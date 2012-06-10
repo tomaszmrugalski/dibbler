@@ -50,6 +50,7 @@ class TSrvAddrMgr : public TAddrMgr
                      bool quiet);
     bool delClntAddr(SPtr<TDUID> duid,unsigned long IAID, SPtr<TIPv6Addr> addr,
                      bool quiet);
+    virtual bool verifyAddr(SPtr<TIPv6Addr> addr);
 
     // TA address management
     bool addTAAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
@@ -59,9 +60,10 @@ class TSrvAddrMgr : public TAddrMgr
 
     // prefix management
     virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+    virtual bool verifyPrefix(SPtr<TIPv6Addr> addr);
 
     // how many addresses does this client have?
-    unsigned long getAddrCount(SPtr<TDUID> duid);
+    unsigned long getLeaseCount(SPtr<TDUID> duid);
 
     void doDuties(std::vector<TExpiredInfo>& addrLst,
                   std::vector<TExpiredInfo>& tempAddrLst,
@@ -87,7 +89,6 @@ class TSrvAddrMgr : public TAddrMgr
  protected:
     void print(std::ostream & out);
 
- private:
     TSrvAddrMgr(const std::string& xmlfile, bool loadDB);
     static TSrvAddrMgr * Instance;
 

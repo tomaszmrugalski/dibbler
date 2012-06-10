@@ -270,7 +270,7 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
             status = ClntIfaceMgr().addPrefix(this->Iface, prefix->getPrefix(),
                                               prefix->getPrefixLength(),
                                               prefix->getPref(), prefix->getValid());
-            Log(Debug) << "RENEW will be sent (T1) after " << T1_ << ", REBIND (T2) after "
+            Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                    << T2_ << " seconds." << LogEnd;
             action = "addition";
             break;
@@ -281,7 +281,7 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
             status = ClntIfaceMgr().updatePrefix(this->Iface, prefix->getPrefix(),
                                                  prefix->getPrefixLength(),
                                                  prefix->getPref(), prefix->getValid());
-            Log(Debug) << "RENEW will be sent (T1) after " << T1_ << ", REBIND (T2) after "
+            Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                        << T2_ << " seconds." << LogEnd;
             action = "update";
             break;

@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-namespace {
+namespace test {
 
     class AddrAddrTest : public ::testing::Test {
     public:

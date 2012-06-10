@@ -417,8 +417,7 @@ bool domisparent(_cdomain parent, _cdomain child);
 /*!
  * \brief length of binary domain name
  *
-
- * Returns the length, in bytes, including the trailing \p '\0' character, of
+ * Returns the length, in bytes, including the trailing '\0' character, of
  * the domain name.
  * \param dom Domain name
  * \return Length of the domain name
@@ -501,7 +500,7 @@ stl_string dom_tostring(_cdomain dom);
 /*!
  * \brief number of labels
  *
- * Returns the number of labels, also counting the empty \p '\0' label, of the
+ * Returns the number of labels, also counting the empty '\0' label, of the
  * domain name.
  * \param dom The domain name
  * \return Number of labels
@@ -557,7 +556,7 @@ int domncommon(_cdomain dom1, _cdomain dom2);
  * \return <0, 0 or >0 if the first domain name is smaller than, equal to, or
  * larger than the second one, respectively.
  */
-int domccmp(_cdomain _dom1, _cdomain _dom2);
+int domccmp(_cdomain dom1, _cdomain dom2);
 
 /*!
  * \brief return domain name portion

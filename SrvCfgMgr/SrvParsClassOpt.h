@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvParsClassOpt.h,v 1.10 2008-10-12 20:07:32 thomson Exp $
- *
  */
 
 class TSrvParsClassOpt;
@@ -16,11 +14,11 @@ class TSrvParsClassOpt;
 #define TSRVPARSCLASS_H
 
 #include <string>
-#include "StationID.h"
 #include "DHCPConst.h"
 #include "Container.h"
 #include "SmartPtr.h"
-#include "StationRange.h"
+#include "HostID.h"
+#include "HostRange.h"
 #include "IPv6Addr.h"
 #include "SrvOptAddrParams.h"
 
@@ -55,22 +53,22 @@ class TSrvParsClassOpt
     unsigned long getValidBeg();
 
     //Rejected clients access routines
-    void addRejedClnt(SPtr<TStationRange> addr);
+    void addRejedClnt(SPtr<THostRange> addr);
     void firstRejedClnt();
-    SPtr<TStationRange> getRejedClnt();
-    void setRejedClnt(TContainer<SPtr<TStationRange> > *rejedClnt);
+    SPtr<THostRange> getRejedClnt();
+    void setRejedClnt(TContainer<SPtr<THostRange> > *rejedClnt);
 
     //Accepted clients access routines
-    void addAcceptClnt(SPtr<TStationRange> addr);
+    void addAcceptClnt(SPtr<THostRange> addr);
     void firstAcceptClnt();
-    SPtr<TStationRange> getAcceptClnt();
-    void setAcceptClnt(TContainer<SPtr<TStationRange> > *acceptClnt);
+    SPtr<THostRange> getAcceptClnt();
+    void setAcceptClnt(TContainer<SPtr<THostRange> > *acceptClnt);
 
     //Pool access routines
-    void addPool(SPtr<TStationRange> addr);
+    void addPool(SPtr<THostRange> addr);
     void firstPool();
-    SPtr<TStationRange> getPool();
-    void setPool(TContainer<SPtr<TStationRange> > *pool);
+    SPtr<THostRange> getPool();
+    void setPool(TContainer<SPtr<THostRange> > *pool);
     long countPool();
 
     // leases count
@@ -100,9 +98,9 @@ private:
     unsigned long ValidEnd;
     unsigned long Share;
 
-    TContainer<SPtr<TStationRange> > RejedClnt;
-    TContainer<SPtr<TStationRange> > AcceptClnt;
-    TContainer<SPtr<TStationRange> > Pool;
+    TContainer<SPtr<THostRange> > RejedClnt;
+    TContainer<SPtr<THostRange> > AcceptClnt;
+    TContainer<SPtr<THostRange> > Pool;
 
     unsigned long ClassMaxLease;
 

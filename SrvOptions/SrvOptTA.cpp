@@ -5,7 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvOptTA.cpp,v 1.8 2008-10-12 20:16:14 thomson Exp $
  */
 
 #ifdef WIN32
@@ -21,7 +20,6 @@
 #include "Logger.h"
 #include "AddrClient.h"
 #include "DHCPConst.h"
-#include "SrvTransMgr.h"
 
 using namespace std;
 
@@ -65,20 +63,19 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
  * - SOLICIT (with RAPID_COMMIT)
  * - REQUEST
  */
-TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt,
-			   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
-			   int iface, int msgType, TMsg* parent)
+TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
+                     int msgType, TMsg* parent)
     :TOptTA(queryOpt->getIAID(), parent) {
-    this->ClntDuid  = clntDuid;
-    this->ClntAddr  = clntAddr;
-    this->Iface     = iface;
+    ClntDuid  = clientMsg->getClientDUID();
+    ClntAddr  = clientMsg->getAddr();
+    Iface     = clientMsg->getIface();
     this->OrgMessage= msgType;
     switch (msgType) {
     case SOLICIT_MSG:
-	this->solicit(queryOpt);
+	this->solicit(clientMsg, queryOpt);
 	break;
     case REQUEST_MSG:
-	this->request(queryOpt);
+	this->request(clientMsg, queryOpt);
 	break;
     case RELEASE_MSG:
 	this->release(queryOpt);
@@ -97,16 +94,15 @@ TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }
 
-/**
- * used in response to SOLICIT message
- *
- * @param queryOpt
- */
-void TSrvOptTA::solicit(SPtr<TSrvOptTA> queryOpt) {
-    this->solicitRequest(queryOpt, true);
+/// @brief constructor used in SOLICIT message (and others)
+///
+/// @param clientMsg client message that we are currently responding to
+/// @param queryOpt specific IA_TA option we are trying to answer now
+void TSrvOptTA::solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt) {
+    solicitRequest(clientMsg, queryOpt, true);
 }
 
-void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
+void TSrvOptTA::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt, bool solicit) {
 
     // --- check address counts, how many we've got, how many assigned etc. ---
     unsigned long addrsAssigned  = 0; // already assigned
@@ -114,7 +110,7 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     unsigned long addrsMax       = 0; // clnt-max-lease
     unsigned long willAssign     = 1; // how many will be assigned? Just 1.
 
-    addrsAssigned = SrvAddrMgr().getAddrCount(this->ClntDuid);
+    addrsAssigned = SrvAddrMgr().getLeaseCount(this->ClntDuid);
     addrsAvail    = SrvCfgMgr().countAvailAddrs(this->ClntDuid, this->ClntAddr, this->Iface);
     addrsMax      = SrvCfgMgr().getIfaceByID(this->Iface)->getClntMaxLease();
 
@@ -145,7 +141,7 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     // --- ok, let's assign those damn addresses ---
     SPtr<TSrvOptIAAddress> optAddr;
 
-    optAddr = this->assignAddr();
+    optAddr = this->assignAddr(clientMsg);
     if (!optAddr) {
 	Log(Error) << "No temporary address found. Server is NOT configured with TA option." << LogEnd;
 	SPtr<TOptStatusCode> ptrStatus;
@@ -159,8 +155,8 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit) {
     // those addresses will be released in the TSrvMsgAdvertise::answer() method
 }
 
-void TSrvOptTA::request(SPtr<TSrvOptTA> queryOpt) {
-    this->solicitRequest(queryOpt, false);
+void TSrvOptTA::request(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt) {
+    solicitRequest(clientMsg, queryOpt, false);
 }
 
 void TSrvOptTA::release(SPtr<TSrvOptTA> queryOpt) {
@@ -193,7 +189,7 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
  *
  * @return
  */
-SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
+SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr(SPtr<TSrvMsg> clientMsg) {
     SPtr<TSrvCfgIface> ptrIface;
     ptrIface = SrvCfgMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
@@ -205,11 +201,9 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr() {
     SPtr<TSrvCfgTA> ta;
     ptrIface->firstTA();
 
-    SPtr<TSrvMsg> requestMsg =  (Ptr*)SrvTransMgr().getCurrentRequest();
-
     while ( ta = ptrIface->getTA())
     {
-    	if (!ta->clntSupported(ClntDuid, ClntAddr, requestMsg ))
+    	if (!ta->clntSupported(ClntDuid, ClntAddr, clientMsg ))
     		continue;
     	break;
     }

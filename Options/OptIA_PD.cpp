@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- *
  */
 
 #include "Portable.h"
@@ -19,15 +18,15 @@ TOptIA_PD::TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
     :TOpt(OPTION_IA_PD, parent), IAID_(iaid), T1_(t1), T2_(t2), Valid_(true)  {
 }
 
-uint32_t TOptIA_PD::getIAID() {
+uint32_t TOptIA_PD::getIAID() const {
     return IAID_;
 }
 
-uint32_t TOptIA_PD::getT1() {
+uint32_t TOptIA_PD::getT1() const {
     return T1_;
 }
 
-uint32_t TOptIA_PD::getT2() {
+uint32_t TOptIA_PD::getT2() const {
     return T2_;
 }
 
@@ -82,21 +81,6 @@ char * TOptIA_PD::storeSelf( char* buf) {
     return buf;
 }
 
-uint32_t TOptIA_PD::getMaxValid() {
-    uint32_t maxValid = 0;
-    SPtr<TOpt> ptrOpt;
-    SubOptions.first();
-    while (ptrOpt=SubOptions.get())
-    {
-        if (ptrOpt->getOptType()==OPTION_IAPREFIX) {
-            //SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
-            //if (maxValid<ptrIAAddr->getValid())
-            //    maxValid=ptrIAAddr->getValid();
-        }
-    }
-    return maxValid;
-}
-
 bool TOptIA_PD::isValid() {
     return this->Valid;
 }
@@ -113,4 +97,16 @@ int TOptIA_PD::countPrefixes() {
             cnt++;
     }
     return cnt;
+}
+
+void TOptIA_PD::setT1(uint32_t t1) {
+    T1_ = t1;
+}
+
+void TOptIA_PD::setT2(uint32_t t2) {
+    T2_ = t2;
+}
+
+void TOptIA_PD::setIAID(uint32_t iaid) {
+    IAID_ = iaid;
 }

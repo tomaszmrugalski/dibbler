@@ -32,6 +32,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 
     // options
     FQDNSupport_      = false;
+    FQDNMode_         = 0; // (DNS_UPDATE_MODE_NONE)
     VendorSpecSupport = false;
 
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
@@ -46,7 +47,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
 }
 
-void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain) {
+void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string& domain) {
     UnknownFQDN_ = mode;
     FQDNDomain_ = domain;
 }

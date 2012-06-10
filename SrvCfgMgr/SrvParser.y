@@ -60,8 +60,8 @@ List(Node) NodeClientClassLst;             /* Node list */                      
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
 SPtr<TKey> key;                                                                      \
-List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                           \
+List(THostRange) PresentRangeLst;                                                    \
+List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -115,7 +115,7 @@ virtual ~SrvParser();
 %token PDCLASS_, PD_LENGTH_, PD_POOL_
 %token SCRIPT_
 %token VENDOR_SPEC_
-%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
+%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, LINK_LOCAL_, ADDRESS_, PREFIX_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
@@ -333,6 +333,20 @@ Client
     // copy all defined options
     ClientLst.getLast()->setOptions(ParserOptStack.getLast());
     ParserOptStack.delLast();
+}
+
+| CLIENT_ LINK_LOCAL_ IPV6ADDR_ '{'
+{
+		ParserOptStack.append(new TSrvParsGlobalOpt());
+		SPtr<TIPv6Addr> clntaddr = new TIPv6Addr($3);
+		ClientLst.append(new TSrvCfgOptions(clntaddr));
+} ClientOptions
+'}'
+{
+		Log(Debug) << "Exception: Link-local-based exception specified." << LogEnd;
+		// copy all defined options
+		ClientLst.getLast()->setOptions(ParserOptStack.getLast());
+		ParserOptStack.delLast();
 };
 
 ClientOptions
@@ -356,6 +370,7 @@ ClientOption
 | ExtraOption
 | DsLiteAftrName
 | AddressReservation
+| PrefixReservation
 ;
 
 AddressReservation:
@@ -365,6 +380,14 @@ ADDRESS_ IPV6ADDR_
     Log(Info) << "Exception: Address " << addr->getPlain() << " reserved." << LogEnd;
     ClientLst.getLast()->setAddr(addr);
 };
+
+PrefixReservation:
+PREFIX_ IPV6ADDR_ '/' Number
+{
+    addr = new TIPv6Addr($2);
+    Log(Info) << "Exception: Prefix " << addr->getPlain() << "/" << $4 << " reserved." << LogEnd;
+    ClientLst.getLast()->setPrefix(addr, $4);
+}
 
 /* class { ... } */
 ClassDeclaration:
@@ -601,16 +624,16 @@ StringList
 ADDRESSRangeList
     : IPV6ADDR_
     {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr($1),new TIPv6Addr($1)));
     }
     |   IPV6ADDR_ '-' IPV6ADDR_
     {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
     |  IPV6ADDR_ '/' INTNUMBER_
     {
@@ -624,22 +647,22 @@ ADDRESSRangeList
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
     | ADDRESSRangeList ',' IPV6ADDR_
     {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr($3),new TIPv6Addr($3)));
     }
     |   ADDRESSRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
     {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
 ;
 
@@ -656,11 +679,11 @@ PDRangeList
 
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-	SPtr<TStationRange> range = 0;
+	SPtr<THostRange> range = 0;
 	if (*addr1<=*addr2)
-	    range = new TStationRange(addr1,addr2);
+	    range = new THostRange(addr1,addr2);
 	else
-	    range = new TStationRange(addr2,addr1);
+	    range = new THostRange(addr2,addr1);
 	range->setPrefixLength(prefix);
 	PDLst.append(range);
     }
@@ -669,34 +692,34 @@ PDRangeList
 ADDRESSDUIDRangeList
 : IPV6ADDR_
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr($1),new TIPv6Addr($1)));
 }
 |   IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 }
 | ADDRESSDUIDRangeList ',' IPV6ADDR_
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr($3),new TIPv6Addr($3)));
 }
 |   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 }
 | DUID_
 {
     SPtr<TDUID> duid(new TDUID($1.duid, $1.length));
-    PresentRangeLst.append(new TStationRange(duid, duid));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete $1.duid;
 }
 | DUID_ '-' DUID_
@@ -705,16 +728,16 @@ ADDRESSDUIDRangeList
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
 
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
 
     /// @todo: delete [] $1.duid; delete [] $3.duid?
 }
 | ADDRESSDUIDRangeList ',' DUID_
 {
     SPtr<TDUID> duid(new TDUID($3.duid, $3.length));
-    PresentRangeLst.append(new TStationRange(duid, duid));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete $3.duid;
 }
 | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_
@@ -722,9 +745,9 @@ ADDRESSDUIDRangeList
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     SPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
     delete $3.duid;
     delete $5.duid;
 }
@@ -1751,7 +1774,7 @@ bool SrvParser::EndPDDeclaration()
 
     int len = 0;
     this->PDLst.first();
-    while ( SPtr<TStationRange> pool = PDLst.get() ) {
+    while ( SPtr<THostRange> pool = PDLst.get() ) {
 	if (!len)
 	    len = pool->getPrefixLength();
 	if (len!=pool->getPrefixLength()) {

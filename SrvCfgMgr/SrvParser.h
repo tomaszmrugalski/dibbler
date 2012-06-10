@@ -66,8 +66,8 @@ List(Node) NodeClientClassLst;             /* Node list */                      
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
 SPtr<TKey> key;                                                                      \
-List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                           \
+List(THostRange) PresentRangeLst;                                                    \
+List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -327,55 +327,57 @@ typedef
 #define	CLIENT_	307
 #define	DUID_KEYWORD_	308
 #define	REMOTE_ID_	309
-#define	ADDRESS_	310
-#define	GUESS_MODE_	311
-#define	INACTIVE_MODE_	312
-#define	EXPERIMENTAL_	313
-#define	ADDR_PARAMS_	314
-#define	REMOTE_AUTOCONF_NEIGHBORS_	315
-#define	AFTR_	316
-#define	AUTH_METHOD_	317
-#define	AUTH_LIFETIME_	318
-#define	AUTH_KEY_LEN_	319
-#define	KEY_	320
-#define	SECRET_	321
-#define	ALGORITHM_	322
-#define	DIGEST_NONE_	323
-#define	DIGEST_PLAIN_	324
-#define	DIGEST_HMAC_MD5_	325
-#define	DIGEST_HMAC_SHA1_	326
-#define	DIGEST_HMAC_SHA224_	327
-#define	DIGEST_HMAC_SHA256_	328
-#define	DIGEST_HMAC_SHA384_	329
-#define	DIGEST_HMAC_SHA512_	330
-#define	ACCEPT_LEASEQUERY_	331
-#define	BULKLQ_ACCEPT_	332
-#define	BULKLQ_TCPPORT_	333
-#define	BULKLQ_MAX_CONNS_	334
-#define	BULKLQ_TIMEOUT_	335
-#define	CLIENT_CLASS_	336
-#define	MATCH_IF_	337
-#define	EQ_	338
-#define	AND_	339
-#define	OR_	340
-#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	341
-#define	CLIENT_VENDOR_SPEC_DATA_	342
-#define	CLIENT_VENDOR_CLASS_EN_	343
-#define	CLIENT_VENDOR_CLASS_DATA_	344
-#define	ALLOW_	345
-#define	DENY_	346
-#define	SUBSTRING_	347
-#define	STRING_KEYWORD_	348
-#define	ADDRESS_LIST_	349
-#define	CONTAIN_	350
-#define	NEXT_HOP_	351
-#define	ROUTE_	352
-#define	INFINITE_	353
-#define	STRING_	354
-#define	HEXNUMBER_	355
-#define	INTNUMBER_	356
-#define	IPV6ADDR_	357
-#define	DUID_	358
+#define	LINK_LOCAL_	310
+#define	ADDRESS_	311
+#define	PREFIX_	312
+#define	GUESS_MODE_	313
+#define	INACTIVE_MODE_	314
+#define	EXPERIMENTAL_	315
+#define	ADDR_PARAMS_	316
+#define	REMOTE_AUTOCONF_NEIGHBORS_	317
+#define	AFTR_	318
+#define	AUTH_METHOD_	319
+#define	AUTH_LIFETIME_	320
+#define	AUTH_KEY_LEN_	321
+#define	KEY_	322
+#define	SECRET_	323
+#define	ALGORITHM_	324
+#define	DIGEST_NONE_	325
+#define	DIGEST_PLAIN_	326
+#define	DIGEST_HMAC_MD5_	327
+#define	DIGEST_HMAC_SHA1_	328
+#define	DIGEST_HMAC_SHA224_	329
+#define	DIGEST_HMAC_SHA256_	330
+#define	DIGEST_HMAC_SHA384_	331
+#define	DIGEST_HMAC_SHA512_	332
+#define	ACCEPT_LEASEQUERY_	333
+#define	BULKLQ_ACCEPT_	334
+#define	BULKLQ_TCPPORT_	335
+#define	BULKLQ_MAX_CONNS_	336
+#define	BULKLQ_TIMEOUT_	337
+#define	CLIENT_CLASS_	338
+#define	MATCH_IF_	339
+#define	EQ_	340
+#define	AND_	341
+#define	OR_	342
+#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	343
+#define	CLIENT_VENDOR_SPEC_DATA_	344
+#define	CLIENT_VENDOR_CLASS_EN_	345
+#define	CLIENT_VENDOR_CLASS_DATA_	346
+#define	ALLOW_	347
+#define	DENY_	348
+#define	SUBSTRING_	349
+#define	STRING_KEYWORD_	350
+#define	ADDRESS_LIST_	351
+#define	CONTAIN_	352
+#define	NEXT_HOP_	353
+#define	ROUTE_	354
+#define	INFINITE_	355
+#define	STRING_	356
+#define	HEXNUMBER_	357
+#define	INTNUMBER_	358
+#define	IPV6ADDR_	359
+#define	DUID_	360
 
 
 #line 169 "../bison++/bison.h"
@@ -476,7 +478,9 @@ static const int VENDOR_SPEC_;
 static const int CLIENT_;
 static const int DUID_KEYWORD_;
 static const int REMOTE_ID_;
+static const int LINK_LOCAL_;
 static const int ADDRESS_;
+static const int PREFIX_;
 static const int GUESS_MODE_;
 static const int INACTIVE_MODE_;
 static const int EXPERIMENTAL_;
@@ -585,55 +589,57 @@ static const int DUID_;
 	,CLIENT_=307
 	,DUID_KEYWORD_=308
 	,REMOTE_ID_=309
-	,ADDRESS_=310
-	,GUESS_MODE_=311
-	,INACTIVE_MODE_=312
-	,EXPERIMENTAL_=313
-	,ADDR_PARAMS_=314
-	,REMOTE_AUTOCONF_NEIGHBORS_=315
-	,AFTR_=316
-	,AUTH_METHOD_=317
-	,AUTH_LIFETIME_=318
-	,AUTH_KEY_LEN_=319
-	,KEY_=320
-	,SECRET_=321
-	,ALGORITHM_=322
-	,DIGEST_NONE_=323
-	,DIGEST_PLAIN_=324
-	,DIGEST_HMAC_MD5_=325
-	,DIGEST_HMAC_SHA1_=326
-	,DIGEST_HMAC_SHA224_=327
-	,DIGEST_HMAC_SHA256_=328
-	,DIGEST_HMAC_SHA384_=329
-	,DIGEST_HMAC_SHA512_=330
-	,ACCEPT_LEASEQUERY_=331
-	,BULKLQ_ACCEPT_=332
-	,BULKLQ_TCPPORT_=333
-	,BULKLQ_MAX_CONNS_=334
-	,BULKLQ_TIMEOUT_=335
-	,CLIENT_CLASS_=336
-	,MATCH_IF_=337
-	,EQ_=338
-	,AND_=339
-	,OR_=340
-	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=341
-	,CLIENT_VENDOR_SPEC_DATA_=342
-	,CLIENT_VENDOR_CLASS_EN_=343
-	,CLIENT_VENDOR_CLASS_DATA_=344
-	,ALLOW_=345
-	,DENY_=346
-	,SUBSTRING_=347
-	,STRING_KEYWORD_=348
-	,ADDRESS_LIST_=349
-	,CONTAIN_=350
-	,NEXT_HOP_=351
-	,ROUTE_=352
-	,INFINITE_=353
-	,STRING_=354
-	,HEXNUMBER_=355
-	,INTNUMBER_=356
-	,IPV6ADDR_=357
-	,DUID_=358
+	,LINK_LOCAL_=310
+	,ADDRESS_=311
+	,PREFIX_=312
+	,GUESS_MODE_=313
+	,INACTIVE_MODE_=314
+	,EXPERIMENTAL_=315
+	,ADDR_PARAMS_=316
+	,REMOTE_AUTOCONF_NEIGHBORS_=317
+	,AFTR_=318
+	,AUTH_METHOD_=319
+	,AUTH_LIFETIME_=320
+	,AUTH_KEY_LEN_=321
+	,KEY_=322
+	,SECRET_=323
+	,ALGORITHM_=324
+	,DIGEST_NONE_=325
+	,DIGEST_PLAIN_=326
+	,DIGEST_HMAC_MD5_=327
+	,DIGEST_HMAC_SHA1_=328
+	,DIGEST_HMAC_SHA224_=329
+	,DIGEST_HMAC_SHA256_=330
+	,DIGEST_HMAC_SHA384_=331
+	,DIGEST_HMAC_SHA512_=332
+	,ACCEPT_LEASEQUERY_=333
+	,BULKLQ_ACCEPT_=334
+	,BULKLQ_TCPPORT_=335
+	,BULKLQ_MAX_CONNS_=336
+	,BULKLQ_TIMEOUT_=337
+	,CLIENT_CLASS_=338
+	,MATCH_IF_=339
+	,EQ_=340
+	,AND_=341
+	,OR_=342
+	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=343
+	,CLIENT_VENDOR_SPEC_DATA_=344
+	,CLIENT_VENDOR_CLASS_EN_=345
+	,CLIENT_VENDOR_CLASS_DATA_=346
+	,ALLOW_=347
+	,DENY_=348
+	,SUBSTRING_=349
+	,STRING_KEYWORD_=350
+	,ADDRESS_LIST_=351
+	,CONTAIN_=352
+	,NEXT_HOP_=353
+	,ROUTE_=354
+	,INFINITE_=355
+	,STRING_=356
+	,HEXNUMBER_=357
+	,INTNUMBER_=358
+	,IPV6ADDR_=359
+	,DUID_=360
 
 
 #line 215 "../bison++/bison.h"

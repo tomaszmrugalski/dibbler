@@ -57,7 +57,7 @@ void TClntParsIAOpt::setAddrHint(bool addrHint)
     this->AddrHint=addrHint;
 }
 
-void TClntParsIAOpt::addPrefSrv(SPtr<TStationID> prefSrv)
+void TClntParsIAOpt::addPrefSrv(SPtr<THostID> prefSrv)
 {
     this->PrefSrv.append(prefSrv);
 }
@@ -67,7 +67,7 @@ void TClntParsIAOpt::firstPrefSrv()
     this->PrefSrv.first();
 }
 
-SPtr<TStationID> TClntParsIAOpt::getPrefSrv()
+SPtr<THostID> TClntParsIAOpt::getPrefSrv()
 {
     return this->PrefSrv.get();
 }
@@ -76,16 +76,16 @@ void TClntParsIAOpt::clearPrefSrv()
     this->PrefSrv.clear();
 }
 
-void TClntParsIAOpt::setPrefSrvLst(TContainer<SPtr<TStationID> > *lst)
+void TClntParsIAOpt::setPrefSrvLst(TContainer<SPtr<THostID> > *lst)
 {
-    SPtr<TStationID> id;
+    SPtr<THostID> id;
     this->PrefSrv.clear();
     lst->first();
     while(id=lst->get())
         this->PrefSrv.append(id);
 }
 
-void TClntParsIAOpt::addRejedSrv(SPtr<TStationID> prefSrv)
+void TClntParsIAOpt::addRejedSrv(SPtr<THostID> prefSrv)
 {
     this->RejedSrv.append(prefSrv);
 }
@@ -99,16 +99,16 @@ void TClntParsIAOpt::clearRejedSrv()
 {
     this->RejedSrv.clear();
 }
-void TClntParsIAOpt::setRejedSrvLst(TContainer<SPtr<TStationID> > *lst)
+void TClntParsIAOpt::setRejedSrvLst(TContainer<SPtr<THostID> > *lst)
 {
-    SPtr<TStationID> id;
+    SPtr<THostID> id;
     this->RejedSrv.clear();
     lst->first();
     while(id=lst->get())
         this->RejedSrv.append(id);
 }
 
-SPtr<TStationID> TClntParsIAOpt::getRejedSrv()
+SPtr<THostID> TClntParsIAOpt::getRejedSrv()
 {
     return this->RejedSrv.get();
 }

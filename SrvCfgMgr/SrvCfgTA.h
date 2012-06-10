@@ -59,9 +59,9 @@ class TSrvCfgTA
     unsigned long ID; // this is not IAID, just internal ID counter
     static unsigned long staticID;
 
-    TContainer<SPtr<TStationRange> > RejedClnt;
-    TContainer<SPtr<TStationRange> > AcceptClnt;
-    SPtr<TStationRange> Pool;
+    TContainer<SPtr<THostRange> > RejedClnt;
+    TContainer<SPtr<THostRange> > AcceptClnt;
+    SPtr<THostRange> Pool;
     unsigned long ClassMaxLease;
     unsigned long AddrsAssigned;
     unsigned long AddrsCount;
