@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <climits>
 
-namespace {
+namespace test {
     class AddrClientTest : public ::testing::Test {
     public:
         AddrClientTest() { }

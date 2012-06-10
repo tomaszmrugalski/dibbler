@@ -23,8 +23,8 @@ public:
 
     void setWorkDir(const std::string& dir);
     std::string getWorkDir();
-    void setPrefixLength(int len);
-    int getPrefixLength();
+    void setOnLinkPrefixLength(int len);
+    int getOnLinkPrefixLength();
     void setDigest(DigestTypes digest);
     DigestTypes getDigest();
     void setAnonInfRequest(bool anonymous);

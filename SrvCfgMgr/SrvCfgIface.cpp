@@ -16,6 +16,7 @@
 #include "SrvCfgPD.h"
 #include "Logger.h"
 #include "Opt.h"
+#include "SrvMsg.h"
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -34,11 +35,21 @@ bool TSrvCfgIface::leaseQuerySupport() const
     return LeaseQuery_;
 }
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, bool quiet)
-{
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, 
+                                                      TMsg * parent, bool quiet) {
+
+    SPtr<TOptVendorData> remoteID;
+    TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
+    SPtr<TIPv6Addr> peer;
+    if (par) {
+        remoteID = par->getRemoteID();
+        peer = par->getClientPeer();
+        Log(Debug) << "Checking exceptions for link-local=" << peer->getPlain() << LogEnd;
+    }
+
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
-    while (x=ExceptionsLst_.get()) {
+    while (x = ExceptionsLst_.get()) {
         if ( duid && x->getDuid() && (*(x->getDuid()) == *duid) ) {
             if (!quiet)
                 Log(Debug) << "Found per-client configuration (exception) for client with DUID="
@@ -51,48 +62,179 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, SPtr<TOp
         if ( remoteID && remoteid && (remoteID->getVendor() == remoteid->getVendor())
              && (remoteid->getVendorDataLen() == remoteID->getVendorDataLen())
              && !memcmp(remoteid->getVendorData(), remoteID->getVendorData(), remoteid->getVendorDataLen()) ) {
-                Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor="
-                           << remoteid->getVendor() << ", data="
-                           << remoteid->getVendorDataPlain() << "." << LogEnd;
+            Log(Debug) << "Found per-client configuration (exception) for client with RemoteID: vendor="
+                       << remoteid->getVendor() << ", data="
+                       << remoteid->getVendorDataPlain() << "." << LogEnd;
+            return x;
+        }
+        if ( peer && x && x->getClntAddr() && *(peer) == *(x->getClntAddr()) ) {
+            Log(Debug) << "Found per-client configuration (exception) for client with link-local="
+                       << peer->getPlain() << LogEnd;
             return x;
         }
     }
     return 0;
 }
 
-void TSrvCfgIface::firstAddrClass() {
-    SrvCfgAddrClassLst_.first();
-}
-
-/*
- * tries to find if there is a class, where client is on white-list
- */
-bool TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
-    SPtr<TSrvCfgAddrClass> ptrClass;
-    SrvCfgAddrClassLst_.first();
-    while(ptrClass=SrvCfgAddrClassLst_.get()) {
-        if (ptrClass->clntPrefered(duid, clntAddr)) {
-            classid=ptrClass->getID();
+/// @brief Checks if address is reserved.
+///
+/// Iterates over exceptions list and checks if specified address is reserved.
+///
+/// @param addr Address in question.
+///
+/// @return True if reserved (false otherwise).
+bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
+{
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst_.first();
+    while (x=ExceptionsLst_.get()) {
+        if (*x->getAddr() == *addr)
             return true;
-        }
     }
     return false;
 }
 
-/*
- * tries to find a class, which client is allowed to use
- */
-bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, unsigned long &classid) {
+/// @brief Checks if prefix is reserved.
+///
+/// Iterates over exceptions list and checks if specified prefix is reserved.
+///
+/// @param prefix prefix in question.
+///
+/// @return True if reserved (false otherwise).
+bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
+{
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst_.first();
+    while (x=ExceptionsLst_.get()) {
+        if (x->getAddr() == prefix)
+            return true;
+    }
+    return false;
+}
+
+/// @brief Checks if a prefix is reserved for another client.
+///
+/// @param pfx checked prefix (mandatory)
+/// @param duid Client's duid (mandatory)
+/// @param myRemoteID (can be NULL)
+/// @param linkLocal (can be NULL)
+///
+/// @return true if reserved for some else, false = not reserved
+bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid,
+                                       SPtr<TOptVendorData> myRemoteID,
+                                       SPtr<TIPv6Addr> linkLocal) {
+    // sanity check
+    if (!pfx || !duid) {
+        // should not happen
+        Log(Error) << "Reservation check failed. Required parameters not specified." << LogEnd;
+        return true;
+    }
+
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst_.first();
+    Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
+    while (x=ExceptionsLst_.get()) {
+
+        if (!x->getPrefix()) // that is not prefix reservation
+            continue;
+
+        if ( *(x->getPrefix()) != (*pfx) )
+            continue; // that is not the prefix we are looking for
+
+        // we found the prefix we are looking for. Let's check if we can use it
+
+        // DUID based reservation?
+        if (x->getDuid()) {
+            if (*duid == *x->getDuid()) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain() << " is reserved for DUID="
+                           << x->getDuid()->getPlain() << LogEnd;
+                return true;
+            }
+        }
+
+        // remote-id based reservation?
+        SPtr<TOptVendorData> remoteid = x->getRemoteID();
+        if (remoteid) {
+            if ( (myRemoteID->getVendor() == remoteid->getVendor()) &&
+                 (myRemoteID->getVendorDataLen() == remoteid->getVendorDataLen()) &&
+                 (!memcmp(myRemoteID->getVendorData(), remoteid->getVendorData(), remoteid->getVendorDataLen())) ) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain() << "is reserved for remote-id="
+                           << remoteid->getPlain() << LogEnd;
+                return true; // no, sorry. It's somebody else's prefix
+            }
+        }
+
+
+        // link-local based reservation
+        SPtr<TIPv6Addr> addr = x->getClntAddr();
+        if (addr) {
+            if (*linkLocal == *addr) {
+                return false; // reserved for us!
+            } else {
+                Log(Debug) << "Prefix " << x->getPrefix()->getPlain()
+                           << " is reserved for link-local address "
+                           << addr->getPlain() << LogEnd;
+                return true;
+            }
+        }
+
+        Log(Error) << "Found reservation for prefix " << x->getPrefix()->getPlain()
+                   << ", but it is misconfigured (no DUID, remote-id nor link-local specified)"
+                   << LogEnd;
+
+        // this reservation is malformed let's not use it
+        return true;
+    }
+  return false;
+}
+
+void TSrvCfgIface::firstAddrClass() {
+    SrvCfgAddrClassLst_.first();
+}
+
+/// @brief Returns ID of the preferred pool for specified client
+///
+/// tries to find if there is a class, where client is on white-list
+///
+/// @param duid client's DUID
+/// @param clntAddr client's address
+///
+/// @return ID of prefered pool (or -1 if there is none)
+int TSrvCfgIface::getPreferedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
+    SPtr<TSrvCfgAddrClass> ptrClass;
+    SrvCfgAddrClassLst_.first();
+    while(ptrClass=SrvCfgAddrClassLst_.get()) {
+        if (ptrClass->clntPrefered(duid, clntAddr)) {
+            return ptrClass->getID();
+        }
+    }
+    return -1;
+}
+
+/// tries to find a class, which client is allowed to use
+///
+/// @param duid client's DUID
+/// @param clntAddr client's linkaddress
+///
+/// @return classid (or -1 if no suitable class is found)
+int TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
     unsigned int clsid[100];
     unsigned int share[100];
     unsigned int cnt = 0;
     unsigned int sum = 0;
     unsigned int rnd;
 
+    /// @todo Buffer overflow for more than 100 classes
+
     SPtr<TSrvCfgAddrClass> ptrClass;
     SrvCfgAddrClassLst_.first();
     while( (ptrClass=SrvCfgAddrClassLst_.get()) && (cnt<100) ) {
-        if (ptrClass->clntSupported(duid, clntAddr)) {
+        if (ptrClass->clntSupported(duid, clntAddr) &&
+            ptrClass->getClassMaxLease() > ptrClass->getAssignedCount()) {
             clsid[cnt]   = ptrClass->getID();
             share[cnt]   = ptrClass->getShare();
             sum         += ptrClass->getShare();
@@ -101,21 +243,20 @@ bool TSrvCfgIface::getAllowedAddrClassID(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntA
     }
 
     if (!cnt)
-        return false; // this client is not supported by any class
+        return -1; // this client is not supported by any class
 
     rnd = rand() % sum;
 
-    unsigned int j=0;
+    unsigned int j = 0;
 
-    for (unsigned int i=0; i<100;i++) {
+    for (unsigned int i = 0; i < cnt; i++) {
         j += share[i];
-        if (j>=rnd) {
-            classid = clsid[i];
-            break;
+        if (j >= rnd) {
+            return clsid[i];
         }
     }
 
-    return true;
+    return clsid[cnt-1];
 }
 
 
@@ -211,41 +352,37 @@ void TSrvCfgIface::delClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) 
 }
 
 SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
-                                                        SPtr<TIPv6Addr> clntAddr) {
-
-    unsigned long classid;
+                                                    SPtr<TIPv6Addr> clntAddr) {
+    long classid;
 
     // step 1: Is there a class reserved for this client?
 
     // if there is class where client is on whitelist, it should be used rather than any other class
     // that would be also suitable
-    if(getPreferedAddrClassID(clntDuid, clntAddr, classid)) {
-      Log(Debug) << "Found prefered class for client (duid = " << *clntDuid << ", addr = "
-                << *clntAddr << ")" << LogEnd;
-      return getClassByID(classid);
+    classid = getPreferedAddrClassID(clntDuid, clntAddr);
+    if(classid > -1) {
+        Log(Debug) << "Found prefered class " << classid << " for client (duid = " << *clntDuid << ", addr = "
+                   << *clntAddr << ")" << LogEnd;
+        return getClassByID(classid);
     }
 
     // Get one of the normal classes
-    if(getAllowedAddrClassID(clntDuid, clntAddr, classid)) {
+    classid = getAllowedAddrClassID(clntDuid, clntAddr);
+    if(classid > -1) {
         Log(Debug) << "Prefered class for client not found, using classid=" << classid << "." << LogEnd;
         return getClassByID(classid);
     }
 
     // This is some kind of problem...
-    Log(Error) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
-               << clntAddr->getPlain() << ")." << LogEnd;
+    // we are out of addresses, or we really don't like this client
+    Log(Warning) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
+                 << clntAddr->getPlain() << ")." << LogEnd;
     return 0;
 }
 
 long TSrvCfgIface::countAddrClass() const {
     return SrvCfgAddrClassLst_.count();
 }
-
-
-
-/** Prefix delegation functions
-
-*/
 
 SPtr<TSrvCfgPD> TSrvCfgIface::getPD() {
     return SrvCfgPDLst_.get();
@@ -333,11 +470,19 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     Unicast_       = opt->getUnicast();
     LeaseQuery_    = opt->getLeaseQuerySupport();
 
+    T1Min_    = opt->getT1Beg();
+    T1Max_    = opt->getT1End();
+    T2Min_    = opt->getT2Beg();
+    T2Max_    = opt->getT2End();
+    PrefMin_  = opt->getPrefBeg();
+    PrefMax_  = opt->getPrefEnd();
+    ValidMax_ = opt->getValidBeg();
+    ValidMax_ = opt->getValidEnd();
+
     if (opt->supportFQDN()){
         UnknownFQDN_ = opt->getUnknownFQDN();
         FQDNDomain_  = opt->getFQDNDomain();
 
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
         setFQDNLst(opt->getFQDNLst());
         FQDNMode_ = opt->getFQDNMode();
 
@@ -354,10 +499,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
         case DNSUPDATE_MODE_BOTH:
             Log(Cont) << "server will perform both (AAAA and PTR) updates." << LogEnd;
         }
-#else
-        Log(Error) << "DNSUpdate is disabled (please recompile)." << LogEnd;
-#endif
-        Log(Debug) <<"FQDN: revDNS zoneroot lenght set to " << getRevDNSZoneRootLength()<< "." << LogEnd;
+        Log(Debug) <<"FQDN: RevDNS zoneroot lenght set to " << getRevDNSZoneRootLength()<< "." << LogEnd;
     }
 
     if (opt->isRelay()) {
@@ -389,6 +531,8 @@ void TSrvCfgIface::setDefaults() {
     NoConfig_ = false;
     Name_ = "[unknown]";
     ID_ = -1;
+    Relay_ = false;
+    RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
     RelayID_ = -1;
     Preference_ = 0;
 
@@ -399,6 +543,15 @@ void TSrvCfgIface::setDefaults() {
 
     FQDNMode_ = DNSUPDATE_MODE_NONE;
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
+
+    T1Min_    = SERVER_DEFAULT_MIN_T1;
+    T1Max_    = SERVER_DEFAULT_MAX_T1;
+    T2Min_    = SERVER_DEFAULT_MIN_T2;
+    T2Max_    = SERVER_DEFAULT_MAX_T2;
+    PrefMin_  = SERVER_DEFAULT_MIN_PREF;
+    PrefMax_  = SERVER_DEFAULT_MAX_PREF;
+    ValidMin_ = SERVER_DEFAULT_MIN_VALID;
+    ValidMax_ = SERVER_DEFAULT_MAX_VALID;
 }
 
 void TSrvCfgIface::setNoConfig() {
@@ -573,9 +726,9 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     {
         string tmp = addr->getPlain();
         std::string::size_type j = 0;
-        while ( (j = tmp.find("::"))!=std::string::npos)
+        while ( (j = tmp.find("::")) != std::string::npos)
             tmp.replace(j, 1, "-");
-        while ( (j = tmp.find(':'))!=std::string::npos)
+        while ( (j = tmp.find(':')) != std::string::npos)
             tmp.replace(j, 1, "-");
         tmp = tmp + "." + FQDNDomain_;
         SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
@@ -656,7 +809,7 @@ void TSrvCfgIface::delTAAddr() {
 // --------------------------------------------------------------------
 
 ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
-    SPtr<TStationID> Station;
+    SPtr<THostID> Station;
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
 
@@ -811,4 +964,30 @@ void TSrvCfgIface::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
     while(ptrPD = SrvCfgPDLst_.get()){
         ptrPD->mapAllowDenyList(clientClassLst);
     }
+}
+
+
+uint32_t TSrvCfgIface::chooseTime(uint32_t min, uint32_t max, uint32_t proposal)
+{
+    if (proposal < min)
+        return min;
+    if (proposal > max)
+        return max;
+    return proposal;
+}
+
+uint32_t TSrvCfgIface::getT1(uint32_t proposal) {
+    return chooseTime(T1Min_, T1Max_, proposal);
+}
+
+uint32_t TSrvCfgIface::getT2(uint32_t proposal) {
+    return chooseTime(T2Min_, T2Max_, proposal);
+}
+
+uint32_t TSrvCfgIface::getPref(uint32_t proposal) {
+    return chooseTime(PrefMin_, PrefMax_, proposal);
+}
+
+uint32_t TSrvCfgIface::getValid(uint32_t proposal) {
+    return chooseTime(ValidMin_, ValidMax_, proposal);
 }

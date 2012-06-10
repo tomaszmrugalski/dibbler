@@ -22,13 +22,14 @@
 using namespace std;
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
+    :CfgMgr(NULL)
 {
-    this->IfaceMgr = ifaceMgr;
+    IfaceMgr = ifaceMgr;
 }
 
 void ReqTransMgr::SetParams(ReqCfgMgr * cfgMgr)
 {
-    this->CfgMgr = cfgMgr;
+    CfgMgr = cfgMgr;
 }
 
 bool ReqTransMgr::BindSockets()

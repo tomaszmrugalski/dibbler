@@ -16,31 +16,31 @@ using namespace std;
 /*
   this one is used to create relay interfaces
 **/
-TSrvIfaceIface::TSrvIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-			       int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalAddrCnt,
-			       int hwType)
+TSrvIfaceIface::TSrvIfaceIface(const char * name, int id, unsigned int flags, char* mac,
+                               int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalAddrCnt,
+                               int hwType)
     :TIfaceIface(name,id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType)
 {
-    this->Relay = false;
-    this->RelaysCnt = 0;
+    Relay_ = false;
+    RelaysCnt_ = 0;
 }
 
 void TSrvIfaceIface::setUnderlaying(SPtr<TSrvIfaceIface> under) {
-    this->UnderRelay = under;
-    this->Relay = true;
+    UnderRelay_ = under;
+    Relay_ = true;
 }
 
 SPtr<TSrvIfaceIface> TSrvIfaceIface::getUnderlaying() {
-    return this->UnderRelay;
+    return UnderRelay_;
 }
 
 bool TSrvIfaceIface::appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID) {
-    if (this->RelaysCnt>=HOP_COUNT_LIMIT) 
-	return false;
-    this->Relays[this->RelaysCnt].iface       = relay;
-    this->Relays[this->RelaysCnt].ifindex     = relay->getID();
-    this->Relays[this->RelaysCnt].interfaceID = interfaceID;
-    this->RelaysCnt++;
+    if (RelaysCnt_ >= HOP_COUNT_LIMIT)
+        return false;
+    Relays_[RelaysCnt_].iface       = relay;
+    Relays_[RelaysCnt_].ifindex     = relay->getID();
+    Relays_[RelaysCnt_].interfaceID = interfaceID;
+    RelaysCnt_++;
     return true;
 }
 
@@ -50,38 +50,39 @@ SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterface
         return 0;
     }
 
-    if (this->RelaysCnt==0) {
-	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-	return 0;
+    if (RelaysCnt_ == 0) {
+        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+        return 0;
     }
-    for (i=0; i<this->RelaysCnt; i++) {
-	if (Relays[i].interfaceID && (*Relays[i].interfaceID == *interfaceID) )
-	    return this->Relays[i].iface;
+    for (i = 0; i < RelaysCnt_; i++) {
+        if (Relays_[i].interfaceID && (*Relays_[i].interfaceID == *interfaceID) )
+            return Relays_[i].iface;
     }
     return 0;
 }
 
 SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
-    if (this->RelaysCnt==0) {
-	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-	return 0;
+    if (RelaysCnt_ == 0) {
+        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+        return 0;
     }
+
     //// @todo: Implement finding RELAYs using link address
-    Log(Error) << "Finding RELAYs using link address is not implemented yet. Using first relay:" 
-	      << this->Relays[0].iface->getFullName() << LogEnd;
-    return this->Relays[0].iface;
+    Log(Error) << "Finding RELAYs using link address is not implemented yet. Using first relay:"
+              << Relays_[0].iface->getFullName() << LogEnd;
+    return Relays_[0].iface;
 }
 
 SPtr<TSrvIfaceIface> TSrvIfaceIface::getAnyRelay() {
-    if (this->RelaysCnt==0) {
-	Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-	return 0;
+    if (RelaysCnt_==0) {
+        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
+        return 0;
     }
-    return this->Relays[0].iface;
+    return Relays_[0].iface;
 }
 
 int TSrvIfaceIface::getRelayCnt() {
-    return this->RelaysCnt;
+    return RelaysCnt_;
 }
 
 
@@ -100,29 +101,29 @@ std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x) {
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
     strum << " flags=\"" << x.Flags << "\">" << endl;
-    
-    if (x.Relay) {
-	strum << "    <UnderlayingRelay name=\"" << x.UnderRelay->getName() << "\" ifindex=\"" 
-	      << x.UnderRelay->getID() << "\" />" << endl;
+
+    if (x.Relay_) {
+        strum << "    <UnderlayingRelay name=\"" << x.UnderRelay_->getName() << "\" ifindex=\""
+              << x.UnderRelay_->getID() << "\" />" << endl;
     }
 
-    if (x.RelaysCnt) {
-	for (i=0; i< x.RelaysCnt; i++) {
-	    strum << "    <OverlayingRelay name=\"" << x.Relays[i].iface->getName() 
-		  << "\" ifindex=\"" << x.Relays[i].ifindex;
-	    if (x.Relays[i].interfaceID)
-	      strum << "\" interfaceID=\"" << x.Relays[i].interfaceID->getPlain();
-	    else
-	      strum << "\" interfaceID=null\"";
-	    strum << "\" />" << endl;
-	}
+    if (x.RelaysCnt_) {
+        for (i=0; i< x.RelaysCnt_; i++) {
+            strum << "    <OverlayingRelay name=\"" << x.Relays_[i].iface->getName()
+                  << "\" ifindex=\"" << x.Relays_[i].ifindex;
+            if (x.Relays_[i].interfaceID)
+              strum << "\" interfaceID=\"" << x.Relays_[i].interfaceID->getPlain();
+            else
+              strum << "\" interfaceID=null\"";
+            strum << "\" />" << endl;
+        }
     }
 
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
-	inet_ntop6(x.LLAddr+i*16,buf);
-	strum << "    <Addr scope=\"local\">" << buf << "</Addr>" << endl;
+        inet_ntop6(x.LLAddr+i*16,buf);
+        strum << "    <Addr scope=\"local\">" << buf << "</Addr>" << endl;
     }
 
     strum << "    <!-- " << x.countGlobalAddr() << " non-local (global) addrs -->" << endl;
@@ -130,15 +131,15 @@ std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x) {
     x.firstGlobalAddr();
     SPtr<TIPv6Addr> addr;
     while (addr = x.getGlobalAddr()) {
-      	strum << "    <Addr scope=\"global\">" << *addr << "</Addr>" << endl;
+        strum << "    <Addr scope=\"global\">" << *addr << "</Addr>" << endl;
     }
 
     strum << "    <Mac length=\"" << x.Maclen << "\">";
     for (int i=0; i<x.Maclen; i++) {
-	strum.fill('0');
-	strum.width(2);
-	strum << (hex) << (int) x.Mac[i];
-	if (i<x.Maclen-1) strum  << ":";
+        strum.fill('0');
+        strum.width(2);
+        strum << (hex) << (int) x.Mac[i];
+        if (i<x.Maclen-1) strum  << ":";
     }
     strum << "</Mac>" << endl;
 
@@ -146,7 +147,7 @@ std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x) {
     SPtr<TIfaceSocket> sock;
     x.firstSocket();
     while (sock = x.getSocket() ) {
-	strum << "    " << *sock;
+        strum << "    " << *sock;
     }
     strum << "  </SrvIfaceIface>" << endl;
     return strum;

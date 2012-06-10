@@ -28,6 +28,11 @@ TSrvCfgOptions::TSrvCfgOptions(SPtr<TOptVendorData> remoteID) {
     RemoteID = remoteID;
 }
 
+TSrvCfgOptions::TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr) {
+    SetDefaults();
+    ClntAddr = clntaddr;
+}
+
 SPtr<TDUID> TSrvCfgOptions::getDuid() const {
     return Duid;
 }
@@ -36,11 +41,16 @@ SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() const {
     return RemoteID;
 }
 
+SPtr<TIPv6Addr> TSrvCfgOptions::getClntAddr() const {
+    return ClntAddr;
+}
+
 void TSrvCfgOptions::SetDefaults() {
     this->VendorSpecSupport       = false;
 
     Duid = 0;
     RemoteID = 0;
+		ClntAddr = 0;
 
     ExtraOpts_.clear();
     ForcedOpts_.clear();

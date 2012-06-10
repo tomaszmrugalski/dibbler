@@ -56,6 +56,22 @@ void TClntCfgIface::setDefaults() {
     VendorSpecState = STATE_DISABLED;
     RoutingEnabledState = STATE_DISABLED;
 
+    ReqDNSServer = false;
+    ReqDomain = false;
+    ReqNTPServer = false;
+    ReqTimezone = false;
+    ReqSIPServer = false;
+    ReqSIPDomain = false;
+    ReqFQDN = false;
+    ReqNISServer = false;
+    ReqNISPServer = false;
+    ReqNISDomain = false;
+    ReqNISPDomain = false;
+    ReqLifetime = false;
+    ReqVendorSpec = false;
+
+    ReqPrefixDelegation = false;
+
     ExtraOpts.clear();
 }
 
@@ -109,7 +125,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
     if (ReqVendorSpec) setVendorSpecState(STATE_NOTCONFIGURED);
 
     // copy preferred-server list
-    SPtr<TStationID> station;
+    SPtr<THostID> station;
     opt->firstPrefSrv();
     while (station = opt->getPrefSrv())
         PrefSrvLst.append(station);
@@ -123,7 +139,7 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
 bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
 {
     RejectedSrvLst.first();
-    SPtr<TStationID> RejectedSrv;
+    SPtr<THostID> RejectedSrv;
     while(RejectedSrv=RejectedSrvLst.get())
     {
         if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
@@ -273,9 +289,6 @@ void TClntCfgIface::vendorSpecSupported(bool support)
 // --------------------------------------------------------------------------------
 bool TClntCfgIface::isReqDNSServer() {
     return this->ReqDNSServer;
-}
-bool TClntCfgIface::isReqPrefixDelegation() {
-    return this->ReqPrefixDelegation;
 }
 bool TClntCfgIface::isReqDomain() {
     return this->ReqDomain;
@@ -471,11 +484,11 @@ void TClntCfgIface::setAuthenticationState(EState state) {
     this->AuthenticationState = state;
 }
 
-void TClntCfgIface::setPrefixLength(int len) {
+void TClntCfgIface::setOnLinkPrefixLength(int len) {
     this->PrefixLength = len;
 }
 
-int  TClntCfgIface::getPrefixLength() {
+int  TClntCfgIface::getOnLinkPrefixLength() {
     return this->PrefixLength;
 }
 

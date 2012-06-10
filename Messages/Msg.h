@@ -48,13 +48,14 @@ class TMsg
     SPtr<TOpt> getOption(int type);
     void firstOption();
     int countOption();
+    void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
 
     virtual SPtr<TOpt> getOption();
     
     long getType();
     long getTransID();
     TOptList & getOptLst();
-    SPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr(); /// @todo: rename to getPeerAddr()
     int getIface();
     virtual ~TMsg();
     bool isDone();

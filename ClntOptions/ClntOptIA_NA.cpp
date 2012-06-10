@@ -88,8 +88,10 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrI
     //checkRequestConstructor
     ClntCfgIA->firstAddr();
     SPtr<TClntCfgAddr> ClntCfgAddr;
+
+    /// @todo: keep allocated address in TAddrClient
     while ((ClntCfgAddr = ClntCfgIA->getAddr())&&
-        ((ClntCfgIA->countAddr()-ClntaddrIA->getAddrCount())>this->countAddr() ))
+        ((ClntCfgIA->countAddr()-ClntaddrIA->countAddr())>this->countAddr() ))
     {
         SPtr<TAddrAddr> ptrAddr=ClntaddrIA->getAddr(ClntCfgAddr->get());
         if(!ptrAddr)
@@ -367,7 +369,7 @@ bool TClntOptIA_NA::doDuties() {
     if (getT1() && getT2()) {
       ptrIA->setT1( this->getT1() );
       ptrIA->setT2( this->getT2() );
-      Log(Debug) << "RENEW will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
+      Log(Debug) << "RENEW(IA_NA) will be sent (T1) after " << ptrIA->getT1() << ", REBIND (T2) after " << ptrIA->getT2() << " seconds." << LogEnd;
     } else {
       this->firstAddr();
       ptrOptAddr = this->getAddr();

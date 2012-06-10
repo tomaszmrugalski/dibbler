@@ -18,11 +18,15 @@ TOptIA_NA::TOptIA_NA(long IAID, long t1,  long t2, TMsg* parent)
     :TOpt(OPTION_IA_NA, parent), IAID_(IAID), T1_(t1), T2_(t2), Valid_(true) {
 }
 
-unsigned long TOptIA_NA::getIAID() {
+void TOptIA_NA::setIAID(uint32_t iaid) {
+    IAID_ = iaid;
+}
+
+unsigned long TOptIA_NA::getIAID() const {
     return IAID_;
 }
 
-unsigned long TOptIA_NA::getT1() {
+unsigned long TOptIA_NA::getT1() const {
     return T1_;
 }
 
@@ -30,7 +34,7 @@ void TOptIA_NA::setT1(unsigned long t1) {
     T1_ = t1;
 }
 
-unsigned long TOptIA_NA::getT2() {
+unsigned long TOptIA_NA::getT2() const {
     return T2_;
 }
 
@@ -104,7 +108,7 @@ unsigned long TOptIA_NA::getMaxValid() {
     return maxValid;
 }
 
-bool TOptIA_NA::isValid() {
+bool TOptIA_NA::isValid() const {
     return this->Valid;
 }
 

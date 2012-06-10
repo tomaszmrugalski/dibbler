@@ -24,14 +24,14 @@ using namespace std;
 unsigned long TSrvCfgAddrClass::StaticID_ = 0;
 
 TSrvCfgAddrClass::TSrvCfgAddrClass() {
-    T1Beg_    = 0;
-    T1End_    = DHCPV6_INFINITY;
-    T2Beg_    = 0;
-    T2End_    = DHCPV6_INFINITY;
-    PrefBeg_  = 0;
-    PrefEnd_  = DHCPV6_INFINITY;
-    ValidBeg_ = 0;
-    ValidEnd_ = DHCPV6_INFINITY;
+    T1Min_    = SERVER_DEFAULT_MIN_T1;
+    T1Max_    = SERVER_DEFAULT_MAX_T1;
+    T2Min_    = SERVER_DEFAULT_MIN_T2;
+    T2Max_    = SERVER_DEFAULT_MAX_T2;
+    PrefMin_  = SERVER_DEFAULT_MIN_PREF;
+    PrefMax_  = SERVER_DEFAULT_MAX_PREF;
+    ValidMin_ = SERVER_DEFAULT_MIN_VALID;
+    ValidMax_ = SERVER_DEFAULT_MAX_VALID;
     ID_ = StaticID_++; // client-class ID
     AddrsAssigned_ = 0;
     AddrsCount_ = 0;
@@ -47,7 +47,7 @@ TSrvCfgAddrClass::~TSrvCfgAddrClass() {
  */
 bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
     // is client on black list?
     while(range = RejedClnt_.get())
@@ -88,7 +88,7 @@ bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, 
                         return true;
         }
 
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
 
     // is client on black list?
@@ -117,7 +117,7 @@ bool TSrvCfgAddrClass::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, 
  */
 bool TSrvCfgAddrClass::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt_.first();
     // is client on black list?
     while(range = RejedClnt_.get())
@@ -137,7 +137,7 @@ bool TSrvCfgAddrClass::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 }
 
 
-long TSrvCfgAddrClass::chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime)
+uint32_t TSrvCfgAddrClass::chooseTime(uint32_t beg, uint32_t end, uint32_t clntTime)
 {
     if (clntTime < beg)
         return beg;
@@ -146,32 +146,32 @@ long TSrvCfgAddrClass::chooseTime(unsigned long beg, unsigned long end, unsigned
     return clntTime;
 }
 
-unsigned long TSrvCfgAddrClass::getT1(unsigned long clntT1) {
-    return chooseTime(T1Beg_, T1End_, clntT1);
+uint32_t TSrvCfgAddrClass::getT1(uint32_t clntT1) {
+    return chooseTime(T1Min_, T1Max_, clntT1);
 }
 
-unsigned long TSrvCfgAddrClass::getT2(unsigned long clntT2) {
-    return chooseTime(T2Beg_, T2End_, clntT2);
+uint32_t TSrvCfgAddrClass::getT2(uint32_t clntT2) {
+    return chooseTime(T2Min_, T2Max_, clntT2);
 }
 
-unsigned long TSrvCfgAddrClass::getPref(unsigned long clntPref) {
-    return chooseTime(PrefBeg_, PrefEnd_, clntPref);
+uint32_t TSrvCfgAddrClass::getPref(uint32_t clntPref) {
+    return chooseTime(PrefMin_, PrefMax_, clntPref);
 }
 
-unsigned long TSrvCfgAddrClass::getValid(unsigned long clntValid) {
-    return chooseTime(ValidBeg_, ValidEnd_, clntValid);
+uint32_t TSrvCfgAddrClass::getValid(uint32_t clntValid) {
+    return chooseTime(ValidMin_, ValidMax_, clntValid);
 }
 
 void TSrvCfgAddrClass::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 {
-    T1Beg_    = opt->getT1Beg();
-    T2Beg_    = opt->getT2Beg();
-    T1End_    = opt->getT1End();
-    T2End_    = opt->getT2End();
-    PrefBeg_  = opt->getPrefBeg();
-    PrefEnd_  = opt->getPrefEnd();
-    ValidBeg_ = opt->getValidBeg();
-    ValidEnd_ = opt->getValidEnd();
+    T1Min_    = opt->getT1Beg();
+    T2Min_    = opt->getT2Beg();
+    T1Max_    = opt->getT1End();
+    T2Max_    = opt->getT2End();
+    PrefMin_  = opt->getPrefBeg();
+    PrefMax_  = opt->getPrefEnd();
+    ValidMin_ = opt->getValidBeg();
+    ValidMax_ = opt->getValidEnd();
     Share_    = opt->getShare();
 
     AllowLst_ = opt->getAllowClientClassString();
@@ -179,7 +179,7 @@ void TSrvCfgAddrClass::setOptions(SPtr<TSrvParsGlobalOpt> opt)
 
     ClassMaxLease_ = opt->getClassMaxLease();
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     opt->firstRejedClnt();
     while(statRange = opt->getRejedClnt())
         RejedClnt_.append(statRange);
@@ -287,13 +287,13 @@ ostream& operator<<(ostream& out,TSrvCfgAddrClass& addrClass)
     out << "    <class id=\"" << addrClass.ID_ << "\" share=\"" << addrClass.Share_ << "\">" << std::endl;
     out << "      <!-- total addrs in class: " << addrClass.AddrsCount_
         << ", addrs assigned: " << addrClass.AddrsAssigned_ << " -->" << endl;
-    out << "      <T1 min=\"" << addrClass.T1Beg_ << "\" max=\"" << addrClass.T1End_  << "\" />" << endl;
-    out << "      <T2 min=\"" << addrClass.T2Beg_ << "\" max=\"" << addrClass.T2End_  << "\" />" << endl;
-    out << "      <pref min=\"" << addrClass.PrefBeg_ << "\" max=\""<< addrClass.PrefEnd_  << "\" />" <<endl;
-    out << "      <valid min=\"" << addrClass.ValidBeg_ << "\" max=\""<< addrClass.ValidEnd_ << "\" />" << endl;
+    out << "      <T1 min=\"" << addrClass.T1Min_ << "\" max=\"" << addrClass.T1Max_  << "\" />" << endl;
+    out << "      <T2 min=\"" << addrClass.T2Min_ << "\" max=\"" << addrClass.T2Max_  << "\" />" << endl;
+    out << "      <pref min=\"" << addrClass.PrefMin_ << "\" max=\""<< addrClass.PrefMax_  << "\" />" <<endl;
+    out << "      <valid min=\"" << addrClass.ValidMin_ << "\" max=\""<< addrClass.ValidMax_ << "\" />" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease_ << "</ClassMaxLease>" << endl;
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool_;
 

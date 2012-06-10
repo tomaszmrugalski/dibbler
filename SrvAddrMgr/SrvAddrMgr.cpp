@@ -18,6 +18,7 @@
 #include "Logger.h"
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
+#include "SrvCfgMgr.h"
 
 using namespace std;
 
@@ -338,12 +339,12 @@ bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6
     return result;
 }
 
-/// @brief returns number of addresses for a specific client
+/// @brief returns how many leases does this client have?
 ///
 /// @param duid client's DUID
-/// @return number of addresses assigned
-unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
-{
+///
+/// @return number of leases (addresses and/or prefixes)
+unsigned long TSrvAddrMgr::getLeaseCount(SPtr<TDUID> duid) {
     SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
     while ( ptrClient = ClntsLst.get() ) {
@@ -355,14 +356,27 @@ unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
         return 0;
     }
 
-    unsigned long count=0;
+    unsigned long count = 0;
 
-    // look at each of client's IAs
+    // count each of client's IAs
     SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         count += ptrIA->countAddr();
     }
+
+    // count each of client's TA
+    ptrClient->firstTA();
+    while (ptrIA = ptrClient->getTA() ) {
+        count += ptrIA->countAddr();
+    }
+
+    // count each of client's PD
+    ptrClient->firstPD();
+    while (ptrIA = ptrClient->getPD() ) {
+        count += ptrIA->countPrefix();
+    }
+
     return count;
 }
 
@@ -461,7 +475,7 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 {
     SPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);
     if (!ptrAddrClient) {
-        Log(Warning) << "Unable to find client in the addrDB.";
+        Log(Warning) << "Unable to find client in the addrDB." << LogEnd;
         return 0;
     }
     ptrAddrClient->firstIA();
@@ -570,6 +584,44 @@ void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
             } // while (prefix)
         } // while (pd)
     } // while (client)
+}
+
+/// @brief Checks if address is still supported in current configuration (used in loadDB)
+///
+/// @param addr checked address
+///
+/// @return true, if supported
+bool TSrvAddrMgr::verifyAddr(SPtr<TIPv6Addr> addr) {
+    if (SrvCfgMgr().addrReserved(addr)) {
+        return true;
+    }
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByAddr(iface->getID(), addr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @brief Checks if prefix is still supported in current configuration (used in loadDB)
+///
+/// @param prefix checked prefix
+///
+/// @return true, if prefix is supported
+bool TSrvAddrMgr::verifyPrefix(SPtr<TIPv6Addr> prefix) {
+    if (SrvCfgMgr().prefixReserved(prefix)) {
+        return true;
+    }
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByPrefix(iface->getID(), prefix)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**

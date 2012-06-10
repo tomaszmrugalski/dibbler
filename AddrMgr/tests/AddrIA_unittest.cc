@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace {
+namespace test {
 
 TEST(AddrIATest, constructor) {
     SPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::abcd", true);
@@ -21,7 +21,7 @@ TEST(AddrIATest, constructor) {
     EXPECT_EQ(200u, ia->getT2());
     EXPECT_EQ(300u, ia->getIAID());
     EXPECT_EQ(string("fe80::abcd"), ia->getSrvAddr()->getPlain());
-    EXPECT_EQ(0, ia->getAddrCount());
+    EXPECT_EQ(0, ia->countAddr());
 }
 
 }

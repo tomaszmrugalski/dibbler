@@ -42,11 +42,11 @@ string TClntParsGlobalOpt::getWorkDir() {
     return WorkDir;
 }
 
-void TClntParsGlobalOpt::setPrefixLength(int len) {
+void TClntParsGlobalOpt::setOnLinkPrefixLength(int len) {
     PrefixLength = len;
 }
 
-int TClntParsGlobalOpt::getPrefixLength() {
+int TClntParsGlobalOpt::getOnLinkPrefixLength() {
     return PrefixLength;
 }
 

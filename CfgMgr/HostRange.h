@@ -8,7 +8,6 @@
  *
  */
 
-class TStationRange;
 #ifndef STATIONRANGE_H
 #define STATIONRANGE_H
 
@@ -19,13 +18,13 @@ class TStationRange;
 #include <iostream>
 #include <iomanip>
 
-class TStationRange
+class THostRange
 {
-    friend std::ostream& operator<<(std::ostream& out, TStationRange& station);
+    friend std::ostream& operator<<(std::ostream& out, THostRange& station);
  public:
-    ~TStationRange(void);
-    TStationRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
-    TStationRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
+    ~THostRange(void);
+    THostRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
+    THostRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
     bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr);
     bool in(SPtr<TIPv6Addr> addr);
     bool in(SPtr<TDUID> duid);

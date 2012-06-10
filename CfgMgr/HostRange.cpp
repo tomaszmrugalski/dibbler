@@ -7,22 +7,22 @@
  * released under GNU GPL v2 only licence
  */
 
-#include "StationRange.h"
+#include "HostRange.h"
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TStationRange::TStationRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr)
+THostRange::THostRange( SPtr<TDUID> duidl, SPtr<TDUID> duidr)
     :isAddrRange_(false), DUIDL_(duidl), DUIDR_(duidr), PrefixLength_(-1)
 {
 }
 
-TStationRange::TStationRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
+THostRange::THostRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
     :isAddrRange_(true), AddrL_(addrl), AddrR_(addrr), PrefixLength_(-1)
 {
     /// @todo: prefix length could be calculated automatically here
 }
 
-bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
+bool THostRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
 {
     if (isAddrRange_)
     {
@@ -39,7 +39,7 @@ bool TStationRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
     return true;
 }
 
-bool TStationRange::in(SPtr<TIPv6Addr> addr)
+bool THostRange::in(SPtr<TIPv6Addr> addr)
 {
     if (isAddrRange_)
     {
@@ -52,7 +52,7 @@ bool TStationRange::in(SPtr<TIPv6Addr> addr)
         return false;
 }
 
-bool TStationRange::in(SPtr<TDUID> duid)
+bool THostRange::in(SPtr<TDUID> duid)
 {
     if (isAddrRange_)
         return false;
@@ -64,7 +64,7 @@ bool TStationRange::in(SPtr<TDUID> duid)
     return true;
 }
 
-SPtr<TIPv6Addr> TStationRange::getRandomAddr() const  {
+SPtr<TIPv6Addr> THostRange::getRandomAddr() const  {
     if(isAddrRange_)
     {
         SPtr<TIPv6Addr> diff = new TIPv6Addr();
@@ -77,7 +77,7 @@ SPtr<TIPv6Addr> TStationRange::getRandomAddr() const  {
         return 0;
 }
 
-SPtr<TIPv6Addr> TStationRange::getRandomPrefix() const {
+SPtr<TIPv6Addr> THostRange::getRandomPrefix() const {
     if(isAddrRange_)
     {
         SPtr<TIPv6Addr> diff = new TIPv6Addr();
@@ -92,7 +92,7 @@ SPtr<TIPv6Addr> TStationRange::getRandomPrefix() const {
 
 
 
-unsigned long TStationRange::rangeCount() const {
+unsigned long THostRange::rangeCount() const {
     if(isAddrRange_) {
         SPtr<TIPv6Addr> diff(new TIPv6Addr());
         *diff=(*AddrR_)-(*AddrL_);
@@ -110,27 +110,27 @@ unsigned long TStationRange::rangeCount() const {
         return 0;
 }
 
-int TStationRange::getPrefixLength() const {
+int THostRange::getPrefixLength() const {
     return PrefixLength_;
 }
 
-void TStationRange::setPrefixLength(int len) {
+void THostRange::setPrefixLength(int len) {
     PrefixLength_ = len;
 }
 
 
-TStationRange::~TStationRange(void) {
+THostRange::~THostRange(void) {
 }
 
-SPtr<TIPv6Addr> TStationRange::getAddrL() const {
+SPtr<TIPv6Addr> THostRange::getAddrL() const {
     return AddrL_;
 }
 
-SPtr<TIPv6Addr> TStationRange::getAddrR() const {
+SPtr<TIPv6Addr> THostRange::getAddrR() const {
     return AddrR_;
 }
 
-void TStationRange::truncate(int minPrefix, int maxPrefix) {
+void THostRange::truncate(int minPrefix, int maxPrefix) {
     if (!isAddrRange_) {
         Log(Error) << "Unable to truncace this pool: this is DUID pool, not address pool." << LogEnd;
         return;
@@ -141,7 +141,7 @@ void TStationRange::truncate(int minPrefix, int maxPrefix) {
     AddrR_->truncate(minPrefix, maxPrefix);
 }
 
-std::ostream& operator<<(std::ostream& out, TStationRange& range)
+std::ostream& operator<<(std::ostream& out, THostRange& range)
 {
     if (range.isAddrRange_) {
         // address range

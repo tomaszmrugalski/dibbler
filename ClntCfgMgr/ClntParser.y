@@ -32,24 +32,24 @@ using namespace std;
 %}
 // --- CLASS MEMBERS ---
 
-%define MEMBERS yyFlexLexer * lex;                                          \
+%define MEMBERS yyFlexLexer * Lex_;                                         \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			            \
+List(TClntParsGlobalOpt) ParserOptStack;                                    \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
-List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgIface) ClntCfgIfaceLst;                                        \
+List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(TStationID) PresentStationLst;		                            \
-List(TIPv6Addr) PresentAddrLst;			                            \
+List(THostID) PresentStationLst;                                         \
+List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
-List(std::string) PresentStringLst;	                                    \
-List(TOptVendorSpecInfo) VendorSpec;					    \
+List(std::string) PresentStringLst;                                         \
+List(TOptVendorSpecInfo) VendorSpec;                                        \
 bool IfaceDefined(int ifaceNr);                                             \
 bool IfaceDefined(const std::string& ifaceName);                            \
 bool StartIfaceDeclaration(const std::string& ifaceName);                   \
@@ -73,16 +73,18 @@ SPtr<TDUID> DUIDEnterpriseID;
 
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                    \
-    this->lex = lex;                                                        \
+    Lex_ = lex;                                                             \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;                                                   \
-                         CfgMgr = 0; \
-                         iaidSet = false; \
-                         iaid = 0xffffffff; \
-                         DUIDEnterpriseNumber = -1;
+    CfgMgr = 0;                                                             \
+    iaidSet = false;                                                        \
+    iaid = 0xffffffff;                                                      \
+    DUIDEnterpriseNumber = -1;                                              \
+    yynerrs = 0;                                                            \
+    yychar = 0;
 
 %union
 {
@@ -542,7 +544,7 @@ StrictRfcNoRoutingOption
 : STRICT_RFC_NO_ROUTING_
 {
     Log(Notice) << "Strict-rfc-no-routing directive set: addresses will be added with 128 prefix." << LogEnd;
-    ParserOptStack.getLast()->setPrefixLength(128);
+    ParserOptStack.getLast()->setOnLinkPrefixLength(128);
     // by default prefix is set to 128
 }
 ;
@@ -804,7 +806,7 @@ UnicastOption
 	break;
     default:
 	Log(Error) << "Invalid parameter (" << $2 << ") passed to unicast in line "
-		   << lex->YYText() << "." << LogEnd;
+		   << Lex_->YYText() << "." << LogEnd;
 	return 1;
     }
 }
@@ -822,7 +824,7 @@ Routing
         break;
     default:
         Log(Error) << "Invalid parameter (" << $2 << ") passed to routing in line "
-                   << lex->YYText() << "." << LogEnd;
+                   << Lex_->YYText() << "." << LogEnd;
         return 1;
     }
 }
@@ -830,19 +832,19 @@ Routing
 ADDRESDUIDList
 : IPV6ADDR_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($1))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TIPv6Addr($1))));
 }
 | DUID_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TDUID($1.duid,$1.length))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TDUID($1.duid,$1.length))));
 }
 | ADDRESDUIDList ',' IPV6ADDR_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID(new TIPv6Addr($3))));
+    PresentStationLst.append(SPtr<THostID> (new THostID(new TIPv6Addr($3))));
 }
 | ADDRESDUIDList ',' DUID_
 {
-    PresentStationLst.append(SPtr<TStationID> (new TStationID( new TDUID($3.duid,$3.length))));
+    PresentStationLst.append(SPtr<THostID> (new THostID( new TDUID($3.duid,$3.length))));
 }
 ;
 
@@ -1245,7 +1247,7 @@ bool ClntParser::EndIfaceDeclaration()
     if (VendorSpec.count())
 	ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     iface->setOptions(ParserOptStack.getLast());
-    iface->setPrefixLength(ParserOptStack.getLast()->getPrefixLength());
+    iface->setOnLinkPrefixLength(ParserOptStack.getLast()->getOnLinkPrefixLength());
 
     if ( (iface->stateless()) && (ClntCfgIALst.count()) ) {
 	Log(Crit) << "Interface " << iface->getFullName() << " is configured stateless, "
@@ -1391,7 +1393,7 @@ int ClntParser::yylex()
 {
     memset(&std::yylval,0, sizeof(std::yylval));
     memset(&this->yylval,0, sizeof(this->yylval));
-    int x = this->lex->yylex();
+    int x = Lex_->yylex();
     this->yylval=std::yylval;
     return x;
 }
@@ -1403,8 +1405,8 @@ int ClntParser::yylex()
  */
 void ClntParser::yyerror(char *m)
 {
-    Log(Crit) << "Config parse error: line " << lex->lineno()
-	      << ", unexpected [" << lex->YYText() << "] token." << LogEnd;
+    Log(Crit) << "Config parse error: line " << Lex_->lineno()
+	      << ", unexpected [" << Lex_->YYText() << "] token." << LogEnd;
 }
 
 /**

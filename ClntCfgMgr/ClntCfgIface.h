@@ -8,8 +8,6 @@
  *          Mateusz Ozga <matozga@gmail.com>
  *
  * released under GNU GPL v2 only licence
- *
- * $Id: ClntCfgIface.h,v 1.20 2008-08-29 00:07:27 thomson Exp $
  */
 
 #ifndef CLNTCFGIFACE_H
@@ -17,7 +15,7 @@
 #include <list>
 
 #include "Container.h"
-#include "StationID.h"
+#include "HostID.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
@@ -174,10 +172,9 @@ public:
     EState getLifetimeState();
     void setLifetimeState(EState state);
 
-    // --- option: Prefix Delegation ---
-    bool isReqPrefixDelegation();
-    void setPrefixLength(int len);
-    int  getPrefixLength();
+    // --- see strict-rfc-no-routing ---
+    void setOnLinkPrefixLength(int len);
+    int  getOnLinkPrefixLength();
 
     // --- option: VendorSpec ---
     bool isReqVendorSpec();
@@ -215,8 +212,8 @@ private:
 
     List(TClntCfgIA) IALst;
     List(TClntCfgPD) PDLst;
-    List(TStationID) PrefSrvLst;
-    List(TStationID) RejectedSrvLst;
+    List(THostID) PrefSrvLst;
+    List(THostID) RejectedSrvLst;
 
     List(TClntCfgTA) ClntCfgTALst;
 

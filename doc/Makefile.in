@@ -111,6 +111,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -539,8 +540,8 @@ devel: $(DOXYGEN)
 
 cppcheck:
 	mkdir -p html
-	cppcheck --enable=all --suppressions-list=cppcheck-skip.txt -f -v -j 2 \
-        -i bison++/ -i tests/ .. 1> html/cppcheck.log 2> html/cppcheck-error.log
+	cd .. && cppcheck --enable=all --suppressions-list=doc/cppcheck-skip.txt -f -v -j 2 \
+        -i bison++/ -i tests/ -i dibbler-*/ . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html
