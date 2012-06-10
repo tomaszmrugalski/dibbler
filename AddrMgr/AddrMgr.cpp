@@ -56,7 +56,6 @@ TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
  *   version that is available.
  *
  * @param xmlFile filename of the database
- * @param server is this server side (i.e. don't manipulate states)
  *
  */
 void TAddrMgr::dbLoad(const char * xmlFile)
@@ -462,15 +461,15 @@ bool TAddrMgr::delPrefix(SPtr<TDUID> clntDuid,
     if (!quiet)
         Log(Debug) << "PD: Deleted prefix " << *prefix << " from addrDB." << LogEnd;
 
-    if (!ptrPD->getPrefixCount()) {
-              if (!quiet)
-                  Log(Debug) << "PD: Deleted PD (iaid=" << IAID << ") from addrDB." << LogEnd;
-              ptrClient->delPD(IAID);
+    if (!ptrPD->countPrefix()) {
+        if (!quiet)
+            Log(Debug) << "PD: Deleted PD (iaid=" << IAID << ") from addrDB." << LogEnd;
+        ptrClient->delPD(IAID);
     }
 
     if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD() && DeleteEmptyClient) {
         if (!quiet)
-                  Log(Debug) << "PD: Deleted client (DUID=" << clntDuid->getPlain()
+            Log(Debug) << "PD: Deleted client (DUID=" << clntDuid->getPlain()
                        << ") from addrDB." << LogEnd;
         this->delClient(clntDuid);
     }
@@ -560,11 +559,16 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
         }
         if (AddrMgrTag && strstr(buf,"<AddrClient")) {
             clnt = parseAddrClient(xmlFile, f);
-            ClntsLst.append(clnt);
-            Log(Debug) << "Client " << clnt->getDUID()->getPlain()
-                       << " loaded from disk successfuly (" << clnt->countIA()
-                       << "/" << clnt->countPD() << "/" << clnt->countTA()
-                       << " ia/pd/ta)." << LogEnd;
+            if (clnt->countIA() + clnt->countTA() + clnt->countPD() > 0) {
+                ClntsLst.append(clnt);
+                Log(Debug) << "Client " << clnt->getDUID()->getPlain()
+                           << " loaded from disk successfuly (" << clnt->countIA()
+                           << "/" << clnt->countPD() << "/" << clnt->countTA()
+                           << " ia/pd/ta)." << LogEnd;
+            } else {
+                Log(Info) << "All client's " << clnt->getDUID()->getPlain()
+                          << " leases are not valid." << LogEnd;
+            }
             continue;
         }
 
@@ -585,7 +589,7 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
  * @brief parses XML section that defines single client
  *
  * parses XML section that defines single client.
- * That is <AddrClient>...</AddrClient> section.
+ * That is &lt;AddrClient&gt;...&lt;/AddrClient&gt; section.
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -682,16 +686,19 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
             if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, iface)) {
                 if (!ptrpd)
                     continue;
-                clnt->addPD(ptrpd);
-                Log(Debug) << "Parsed PD, pdid=" << pdid << ", t1=" << t1
-                           << ", t2=" << t2 << LogEnd;
+                if (ptrpd->countPrefix()) {
+                    clnt->addPD(ptrpd);
+                    Log(Debug) << "Parsed PD, pdid=" << pdid << ", t1=" << t1
+                               << ", t2=" << t2 << LogEnd;
+                } else {
+                    Log(Debug) << "PD with iaid=" << pdid << " has no valid prefixes." << LogEnd;
+                }
             }
         }
         if (strstr(buf,"</AddrClient>"))
             break;
     }
 
-    /// @todo: add some extra checks here
     return clnt;
 }
 
@@ -722,7 +729,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(const char * xmlFile, FILE *f) {
 /**
  * @brief parses part XML section that represents single PD
  *
- * (section between <AddrPD>...</AddrPD>)
+ * (section between &lt;AddrPD&gt;...&lt;/AddrPD&gt;)
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -763,9 +770,14 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"<AddrPrefix")) {
             pr = parseAddrPrefix(xmlFile, buf, true);
             if (ptrpd && pr) {
-                ptrpd->addPrefix(pr);
-                pr->setTentative(TENTATIVE_NO);
-                //Log(Debug) << "Parsed prefix " << pr->getPlain() << LogEnd;
+                if (verifyPrefix(pr->get())) {
+                    ptrpd->addPrefix(pr);
+                    pr->setTentative(TENTATIVE_NO);
+                    //Log(Debug) << "Parsed prefix " << pr->getPlain() << LogEnd;
+                } else {
+                    Log(Debug) << "Prefix " << pr->get()->getPlain() 
+                               << " does no longer match current configuration. Lease dropped." << LogEnd;
+                }
             }
         }
         if (strstr(buf,"</AddrPD>"))
@@ -779,7 +791,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
 /**
  * @brief parses part XML section that represents single IA
  *
- * (section between <AddrIA>...</AddrIA>)
+ * (section between &lt;AddrIA&gt;...&lt;/AddrIA&gt;)
  *
  * @param xmlFile name of the file being currently read
  * @param f file handle
@@ -821,10 +833,14 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
                   continue;
               }
               if (strstr(buf,"<AddrAddr")) {
-                  addr = parseAddrAddr(xmlFile, buf, false);
+                  addr = parseAddrAddr(xmlFile, buf,false);
                   if (ia && addr) {
-                            ia->addAddr(addr);
-                            addr->setTentative(TENTATIVE_NO);
+                      if (verifyAddr(addr->get())) {
+                              ia->addAddr(addr);
+                              addr->setTentative(TENTATIVE_NO);
+                      } else {
+                          Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
+                      }
                   }
               }
               if (strstr(buf,"</AddrIA>"))
@@ -838,7 +854,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 /**
  * @brief parses single address
  *
- * parses single address that is defined in <AddrAddr> tag.
+ * parses single address that is defined in &lt;AddrAddr&gt; tag.
  *
  * @param xmlFile name of the file being currently read
  * @param buf null terminated buffer that contains string to parse

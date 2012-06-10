@@ -8,8 +8,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsg.h,v 1.20 2008-08-29 00:07:34 thomson Exp $
- *
  */
 
 #ifndef SRVMSG_H
@@ -23,6 +21,9 @@
 #include "OptOptionRequest.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptTA.h"
+#include "SrvOptIA_PD.h"
 #include "OptVendorData.h"
 #include "OptGeneric.h"
 
@@ -31,7 +32,7 @@ class TSrvMsg : public TMsg
 public:
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
-        
+
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);
@@ -39,19 +40,21 @@ public:
 
     void appendAuthenticationOption(SPtr<TDUID> duid);
     bool appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool includeClientID = true);
-    bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, 
-				int iface, SPtr<TOptOptionRequest> reqOpt);
+    bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
+                                int iface, SPtr<TOptOptionRequest> reqOpt);
     std::string showRequestedOptions(SPtr<TOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
 
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
-		      SPtr<TIPv6Addr> peerAddr,
-		      int hop,
-		      SPtr<TSrvOptInterfaceID> interfaceID,
-		      List(TOptGeneric) echoList);
+                      SPtr<TIPv6Addr> peerAddr,
+                      int hop,
+                      SPtr<TSrvOptInterfaceID> interfaceID,
+                      List(TOptGeneric) echoList);
 
     int getRelayCount();
+
+    bool releaseAll(bool quiet);
 
     bool validateReplayDetection();
 
@@ -64,6 +67,10 @@ public:
     void doDuties();
     void send();
 
+    void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
+    SPtr<TDUID> getClientDUID();
+                SPtr<TIPv6Addr> getClientPeer();
+
 protected:
     SPtr<TOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
@@ -72,11 +79,22 @@ protected:
 
     bool check(bool clntIDmandatory, bool srvIDmandatory);
 
+    void processIA_NA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_NA> q);
+    void processIA_TA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> q);
+    void processIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> q);
+    void processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> q);
+
 #if 0
-    SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
-				  SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
+    SPtr<TSrvOptFQDN> prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid,
+                                  SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
 #endif
+    SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
+                              SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
+                              std::string hint, bool doRealUpdate);
+    void delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
+
+
     int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
 
 

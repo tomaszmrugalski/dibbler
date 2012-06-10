@@ -2,7 +2,7 @@ AM_CPPFLAGS  = -I$(top_srcdir)/AddrMgr
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 
 # This is to workaround long long in gtest.h
-AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long
+AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
 # Darwin quirks:
 # dyld can't find proper lib if make instal was not done for gtest
@@ -38,7 +38,7 @@ AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 AddrMgr_tests_LDADD = $(GTEST_LDADD)
 AddrMgr_tests_LDADD += $(top_builddir)/AddrMgr/libAddrMgr.a
 AddrMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
-AddrMgr_tests_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+AddrMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 
 noinst_PROGRAMS = $(TESTS)

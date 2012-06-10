@@ -22,7 +22,9 @@ TRelCfgIface::TRelCfgIface(int ifindex)
 }
 
 TRelCfgIface::TRelCfgIface(const std::string& ifaceName)
-    :Name_(ifaceName), ID_(-1), InterfaceID_(-1) {
+    :Name_(ifaceName), ID_(-1), InterfaceID_(-1),
+     ClientUnicast_(RELAY_CLIENT_UNICAST), ServerUnicast_(RELAY_SERVER_UNICAST),
+     ClientMulticast_(RELAY_CLIENT_MULTICAST), ServerMulticast_(RELAY_CLIENT_MULTICAST) {
 }
 
 int TRelCfgIface::getID() {

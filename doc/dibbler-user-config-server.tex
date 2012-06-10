@@ -119,6 +119,35 @@ next-hop address-of-a-router
 }
 \end{lstlisting}
 
+\subsubsection{Client scope}
+\label{server-scope-client}
+Server allows defining custom parameters on a per-host basis. See
+Sections \ref{feature-exceptions} and \ref{example-server-exceptions} 
+for details. There are two types of reservations: DUID-based and 
+remote-id based. Following syntax can be used:
+
+\begin{lstlisting}
+client duid 00:00:00:00:00
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+client remote-id 5-0x01020304
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
 \subsubsection{Server options}
 
 So called standard options are defined by the base DHCPv6 specification,
@@ -339,6 +368,7 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
    \begin{lstlisting}
      pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
    \end{lstlisting}
+   It is also possible to use prefix/length notation.
 
  \item[pd-pool] -- (scope: pd-class). Takes coma separated IPv6
    address ranges. Each range is defined as fist-address, a dash and a
@@ -348,6 +378,7 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
    \begin{lstlisting}
      pd-pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
    \end{lstlisting}
+   It is also possible to use prefix/length notation.
 
 \item[share] -- (scope: class). Defines percentage of clients that a
   class should handle. This parameter is only useful if there are more
@@ -551,6 +582,16 @@ string is any string enclosed in single or double quotes. See Section
   \verb+deny+ to assign segregate clients into different groups. See
   Section \ref{feature-client-class} for overview and Section
   \ref{class-expressions} for list of supported expressions.
+
+\item[address] -- (scope: client). Takes one parameter that specifies
+   address. It instructs server to reserve this particular address for
+   defined client. See Sections \ref{feature-exceptions}
+   and \ref{example-server-exceptions} for details.
+
+\item[prefix] -- (scope: client). Takes one parameter that specifies
+   prefix using prefix/length notation. It instructs server to reserve
+   specified prefix for defined client. See Sections \ref{feature-exceptions}
+   and \ref{example-server-exceptions} for details.
 
 \end{description}
 
@@ -1021,45 +1062,76 @@ vendor specific information. See section \ref{feature-exceptions} for
 background information. Since 0.8.0RC1, also addresses can be reserverd
 in this way.
 
+Addresses reserved for special clients may be inside or outside of
+specified pools. If leases are outside of specified pools, timers (t1,
+t2, prefered and valid lifetimes are set to infinity). It is currently
+not possible to specify separate timers (t1, t2, preferred or valid
+lifetimes) on a per-client basis. Please define leases that belong to
+supported address and prefix pools. Timers from corresponding pools
+will be used.
+
+Note that per client reservation was significantly refactored after
+0.8.1, so its stability is not yet confirmed.
+
 \begin{lstlisting}
 # server.conf
+# Example server configuration file: per-client configuaration
+#
+# In this example, some clients receive different parameters than others.
+
+# Logging level range: 1(Emergency)-8(Debug)
+# 
+log-level 8
+
+# Don't log full date
+log-mode short
+
 iface "eth0" {
 
- class {
-   pool 2000::1/64
- }
+    class {
+        pool 2001:db8:1::/64
+    }
 
-# common configuration options, provided for all clients
- option dns-server 2000::1
- option domain example.com
- option vendor-spec 5678-0x0002aaaa
+    pd-class {
+        pd-pool 2001:db8:2::/48
+	pd-length 64
+    }
 
-  # special parameters for client with DUID 00:01:02:03:04:06
-  client duid 0x000102030406
+  # common configuration options, provided for all clients
+  option dns-server 2001:db8:1::1
+  option domain example.com
+  option vendor-spec 5678-2-0xaaaa,1234-3-0x0102
+
+  # special parameters for client with DUID 00:01:02:03:04:06      
+  client duid 00:01:02:03:04:06
   {
-        address 2001::123
-        option domain second.client.biz
-        option dns-server 1234::5678:abcd
-        option vendor-spec 2-0x000122, 22-0x222222
+        address 2001:db8:1::123
+	prefix 2001:db8:abcd::/64
+	option domain second.client.biz
+	option dns-server 2001:db8::5678:abcd
+	option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
   }
 
-  # special address reserved for client with this remote-id option
-  # (remote-id option may be added by relays)
+  # this client should receive default domain and dns-server, 
+  # but different vendor-spec info
+  client duid 0x0001000044e8ef3400085404a324
+  {
+	option vendor-spec 1111-57-0x01020304
+  }
+  
   client remote-id 5-0x01020304
   {
-        address 2000::0102:0304
-        option domain our.special.remoteid.client.org
+	address 2001:db8:1::0102:0304
+	option domain our.special.remoteid.client.org
   }
 
-  #  client link-local fe80::211:25ff:fe12:6688
-  #  (link-local reservation is not supported yet. configure clients
-  #  to use DUID-LL (link-local address based DUID) and then make
-  #  DUID based reservations)
+  #  client link-local fe80::1:2:3:4
   #  {
   #      option domain link.local.detected.interop.test.com
-  #  }
+  #  } 
 
 }
+
 \end{lstlisting}
 
 \subsubsection{Example 13: Prefix delegation}

@@ -10,7 +10,7 @@
 #ifndef PARSIAOPT_H_
 #define PARSIAOPT_H_
 
-#include "StationID.h"
+#include "HostID.h"
 
 #include "Container.h"
 #include "DHCPConst.h"
@@ -36,17 +36,17 @@ class TClntParsIAOpt : public TClntParsAddrOpt
     bool getAddrHint();
     void setAddrHint(bool addrHint);
     
-    void addPrefSrv(SPtr<TStationID> prefSrv);
+    void addPrefSrv(SPtr<THostID> prefSrv);
     void firstPrefSrv();
-    SPtr<TStationID> getPrefSrv();
+    SPtr<THostID> getPrefSrv();
     void clearPrefSrv();
-    void setPrefSrvLst(TContainer<SPtr<TStationID> > *lst);
+    void setPrefSrvLst(TContainer<SPtr<THostID> > *lst);
     
-    void addRejedSrv(SPtr<TStationID> prefSrv);
+    void addRejedSrv(SPtr<THostID> prefSrv);
     void firstRejedSrv();
-    SPtr<TStationID> getRejedSrv();
+    SPtr<THostID> getRejedSrv();
     void clearRejedSrv();
-    void setRejedSrvLst(TContainer<SPtr<TStationID> > *lst);
+    void setRejedSrvLst(TContainer<SPtr<THostID> > *lst);
 
     void setAddrParams(bool useAddrParams);
     bool getAddrParams();
@@ -57,8 +57,8 @@ private:
     
     long IAIDCnt;
     bool AddrHint;
-    List(TStationID) PrefSrv;
-    List(TStationID) RejedSrv;
+    List(THostID) PrefSrv;
+    List(THostID) RejedSrv;
 
     bool AddrParams;
 };

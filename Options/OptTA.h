@@ -30,6 +30,7 @@ class TOptTA : public TOpt
     
     char * storeSelf( char* buf);
     bool isValid();
+    bool doDuties() { return true; }
  protected:
     uint32_t IAID_;
     bool Valid_;

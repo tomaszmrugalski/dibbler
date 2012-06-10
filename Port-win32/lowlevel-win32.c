@@ -485,7 +485,7 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
         return LOWLEVEL_NO_ERROR;
     } else {
         sprintf(Message, "%s %s %s %s %s %s %s returned non-zero returncode %d",
-                netshPath, arg1, arg2, arg3, arg4, arg5, arg6);
+                netshPath, arg1, arg2, arg3, arg4, arg5, arg6, i);
         return LOWLEVEL_ERROR_UNSPEC;
     }
 }
@@ -506,7 +506,7 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
         return LOWLEVEL_NO_ERROR;
     } else {
         sprintf(Message, "%s %s %s %s %s %s %s returned non-zero returncode %d",
-                netshPath, arg1, arg2, arg3, arg4, arg5, arg6);
+                netshPath, arg1, arg2, arg3, arg4, arg5, arg6, i);
         return LOWLEVEL_ERROR_UNSPEC;
     }
 }

@@ -36,13 +36,20 @@ public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
     TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
+    TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr);
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt);
-    SPtr<TDUID> getDuid() const;
-    SPtr<TOptVendorData> getRemoteID() const;
 
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
     SPtr<TIPv6Addr> getAddr() const;
+    
+    void setPrefix(SPtr<TIPv6Addr> prefix, uint8_t length) { Prefix = prefix, PrefixLen = length; }
+    SPtr<TIPv6Addr> getPrefix() { return Prefix; }
+    uint8_t getPrefixLen() { return PrefixLen; }
+    
+    SPtr<TDUID> getDuid() const;
+    SPtr<TOptVendorData> getRemoteID() const;
+    SPtr<TIPv6Addr> getClntAddr() const;
 
     // option: DNS Servers is now handled with extra options mechanism
     // option: Domain is now handled with extra options mechanism
@@ -72,6 +79,8 @@ private:
 
     // address reservation
     SPtr<TIPv6Addr> Addr;
+    SPtr<TIPv6Addr> Prefix;
+    uint8_t PrefixLen;
 
     // options reservation
     TOptList ExtraOpts_;  // extra options ALWAYS sent to client (may also include ForcedOpts)
@@ -79,8 +88,10 @@ private:
 
     void SetDefaults();
 
+    //client specification
     SPtr<TOptVendorData> RemoteID;
     SPtr<TDUID> Duid;
+    SPtr<TIPv6Addr> ClntAddr;
 };
 
 #endif

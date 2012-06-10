@@ -1,15 +1,19 @@
 AUTOMAKE_OPTIONS = foreign
 
-CODE_SUBDIRS = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
-CODE_SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages
+CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr Messages poslib
+CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
 CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
-CODE_SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
-CODE_SUBDIRS += SrvOptions SrvTransMgr doc
-CODE_SUBDIRS += poslib
+CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
+CODE_SUBDIRS += Requestor
+CODE_SUBDIRS += doc
 
-SUBDIRS = $(CODE_SUBDIRS) @PORT_SUBDIR@
+SUBDIRS = $(CODE_SUBDIRS)
 
-DIST_SUBDIRS = $(CODE_SUBDIRS) Port-bsd Port-linux Port-win32 Port-winnt2k bison++
+if HAVE_GTEST
+    SUBDIRS += tests
+endif
+
+DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 

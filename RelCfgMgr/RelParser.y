@@ -45,7 +45,9 @@ virtual ~RelParser();
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                          \
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    yynerrs = 0;                                                                  \
+    yychar = 0;
 
 %union    
 {

@@ -65,7 +65,7 @@ public:
     List(TFQDN) *getFQDNLst();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
-    void setUnknownFQDN(EUnknownFQDNMode mode, const std::string domain);
+    void setUnknownFQDN(EUnknownFQDNMode mode, const std::string& domain);
     EUnknownFQDNMode getUnknownFQDN();
     std::string getFQDNDomain();
 

@@ -68,7 +68,8 @@ am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvOptions/libSrvOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libposlib.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libposlib.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -139,6 +140,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -246,7 +248,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvAddrMgr \
 	-I$(top_srcdir)/Options -I$(top_srcdir)/SrvOptions \
 	-I$(top_srcdir)/Messages -I$(top_srcdir)/SrvMessages \
-	-I$(top_srcdir)/Misc $(GTEST_INCLUDES) -Wno-long-long
+	-I$(top_srcdir)/Misc $(GTEST_INCLUDES) -Wno-long-long \
+	-Wno-variadic-macros
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_SOURCES = run_tests.cpp \
 @HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.cc
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
@@ -264,7 +267,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libposlib.a \
-@HAVE_GTEST_TRUE@	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 all: all-am
 
 .SUFFIXES:

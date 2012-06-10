@@ -193,7 +193,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             cfgIface->setIfaceID(ifaceIface->getID());
 
             // setup default prefix length (used when IPv6 address is added to the interface)
-            ifaceIface->setPrefixLength(cfgIface->getPrefixLength());
+            ifaceIface->setPrefixLength(cfgIface->getOnLinkPrefixLength());
 
             if (!ifaceIface->countLLAddress()) {
                 if (this->inactiveMode()) {

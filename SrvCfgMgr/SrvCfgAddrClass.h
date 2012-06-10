@@ -17,6 +17,7 @@ class TSrvCfgAddrClass;
 #include <iostream>
 #include <iomanip>
 
+#include "DHCPDefaults.h"
 #include "SrvAddrMgr.h"
 #include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
@@ -44,11 +45,13 @@ class TSrvCfgAddrClass
     bool addrInPool(SPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SPtr<TIPv6Addr> getRandomAddr();
+    SPtr<TIPv6Addr> getFirstAddr();
+    SPtr<TIPv6Addr> getLastAddr();
 
-    unsigned long getT1(unsigned long clntT1);
-    unsigned long getT2(unsigned long clntT2);
-    unsigned long getPref(unsigned long clntPref);
-    unsigned long getValid(unsigned long clntValid);
+    uint32_t getT1(uint32_t clntT1 = SERVER_DEFAULT_MAX_T1);
+    uint32_t getT2(uint32_t clntT2 = SERVER_DEFAULT_MAX_T2);
+    uint32_t getPref(uint32_t clntPref = SERVER_DEFAULT_MAX_PREF);
+    uint32_t getValid(uint32_t clntValid = SERVER_DEFAULT_MAX_VALID);
     unsigned long getClassMaxLease();
     unsigned long getID();
     unsigned long getShare();
@@ -66,19 +69,19 @@ class TSrvCfgAddrClass
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
  private:
-    unsigned long T1Beg_;
-    unsigned long T2Beg_;
-    unsigned long PrefBeg_;
-    unsigned long ValidBeg_;
-    unsigned long T1End_;
-    unsigned long T2End_;
-    unsigned long PrefEnd_;
-    unsigned long ValidEnd_;
-    unsigned long Share_;
+    uint32_t T1Min_;
+    uint32_t T2Min_;
+    uint32_t PrefMin_;
+    uint32_t ValidMin_;
+    uint32_t T1Max_;
+    uint32_t T2Max_;
+    uint32_t PrefMax_;
+    uint32_t ValidMax_;
+    uint32_t Share_;
 
-    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
+    uint32_t chooseTime(uint32_t beg, uint32_t end, uint32_t clntTime);
 
-    SPtr<TStationRange> Pool_;
+    SPtr<THostRange> Pool_;
     unsigned long ClassMaxLease_;
     unsigned long AddrsAssigned_;
     unsigned long AddrsCount_;
@@ -94,8 +97,8 @@ class TSrvCfgAddrClass
     List(TSrvCfgClientClass) DenyClientClassLst_;
 
     // old white/black-list
-    List(TStationRange) RejedClnt_;
-    List(TStationRange) AcceptClnt_;
+    List(THostRange) RejedClnt_;
+    List(THostRange) AcceptClnt_;
 };
 
 #endif

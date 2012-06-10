@@ -125,6 +125,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -226,10 +227,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = .
-dist_noinst_DATA = addrpack.c bison.cc bison.h bison.h \
-	client-win32.cpp client-win32.vs2003.rc \
+dist_noinst_DATA = addrpack.c client-win32.cpp ClntService.cpp \
+	ClntService.h config.h dibbler-config.h client-win32.vs2003.rc \
 	client-win32.vs2003.suo client-win32.vs2008.vcproj \
-	ClntService.cpp ClntService.h config.h dibbler-config.h \
 	dibbler-requestor.rc ipv6-wrapper.c lowlevel-win32.c \
 	relay-win32.cpp relay-win32.vs2003.rc relay-win32.vs2003.suo \
 	relay-win32.vs2008.vcproj RelService.cpp RelService.h \

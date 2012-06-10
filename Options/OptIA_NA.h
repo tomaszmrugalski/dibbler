@@ -22,16 +22,17 @@ class TOptIA_NA : public TOpt
     size_t getSize();
     int getStatusCode();
 
-    unsigned long getIAID();
-    unsigned long getT1();
-    unsigned long getT2();
+    unsigned long getIAID() const;
+    unsigned long getT1() const;
+    unsigned long getT2() const;
     void setT1(unsigned long t1);
     void setT2(unsigned long t2);
+    void setIAID(uint32_t iaid);
     unsigned long getMaxValid();
     int countAddrs();
 
     char * storeSelf( char* buf);
-    bool isValid();
+    bool isValid() const;
  protected:
     unsigned long IAID_;
     unsigned long T1_;
