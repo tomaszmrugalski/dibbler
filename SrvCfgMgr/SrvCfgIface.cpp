@@ -805,15 +805,15 @@ void TSrvCfgIface::delTAAddr() {
 
 // subnet management
 void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length) {
-    Subnets_.push_back(TStationRange(prefix, length));
+    Subnets_.push_back(THostRange(prefix, length));
 }
 
 void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max) {
-    Subnets_.push_back(TStationRange(min, max));
+    Subnets_.push_back(THostRange(min, max));
 }
 
 bool TSrvCfgIface::addrInSubnet(SPtr<TIPv6Addr> addr) {
-    for (std::vector<TStationRange>::const_iterator range = Subnets_.begin();
+    for (std::vector<THostRange>::const_iterator range = Subnets_.begin();
          range != Subnets_.end(); ++range) {
         if (range->in(addr)) {
             return true;
@@ -847,7 +847,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     }
 
     out << "    <!--" << iface.Subnets_.size() << " subnet(s) -->" << std::endl;
-    for (std::vector<TStationRange>::const_iterator range = iface.Subnets_.begin();
+    for (std::vector<THostRange>::const_iterator range = iface.Subnets_.begin();
          range != iface.Subnets_.end(); ++range) {
         out << "    <subnet>" << range->getAddrL() << "-" << range->getAddrR() << "</subnet>" << std::endl;
 

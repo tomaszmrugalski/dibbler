@@ -151,7 +151,7 @@ private:
     List(TSrvCfgPD) SrvCfgPDLst_;
 
     // --- subnets ---
-    std::vector<TStationRange> Subnets_;
+    std::vector<THostRange> Subnets_;
 
     // --- relay ---
     bool Relay_;
