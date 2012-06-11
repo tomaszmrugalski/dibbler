@@ -271,11 +271,13 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
  * this method is used to prepare response to IA_PD received in SOLICIT and REQUEST messages
  * (i.e. it tries to assign prefix as requested by client)
  *
- * @param queryOpt
- * @param ptrIface
- * @param fake
+ * @param clientMsg original message received from a client
+ * @param queryOpt specific option in clientMsg that we are answering now
+ * @param ptrIface pointer to SrvCfgIface
+ * @param fake is this fake request? (fake = solicit, so nothing is actually assigned)
  */
-void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
+void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
+                                  SPtr<TSrvCfgIface> ptrIface, bool fake) {
 
     // --- Is this PD without IAPREFIX options? ---
     SPtr<TIPv6Addr> hint = 0;
