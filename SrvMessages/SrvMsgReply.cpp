@@ -52,7 +52,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
-    this->MRT = 31;
+    this->MRT_ = 31;
     IsDone = false;
     this->send();
 }
@@ -272,7 +272,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    this->MRT = 31;
+    MRT_ = 31;
     this->send();
 }
 
@@ -341,7 +341,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    this->MRT = 0;
+    MRT_ = 0;
     this->send();
 
 }
@@ -525,7 +525,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    this->MRT=46;
+    MRT_ = 46;
     this->send();
 }
 
@@ -593,7 +593,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    this->MRT = 0;
+    MRT_ = 0;
     this->send();
 }
 
@@ -619,7 +619,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    this->MRT = 330;
+    MRT_ = 330;
     this->send();
 }
 
@@ -647,7 +647,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     pkt = new char[this->getSize()];
     IsDone = false;
     SPtr<TIPv6Addr> ptrAddr;
-    this->MRT = 330;
+    MRT_ = 330;
     this->send();
 }
 
@@ -702,7 +702,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
 
     pkt = new char[this->getSize()];
     IsDone = false;
-    MRT = 330; /// @todo:
+    MRT_ = 330;
     send();
 }
 
@@ -711,7 +711,7 @@ void TSrvMsgReply::doDuties() {
 }
 
 unsigned long TSrvMsgReply::getTimeout() {
-    unsigned long diff = now() - this->FirstTimeStamp;
+    unsigned long diff = now() - FirstTimeStamp_;
     if (diff>SERVER_REPLY_CACHE_TIMEOUT)
         return 0;
     return SERVER_REPLY_CACHE_TIMEOUT-diff;

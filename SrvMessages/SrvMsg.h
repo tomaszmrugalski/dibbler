@@ -69,9 +69,10 @@ public:
 
     void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
     SPtr<TDUID> getClientDUID();
-                SPtr<TIPv6Addr> getClientPeer();
+    SPtr<TIPv6Addr> getClientPeer();
 
 protected:
+    void setDefaults();
     SPtr<TOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
     void getORO(SPtr<TMsg> clientMessage);
@@ -98,21 +99,21 @@ protected:
     int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
 
 
+    /// @todo: convert this into RelayInfo structure
     // relay
-    SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
-    List(TOptGeneric) EchoListTbl[HOP_COUNT_LIMIT];  // list of options to be echoed back
-    int len[HOP_COUNT_LIMIT];
-    int HopTbl[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> LinkAddrTbl_[HOP_COUNT_LIMIT];
+    SPtr<TIPv6Addr> PeerAddrTbl_[HOP_COUNT_LIMIT];
+    SPtr<TSrvOptInterfaceID> InterfaceIDTbl_[HOP_COUNT_LIMIT];
+    List(TOptGeneric) EchoListTbl_[HOP_COUNT_LIMIT];  // list of options to be echoed back
+    int Len_[HOP_COUNT_LIMIT];
+    int HopTbl_[HOP_COUNT_LIMIT];
+    int Relays_;
 
-    unsigned long FirstTimeStamp; // timestamp of first message transmission
-    unsigned long MRT;            // maximum retransmission timeout
-    int Relays;
+    unsigned long FirstTimeStamp_; // timestamp of first message transmission
+    unsigned long MRT_;            // maximum retransmission timeout
 
+    /// @todo: this should be removed
     SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
-    int Parent; // type of the parent message (used in ADVERTISE and REPLY)
-
 };
 
 #endif

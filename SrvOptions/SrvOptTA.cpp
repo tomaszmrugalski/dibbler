@@ -30,6 +30,8 @@ using namespace std;
  */
 TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
     :TOptTA(buf,bufsize, parent) {
+
+    Iface  = parent->getIface();
     int pos=0;
     while(pos<bufsize) {
         int code=buf[pos]*256+buf[pos+1];
@@ -69,7 +71,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
     ClntDuid  = clientMsg->getClientDUID();
     ClntAddr  = clientMsg->getAddr();
     Iface     = clientMsg->getIface();
-    this->OrgMessage= msgType;
+    this->OrgMessage = msgType;
     switch (msgType) {
     case SOLICIT_MSG:
 	this->solicit(clientMsg, queryOpt);
@@ -91,6 +93,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
 
 TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     :TOptTA(iaid, parent) {
+    Iface  = parent->getIface();
     SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }
 

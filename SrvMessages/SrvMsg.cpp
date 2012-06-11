@@ -52,17 +52,6 @@ using namespace std;
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
     :TMsg(iface, addr, msgType, transID)
 {
-    this->Relays = 0;
-
-#ifndef MOD_DISABLE_AUTH
-    this->DigestType = SrvCfgMgr().getDigest();
-    this->AuthKeys = SrvCfgMgr().AuthKeys;
-#endif
-
-    FirstTimeStamp = now();
-    this->MRT=0;
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
 }
 
 /**
@@ -78,22 +67,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
                  char* buf, int bufSize)
     :TMsg(iface, addr, buf, bufSize)
 {
-    Relays = 0;
-
-    for (int i=0; i<32; i++) {
-        HopTbl[i] = 0;
-        len[i] = 0;
-    }
-
-#ifndef MOD_DISABLE_AUTH
-    this->AuthKeys = SrvCfgMgr().AuthKeys;
-    this->DigestType = SrvCfgMgr().getDigest();
-#endif
-
-    FirstTimeStamp = now();
-    this->MRT=0;
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
+    setDefaults();
 
     int pos=0;
     while (pos<bufSize)	{
@@ -238,6 +212,23 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 
 }
 
+void TSrvMsg::setDefaults() {
+    for (int i=0; i<32; i++) {
+        HopTbl_[i] = 0;
+        Len_[i] = 0;
+    }
+
+    Relays_ = 0;
+
+#ifndef MOD_DISABLE_AUTH
+    DigestType = SrvCfgMgr().getDigest();
+    AuthKeys = SrvCfgMgr().AuthKeys;
+#endif
+
+    FirstTimeStamp_ = now();
+    MRT_ = 0;
+}
+
 /// Processes options in incoming message and assigns leases and options, if possible.
 /// This method may be used in any message that causes server to assign anything, i.e.
 /// SOLICIT, REQUEST, RENEW, REBIND (and possibly CONFIRM)
@@ -366,8 +357,8 @@ void TSrvMsg::doDuties() {
 }
 
 unsigned long TSrvMsg::getTimeout() {
-    if (this->FirstTimeStamp+this->MRT - now() > 0 )
-        return this->FirstTimeStamp+this->MRT - now();
+    if (FirstTimeStamp_ + MRT_ - now() > 0 )
+        return FirstTimeStamp_ + MRT_ - now();
     else
         return 0;
 }
@@ -377,16 +368,16 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                            int hop,
                            SPtr<TSrvOptInterfaceID> interfaceID,
                            List(TOptGeneric) echolist) {
-    this->LinkAddrTbl[this->Relays] = linkAddr;
-    this->PeerAddrTbl[this->Relays] = peerAddr;
-    this->HopTbl[this->Relays]      = hop;
-    this->InterfaceIDTbl[this->Relays] = interfaceID;
-    this->EchoListTbl[this->Relays]    = echolist;
-    this->Relays++;
+    LinkAddrTbl_[Relays_] = linkAddr;
+    PeerAddrTbl_[Relays_] = peerAddr;
+    HopTbl_[Relays_]      = hop;
+    InterfaceIDTbl_[Relays_] = interfaceID;
+    EchoListTbl_[Relays_]    = echolist;
+    Relays_++;
 }
 
 int TSrvMsg::getRelayCount() {
-    return this->Relays;
+    return Relays_;
 }
 
 void TSrvMsg::send()
@@ -405,27 +396,27 @@ void TSrvMsg::send()
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
-    Log(Cont) << ", " << this->Relays << " relay(s)." << LogEnd;
+    Log(Cont) << ", " << Relays_ << " relay(s)." << LogEnd;
 
     port = DHCPCLIENT_PORT;
-    if (this->Relays>0) {
+    if (Relays_>0) {
         port = DHCPSERVER_PORT;
-        if (this->Relays>HOP_COUNT_LIMIT) {
-            Log(Error) << "Unable to send message. Got " << this->Relays << " relay entries (" << HOP_COUNT_LIMIT
+        if (Relays_>HOP_COUNT_LIMIT) {
+            Log(Error) << "Unable to send message. Got " << Relays_ << " relay entries (" << HOP_COUNT_LIMIT
                        << " is allowed maximum." << LogEnd;
             return;
         }
 
         // calculate lengths of all relays
-        len[Relays-1]=this->getSize();
-        for (int i=this->Relays-1; i>0; i--) {
-            len[i-1]= len[i] + 38; // 34 bytes (relay header) + 4 bytes (relay-msg option header)
-            if (this->InterfaceIDTbl[i] && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
-                len[i-1]+=this->InterfaceIDTbl[i]->getSize();
+        Len_[Relays_ - 1] = getSize();
+        for (int i = Relays_ - 1; i > 0; i--) {
+            Len_[i-1] = Len_[i] + 38; // 34 bytes (relay header) + 4 bytes (relay-msg option header)
+            if (InterfaceIDTbl_[i] && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
+                Len_[i-1] += InterfaceIDTbl_[i]->getSize();
 
-                EchoListTbl[i].first();
-                while (gen = EchoListTbl[i].get()) {
-                    len[i-1] += gen->getSize();
+                EchoListTbl_[i].first();
+                while (gen = EchoListTbl_[i].get()) {
+                    Len_[i-1] += gen->getSize();
                 }
 
             }
@@ -435,7 +426,7 @@ void TSrvMsg::send()
         offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
         // check if there are underlaying interfaces
-        for (int i=0; i < this->Relays; i++) {
+        for (int i=0; i < Relays_; i++) {
             under = ptrIface->getUnderlaying();
             if (!under) {
                 Log(Error) << "Sending message on the " << ptrIface->getName() << "/" << ptrIface->getID()
@@ -650,21 +641,21 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
 
 SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
 {
-   if (Relays > 0)
+   if (Relays_ > 0)
    {
-       return PeerAddrTbl[0]; //first hop ?
+       return PeerAddrTbl_[0]; //first hop ?
    }
    return PeerAddr;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
-    this->Relays = q->Relays;
-    for (int i=0; i < this->Relays; i++) {
-        this->LinkAddrTbl[i]   = q->LinkAddrTbl[i];
-        this->PeerAddrTbl[i]   = q->PeerAddrTbl[i];
-        this->InterfaceIDTbl[i]= q->InterfaceIDTbl[i];
-        this->HopTbl[i]        = q->HopTbl[i];
-        this->EchoListTbl[i]   = q->EchoListTbl[i];
+    Relays_ = q->Relays_;
+    for (int i=0; i < Relays_; i++) {
+        LinkAddrTbl_[i]   = q->LinkAddrTbl_[i];
+        PeerAddrTbl_[i]   = q->PeerAddrTbl_[i];
+        InterfaceIDTbl_[i]= q->InterfaceIDTbl_[i];
+        HopTbl_[i]        = q->HopTbl_[i];
+        EchoListTbl_[i]   = q->EchoListTbl_[i];
     }
 }
 
@@ -681,42 +672,43 @@ void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
 int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
 {
     int offset = 0;
-    if (relayDepth == this->Relays) {
+    if (relayDepth == Relays_) {
         return storeSelf(buf);
     }
     buf[offset++] = RELAY_REPL_MSG;
-    buf[offset++] = HopTbl[relayDepth];
-    LinkAddrTbl[relayDepth]->storeSelf(buf+offset);
-    PeerAddrTbl[relayDepth]->storeSelf(buf+offset+16);
+    buf[offset++] = HopTbl_[relayDepth];
+    LinkAddrTbl_[relayDepth]->storeSelf(buf+offset);
+    PeerAddrTbl_[relayDepth]->storeSelf(buf+offset+16);
     offset += 32;
 
     if (order == SRV_IFACE_ID_ORDER_BEFORE)
     {
-        if (InterfaceIDTbl[relayDepth]) {
-            InterfaceIDTbl[relayDepth]->storeSelf(buf+offset);
-            offset += InterfaceIDTbl[relayDepth]->getSize();
+        if (InterfaceIDTbl_[relayDepth]) {
+            InterfaceIDTbl_[relayDepth]->storeSelf(buf+offset);
+            offset += InterfaceIDTbl_[relayDepth]->getSize();
         }
     }
 
     writeUint16((buf+offset), OPTION_RELAY_MSG);
     offset += sizeof(uint16_t);
-    writeUint16((buf+offset), len[relayDepth]);
+    writeUint16((buf+offset), Len_[relayDepth]);
     offset += sizeof(uint16_t);
 
     offset += storeSelfRelay(buf+offset, relayDepth+1, order);
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)
     {
-        if (InterfaceIDTbl[relayDepth]) {
-            InterfaceIDTbl[relayDepth]->storeSelf(buf+offset);
-            offset += InterfaceIDTbl[relayDepth]->getSize();
+        if (InterfaceIDTbl_[relayDepth]) {
+            InterfaceIDTbl_[relayDepth]->storeSelf(buf+offset);
+            offset += InterfaceIDTbl_[relayDepth]->getSize();
         }
     }
 
     SPtr<TOptGeneric> gen;
-    EchoListTbl[relayDepth].first();
-    while (gen = EchoListTbl[relayDepth].get()) {
-        Log(Debug) << "Echoing back option " << gen->getOptType() << ", length " << gen->getSize() << LogEnd;
+    EchoListTbl_[relayDepth].first();
+    while (gen = EchoListTbl_[relayDepth].get()) {
+        Log(Debug) << "Echoing back option " << gen->getOptType() << ", length " 
+                   << gen->getSize() << LogEnd;
         gen->storeSelf(buf+offset);
         offset += gen->getSize();
     }
