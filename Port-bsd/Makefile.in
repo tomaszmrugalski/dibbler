@@ -56,7 +56,10 @@ libLowLevel_a_AR = $(AR) $(ARFLAGS)
 libLowLevel_a_LIBADD =
 am_libLowLevel_a_OBJECTS = libLowLevel_a-daemon.$(OBJEXT) \
 	libLowLevel_a-lowlevel-bsd.$(OBJEXT) \
-	libLowLevel_a-lowlevel-options-bsd.$(OBJEXT)
+	libLowLevel_a-lowlevel-options-bsd.$(OBJEXT) \
+	libLowLevel_a-dibbler-client.$(OBJEXT) \
+	libLowLevel_a-dibbler-server.$(OBJEXT) \
+	libLowLevel_a-dibbler-relay.$(OBJEXT)
 libLowLevel_a_OBJECTS = $(am_libLowLevel_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -135,6 +138,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -154,6 +158,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -228,6 +233,7 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -235,12 +241,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
-libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-bsd.c lowlevel-options-bsd.c malloc.h
+libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-bsd.c lowlevel-options-bsd.c malloc.h dibbler-client.cpp dibbler-server.cpp dibbler-relay.cpp
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -265,9 +271,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -285,6 +291,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-daemon.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-client.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-relay.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-dibbler-server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-bsd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Po@am__quote@
 
@@ -383,6 +392,54 @@ libLowLevel_a-daemon.obj: daemon.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='daemon.cpp' object='libLowLevel_a-daemon.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-daemon.obj `if test -f 'daemon.cpp'; then $(CYGPATH_W) 'daemon.cpp'; else $(CYGPATH_W) '$(srcdir)/daemon.cpp'; fi`
+
+libLowLevel_a-dibbler-client.o: dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-client.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo -c -o libLowLevel_a-dibbler-client.o `test -f 'dibbler-client.cpp' || echo '$(srcdir)/'`dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo $(DEPDIR)/libLowLevel_a-dibbler-client.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-client.cpp' object='libLowLevel_a-dibbler-client.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-client.o `test -f 'dibbler-client.cpp' || echo '$(srcdir)/'`dibbler-client.cpp
+
+libLowLevel_a-dibbler-client.obj: dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-client.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo -c -o libLowLevel_a-dibbler-client.obj `if test -f 'dibbler-client.cpp'; then $(CYGPATH_W) 'dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-client.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-client.Tpo $(DEPDIR)/libLowLevel_a-dibbler-client.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-client.cpp' object='libLowLevel_a-dibbler-client.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-client.obj `if test -f 'dibbler-client.cpp'; then $(CYGPATH_W) 'dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-client.cpp'; fi`
+
+libLowLevel_a-dibbler-server.o: dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-server.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo -c -o libLowLevel_a-dibbler-server.o `test -f 'dibbler-server.cpp' || echo '$(srcdir)/'`dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo $(DEPDIR)/libLowLevel_a-dibbler-server.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-server.cpp' object='libLowLevel_a-dibbler-server.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-server.o `test -f 'dibbler-server.cpp' || echo '$(srcdir)/'`dibbler-server.cpp
+
+libLowLevel_a-dibbler-server.obj: dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-server.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo -c -o libLowLevel_a-dibbler-server.obj `if test -f 'dibbler-server.cpp'; then $(CYGPATH_W) 'dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-server.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-server.Tpo $(DEPDIR)/libLowLevel_a-dibbler-server.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-server.cpp' object='libLowLevel_a-dibbler-server.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-server.obj `if test -f 'dibbler-server.cpp'; then $(CYGPATH_W) 'dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-server.cpp'; fi`
+
+libLowLevel_a-dibbler-relay.o: dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-relay.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo -c -o libLowLevel_a-dibbler-relay.o `test -f 'dibbler-relay.cpp' || echo '$(srcdir)/'`dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo $(DEPDIR)/libLowLevel_a-dibbler-relay.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-relay.cpp' object='libLowLevel_a-dibbler-relay.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-relay.o `test -f 'dibbler-relay.cpp' || echo '$(srcdir)/'`dibbler-relay.cpp
+
+libLowLevel_a-dibbler-relay.obj: dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libLowLevel_a-dibbler-relay.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo -c -o libLowLevel_a-dibbler-relay.obj `if test -f 'dibbler-relay.cpp'; then $(CYGPATH_W) 'dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-relay.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-dibbler-relay.Tpo $(DEPDIR)/libLowLevel_a-dibbler-relay.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='dibbler-relay.cpp' object='libLowLevel_a-dibbler-relay.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libLowLevel_a-dibbler-relay.obj `if test -f 'dibbler-relay.cpp'; then $(CYGPATH_W) 'dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/dibbler-relay.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

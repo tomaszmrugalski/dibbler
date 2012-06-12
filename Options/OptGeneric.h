@@ -20,14 +20,12 @@
 class TOptGeneric : public TOpt
 {
   public:
-    bool operator == (const TOptGeneric &other) const {
-	return false;
-    }
+    bool operator == (const TOptGeneric &other);
 
     TOptGeneric(int optType, const char * data, unsigned short dataLen, TMsg* parent);
     TOptGeneric(int optType, TMsg* parent);
     ~TOptGeneric();
-    int getSize();
+    size_t getSize();
     void setData(char * data, int dataLen);
     std::string getPlain();
     bool doDuties() { return true; }

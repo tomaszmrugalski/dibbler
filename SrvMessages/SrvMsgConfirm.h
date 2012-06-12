@@ -30,7 +30,7 @@ class TSrvMsgConfirm : public TSrvMsg
     bool check();
     unsigned long getTimeout(); /// @todo this is obsolete
     ~TSrvMsgConfirm();
-    string getName();
+    std::string getName() const;
 
 };
 #endif /* SRVMSGCONFIRM_H*/

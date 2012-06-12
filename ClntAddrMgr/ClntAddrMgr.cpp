@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.cpp,v 1.26 2008-11-11 22:02:43 thomson Exp $
  */
 
 #include "SmartPtr.h"
@@ -15,9 +14,11 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
+using namespace std;
+
 TClntAddrMgr * TClntAddrMgr::Instance = 0;
 
-void TClntAddrMgr::instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB)
+void TClntAddrMgr::instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, const std::string& xmlFile, bool loadDB)
 {
   if (Instance) {
       Log(Crit) << "Attempt to create another instance of TClntAddrMgr!" << LogEnd;
@@ -42,7 +43,7 @@ TClntAddrMgr& TClntAddrMgr::instance()
  * @param loadDB should existing dump be loaded?
  *
  */
-TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB)
+TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, const std::string& xmlFile, bool loadDB)
     :TAddrMgr(xmlFile, useConfirm)
 {
     // client may have been already loaded from client-AddrMgr.xml file
@@ -57,6 +58,22 @@ TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFi
     DeleteEmptyClient = false; // don't delete this client, even when IAs or PD has been removed
     firstClient();
     Client = getClient();
+
+    if (useConfirm)
+        processLoadedDB();
+}
+
+void TClntAddrMgr::processLoadedDB() {
+    SPtr<TAddrIA> ia;
+    Client->firstIA();
+    while (ia=Client->getIA()) {
+        ia->setState(STATE_CONFIRMME);
+    }
+
+    Client->firstPD();
+    while (ia=Client->getPD()) {
+        ia->setState(STATE_CONFIRMME);
+    }
 }
 
 
@@ -275,7 +292,7 @@ int TClntAddrMgr::countTA()
     return Client->countTA();
 }
 
-void TClntAddrMgr::print(ostream &x) {
+void TClntAddrMgr::print(std::ostream &) {
     
 }
 

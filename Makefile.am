@@ -1,20 +1,25 @@
 AUTOMAKE_OPTIONS = foreign
 
-# Uncomment this if you don't want makefiles to rebuild themselves
-# Makefile:
+CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr Messages poslib
+CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
+CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
+CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
+CODE_SUBDIRS += Requestor
+CODE_SUBDIRS += doc
 
-SUBDIRS  = Misc Options AddrMgr CfgMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
-SUBDIRS += ClntOptions ClntTransMgr IfaceMgr Messages
-SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
-SUBDIRS += Requestor SrvAddrMgr SrvCfgMgr SrvIfaceMgr SrvMessages
-SUBDIRS += SrvOptions SrvTransMgr
-SUBDIRS += poslib @PORT_SUBDIR@
+SUBDIRS = $(CODE_SUBDIRS)
+
+if HAVE_GTEST
+    SUBDIRS += tests
+endif
+
+DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 
 client: dibbler-client
 
-dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp 
+dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
 dibbler_client_SOURCES += $(top_srcdir)/Misc/DHCPClient.cpp $(top_srcdir)/Misc/DHCPClient.h
 
 dibbler_client_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/ClntTransMgr
@@ -69,12 +74,12 @@ dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
-dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions 
+dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions
 dibbler_server_LDADD += -lIfaceMgr -lposlib -lMisc
 
 relay: dibbler-relay
 
-dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp 
+dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
 dibbler_relay_SOURCES += $(top_srcdir)/Misc/DHCPRelay.cpp $(top_srcdir)/Misc/DHCPRelay.h
 
 dibbler_relay_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/RelTransMgr
@@ -103,7 +108,7 @@ requestor: dibbler-requestor
 
 dibbler_requestor_SOURCES = $(top_srcdir)/Requestor/Requestor.cpp $(top_srcdir)/Requestor/Requestor.h
 
-dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options 
+dibbler_requestor_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options
 dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/Requestor
 dibbler_requestor_CPPFLAGS += -I$(top_srcdir)/IfaceMgr
 
@@ -113,6 +118,18 @@ dibbler_requestor_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
+
+nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
+nobase_dist_doc_DATA += scripts/notify-scripts/client-notify.sh scripts/notify-scripts/server-notify.sh
+nobase_dist_doc_DATA += scripts/INFO scripts/remote-autoconf scripts/xtract_version
+
+dist_noinst_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
+dist_noinst_DATA += scripts
+dist_noinst_DATA += tests
+
+# these are conditional directories. Therefore they are not added to
+# dist directory.
+
 
 bison: bison/bison++
 

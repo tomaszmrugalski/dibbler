@@ -19,17 +19,17 @@ public:
     TOptAuthentication(TMsg* parent);
     TOptAuthentication(char * &buf,  int &n,TMsg* parent);
     void setRDM(uint8_t value);
-    uint32_t getSPI();
+    uint32_t getSPI() const;
     void setAuthInfoLen(uint16_t len);
     void setDigestType(enum DigestTypes type);
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
 
 private:
-    uint8_t RDM;
-    uint16_t AuthInfoLen;
+    uint8_t RDM_;
+    uint16_t AuthInfoLen_;
 
-    bool Valid;
+    bool Valid_;
 };
 
 #endif 

@@ -44,8 +44,8 @@ class TAddrMgr;
 class TAddrMgr
 {
   public:
-    friend ostream & operator<<(ostream & strum,TAddrMgr &x);
-    TAddrMgr(string addrdb, bool loadfile = false);
+    friend std::ostream & operator<<(std::ostream & strum,TAddrMgr &x);
+    TAddrMgr(const std::string& addrdb, bool loadfile = false);
     virtual ~TAddrMgr();
 
     //--- Client container ---
@@ -57,6 +57,10 @@ class TAddrMgr
     SPtr<TAddrClient> getClient(SPtr<TIPv6Addr> leasedAddr);
     int countClient();
     bool delClient(SPtr<TDUID> duid);
+
+    // checks if address is conformant to current configuration (used in loadDB())
+    virtual bool verifyAddr(SPtr<TIPv6Addr> addr) { return true; }
+    virtual bool verifyPrefix(SPtr<TIPv6Addr> addr) { return true; }
 
     // --- prefix related ---
     virtual bool addPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
@@ -81,7 +85,6 @@ class TAddrMgr
     void dbLoad(const char * xmlFile);
     virtual void dump();
     bool isDone();
-    bool restore;
 
 #ifdef MOD_LIBXML2
     // database loading methods that use libxml2
@@ -93,16 +96,16 @@ class TAddrMgr
 #else
     // database loading methods that use internal loading routines
     bool xmlLoadBuiltIn(const char * xmlFile);
-    SPtr<TAddrClient> parseAddrClient(FILE *f);
-    SPtr<TAddrIA> parseAddrIA(FILE * f, int t1,int t2,int iaid,int iface);
-    SPtr<TAddrIA> parseAddrPD(FILE * f, int t1,int t2,int iaid,int iface);
-    SPtr<TAddrAddr> parseAddrAddr(char * buf,bool pd);
-    SPtr<TAddrPrefix> parseAddrPrefix(char * buf,bool pd);
-    SPtr<TAddrIA> parseAddrTA(FILE *f);
+    SPtr<TAddrClient> parseAddrClient(const char * xmlFile, FILE *f);
+    SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface);
+    SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface);
+    SPtr<TAddrAddr> parseAddrAddr(const char * xmlFile, char * buf,bool pd);
+    SPtr<TAddrPrefix> parseAddrPrefix(const char * xmlFile, char * buf,bool pd);
+    SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);
 #endif
 
 protected:
-    virtual void print(ostream & out) = 0;
+    virtual void print(std::ostream & out) = 0;
     bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
                    int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
                    SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
@@ -114,7 +117,7 @@ protected:
 
     bool IsDone;
     List(TAddrClient) ClntsLst;
-    string XmlFile;
+    std::string XmlFile;
 
     bool DeleteEmptyClient; // should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
 };

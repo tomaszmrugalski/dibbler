@@ -76,6 +76,78 @@ pool minaddress-maxaddress
 pool address/prefix
 \end{lstlisting}
 
+\subsubsection{Prefix class scope}
+\label{server-pd-class-scope}
+That is an equivalent of address class for a prefix delegation. It
+contains definition of prefixes that are going to be delegation to
+clients. Only pd-class scoped parameters can be defined here. Prefix
+class is declared as follows:
+\begin{lstlisting}
+pd-class
+{
+    pd-pool prefix/length
+    pd-length prefix-length
+}
+\end{lstlisting}
+
+\subsubsection{Temporary address class scope}
+\label{server-ta-class-scope}
+That is an equivalent of address class for temporary addresses. It
+contains definition of temporary addresses that are going to be
+assigned to clients that request temporary addresses. Only ta-class
+scoped parameters can be defined here. Prefix class is declared as
+follows: 
+\begin{lstlisting}
+ta-class {
+    pool 2001:db8:1::1-2001:db81:1::ffff
+}
+\end{lstlisting}
+
+\subsubsection{Routing scope}
+\label{server-route-scope}
+Support for routing configuration was added in 0.8.0RC1. It is
+possible to define routing scope. Each scope represents a single
+router available on-link. In this scope, routes available via
+specified link my be defined.
+
+\begin{lstlisting}
+next-hop address-of-a-router
+{
+  route1-parameters
+  route2-parameters
+  ...
+}
+\end{lstlisting}
+
+\subsubsection{Client scope}
+\label{server-scope-client}
+Server allows defining custom parameters on a per-host basis. See
+Sections \ref{feature-exceptions} and \ref{example-server-exceptions} 
+for details. There are two types of reservations: DUID-based and 
+remote-id based. Following syntax can be used:
+
+\begin{lstlisting}
+client duid 00:00:00:00:00
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+client remote-id 5-0x01020304
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
 \subsubsection{Server options}
 
 So called standard options are defined by the base DHCPv6 specification,
@@ -204,6 +276,25 @@ that specifies timeout in milliseconds. Defines how long client should
 wait for DNS server response during DNS Update before declaring
 update a failure. See Section \ref{feature-dns-update}.
 
+\item[class] -- (scope: interface). This definition must be followed by
+curly braces and creates a new address class scope. See
+Section \ref{server-class-scope}.
+
+\item[pd-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new prefix-delegation class
+scope. See Section \ref{server-pd-class-scope}.
+
+\item[ta-class] -- (scope: interface). This definition must be
+followed by curly braces and creates a new temporary address class
+scope. See Section \ref{server-ta-class-scope}.
+
+\item[next-hop] -- (scope: interface). This definition takes one
+parameter that defines IPv6 address of a router. Without any further
+parameters, it conveys an information about default route for
+bandwidth limited networks. That mode is discouraged, unless there are
+significant bandwith limitations. It is usually followed by curly
+braces that create a new route scope. See Section \ref{server-route-scope}.
+
  \item[preference] -- (scope: interface, type: 0-255, default:
             none). Eech server can be configured to a specific
             preference level. When client receives several
@@ -277,6 +368,7 @@ update a failure. See Section \ref{feature-dns-update}.
    \begin{lstlisting}
      pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
    \end{lstlisting}
+   It is also possible to use prefix/length notation.
 
  \item[pd-pool] -- (scope: pd-class). Takes coma separated IPv6
    address ranges. Each range is defined as fist-address, a dash and a
@@ -286,6 +378,7 @@ update a failure. See Section \ref{feature-dns-update}.
    \begin{lstlisting}
      pd-pool 2001:db8:abcd:: - 2001:db8:abcd::ffff
    \end{lstlisting}
+   It is also possible to use prefix/length notation.
 
 \item[share] -- (scope: class). Defines percentage of clients that a
   class should handle. This parameter is only useful if there are more
@@ -489,6 +582,16 @@ string is any string enclosed in single or double quotes. See Section
   \verb+deny+ to assign segregate clients into different groups. See
   Section \ref{feature-client-class} for overview and Section
   \ref{class-expressions} for list of supported expressions.
+
+\item[address] -- (scope: client). Takes one parameter that specifies
+   address. It instructs server to reserve this particular address for
+   defined client. See Sections \ref{feature-exceptions}
+   and \ref{example-server-exceptions} for details.
+
+\item[prefix] -- (scope: client). Takes one parameter that specifies
+   prefix using prefix/length notation. It instructs server to reserve
+   specified prefix for defined client. See Sections \ref{feature-exceptions}
+   and \ref{example-server-exceptions} for details.
 
 \end{description}
 
@@ -959,45 +1062,76 @@ vendor specific information. See section \ref{feature-exceptions} for
 background information. Since 0.8.0RC1, also addresses can be reserverd
 in this way.
 
+Addresses reserved for special clients may be inside or outside of
+specified pools. If leases are outside of specified pools, timers (t1,
+t2, prefered and valid lifetimes are set to infinity). It is currently
+not possible to specify separate timers (t1, t2, preferred or valid
+lifetimes) on a per-client basis. Please define leases that belong to
+supported address and prefix pools. Timers from corresponding pools
+will be used.
+
+Note that per client reservation was significantly refactored after
+0.8.1, so its stability is not yet confirmed.
+
 \begin{lstlisting}
 # server.conf
+# Example server configuration file: per-client configuaration
+#
+# In this example, some clients receive different parameters than others.
+
+# Logging level range: 1(Emergency)-8(Debug)
+# 
+log-level 8
+
+# Don't log full date
+log-mode short
+
 iface "eth0" {
 
- class {
-   pool 2000::1/64
- }
+    class {
+        pool 2001:db8:1::/64
+    }
 
-# common configuration options, provided for all clients
- option dns-server 2000::1
- option domain example.com
- option vendor-spec 5678-0x0002aaaa
+    pd-class {
+        pd-pool 2001:db8:2::/48
+	pd-length 64
+    }
 
-  # special parameters for client with DUID 00:01:02:03:04:06
-  client duid 0x000102030406
+  # common configuration options, provided for all clients
+  option dns-server 2001:db8:1::1
+  option domain example.com
+  option vendor-spec 5678-2-0xaaaa,1234-3-0x0102
+
+  # special parameters for client with DUID 00:01:02:03:04:06      
+  client duid 00:01:02:03:04:06
   {
-        address 2001::123
-        option domain second.client.biz
-        option dns-server 1234::5678:abcd
-        option vendor-spec 2-0x000122, 22-0x222222
+        address 2001:db8:1::123
+	prefix 2001:db8:abcd::/64
+	option domain second.client.biz
+	option dns-server 2001:db8::5678:abcd
+	option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
   }
 
-  # special address reserved for client with this remote-id option
-  # (remote-id option may be added by relays)
+  # this client should receive default domain and dns-server, 
+  # but different vendor-spec info
+  client duid 0x0001000044e8ef3400085404a324
+  {
+	option vendor-spec 1111-57-0x01020304
+  }
+  
   client remote-id 5-0x01020304
   {
-        address 2000::0102:0304
-        option domain our.special.remoteid.client.org
+	address 2001:db8:1::0102:0304
+	option domain our.special.remoteid.client.org
   }
 
-  #  client link-local fe80::211:25ff:fe12:6688
-  #  (link-local reservation is not supported yet. configure clients
-  #  to use DUID-LL (link-local address based DUID) and then make
-  #  DUID based reservations)
+  #  client link-local fe80::1:2:3:4
   #  {
   #      option domain link.local.detected.interop.test.com
-  #  }
+  #  } 
 
 }
+
 \end{lstlisting}
 
 \subsubsection{Example 13: Prefix delegation}
@@ -1184,7 +1318,7 @@ iface "eth0" {
  class {
    pool 2001:db8::/64
  }
- option 145 - 01:02:a3:b4:c5:dd:ea
+ option 145 duid 01:02:a3:b4:c5:dd:ea
  option 146 address 2001:db8:1::dead:beef
  option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
  option 148 string "secretlair.example.org"

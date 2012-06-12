@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgAddrClass.h,v 1.17 2008-10-12 19:42:45 thomson Exp $
- *
  */
 
 class TSrvCfgAddrClass;
@@ -19,6 +17,7 @@ class TSrvCfgAddrClass;
 #include <iostream>
 #include <iomanip>
 
+#include "DHCPDefaults.h"
 #include "SrvAddrMgr.h"
 #include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
@@ -28,12 +27,10 @@ class TSrvCfgAddrClass;
 #include "SmartPtr.h"
 #include "SrvOptAddrParams.h"
 #include "SrvCfgClientClass.h"
-using namespace std;
-
 
 class TSrvCfgAddrClass
 {
-    friend ostream& operator<<(ostream& out,TSrvCfgAddrClass& iface);
+    friend std::ostream& operator<<(std::ostream& out, TSrvCfgAddrClass& iface);
  public:
     TSrvCfgAddrClass();
 
@@ -48,11 +45,13 @@ class TSrvCfgAddrClass
     bool addrInPool(SPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SPtr<TIPv6Addr> getRandomAddr();
+    SPtr<TIPv6Addr> getFirstAddr();
+    SPtr<TIPv6Addr> getLastAddr();
 
-    unsigned long getT1(unsigned long clntT1);
-    unsigned long getT2(unsigned long clntT2);
-    unsigned long getPref(unsigned long clntPref);
-    unsigned long getValid(unsigned long clntValid);
+    uint32_t getT1(uint32_t clntT1 = SERVER_DEFAULT_MAX_T1);
+    uint32_t getT2(uint32_t clntT2 = SERVER_DEFAULT_MAX_T2);
+    uint32_t getPref(uint32_t clntPref = SERVER_DEFAULT_MAX_PREF);
+    uint32_t getValid(uint32_t clntValid = SERVER_DEFAULT_MAX_VALID);
     unsigned long getClassMaxLease();
     unsigned long getID();
     unsigned long getShare();
@@ -70,36 +69,36 @@ class TSrvCfgAddrClass
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
  private:
-    unsigned long T1Beg;
-    unsigned long T2Beg;
-    unsigned long PrefBeg;
-    unsigned long ValidBeg;
-    unsigned long T1End;
-    unsigned long T2End;
-    unsigned long PrefEnd;
-    unsigned long ValidEnd;
-    unsigned long Share;
+    uint32_t T1Min_;
+    uint32_t T2Min_;
+    uint32_t PrefMin_;
+    uint32_t ValidMin_;
+    uint32_t T1Max_;
+    uint32_t T2Max_;
+    uint32_t PrefMax_;
+    uint32_t ValidMax_;
+    uint32_t Share_;
 
-    long chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime);
+    uint32_t chooseTime(uint32_t beg, uint32_t end, uint32_t clntTime);
 
-    SPtr<TStationRange> Pool;
-    unsigned long ClassMaxLease;
-    unsigned long AddrsAssigned;
-    unsigned long AddrsCount;
+    SPtr<THostRange> Pool_;
+    unsigned long ClassMaxLease_;
+    unsigned long AddrsAssigned_;
+    unsigned long AddrsCount_;
 
-    SPtr<TSrvOptAddrParams> AddrParams; // AddrParams - experimental option
+    SPtr<TSrvOptAddrParams> AddrParams_; // AddrParams - experimental option
 
     // new, better white/black-list
-    unsigned long ID; // client class ID
-    static unsigned long staticID;
-    List(string) allowLst;
-    List(string) denyLst;
-    List(TSrvCfgClientClass) allowClientClassLst;
-    List(TSrvCfgClientClass) denyClientClassLst;
+    unsigned long ID_; // client class ID
+    static unsigned long StaticID_;
+    List(std::string) AllowLst_;
+    List(std::string) DenyLst_;
+    List(TSrvCfgClientClass) AllowClientClassLst_;
+    List(TSrvCfgClientClass) DenyClientClassLst_;
 
     // old white/black-list
-    List(TStationRange) RejedClnt;
-    List(TStationRange) AcceptClnt;
+    List(THostRange) RejedClnt_;
+    List(THostRange) AcceptClnt_;
 };
 
 #endif

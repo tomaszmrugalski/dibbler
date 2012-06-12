@@ -149,7 +149,7 @@ int tcpopen(_addr *addr) {
 	throw PException("Could not create TCP socket");
     if (connect(sockid, (sockaddr *)addr, struct_len(addr)) < 0) { 
 	closesocket(sockid);
-	string txt = addr_to_string(addr, false);
+        std::string txt = addr_to_string(addr, false);
 	throw PException(true, "Could not connect TCP socket to dst addr=%s", txt.c_str());
     }
     return sockid;

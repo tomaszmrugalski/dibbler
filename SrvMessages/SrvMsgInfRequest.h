@@ -22,7 +22,7 @@ class TSrvMsgInfRequest : public TSrvMsg
     void doDuties();
     bool check();
     unsigned long getTimeout();
-    string getName();
+    std::string getName() const;
     ~TSrvMsgInfRequest();
   private:
     SPtr<TSrvAddrMgr> AddrMgr;

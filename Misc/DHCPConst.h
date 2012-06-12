@@ -171,8 +171,11 @@
 #define OPTION_KEYGEN               241
 
 // additional options
+#define OPTION_NEXT_HOP         242
+#define OPTION_RTPREFIX         243
+
 // new geolocation option (TODO: which draft?)
-#define OPTION_GEOLOC           242
+#define OPTION_GEOLOC           244
 
 // Experimental implementation for address prefix length information
 // See: http://klub.com.pl/dhcpv6/doc/draft-mrugalski-addropts-XX-2007-04-17.txt
@@ -197,6 +200,7 @@ typedef enum {
 #define OPTION_INFORMATION_REFRESH_TIME_LEN         4
 
 // --- Status Codes ---
+/// @todo: convert this to enum
 #define STATUSCODE_SUCCESS          0
 #define STATUSCODE_UNSPECFAIL       1
 #define STATUSCODE_NOADDRSAVAIL     2
@@ -211,7 +215,7 @@ typedef enum {
 #define STATUSCODE_NOTALLOWED       10
 
 // INFINITY + 1 is 0. That's cool!
-#define DHCPV6_INFINITY (unsigned) 0xffffffff
+#define DHCPV6_INFINITY (uint32_t) 0xffffffff
 
 //maximum size of cache for geolocation information
 #define MAX_CACHE_SIZE 1024*1024

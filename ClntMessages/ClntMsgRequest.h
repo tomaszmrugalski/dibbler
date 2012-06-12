@@ -26,7 +26,7 @@ class TClntMsgRequest : public TClntMsg
     void answer(SPtr<TClntMsg> msg);
     void doDuties();
     bool check();
-    string getName();
+    std::string getName() const;
     ~TClntMsgRequest();
   private:
     void setState(TOptList opts, EState state);

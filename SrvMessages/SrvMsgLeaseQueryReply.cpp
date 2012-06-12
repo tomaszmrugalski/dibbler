@@ -7,22 +7,21 @@
  *                                                                           
  * released under GNU GPL v2 only licence                                
  *                                                                           
- * $Id: SrvMsgLeaseQueryReply.cpp,v 1.7 2008-08-29 00:07:35 thomson Exp $
  */
 
 #include "SrvMsgLeaseQueryReply.h"
 #include "Logger.h"
 #include "SrvOptLQ.h"
-#include "SrvOptStatusCode.h" 
+#include "OptStatusCode.h" 
+#include "OptDUID.h"
 #include "SrvOptIAAddress.h"
-#include "SrvOptServerIdentifier.h"
 #include "SrvOptIAPrefix.h"
-#include "SrvOptClientIdentifier.h"
 #include "AddrClient.h"
 #include "SrvCfgMgr.h"
 #include "OptStringLst.h"
 #include "SrvGeolocMgr.h"
 
+using namespace std;
 
 TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
     :TSrvMsg(query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
@@ -77,7 +76,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
                 ok = queryByClientID(q, queryMsg, withGeoloc);
                 break;
 	    default:
-		Options.push_back( new TSrvOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
+		Options.push_back(new TOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
 		Log(Warning) << "LQ: Invalid query type (" << q->getQueryType() << " received." << LogEnd;
 		return true;
 	    }
@@ -95,15 +94,15 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 
     }
     if (!count) {
-	Options.push_back(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
+	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
 	return true;
     }
 
     // append SERVERID
-    SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(), this);
-    Options.push_back((Ptr*)ptrSrvID);
-   
+    SPtr<TOptDUID> serverID;
+    serverID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
+    Options.push_back((Ptr*)serverID);
+
     // allocate buffer
     pkt = new char[getSize()];
     this->send();
@@ -122,7 +121,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
 	    addr = (Ptr*) opt;
     }
     if (!addr) {
-	Options.push_back(new TSrvOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
+	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
 	return true;
     }
 
@@ -131,7 +130,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.push_back( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
+	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
 	return true;
     }
     
@@ -145,7 +144,7 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
 
 bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg, bool withGeoloc) {
     SPtr<TOpt> opt;
-    SPtr<TSrvOptClientIdentifier> duidOpt = 0;
+    SPtr<TOptDUID> duidOpt = 0;
     SPtr<TDUID> duid = 0;
     SPtr<TIPv6Addr> link = q->getLinkAddr();
     
@@ -157,7 +156,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
 	}
     }
     if (!duid) {
-	Options.push_back( new TSrvOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
+	Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
 	return true;
     }
 
@@ -166,7 +165,7 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     
     if (!cli) {
 	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
-	Options.push_back( new TSrvOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this DUID found.", this) );
+	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this DUID found.", this) );
 	return true;
     }
     
@@ -250,7 +249,7 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
 	}
     }
 
-    cliData->addOption(new TSrvOptClientIdentifier(cli->getDUID(), this));
+    cliData->addOption(new TOptDUID(OPTION_CLIENTID, cli->getDUID(), this));
 
     // TODO: add all temporary addresses
 
@@ -277,6 +276,6 @@ void TSrvMsgLeaseQueryReply::doDuties() {
     IsDone = true;
 }
 
-string TSrvMsgLeaseQueryReply::getName() {
+string TSrvMsgLeaseQueryReply::getName() const {
     return "LEASE-QUERY-REPLY";
 }

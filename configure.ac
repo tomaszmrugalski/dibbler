@@ -2,11 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.0-git], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [0.8.2], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
+
+# DO NOT trigger rebuild rules, unless I tell you so.
+AM_MAINTAINER_MODE([disable])
 
 # Poslib stuff
 AC_LANG_CPLUSPLUS
@@ -47,13 +50,11 @@ AC_CHECK_DECLS([IPV6_PKTINFO],,,[
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
-    #include <netinet/ip.h>
 ])
 AC_CHECK_DECLS([IPV6_RECVPKTINFO],,,[
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
 ])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -207,12 +208,14 @@ dnl ---------------------------------------------
       PORT_SUBDIR="Port-linux"
       PORT_CFLAGS=
       PORT_LDFLAGS="-lpthread"
+      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=
       PORT_LDFLAGS=
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k"
       ;;
     OpenBSD)
       ARCH="BSD"
@@ -225,6 +228,7 @@ dnl ---------------------------------------------
       PORT_LDFLAGS = "-lws2_32"
       PORT_CFLAGS  = "-DMINGWBUILD"
       PORT_SUBDIR  = "Port-win2k"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
     *)
       AC_MSG_ERROR("Unsupported OS: uname returned $system")
@@ -263,11 +267,19 @@ dnl ------------------------------------------------------------
   )
 
   if test x$debug = xyes; then
-     CPPFLAGS="${CPPFLAGS} -O0 -g"
+     OPTFLAG="-O0"
+     CPPFLAGS="-g ${CPPFLAGS}"
      LINKPRINT="${LINKPRINT} debug"
   else
-     CPPFLAGS="${CPPFLAGS} -O2"
+     OPTFLAG="-O2"
   fi
+
+  # add -O2 or -O0 only if it isn't specified already by user
+  TMP=`echo "$CPPFLAGS" | grep "\-O" -`
+  if test "$CPPFLAGS" != "$TMP"; then
+     CPPFLAGS="${OPTFLAG} ${CPPFLAGS}"
+  fi
+
 
 ### electric-fence ####################
   AC_ARG_ENABLE(efence,
@@ -311,6 +323,26 @@ dnl ------------------------------------------------------------
    if test x$MOD_CLNT_BIND_REUSE = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
+
+### support for resolvconf tool (mostly Debian, probably) ##############
+   AC_ARG_ENABLE(resolvconf,
+	[  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)],
+	[ case "${enableval}" in
+	       yes)
+	       MOD_RESOLVCONF=yes
+	       ;;
+	       no)
+	       MOD_RESOLVCONF=no
+	       ;;
+	       *)
+	       AC_MSG_ERROR(bad value ${enablevald} for --enable-resolvconf)
+	       ;;
+	  esac],
+	  [MOD_RESOLVCONF=no]
+    )
+
+AM_CONDITIONAL(RESOLVCONF, test $MOD_RESOLVCONF = yes)
+AM_COND_IF([RESOLVCONF], [AC_DEFINE([MOD_RESOLVCONF], [1], [Support for /sbin/resolvconf enabled?])])
 
 ### DNS Update ####################################
 ### We may add separate parameter for client and server eventually ##########
@@ -426,27 +458,28 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(ARCH)
 AC_SUBST(PORT_SUBDIR)
+
+# Lists all port directories that are unused on this platform (e.g. BSD and winn2k on Linux)
+AC_SUBST(EXTRA_DIST_SUBDIRS)
 AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
 
-#AC_CONFIG_SUBDIRS([bison++])
+AC_CONFIG_SUBDIRS([bison++])
 #AC_CONFIG_SUBDIRS([poslib])
 
-AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile)
 
 if test "$gtest_path" != "no"; then
   echo "GTEST enabled, generating Makefiles"
   AC_DEFINE(HAVE_GTEST, 1, [Defines if google test is available and should be used])
 fi
 
-AC_OUTPUT(AddrMgr/tests/Makefile Options/tests/Makefile)
-
-AM_CONDITIONAL(HAVE_GTEST, test $gtest_path != "no")
+AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
-AC_OUTPUT(Port-linux/Makefile Port-bsd/Makefile)
+
+AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg CfgMgr/tests/Makefile tests/Makefile tests/Srv/Makefile)
 
 dnl ----------------------------------------
 dnl Print out configured parameters
@@ -459,6 +492,7 @@ echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
 echo "DNS Update (clnt/srv) disabled: $MOD_CLNT_DISABLE_DNSUPDATE/$MOD_SRV_DISABLE_DNSUPDATE"
 echo "Authentication disabled       : $MOD_DISABLE_AUTH"
 echo "Link-state change detection   : $MOD_CLNT_CONFIRM"
+echo "/sbin/resolvconf support      : $MOD_RESOLVCONF"
 
 echo
 echo "Experimental features:"

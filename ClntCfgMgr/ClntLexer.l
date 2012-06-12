@@ -6,9 +6,15 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "ClntParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
 %}
 
 %x COMMENT
@@ -49,6 +55,7 @@ iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
 address               { return ClntParser::ADDRESS_;}
 string                { return ClntParser::STRING_KEYWORD_; }
+duid                  { return ClntParser::DUID_KEYWORD_; }
 address-list          { return ClntParser::ADDRESS_LIST_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
@@ -84,6 +91,7 @@ nis-domain            { return ClntParser::NIS_DOMAIN_; }
 nis\+-server          { return ClntParser::NISP_SERVER_; }
 nis\+-domain          { return ClntParser::NISP_DOMAIN_; }
 lifetime              { return ClntParser::LIFETIME_; }
+routing               { return ClntParser::ROUTING_; }
 reject-servers        { return ClntParser::REJECT_SERVERS_;}
 preferred-servers     { return ClntParser::PREFERRED_SERVERS_;}
 prefered-servers      { return ClntParser::PREFERRED_SERVERS_;}
@@ -114,6 +122,7 @@ digest-hmac-sha384    { return ClntParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 aftr                  { return ClntParser::AFTR_; }
+downlink-prefix-ifaces { return ClntParser::DOWNLINK_PREFIX_IFACES_; }
 
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
@@ -139,7 +148,7 @@ request               { return ClntParser::REQUEST_; }
 %{    //IPv6 address - various forms
 %}
 ({hex1to4}:){7}{hex1to4} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -148,7 +157,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){1,6})?{hex1to4}"::"(({hex1to4}:){1,6})?{hex1to4} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -156,8 +165,8 @@ request               { return ClntParser::REQUEST_; }
     }
 }
 
-"::"(({hex1to4}:){1,7})?{hex1to4} { 
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+"::"(({hex1to4}:){1,7})?{hex1to4} {
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -167,7 +176,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){0,7})?{hex1to4}:: {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -176,7 +185,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 "::" {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -185,7 +194,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 (({hex1to4}:){1,5})?{hex1to4}"::"(({hex1to4}:){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -194,7 +203,7 @@ request               { return ClntParser::REQUEST_; }
 }
 
 "::"(({hex1to4}":"){1,6})?{integer}"."{integer}"."{integer}"."{integer} {
-    if(!inet_pton6(yytext,yylval.addrval)) { 
+    if(!inet_pton6(yytext,yylval.addrval)) {
         Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
         { YYABORT; }
     } else {
@@ -249,10 +258,10 @@ request               { return ClntParser::REQUEST_; }
     for (int i=0 ; i<len; i++)
     {
         yylval.duidval.duid[i>>1]<<=4;
-        if (!isxdigit(ptr[i])) { 
+        if (!isxdigit(ptr[i])) {
              Log(Crit) << "DUID parsing failed (" << yytext << ")." << LogEnd;
              { YYABORT; }
-        } 
+        }
         if (isalpha(ptr[i])) {
             yylval.duidval.duid[i>>1]|=toupper(ptr[i])-'A'+10;
         } else {
@@ -279,34 +288,34 @@ request               { return ClntParser::REQUEST_; }
         x = *pos-'0';
       x *= 16;
 
-      if (isalpha(*(pos+1)))	
+      if (isalpha(*(pos+1)))
         x += (toupper(*(pos+1))-'A' + 10);
       else
         x += *(pos+1) - '0';
       yylval.duidval.duid[i] = x;
       i++;
    }
-   
+
    return ClntParser::DUID_;
 }
 
-{hexnumber} { 
+{hexnumber} {
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",(unsigned int*)&(yylval.ival))) {
+    if(!sscanf(yytext,"%10x",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Hex number parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
     return ClntParser::HEXNUMBER_;
 }
 
-{integer} { 
-    if(!sscanf(yytext,"%u",(unsigned int*)&(yylval.ival))) { 
+{integer} {
+    if(!sscanf(yytext,"%10u",(unsigned int*)&(yylval.ival))) {
         Log(Crit) << "Integer parsing [" << yytext << "] failed." << LogEnd;
         { YYABORT; }
     }
     return ClntParser::INTNUMBER_;
 }
 
-.  {return yytext[0];} 
+.  {return yytext[0];}
 
 %%

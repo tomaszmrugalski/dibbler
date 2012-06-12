@@ -7,13 +7,13 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvParsClassOpt.cpp,v 1.10 2008-10-12 20:07:32 thomson Exp $
- *
  */
 
 #include <limits.h>
 #include "SrvParsClassOpt.h"
 #include "DHCPConst.h"
+
+using namespace std;
 
 TSrvParsClassOpt::TSrvParsClassOpt(void)
 {
@@ -119,7 +119,7 @@ unsigned long TSrvParsClassOpt::getValidBeg()
 }
 
 //Rejected clients access routines
-void TSrvParsClassOpt::addRejedClnt(SPtr<TStationRange> addr)
+void TSrvParsClassOpt::addRejedClnt(SPtr<THostRange> addr)
 {
     this->RejedClnt.append(addr);
 }
@@ -127,21 +127,21 @@ void TSrvParsClassOpt::firstRejedClnt()
 {
     this->RejedClnt.first();
 }
-SPtr<TStationRange> TSrvParsClassOpt::getRejedClnt()
+SPtr<THostRange> TSrvParsClassOpt::getRejedClnt()
 {
     return this->RejedClnt.get();
 }
-void TSrvParsClassOpt::setRejedClnt(TContainer<SPtr<TStationRange> > *rejedClnt)
+void TSrvParsClassOpt::setRejedClnt(TContainer<SPtr<THostRange> > *rejedClnt)
 {
     this->RejedClnt.clear();
     rejedClnt->first();
-    SPtr<TStationRange> addr;
+    SPtr<THostRange> addr;
     while(addr=rejedClnt->get())
         this->RejedClnt.append(addr);
 }
 
 //Accepted clients access routines
-void TSrvParsClassOpt::addAcceptClnt(SPtr<TStationRange> addr)
+void TSrvParsClassOpt::addAcceptClnt(SPtr<THostRange> addr)
 {
     this->AcceptClnt.append(addr);
 }
@@ -151,22 +151,22 @@ void TSrvParsClassOpt::firstAcceptClnt()
     this->AcceptClnt.first();
 }
 
-SPtr<TStationRange> TSrvParsClassOpt::getAcceptClnt()
+SPtr<THostRange> TSrvParsClassOpt::getAcceptClnt()
 {
     return this->AcceptClnt.get();
 }
 
-void TSrvParsClassOpt::setAcceptClnt(TContainer<SPtr<TStationRange> > *acceptClnt)
+void TSrvParsClassOpt::setAcceptClnt(TContainer<SPtr<THostRange> > *acceptClnt)
 {
     this->AcceptClnt.clear();
     acceptClnt->first();
-    SPtr<TStationRange> addr;
+    SPtr<THostRange> addr;
     while(addr=acceptClnt->get())
         this->AcceptClnt.append(addr);
 }
 
 //Pool access routines
-void TSrvParsClassOpt::addPool(SPtr<TStationRange> addr)
+void TSrvParsClassOpt::addPool(SPtr<THostRange> addr)
 {
     this->Pool.append(addr);
 }
@@ -174,16 +174,16 @@ void TSrvParsClassOpt::firstPool()
 {
     this->Pool.first();
 }
-SPtr<TStationRange> TSrvParsClassOpt::getPool()
+SPtr<THostRange> TSrvParsClassOpt::getPool()
 {
     return this->Pool.get();
 }
 
-void TSrvParsClassOpt::setPool(TContainer<SPtr<TStationRange> > *pool)
+void TSrvParsClassOpt::setPool(TContainer<SPtr<THostRange> > *pool)
 {
     this->Pool.clear();
     pool->first();
-    SPtr<TStationRange> addr;
+    SPtr<THostRange> addr;
     while(addr=pool->get())
         this->Pool.append(addr);
 }
@@ -216,24 +216,21 @@ SPtr<TSrvOptAddrParams> TSrvParsClassOpt::getAddrParams()
     return AddrParams;
 }
 
-void TSrvParsClassOpt::setAllowClientClass(string s)
-{
-	allowLst.append(SPtr<string> (new string(s)));
+void TSrvParsClassOpt::setAllowClientClass(std::string s) {
+    allowLst.append(SPtr<string> (new string(s)));
 }
 
-void TSrvParsClassOpt::setDenyClientClass(string s)
+void TSrvParsClassOpt::setDenyClientClass(std::string s)
 {
-	denyLst.append(SPtr<string> (new string(s)));
+    denyLst.append(SPtr<string> (new string(s)));
 }
 
-List(string) TSrvParsClassOpt::getAllowClientClassString()
-{
-	return allowLst;
+List(std::string) TSrvParsClassOpt::getAllowClientClassString() {
+    return allowLst;
 }
 
-List(string) TSrvParsClassOpt::getDenyClientClassString()
-{
-	return denyLst;
+List(std::string) TSrvParsClassOpt::getDenyClientClassString() {
+    return denyLst;
 }
 
 

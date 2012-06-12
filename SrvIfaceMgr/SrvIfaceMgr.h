@@ -25,32 +25,42 @@ class TSrvIfaceMgr :public TIfaceMgr {
    static TSrvIfaceMgr &instance();
 
    ~TSrvIfaceMgr();
-    friend ostream & operator <<(ostream & strum, TSrvIfaceMgr &x);
+   friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceMgr &x);
 
-    SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface, 
-				SPtr<TIPv6Addr> peer, 
-				char * buf, int bufsize);
-    
-    SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface, 
-				      SPtr<TIPv6Addr> peer, 
-				      char * buf, int bufsize);
-    
-    bool setupRelay(string name, int ifindex, int underIfindex, SPtr<TSrvOptInterfaceID> interfaceID);
-    void dump();
-    
-    // ---sends messages---
-    bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
-    
-    // ---receives messages---
-    SPtr<TSrvMsg> select(unsigned long timeout);
+   SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
+                           SPtr<TIPv6Addr> peer,
+                           char * buf, int bufsize);
 
-    void redetectIfaces();
+   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
+                                 SPtr<TIPv6Addr> peer,
+                                 char * buf, int bufsize);
 
-  private:
-    TSrvIfaceMgr(string xmlFile);
-    static TSrvIfaceMgr * Instance;
+   bool setupRelay(std::string name, int ifindex, int underIfindex,
+                   SPtr<TSrvOptInterfaceID> interfaceID);
+   void dump();
 
-    string XmlFile;
+   // ---sends messages---
+   bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+
+   // ---receives messages---
+   SPtr<TSrvMsg> select(unsigned long timeout);
+
+   bool addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
+                const std::string& domainname);
+
+   bool delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
+                const std::string& domainname);
+
+   virtual void notifyScripts(const std::string& scriptName,
+                              SPtr<TMsg> question, SPtr<TMsg> answer);
+
+   void redetectIfaces();
+
+protected:
+   TSrvIfaceMgr(const std::string& xmlFile);
+   static TSrvIfaceMgr * Instance;
+
+   std::string XmlFile;
 };
 
-#endif 
+#endif

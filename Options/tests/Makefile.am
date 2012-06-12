@@ -2,7 +2,7 @@ AM_CPPFLAGS  = -I$(top_srcdir)/Options
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 
 # This is to workaround long long in gtest.h
-AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long
+AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
 info:
         @echo "GTEST_LDADD=$(GTEST_LDADD)"
@@ -17,6 +17,7 @@ TESTS += Opt_tests
 Opt_tests_SOURCES = run_tests.cpp
 Opt_tests_SOURCES += OptAddr_unittest.cc
 Opt_tests_SOURCES += OptIAAddress_unittest.cc
+Opt_tests_SOURCES += OptRtPrefix_unittest.cc
 
 Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

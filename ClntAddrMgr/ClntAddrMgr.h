@@ -25,11 +25,12 @@
 class TClntAddrMgr : public TAddrMgr
 {
  private:
-    TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, string xmlFile, bool loadDB);
+    TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, const std::string& xmlFile, bool loadDB);
 
   public:
     static TClntAddrMgr& instance();
-    static void instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, string xmlFile, bool loadDB);
+    static void instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, 
+                               const std::string& xmlFile, bool loadDB);
 
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -76,9 +77,10 @@ class TClntAddrMgr : public TAddrMgr
     ~TClntAddrMgr();
 
     void doDuties();
+    void processLoadedDB();
     
  protected:
-    void print(ostream &x);
+    void print(std::ostream &x);
  private:
     SPtr<TAddrClient> Client;
     static TClntAddrMgr * Instance;

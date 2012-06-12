@@ -24,20 +24,20 @@
 class TOptStatusCode : public TOpt
 {
   public:
-    TOptStatusCode( char * &buf,  int &len, TMsg* parent);
-    TOptStatusCode(int status,string Message, TMsg* parent);
+    TOptStatusCode(const char * buf, size_t len, TMsg* parent);
+    TOptStatusCode(int status, const std::string& Message, TMsg* parent);
     
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
     
     int getCode();  
-    string getText();
+    std::string getText();
     
     bool doDuties();    
  private:
-    string Message;
-    int StatusCode;
-    bool Valid;
+    std::string Message_;
+    int StatusCode_;
+    bool Valid_;
 };
 
 #endif 

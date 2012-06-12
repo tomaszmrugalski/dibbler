@@ -6,22 +6,24 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: DHCPServer.cpp,v 1.30 2008-08-17 22:41:43 thomson Exp $
  */
 
 #include "DHCPServer.h"
 #include "AddrClient.h"
 #include "Logger.h"
+#include "SrvIfaceMgr.h"
+#include "SrvCfgMgr.h"
+#include "SrvTransMgr.h"
 
-
+using namespace std;
 
 volatile int serviceShutdown;
 
-TDHCPServer::TDHCPServer(string config)
+TDHCPServer::TDHCPServer(const std::string& config)
 {
     serviceShutdown = 0;
     srand(now());
-    this->IsDone = false;
+    IsDone = false;
 
     TSrvIfaceMgr::instanceCreate(SRVIFACEMGR_FILE);
     if ( SrvIfaceMgr().isDone() ) {

@@ -17,6 +17,8 @@
 #include "Logger.h"
 #include "Portable.h"
 
+using namespace std;
+
 #define YY_USE_CLASS
 %}
 
@@ -29,7 +31,7 @@
 List(TRelParsGlobalOpt) ParserOptStack;    /* list of parsed interfaces/IAs/addrs */ \
 List(TRelCfgIface) RelCfgIfaceLst;         /* list of RelCfg interfaces */           \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
-List(string) PresentStringLst;             /* string list */                         \
+List(std::string) PresentStringLst;             /* string list */                    \
 SPtr<TRelOptEcho> EchoOpt;                 /* echo request option */                 \
 /*method check whether interface with id=ifaceNr has been already declared */        \
 bool CheckIsIface(int ifaceNr);                                                      \
@@ -43,7 +45,9 @@ virtual ~RelParser();
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
 %define CONSTRUCTOR_CODE                                                          \
     ParserOptStack.append(new TRelParsGlobalOpt());                               \
-    this->lex = lex;
+    this->lex = lex;                                                              \
+    yynerrs = 0;                                                                  \
+    yychar = 0;
 
 %union    
 {

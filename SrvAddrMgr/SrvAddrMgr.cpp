@@ -10,7 +10,7 @@
  *
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "SrvAddrMgr.h"
 #include "AddrClient.h"
 #include "AddrIA.h"
@@ -18,10 +18,13 @@
 #include "Logger.h"
 #include "SrvCfgAddrClass.h"
 #include "Portable.h"
+#include "SrvCfgMgr.h"
+
+using namespace std;
 
 TSrvAddrMgr * TSrvAddrMgr::Instance = 0;
 
-TSrvAddrMgr::TSrvAddrMgr(string xmlfile, bool loadDB)
+TSrvAddrMgr::TSrvAddrMgr(const std::string& xmlfile, bool loadDB)
     :TAddrMgr(xmlfile, loadDB) {
 
     this->CacheMaxSize = 999999999;
@@ -256,14 +259,15 @@ bool TSrvAddrMgr::addTAAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
 /**
  * Frees address (also deletes IA and/or client, if this was last address)
  *
- * @param clntDuid
- * @param iaid
- * @param clntAddr
+ * @param clntDuid DUID of the client
+ * @param iaid IAID of IA that contains address to be deleted
+ * @param clntAddr address to be deleted
+ * @param quiet should method log deleted address?
  *
- * @return
+ * @return true if removal was successful
  */
 bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid,
-                              SPtr<TIPv6Addr> clntAddr) {
+                            SPtr<TIPv6Addr> clntAddr, bool quiet) {
     // find this client
     SPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -308,16 +312,19 @@ bool TSrvAddrMgr::delTAAddr(SPtr<TDUID> clntDuid, unsigned long iaid,
     }
 
     ta->delAddr(clntAddr);
-    Log(Debug) << "Deleted temp. address " << *clntAddr << " from addrDB." << LogEnd;
+    if (!quiet)
+        Log(Debug) << "Deleted temp. address " << *clntAddr << " from addrDB." << LogEnd;
 
     if (!ta->countAddr()) {
-        Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
+        if (!quiet)
+            Log(Debug) << "Deleted TA (IAID=" << iaid << ") from addrDB." << LogEnd;
         ptrClient->delTA(iaid);
     }
 
     if (!ptrClient->countIA() && !ptrClient->countTA() && !ptrClient->countPD()) {
-        Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
-                   << ") from addrDB." << LogEnd;
+        if (!quiet)
+            Log(Debug) << "Deleted client (DUID=" << clntDuid->getPlain()
+                       << ") from addrDB." << LogEnd;
         this->delClient(clntDuid);
     }
 
@@ -332,11 +339,12 @@ bool TSrvAddrMgr::delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6
     return result;
 }
 
-/*
- * how many addresses does this client have?
- */
-unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
-{
+/// @brief returns how many leases does this client have?
+///
+/// @param duid client's DUID
+///
+/// @return number of leases (addresses and/or prefixes)
+unsigned long TSrvAddrMgr::getLeaseCount(SPtr<TDUID> duid) {
     SPtr <TAddrClient> ptrClient;
     ClntsLst.first();
     while ( ptrClient = ClntsLst.get() ) {
@@ -348,14 +356,27 @@ unsigned long TSrvAddrMgr::getAddrCount(SPtr<TDUID> duid)
         return 0;
     }
 
-    unsigned long count=0;
+    unsigned long count = 0;
 
-    // look at each of client's IAs
+    // count each of client's IAs
     SPtr <TAddrIA> ptrIA;
     ptrClient->firstIA();
     while ( ptrIA = ptrClient->getIA() ) {
         count += ptrIA->countAddr();
     }
+
+    // count each of client's TA
+    ptrClient->firstTA();
+    while (ptrIA = ptrClient->getTA() ) {
+        count += ptrIA->countAddr();
+    }
+
+    // count each of client's PD
+    ptrClient->firstPD();
+    while (ptrIA = ptrClient->getPD() ) {
+        count += ptrIA->countPrefix();
+    }
+
     return count;
 }
 
@@ -405,12 +426,8 @@ bool TSrvAddrMgr::taAddrIsFree(SPtr<TIPv6Addr> addr)
     return true;
 }
 
-void TSrvAddrMgr::getAddrsCount(
-     SPtr<TContainer<SPtr<TSrvCfgAddrClass> > > classes,
-     long    *clntCnt,
-     long    *addrCnt,
-     SPtr<TDUID> duid,
-     int iface)
+void TSrvAddrMgr::getAddrsCount(SPtr< List(TSrvCfgAddrClass) > classes,
+     long *clntCnt, long *addrCnt, SPtr<TDUID> duid, int iface)
 {
     memset(clntCnt,0,sizeof(long)*classes->count());
     memset(addrCnt,0,sizeof(long)*classes->count());
@@ -454,7 +471,7 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 {
     SPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);
     if (!ptrAddrClient) {
-        Log(Warning) << "Unable to find client in the addrDB.";
+        Log(Warning) << "Unable to find client in the addrDB." << LogEnd;
         return 0;
     }
     ptrAddrClient->firstIA();
@@ -477,16 +494,20 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
 /* *** ADDRESS CACHE ************************************************************** */
 /* ******************************************************************************** */
 
-/**
- * remove outdated addresses
- *
- */
-void TSrvAddrMgr::doDuties()
+/// @brief  remove outdated addresses
+///
+/// @param addrLst
+/// @param tempAddrLst
+/// @param prefixLst
+///
+void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
+                           std::vector<TExpiredInfo>& tempAddrLst,
+                           std::vector<TExpiredInfo>& prefixLst)
 {
     SPtr<TAddrClient> ptrClient;
     SPtr<TAddrIA>     ptrIA;
     SPtr<TAddrAddr>   ptrAddr;
-    bool anyDeleted=false;
+
     // for each client...
     this->firstClient();
     while (ptrClient = this->getClient() )
@@ -495,6 +516,7 @@ void TSrvAddrMgr::doDuties()
         if (ptrClient->getValidTimeout())
             continue;
 
+        // check for expired addresses
         ptrClient->firstIA();
         while ( ptrIA = ptrClient->getIA() )
         {
@@ -508,22 +530,94 @@ void TSrvAddrMgr::doDuties()
                 if (ptrAddr->getValidTimeout())
                     continue;
 
-                // delete this address
-                Log(Notice) << "Addr " << *(ptrAddr->get()) << " in IA (IAID="
-                            << ptrIA->getIAID() << ") in client (DUID=\"";
-                if (ptrClient->getDUID())
-                {
-                    Log(Cont) << ptrClient->getDUID()->getPlain();
-                }
-                Log(Cont) << "\") has expired." << dec << LogEnd;
-                delClntAddr(ptrClient->getDUID(), ptrIA->getIAID(),
-                            ptrAddr->get(), false);
-                anyDeleted=true;
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = ptrIA;
+                expire.addr = ptrAddr->get();
+                addrLst.push_back(expire);
+                // delClntAddr(ptrClient->getDUID(), ptrIA->getIAID(),  ptrAddr->get(), false);
             }
         }
+
+        ptrClient->firstTA();
+        while (ptrIA = ptrClient->getTA()) {
+            if (ptrIA->getValidTimeout())
+                continue;
+            ptrIA->firstAddr();
+            while ( ptrAddr = ptrIA->getAddr() )
+            {
+                if (ptrAddr->getValidTimeout())
+                    continue;
+
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = ptrIA;
+                expire.addr = ptrAddr->get();
+                tempAddrLst.push_back(expire);
+                // delTAAddr(ptrClient->getDUID(), ptrIA->getIAID(), ptrAddr->get());
+            }
+        }
+
+        SPtr<TAddrIA> pd;
+        SPtr<TAddrPrefix> prefix;
+        ptrClient->firstPD();
+        while (pd = ptrClient->getPD()) {
+            if (pd->getValidTimeout())
+                continue;
+
+            pd->firstPrefix();
+            while (prefix = pd->getPrefix()) {
+                if (prefix->getValidTimeout())
+                    continue;
+
+                TExpiredInfo expire;
+                expire.client = ptrClient;
+                expire.ia = pd;
+                expire.addr = prefix->get();
+                expire.prefixLen = prefix->getLength();
+                prefixLst.push_back(expire);
+                // delPrefix(ptrClient->getDUID(), pd->getIAID(), prefix->get(), false);
+            } // while (prefix)
+        } // while (pd)
+    } // while (client)
+}
+
+/// @brief Checks if address is still supported in current configuration (used in loadDB)
+///
+/// @param addr checked address
+///
+/// @return true, if supported
+bool TSrvAddrMgr::verifyAddr(SPtr<TIPv6Addr> addr) {
+    if (SrvCfgMgr().addrReserved(addr)) {
+        return true;
     }
-    if (anyDeleted)
-        this->dump();
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByAddr(iface->getID(), addr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @brief Checks if prefix is still supported in current configuration (used in loadDB)
+///
+/// @param prefix checked prefix
+///
+/// @return true, if prefix is supported
+bool TSrvAddrMgr::verifyPrefix(SPtr<TIPv6Addr> prefix) {
+    if (SrvCfgMgr().prefixReserved(prefix)) {
+        return true;
+    }
+
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
+        if (SrvCfgMgr().getClassByPrefix(iface->getID(), prefix)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -661,7 +755,7 @@ void TSrvAddrMgr::checkCacheSize() {
     }
 }
 
-void TSrvAddrMgr::print(ostream & out) {
+void TSrvAddrMgr::print(std::ostream & out) {
     out << "  <cache size=\"" << this->Cache.count() << "\"/>" << endl;
 }
 
@@ -736,24 +830,26 @@ void TSrvAddrMgr::cacheRead() {
         parsed = false;
         getline(f,s);
         string::size_type pos=0;
-        if ( (pos = s.find("<cache")!=string::npos) ) {
+        if ( ((pos = s.find("<cache")) != string::npos) ) {
             // parse beginning
 
             started = true;
-            if ( (pos = s.find("size=\""))!=string::npos ) {
+            if ( (pos = s.find("size=\"")) != string::npos ) {
                 s = s.substr(pos+6);
                 entries = atoi(s.c_str());
-                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file: parsing started, expecting " << entries << " entries." << LogEnd;
+                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file: parsing started, expecting "
+                           << entries << " entries." << LogEnd;
             } else {
-                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file:unable to find entries count. size=\"...\" missing in line "
-                           << lineno << "." << LogEnd;
+                Log(Debug) << "Cache:" << SRVCACHE_FILE << " file:unable to find entries count. "
+                           << "size=\"...\" missing in line " << lineno << "." << LogEnd;
                 return;
             }
         }
 
         if (s.find("<entry")!=string::npos) {
             if (!started) {
-                Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing." << LogEnd;
+                Log(Error) << "Cache:" << SRVCACHE_FILE << " file: opening tag <cache> missing."
+                           << LogEnd;
                 return;
             }
 
@@ -805,9 +901,15 @@ void TSrvAddrMgr::cacheRead() {
         Log(Debug) << "Cache: " << SRVCACHE_FILE << " file: " << entries << " entries expected, but "
                    << this->Cache.count() << " found." << LogEnd;
     }
+    if (!parsed) {
+        Log(Info) << "Did not find any useful information in " << SRVCACHE_FILE << LogEnd;
+    }
+    if (!ended) {
+        Log(Warning) << SRVCACHE_FILE << " seems truncated." << LogEnd;
+    }
 }
 
-void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
+void TSrvAddrMgr::instanceCreate(const std::string& xmlFile, bool loadDB)
 {
     if (Instance) {
         Log(Crit) << "SrvAddrMgr already exists! Application error" << LogEnd;
@@ -818,7 +920,9 @@ void TSrvAddrMgr::instanceCreate( const std::string xmlFile, bool loadDB )
 
 TSrvAddrMgr & TSrvAddrMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "SrvAddrMgr not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "SrvAddrMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }

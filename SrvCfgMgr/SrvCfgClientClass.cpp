@@ -6,9 +6,9 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: SrvCfgClientClass.cpp,v 1.1 2008-10-12 20:54:15 thomson Exp $
- *
  */
+
+using namespace std;
 
 #include "SrvCfgClientClass.h"
 #include "SrvMsg.h"
@@ -18,36 +18,29 @@ TSrvCfgClientClass::TSrvCfgClientClass()
 {
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(string name)
+TSrvCfgClientClass::TSrvCfgClientClass(std::string name)
     :classname(name)
 {
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(string name , SPtr<Node>& cond)
-{
-    classname = name;
-    condition = cond;
+TSrvCfgClientClass::TSrvCfgClientClass(std::string name , SPtr<Node>& cond)
+    :classname(name), condition(cond) {
 }
 
-TSrvCfgClientClass::~TSrvCfgClientClass() 
-{
+TSrvCfgClientClass::~TSrvCfgClientClass() {
     
 }
 
-
-string TSrvCfgClientClass::getClassName()
-{
+std::string TSrvCfgClientClass::getClassName() {
     return classname;
 }
 
-SPtr<Node> TSrvCfgClientClass::getCondition()
-{
+SPtr<Node> TSrvCfgClientClass::getCondition() {
     return condition;
 }
 
-bool TSrvCfgClientClass::isStatisfy(SPtr<TSrvMsg> msg)
-{
+bool TSrvCfgClientClass::isStatisfy(SPtr<TSrvMsg> msg) {
     if (condition->exec(msg) == "true") 
-        return true ;
+        return true;
     return false;
 }

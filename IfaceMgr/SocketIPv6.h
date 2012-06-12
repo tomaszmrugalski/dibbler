@@ -23,13 +23,12 @@ class TIfaceSocket;
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "SmartPtr.h"
-using namespace std;
 
 /*
  * repesents network socket
  */
 class TIfaceSocket {
-    friend ostream& operator<<(ostream& strum, TIfaceSocket &x);
+    friend std::ostream& operator<<(std::ostream& strum, TIfaceSocket &x);
  public:
     TIfaceSocket(char * iface,int ifaceid, int port, 
 		     SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
@@ -72,7 +71,7 @@ class TIfaceSocket {
     enum EState Status;
 
     // error 
-    string Error;
+    std::string Error;
 
     // interface name, on which this socket has been created
     char Iface[MAX_IFNAME_LENGTH];

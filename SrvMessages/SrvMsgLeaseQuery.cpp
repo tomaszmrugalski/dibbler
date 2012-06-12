@@ -14,7 +14,6 @@
 #include "DHCPConst.h"
 #include "SrvIfaceMgr.h"
 #include "SrvMsgAdvertise.h"
-#include "SrvOptServerIdentifier.h"
 #include "SrvOptIA_NA.h"
 #include "AddrClient.h"
 #include "Logger.h"
@@ -42,6 +41,6 @@ TSrvMsgLeaseQuery::~TSrvMsgLeaseQuery() {
 
 }
 
-string TSrvMsgLeaseQuery::getName() {
+std::string TSrvMsgLeaseQuery::getName() const {
     return "LEASE-QUERY";
 }

@@ -6,9 +6,16 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "SrvParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
+
 %}
 
 %x COMMENT
@@ -80,7 +87,9 @@ client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 client              { return SrvParser::CLIENT_; }
 duid                { return SrvParser::DUID_KEYWORD_; }
 remote-id           { return SrvParser::REMOTE_ID_; }
+link-local					{ return SrvParser::LINK_LOCAL_; }
 address             { return SrvParser::ADDRESS_;}
+prefix              { return SrvParser::PREFIX_; }
 guess-mode          { return SrvParser::GUESS_MODE_; }
 
 option              { return SrvParser::OPTION_; }
@@ -90,7 +99,10 @@ ntp-server          { return SrvParser::NTP_SERVER_;}
 time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
+next-hop            { return SrvParser::NEXT_HOP_; }
+route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
+infinite            { return SrvParser::INFINITE_; }
 accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
 ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }

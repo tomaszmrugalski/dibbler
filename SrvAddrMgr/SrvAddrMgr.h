@@ -12,6 +12,7 @@
 #ifndef SRVADDRMGR_H
 #define SRVADDRMGR_H
 
+#include <vector>
 #include "AddrMgr.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgPD.h"
@@ -21,7 +22,7 @@
 class TSrvAddrMgr : public TAddrMgr
 {
   public:
-    static void instanceCreate(const std::string xmlFile, bool loadDB);
+    static void instanceCreate(const std::string& xmlFile, bool loadDB);
     static TSrvAddrMgr & instance();
 
     class TSrvCacheEntry
@@ -30,6 +31,14 @@ class TSrvAddrMgr : public TAddrMgr
         TAddrIA::TIAType type; // address or prefix
         SPtr<TIPv6Addr> Addr;  // cached address, previously assigned to a client
         SPtr<TDUID>     Duid;  // client's duid
+    };
+
+    struct TExpiredInfo
+    {
+        SPtr<TAddrClient> client;
+        SPtr<TAddrIA> ia;
+        SPtr<TIPv6Addr> addr; // address or prefix
+	int prefixLen; // just for prefixes
     };
 
     ~TSrvAddrMgr();
@@ -41,20 +50,24 @@ class TSrvAddrMgr : public TAddrMgr
                      bool quiet);
     bool delClntAddr(SPtr<TDUID> duid,unsigned long IAID, SPtr<TIPv6Addr> addr,
                      bool quiet);
+    virtual bool verifyAddr(SPtr<TIPv6Addr> addr);
 
     // TA address management
     bool addTAAddr(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
                    int iface, unsigned long iaid, SPtr<TIPv6Addr> addr,
                    unsigned long pref, unsigned long valid);
-    bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr);
+    bool delTAAddr(SPtr<TDUID> duid,unsigned long iaid, SPtr<TIPv6Addr> addr, bool quiet);
 
     // prefix management
     virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+    virtual bool verifyPrefix(SPtr<TIPv6Addr> addr);
 
     // how many addresses does this client have?
-    unsigned long getAddrCount(SPtr<TDUID> duid);
+    unsigned long getLeaseCount(SPtr<TDUID> duid);
 
-    void doDuties();
+    void doDuties(std::vector<TExpiredInfo>& addrLst,
+                  std::vector<TExpiredInfo>& tempAddrLst,
+                  std::vector<TExpiredInfo>& prefixLst);
 
     void getAddrsCount(SPtr<List(TSrvCfgAddrClass)> classes, long *clntCnt,
                        long *addrCnt, SPtr<TDUID> duid, int iface);
@@ -74,10 +87,9 @@ class TSrvAddrMgr : public TAddrMgr
     void dump();
 
  protected:
-    void print(ostream & out);
+    void print(std::ostream & out);
 
- private:
-    TSrvAddrMgr(string xmlfile, bool loadDB);
+    TSrvAddrMgr(const std::string& xmlfile, bool loadDB);
     static TSrvAddrMgr * Instance;
 
     void cacheRead();

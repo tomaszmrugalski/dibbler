@@ -42,19 +42,20 @@ class TMsg
 
     virtual int storeSelf(char * buffer);
 
-    virtual string getName() = 0;
+    virtual std::string getName() const = 0;
 
     // returns requested option (or NULL, there is no such option)
     SPtr<TOpt> getOption(int type);
     void firstOption();
     int countOption();
+    void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
 
     virtual SPtr<TOpt> getOption();
     
     long getType();
     long getTransID();
     TOptList & getOptLst();
-    SPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr(); /// @todo: rename to getPeerAddr()
     int getIface();
     virtual ~TMsg();
     bool isDone();
@@ -80,7 +81,7 @@ class TMsg
     SPtr<KeyList> AuthKeys;
 
     // notify scripts stuff
-    void* getNotifyScriptParams() { return NotifyScripts; }
+    void* getNotifyScriptParams();
 
   protected:
     int MsgType;

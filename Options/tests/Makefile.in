@@ -51,10 +51,11 @@ CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
 am__Opt_tests_SOURCES_DIST = run_tests.cpp OptAddr_unittest.cc \
-	OptIAAddress_unittest.cc
+	OptIAAddress_unittest.cc OptRtPrefix_unittest.cc
 @HAVE_GTEST_TRUE@am_Opt_tests_OBJECTS = run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptAddr_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptRtPrefix_unittest.$(OBJEXT)
 Opt_tests_OBJECTS = $(am_Opt_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Opt_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -129,6 +130,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -148,6 +150,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -222,6 +225,7 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -230,9 +234,10 @@ top_srcdir = @top_srcdir@
 
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
-	$(GTEST_INCLUDES) -Wno-long-long
+	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@Opt_tests_SOURCES = run_tests.cpp OptAddr_unittest.cc \
-@HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc
+@HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc \
+@HAVE_GTEST_TRUE@	OptRtPrefix_unittest.cc
 @HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Opt_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
@@ -241,7 +246,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cc .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -266,9 +271,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -292,6 +297,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptAddr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptIAAddress_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptRtPrefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

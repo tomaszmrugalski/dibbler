@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptOptionRequest.cpp,v 1.8 2007-08-26 10:26:19 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -16,31 +14,31 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 
-TOptOptionRequest::TOptOptionRequest(TMsg* parent)
-	:TOpt(OPTION_ORO, parent)
+TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg* parent)
+    :TOpt(code, parent), Valid_(true)
 {
-    this->Options=NULL;
-    this->OptCnt=0;
+    Options = NULL;
+    OptCnt = 0;
 }
 
 int  TOptOptionRequest::getReqOpt(int optNr) {
     if ( (!OptCnt) || (optNr>OptCnt) )
       return 0;
-    return 
+    return
       this->Options[optNr];
 }
 
- int TOptOptionRequest::getSize()
+size_t TOptOptionRequest::getSize()
 {
-	if (!OptCnt) 
+    if (!OptCnt)
         return 0;
-	int mySize = 4+(OptCnt<<1);
-	return mySize+getSubOptSize();
+    int mySize = 4+(OptCnt<<1);
+    return mySize+getSubOptSize();
 }
 
 char * TOptOptionRequest::storeSelf( char* buf)
 {
-    if (!OptCnt) 
+    if (!OptCnt)
         return buf;
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);
@@ -53,25 +51,23 @@ char * TOptOptionRequest::storeSelf( char* buf)
     return buf;
 }
 
-TOptOptionRequest::TOptOptionRequest( char * &buf,  int &bufSize, TMsg* parent)
-	:TOpt(OPTION_ORO, parent)
+TOptOptionRequest::TOptOptionRequest(uint16_t code, const char * buf, size_t bufSize, TMsg* parent)
+    :TOpt(code, parent), Valid_(false)
 {
     if (bufSize%2) {
         Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
-        Valid   = false;
         Options = NULL;
         OptCnt  = 0;
         return;
     }
     int totalOpts = bufSize/2;
     Options = new unsigned short[totalOpts]; // allocate memory for all options
-    
-    int i=0;
-    for (i=0; i<totalOpts; i++) {
-        Options[i] = readUint16(buf+i*2);
+
+    for (int i = 0; i < totalOpts; i++) {
+        Options[i] = readUint16(buf + i*2);
     }
     OptCnt = totalOpts;
-    Valid = true;
+    Valid_ = true;
 }
 
 void TOptOptionRequest::addOption(unsigned short optNr)
@@ -80,7 +76,7 @@ void TOptOptionRequest::addOption(unsigned short optNr)
     if (isOption(optNr))
         return; //if it is no need to include once more
     //store for a while old options
-    unsigned short *oldOptions=Options;
+    unsigned short *oldOptions = Options;
     //assign memort for additional option
     Options = new unsigned short[++OptCnt];
     //If there were options before
@@ -100,7 +96,7 @@ void TOptOptionRequest::delOption(unsigned short optNr)
     //find option if any
     if (!OptCnt) return;
     int optIdx=0;
-    while((optIdx<OptCnt)&&(Options[optIdx]!=optNr)) 
+    while((optIdx<OptCnt)&&(Options[optIdx]!=optNr))
         optIdx++;
     //if there is no such a option
     if (optIdx>=OptCnt) return;
@@ -127,7 +123,7 @@ void TOptOptionRequest::clearOptions() {
 }
 
 bool TOptOptionRequest::isValid() {
-    return this->Valid;
+    return Valid_;
 }
 
 TOptOptionRequest::~TOptOptionRequest()

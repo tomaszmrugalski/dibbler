@@ -18,8 +18,7 @@ class TOptUserClass : public TOpt
 {
  public:
     TOptUserClass( char * &buf,  int &n, TMsg* parent);
-    
-    int getSize();
+    size_t getSize();
     bool isValid();
     char * storeSelf( char* buf);
 };

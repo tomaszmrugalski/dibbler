@@ -25,8 +25,8 @@ public:
 private:
     void PrintRsp(char * buf, int bufLen);
     bool ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen);
-    string BinToString(char * buf, int bufLen);
-    List(string) getCoordinates(char * buf, int bufLen);
+    std::string BinToString(char * buf, int bufLen);
+    List(std::string) getCoordinates(char * buf, int bufLen);
     TIfaceMgr * IfaceMgr;
     SPtr<TIfaceIface> Iface;
     ReqCfgMgr * CfgMgr;

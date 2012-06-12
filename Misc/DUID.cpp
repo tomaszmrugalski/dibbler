@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: DUID.cpp,v 1.13 2008-08-29 00:07:30 thomson Exp $
  */
 
 #include <iostream>
@@ -15,6 +14,8 @@
 
 #include "DUID.h"
 #include "Logger.h"
+
+using namespace std;
 
 TDUID::TDUID()
 {

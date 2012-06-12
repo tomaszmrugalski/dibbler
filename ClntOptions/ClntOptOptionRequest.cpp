@@ -13,13 +13,13 @@
 #include "ClntOptOptionRequest.h"
 
 TClntOptOptionRequest::TClntOptOptionRequest(SPtr<TClntCfgIface> ptrIface, TMsg* parent)
-	:TOptOptionRequest(parent) {
+    :TOptOptionRequest(OPTION_ORO, parent) {
     // requested options are no longer added here
     // see void TClntMsg::appendRequestedOptions() for details
 }
 
 TClntOptOptionRequest::TClntOptOptionRequest( char * buf,  int n, TMsg* parent)
-	:TOptOptionRequest(buf,n, parent) {
+    :TOptOptionRequest(OPTION_ORO, buf, n, parent) {
 }
 
 bool TClntOptOptionRequest::doDuties() {

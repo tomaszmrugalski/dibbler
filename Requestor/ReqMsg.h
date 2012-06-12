@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ReqMsg.h,v 1.3 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #ifndef REQMSG_H
@@ -24,7 +22,7 @@ public:
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     void addOption(SPtr<TOpt> opt);
 
-    string getName();
+    std::string getName() const;
 };
 
 #endif

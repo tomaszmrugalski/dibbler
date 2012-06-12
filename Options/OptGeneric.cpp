@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptGeneric.cpp,v 1.4 2008-11-11 22:41:48 thomson Exp $
- *
  */
 
 #include <stdlib.h>
@@ -16,6 +14,8 @@
 #include <sstream>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
+
+using namespace std;
 
 TOptGeneric::TOptGeneric(int optType, const char* data, unsigned short dataLen, TMsg* parent)
     :TOpt(optType, parent) {
@@ -36,13 +36,12 @@ TOptGeneric::~TOptGeneric() {
     }
 }
 
-int TOptGeneric::getSize()
+size_t TOptGeneric::getSize()
 {
-    return this->DataLen+4;
+    return DataLen + 4;
 }
 
- char * TOptGeneric::storeSelf( char* buf)
-{
+char * TOptGeneric::storeSelf(char* buf) {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, this->DataLen);
     memmove(buf, this->Data, this->DataLen);
@@ -73,4 +72,9 @@ std::string TOptGeneric::getPlain()
 bool TOptGeneric::isValid()
 {
     return true;
+}
+
+bool TOptGeneric::operator == (const TOptGeneric &other) {
+    /// @todo: Implement comparison for real
+    return false;
 }

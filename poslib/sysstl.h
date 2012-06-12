@@ -48,16 +48,14 @@
  * It does work on my debian box however, so I'll do my leak tests on that
  * one.
  */
-#define stl_string basic_string<char, std::string_char_traits<char>, malloc_alloc >
-#define stl_slist(type) slist<type, malloc_alloc >
-#define stl_list(type) list<type, malloc_alloc >
+#define stl_string std::basic_string<char, std::string_char_traits<char>, malloc_alloc >
+#define stl_slist(type) slist <type, malloc_alloc >
+#define stl_list(type) std::list<type, malloc_alloc >
 #else
-#define stl_slist(type) slist<type>
-#define stl_list(type) list<type>
-#define stl_string string
+#define stl_slist(type) slist <type>
+#define stl_list(type) std::list<type>
+#define stl_string std::string
 #endif
-
-using namespace std;
 
 #ifdef HAVE_EXT_SLIST
 using namespace __gnu_cxx;

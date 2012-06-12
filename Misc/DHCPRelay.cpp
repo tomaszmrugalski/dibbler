@@ -16,9 +16,11 @@
 #include "RelTransMgr.h"
 #include "RelMsg.h"
 
+using namespace std;
+
 volatile int serviceShutdown;
 
-TDHCPRelay::TDHCPRelay(string config)
+TDHCPRelay::TDHCPRelay(const std::string& config)
 {
     serviceShutdown = 0;
     srand(now());

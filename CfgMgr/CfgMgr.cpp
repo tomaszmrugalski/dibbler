@@ -1,12 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: CfgMgr.cpp,v 1.20 2009-07-22 20:19:08 thomson Exp $
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #include <sys/types.h>
@@ -17,15 +16,20 @@
 #include "CfgMgr.h"
 #include "Logger.h"
 #include "Portable.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
+using namespace std;
+
 TCfgMgr::TCfgMgr()
- :IsDone(false), 
-  DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */ 
+ :LogLevel(DEFAULT_LOGLEVEL),
+  IsDone(false),
+  DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */
+  DUIDEnterpriseNumber(-1),
   DdnsProto(DNSUPDATE_TCP),
-  _DDNSTimeout(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
+  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
 {
-	
+
 }
 
 TCfgMgr::~TCfgMgr() {
@@ -37,11 +41,10 @@ void TCfgMgr::setDDNSProtocol(DNSUpdateProtocol proto) {
 
 // method compares both files and if differs
 // returns true if files differs and false in the other case
-bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
+bool TCfgMgr::compareConfigs(const std::string& cfgFile, const std::string& oldCfgFile)
 {
-	std::ifstream oldF,newF;
+    std::ifstream oldF,newF;
     bool newConf=false;
-    int  len;
     // It's common for client and server so why not to create CfgMgr
     //open new and saved config files
     newF.open(cfgFile.c_str(),   ios::in|ios::binary);
@@ -54,15 +57,15 @@ bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
             //yes - comparision of old file and new file
             //first the length of both files
             newF.seekg(0,ios::end);
-            oldF.seekg(0,ios::end);			
-            if((len=newF.tellg())!=oldF.tellg())
-                newConf=true; //there is a diffrence at least in length
+            oldF.seekg(0,ios::end);
+            if((newF.tellg()) != oldF.tellg())
+                newConf = true; //there is a diffrence at least in length
             else
             {
                 //next contents
                 newF.seekg(0,ios::beg);
                 oldF.seekg(0,ios::beg);
-                while((!newF.eof())&&(!oldF.eof())&&(!newConf)) 
+                while((!newF.eof())&&(!oldF.eof())&&(!newConf))
                     newConf=(newF.get()!=oldF.get());
             }
             newF.close();
@@ -78,23 +81,23 @@ bool TCfgMgr::compareConfigs(const string cfgFile, const string oldCfgFile)
     }
     else
     {
-	Log(Error) << "Can't open file " << cfgFile 
+        Log(Error) << "Can't open file " << cfgFile
             << ". Config comparision aborted." << LogEnd;
-        
+
     }
     return newConf;
 }
 
 // replaces copy cfgFile to oldCfgFile
-void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
+void TCfgMgr::copyFile(const std::string& cfgFile, const std::string& oldCfgFile)
 {
     ifstream newF;
     ofstream oOldF;
     //try to open input file
     newF.open(cfgFile.c_str(), ios::in|ios::binary);
-    if (newF.fail()) 
-	Log(Error) << "Can't open file "<<cfgFile 
-		  <<", when trying to save new config file." << LogEnd;
+    if (newF.fail())
+        Log(Error) << "Can't open file "<<cfgFile
+                  <<", when trying to save new config file." << LogEnd;
     else
     {
         newF.seekg(0,ios::end);
@@ -102,10 +105,10 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
         newF.seekg(0,ios::beg);
         //try to open output file
         oOldF.open(oldCfgFile.c_str(),ios::trunc|ios::out|ios::binary);
-        if (oOldF.fail()) 
+        if (oOldF.fail())
         {
-	    Log(Error) << "Can't open file "<<oldCfgFile
-		       <<", when trying to save new config file"<< LogEnd;
+            Log(Error) << "Can't open file "<<oldCfgFile
+                       <<", when trying to save new config file"<< LogEnd;
             newF.close();
         }
         else
@@ -125,54 +128,55 @@ void TCfgMgr::copyFile(const string cfgFile, const string oldCfgFile)
  *
  * @param duidFile string representation of the DUID file.
  *
- * @return true if DUID value exists and is correct, false if doesn't. 
+ * @return true if DUID value exists and is correct, false if doesn't.
  *
  */
-bool TCfgMgr::loadDUID(const string duidFile)
+bool TCfgMgr::loadDUID(const std::string& duidFile)
 {
     ifstream f;
     f.open(duidFile.c_str());
     if ( !(f.is_open())  ) {
         // unable to open DUID file
         Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
-		return false;
+                return false;
     }
 
     string s;
     getline(f,s);
     f.close();
 
-	this->DUID = new TDUID(s.c_str());
-	
-	Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from " << duidFile << " file." << LogEnd;
-   
-	int duidLen = s.length();
+        this->DUID = new TDUID(s.c_str());
+
+        Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from " << duidFile << " file." << LogEnd;
+
+        int duidLen = s.length();
     int duidLen2 = DUID->getLen();
     if (duidLen <= 0 || duidLen2 == 0) {
-        Log(Error) << "DUID's value is 0. Please check that " << duidFile << " is not empty and contains actual DUID. You can also delete it." << LogEnd;
+        Log(Error) << "DUID's length is 0. Please check that " << duidFile
+                   << " is not empty and contains actual DUID. You can also delete it." << LogEnd;
         return false;
-	}
+        }
 
-	return true;
+    return true;
 }
 
-bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
-    
+bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
+
     // --- load DUID ---
     if (this->loadDUID(filename)) {
         Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
         return true;
     }
-	// Failed to load DUID. We need to generate it.
+        // Failed to load DUID. We need to generate it.
 
     SPtr<TIfaceIface> realIface;
 
     bool found=false;
-    
-	ifaceMgr.firstIface();
+
+        ifaceMgr.firstIface();
     if (this->DUIDType == DUID_TYPE_EN) {
         realIface = ifaceMgr.getIface(); // use the first interface. It will be ignored anyway
-        found = true; 
+        found = true;
 
         if (!realIface) {
             Log(Error) << "Unable to find any interfaces. Can't generate DUID" << LogEnd;
@@ -186,28 +190,28 @@ bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
         memset(buf,0,64);
 
         if (!realIface->getMac()) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: no link addresses." << LogEnd;
           continue;
         }
         if ( realIface->getMacLen()<6 ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
-                     << " skipped: MAC length is " << realIface->getMacLen() 
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
+                     << " skipped: MAC length is " << realIface->getMacLen()
                      << ", but at least 6 is required." << LogEnd;
           continue;
         }
         if ( realIface->flagLoopback() ) {
-            Log(Debug) << "DUID creation: Interface " << realIface->getFullName() 
+            Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: Interface is loopback." << LogEnd;
             continue;
         }
         if ( !memcmp(realIface->getMac(),buf,realIface->getMacLen()) ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
                      << " skipped: MAC is all zero. " << LogEnd;
           continue;
         }
         if ( !realIface->flagUp() ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID() 
+          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
                      << " skipped: Interface is down." << LogEnd;
           continue;
         }
@@ -216,39 +220,39 @@ bool TCfgMgr::setDUID(const string filename, TIfaceMgr & ifaceMgr) {
     }
 
     if(found) {
-	if ( this->generateDUID(filename, realIface->getMac(),
-				realIface->getMacLen(), realIface->getHardwareType())) {
+        if ( this->generateDUID(filename, realIface->getMac(),
+                                realIface->getMacLen(), realIface->getHardwareType())) {
         if (this->DUIDType!=DUID_TYPE_EN)
-	      Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+              Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
         Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
         return true;
-	} else {
-	    Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
-	    return false;
-	}
-    } 
-    
+        } else {
+            Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
+            return false;
+        }
+    }
+
     Log(Crit) << "Cannot generate DUID, because there is no up and running interface with "
-		 << "MAC address at least 6 bytes long." << LogEnd;
+                 << "MAC address at least 6 bytes long." << LogEnd;
     this->DUID=new TDUID();
     return false;
 }
 
-bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macType)
+bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, int macType)
 {
     ofstream f;
     f.open( duidFile.c_str() );
     if (!f.is_open()) {
-      Log(Crit) << "Unable to create/write " << duidFile << " file." << LogEnd;
-      return false;
+        Log(Crit) << "Unable to create/write " << duidFile << " file." << LogEnd;
+        return false;
     }
     string duidType;
     int DUIDlen = 0;
     char *DUID  = 0;
     long cur_time = 0;
-    
+
     switch (this->DUIDType) {
-      case DUID_TYPE_LLT:
+    case DUID_TYPE_LLT:
         duidType = "link-local+time (duid-llt)";
         DUIDlen=macLen+8;
         DUID = new char[DUIDlen];
@@ -262,22 +266,22 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
            7 leap years of 366 days. 23 years of 365 days.
            Modified by Eric Gamess (UCV)
         */
-        
+
         for (int i=0;i<macLen; i++)
-          DUID[i+8]=mac[i];
+            DUID[i+8]=mac[i];
         break;
-      case DUID_TYPE_LL:
+    case DUID_TYPE_LL:
         duidType= "link-local (duid-ll)";
         DUIDlen = macLen+4;
         DUID = new char[DUIDlen];
         writeUint16(DUID, this->DUIDType);
         writeUint16(DUID+2, macType);
         for (int i=0;i<macLen; i++)
-          DUID[i+4]=mac[i];
+            DUID[i+4]=mac[i];
         break;
-      case DUID_TYPE_EN:
+    case DUID_TYPE_EN:
         Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber << ", Enterprise ID=" <<
-          DUIDEnterpriseID->getPlain() << LogEnd;
+            DUIDEnterpriseID->getPlain() << LogEnd;
         duidType="Enterprise Number (duid-en)";
         DUIDlen = 6 + DUIDEnterpriseID->getLen();
         DUID = new char[DUIDlen];
@@ -289,7 +293,7 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
         Log(Error) << "Invalid DUID type." << LogEnd;
         return false;
     }
-    
+
     Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long " << duidType << " DUID." << LogEnd;
     this->DUID=new TDUID(DUID,DUIDlen);
     delete [] DUID;
@@ -299,7 +303,7 @@ bool TCfgMgr::generateDUID(const string duidFile,char * mac,int macLen, int macT
 }
 
 void TCfgMgr::setWorkdir(std::string workdir) {
-    this->Workdir = workdir;
+    Workdir = workdir;
 }
 
 string TCfgMgr::getWorkDir() {

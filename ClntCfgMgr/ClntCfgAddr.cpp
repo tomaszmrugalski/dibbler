@@ -58,7 +58,7 @@ TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr) {
     Pref = ULONG_MAX;
 }
 
-ostream& operator<<(ostream& out,TClntCfgAddr& addr) {
+std::ostream& operator<<(std::ostream& out, TClntCfgAddr& addr) {
     out << "<addr preferred=\"" << addr.Pref 
 	<< "\" valid=\"" << addr.Valid << "\">";
     out << *addr.Addr << "</addr>" << std::endl;	

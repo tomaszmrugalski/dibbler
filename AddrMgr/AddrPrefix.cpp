@@ -5,7 +5,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrPrefix.cpp,v 1.1 2006-10-06 00:30:17 thomson Exp $
  */
 
 #include <iostream>
@@ -15,6 +14,8 @@
 #include "AddrPrefix.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+
+using namespace std;
 
 TAddrPrefix::TAddrPrefix(SPtr<TIPv6Addr> prefix, long pref, long valid, int length)
     :TAddrAddr(prefix, pref, valid)

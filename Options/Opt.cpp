@@ -8,7 +8,11 @@
  *
  */
 
+#include "Portable.h"
 #include "Opt.h"
+#include "OptGeneric.h"
+#include "OptRtPrefix.h"
+#include "Logger.h"
 
 int TOpt::getOptType() {
     return OptType;
@@ -31,6 +35,12 @@ int TOpt::getSubOptSize() {
     while (ptr = SubOptions.get())
 	size += ptr->getSize();
     return size;
+}
+
+char* TOpt::storeHeader(char* buf) {
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf,getSize() - 4);
+    return buf;
 }
 
 char* TOpt::storeSubOpt( char* buf){
@@ -94,4 +104,61 @@ void TOpt::delOption() {
 
 std::string TOpt::getPlain() {
     return "[generic]";
+}
+
+
+/// Parses options or suboptions, creates appropriate objects and store them in options container
+///
+/// @param options options container (new options will be added here)
+/// @param buf buffer to be parsed
+/// @param len length of the buffer
+/// @param parent pointer to parent message
+/// @param placeId specifies location of the message (option number for option parsing or 0 for message parsing)
+/// @param place text representation of the parsed scope
+///
+/// @return true if parsing was successful, false if anomalies are detected
+bool TOpt::parseOptions(TContainer< SPtr<TOpt> >& options,
+                        const char* buf,
+                        size_t len,
+                        TMsg* parent,
+                        uint16_t placeId /*= 0*/, // 5 (option 5) or (message 5)
+                        std::string place /*= "option"*/ // "option" or "message"
+                        ) {
+
+    // parse suboptions
+    while (len>0) {
+        if (len<4) {
+            Log(Warning) << "Truncated suboption in " << place << " " << placeId << LogEnd;
+            return false;
+        }
+
+        uint16_t optType = readUint16(buf);
+        buf += sizeof(uint16_t);
+        len -= sizeof(uint16_t);
+        uint16_t optLen = readUint16(buf);
+        buf += sizeof(uint16_t);
+        len -= sizeof(uint16_t);
+
+        if (optLen>len) {
+            Log(Warning) << "Truncated suboption " << optType << " in " << place << " " << placeId << LogEnd;
+            return false;
+        }
+
+        switch (optType) {
+        case OPTION_RTPREFIX: {
+            SPtr<TOpt> opt = new TOptRtPrefix(buf, len, parent);
+            options.append(opt);
+            break;
+        }
+        default: {
+            SPtr<TOpt> opt = new TOptGeneric(optType, buf, len, parent);
+            options.append(opt);
+            break;
+        }
+        }
+        buf += optLen;
+        len -= optLen;
+    }
+
+    return true;
 }

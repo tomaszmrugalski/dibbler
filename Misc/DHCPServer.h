@@ -13,14 +13,11 @@
 #include <iostream>
 #include <string>
 #include "SmartPtr.h"
-#include "SrvIfaceMgr.h"
-#include "SrvTransMgr.h"
 
-using namespace std;
 class TDHCPServer
 {
   public:
-    TDHCPServer(string config);
+    TDHCPServer(const std::string& config);
     void run();
     void stop();
     bool isDone();

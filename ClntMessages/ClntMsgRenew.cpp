@@ -211,7 +211,7 @@ bool TClntMsgRenew::check()
     return false;
 }
 
-string TClntMsgRenew::getName() {
+std::string TClntMsgRenew::getName() const {
     return "RENEW";
 }
 

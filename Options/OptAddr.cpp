@@ -11,16 +11,22 @@
 #include "Portable.h"
 #include "OptAddr.h"
 #include "Logger.h"
+#include "OptRtPrefix.h"
+#include "OptGeneric.h"
 
 TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
     :TOpt(type, parent) {
-    if (len!=16) {
+    if (len<16) {
 	Valid = false;
 	Log(Warning) << "Malformed option (code=" << type << ", length=" << len
 		     << "), expected length is 16." << LogEnd;
 	return;
     }
     Addr = new TIPv6Addr(buf, false); // plain = false
+    buf += 16;
+    len -= 16;
+
+    Valid = parseOptions(SubOptions, buf, len, parent);
 }
 
 TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent)
@@ -28,8 +34,9 @@ TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent)
     this->Addr = addr;
 }
 
-int TOptAddr::getSize() {
-    return 20;
+size_t TOptAddr::getSize() {
+    // 20 - size of this option
+    return 20 + getSubOptSize();
 }
 
 SPtr<TIPv6Addr> TOptAddr::getAddr() {
@@ -41,8 +48,13 @@ std::string TOptAddr::getPlain() {
 }
 
 char * TOptAddr::storeSelf(char* buf) {
-
+    // store generic header
     buf = writeUint16( buf, OptType );
     buf = writeUint16( buf, getSize() - 4 );
-    return Addr->storeSelf(buf);
+
+    // store address
+    buf = Addr->storeSelf(buf);
+
+    // store sub-options (if three are any)
+    return storeSubOpt(buf);
 }

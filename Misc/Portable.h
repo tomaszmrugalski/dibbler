@@ -8,14 +8,13 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: Portable.h,v 1.102 2009-07-22 20:19:08 thomson Exp $
- */	
+ */
 
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")"
-/* #define DIBBLER_VERSION "0.8.0" */
+/* #define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")" */
+#define DIBBLER_VERSION "0.8.2"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -166,6 +165,7 @@ struct link_state_notify_t
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
+#define RESOLVCONF         "/sbin/resolvconf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define TIMEZONE_FILE      "/etc/localtime"
 #define TIMEZONES_DIR      "/usr/share/zoneinfo"

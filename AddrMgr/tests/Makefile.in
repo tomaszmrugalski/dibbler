@@ -50,14 +50,21 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_GTEST_TRUE@am__EXEEXT_1 = AddrMgr_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__AddrMgr_tests_SOURCES_DIST = run_tests.cpp AddrAddr_unittest.cc
+am__AddrMgr_tests_SOURCES_DIST = run_tests.cpp AddrAddr_unittest.cc \
+	AddrPrefix_unittest.cc AddrIA_unittest.cc \
+	AddrClient_unittest.cc AddrMgr_unittest.cc
 @HAVE_GTEST_TRUE@am_AddrMgr_tests_OBJECTS = run_tests.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	AddrAddr_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	AddrAddr_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrPrefix_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrIA_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrClient_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	AddrMgr_unittest.$(OBJEXT)
 AddrMgr_tests_OBJECTS = $(am_AddrMgr_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@AddrMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -128,6 +135,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
 GTEST_INCLUDES = @GTEST_INCLUDES@
@@ -147,6 +155,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -221,6 +230,7 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -229,18 +239,21 @@ top_srcdir = @top_srcdir@
 
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS = -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/Misc \
-	$(GTEST_INCLUDES) -Wno-long-long
+	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@AddrMgr_tests_SOURCES = run_tests.cpp \
-@HAVE_GTEST_TRUE@	AddrAddr_unittest.cc
+@HAVE_GTEST_TRUE@	AddrAddr_unittest.cc AddrPrefix_unittest.cc \
+@HAVE_GTEST_TRUE@	AddrIA_unittest.cc AddrClient_unittest.cc \
+@HAVE_GTEST_TRUE@	AddrMgr_unittest.cc
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cc .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -265,9 +278,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -290,6 +303,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrAddr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrClient_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrIA_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrMgr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AddrPrefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

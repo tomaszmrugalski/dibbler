@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: AddrClient.h,v 1.9 2008-02-25 17:49:06 thomson Exp $
- *
  */
 
 class TAddrClient;
@@ -22,7 +20,7 @@ class TAddrClient;
 
 class TAddrClient
 {
-    friend ostream & operator<<(ostream & strum,TAddrClient &x);
+    friend std::ostream & operator<<(std::ostream & strum, TAddrClient &x);
 
 public:
     TAddrClient(SPtr<TDUID> duid);

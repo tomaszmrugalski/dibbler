@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntCfgAddr.h,v 1.6 2008-08-29 00:07:27 thomson Exp $
- *
  */
 
 class TClntCfgAddr;
@@ -21,11 +19,10 @@ class TClntCfgAddr;
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
 
 class TClntCfgAddr
 {
-    friend std::ostream& operator<<(std::ostream& out,TClntCfgAddr& group);
+    friend std::ostream& operator<<(std::ostream& out, TClntCfgAddr& group);
  public:
     TClntCfgAddr();
     TClntCfgAddr(SPtr<TIPv6Addr> addr);

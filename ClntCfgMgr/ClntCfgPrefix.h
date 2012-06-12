@@ -4,9 +4,8 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
+ *
  * released under GNU GPL v2 only licence
- *
- *
  *
  */
 
@@ -20,15 +19,13 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
-
 class TClntCfgPrefix
 {
     friend std::ostream& operator<<(std::ostream& out,TClntCfgPrefix& group);
  public:
     TClntCfgPrefix();
     TClntCfgPrefix(SPtr<TIPv6Addr> prefix, unsigned char prefixLength);
-    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, unsigned long valid, 
+    TClntCfgPrefix(SPtr<TIPv6Addr> prefix, unsigned long valid,
                    unsigned long pref, unsigned char prefixLength);
     ~TClntCfgPrefix();
 

@@ -37,7 +37,7 @@ int rtnl_open_byproto(struct rtnl_handle *rth, unsigned subscriptions,
 	int sndbuf = 32768;
 	int rcvbuf = 32768;
 
-	memset(rth, 0, sizeof(rth));
+	memset(rth, 0, sizeof(struct rtnl_handle));
 
 	rth->fd = socket(AF_NETLINK, SOCK_RAW, protocol);
 	if (rth->fd < 0) {
@@ -433,7 +433,7 @@ int rtnl_from_file(FILE *rtnl, rtnl_filter_t handler,
 	nladdr.nl_groups = 0;
 
 	while (1) {
-		int err, len, type;
+		int err, len;
 		int l;
 
 		status = fread(&buf, 1, sizeof(*h), rtnl);
@@ -448,7 +448,7 @@ int rtnl_from_file(FILE *rtnl, rtnl_filter_t handler,
 			return 0;
 
 		len = h->nlmsg_len;
-		type= h->nlmsg_type;
+		/* type= h->nlmsg_type; */
 		l = len - sizeof(*h);
 
 		if (l<0 || len>sizeof(buf)) {

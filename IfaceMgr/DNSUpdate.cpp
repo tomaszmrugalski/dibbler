@@ -9,8 +9,6 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.21 2008-02-25 17:49:08 thomson Exp $
- *
  */
 
 #include "DNSUpdate.h"
@@ -19,8 +17,10 @@
 #include <stdio.h>
 #include "sha256.h"
 
-DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
-		     string hostip, DnsUpdateMode updateMode,
+using namespace std;
+
+DNSUpdate::DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname,
+		     std::string hostip, DnsUpdateMode updateMode,
 		     DnsUpdateProtocol proto /* = DNSUPDATE_TCP */)
     :_hostname(NULL) { 
     message= NULL;
@@ -71,7 +71,7 @@ DNSUpdate::~DNSUpdate() {
  * 
  * @param fqdnName 
  */
-void DNSUpdate::splitHostDomain(string fqdnName) {
+void DNSUpdate::splitHostDomain(std::string fqdnName) {
     std::string::size_type dotpos = fqdnName.find(".");
     string hostname = "";
     string domain = "";
@@ -129,7 +129,7 @@ DnsUpdateResult DNSUpdate::run(int timeout){
     try {
 	sendMsg(timeout);
     } 
-    catch (PException p) {
+    catch (const PException& p) {
 	DnsUpdateResult result = DNSUPDATE_ERROR;
 	if (strstr(p.message,"Could not connect TCP socket") ){
 	    result = DNSUPDATE_CONNFAIL;
@@ -343,6 +343,9 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	res.tcpsendmessage(q, sockid);
 	
 	res.tcpwaitanswer(a, sockid);
+        if (!a) {
+            throw PException("tcpwaitanswer returned NULL");
+        }
 	if (a->RCODE != RCODE_NOERROR){    
 	    
 	    throw PException((char*)str_rcode(a->RCODE).c_str()); 
@@ -358,7 +361,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	    }
 	
 	if (a) {
-	    // delete a; // FIXME: Why is this commented out? Memory leak!
+	    // delete a; /// @todo: Why is this commented out? Memory leak!
 	    a = 0;
 	}
 	if (q) {
@@ -371,7 +374,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	
 	return RemoteDnsRR;
 	
-    } catch (PException p) {
+    } catch (const PException& p) {
 	if (q) {
 	    delete q;
 	    q = NULL;
@@ -421,7 +424,7 @@ void DNSUpdate::sendMsgTCP(unsigned int timeout){
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;
@@ -448,7 +451,7 @@ void DNSUpdate::sendMsgUDP(unsigned int timeout) {
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;

@@ -32,12 +32,12 @@ class SrvParser;
 class TSrvCfgMgr : public TCfgMgr
 {
 public:
-    friend ostream & operator<<(ostream &strum, TSrvCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TSrvCfgMgr &x);
 
-    static void instanceCreate(const std::string cfgFile, const std::string xmlDumpFile);
+    static void instanceCreate(const std::string& cfgFile, const std::string& xmlDumpFile);
     static TSrvCfgMgr &instance();
 
-    bool parseConfigFile(string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
 
     //Interfaces acccess methods
     void firstIface();
@@ -59,8 +59,8 @@ public:
     SPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SPtr<TIPv6Addr> addr);
     SPtr<TSrvCfgPD> getClassByPrefix(int iface, SPtr<TIPv6Addr> prefix);
     SPtr<TIPv6Addr> getRandomAddr(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface);
-    bool isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface);
-    bool isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface, SPtr<TSrvMsg> msg);
+    // bool isClntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface);
+    bool isClntSupported(/*SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, int iface,*/ SPtr<TSrvMsg> msg);
 
     // prefix-related
     bool incrPrefixCount(int iface, SPtr<TIPv6Addr> prefix);
@@ -76,12 +76,15 @@ public:
     void addTAAddr(int iface);
     void delTAAddr(int iface);
 
+    bool addrReserved(SPtr<TIPv6Addr> addr);
+    bool prefixReserved(SPtr<TIPv6Addr> prefix);
+
     bool isDone();
     virtual ~TSrvCfgMgr();
     bool setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt);
 
     // configuration parameters
-    string getWorkdir();
+    std::string getWorkdir();
     bool stateless();
     bool inactiveMode();
     bool guessMode();
@@ -113,11 +116,13 @@ public:
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
-private:
-    TSrvCfgMgr(string cfgFile, string xmlFile);
+
+    // used to be private, but we need access in tests
+protected:
+    TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
     static TSrvCfgMgr * Instance;
     static int NextRelayID;
-    string XmlFile;
+    std::string XmlFile;
     bool reconfigure;
 
     bool IsDone;

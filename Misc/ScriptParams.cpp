@@ -7,35 +7,39 @@
  *
  */
 
+#include <stdio.h>
 #include <sstream>
 #include "ScriptParams.h"
 #include "Logger.h"
 #include <string.h>
+#include "Portable.h"
 
 using namespace std;
 
 TNotifyScriptParams::TNotifyScriptParams() 
     :envCnt(0), ipCnt(1), pdCnt(1) {
-    for (int i=0; i<512; i++) {
-        env[i]=0;
+    for (int i = 0; i<512; i++) {
+        env[i] = 0;
     }
 }
 
 /// adds parameter to parameters list
 ///
+/// @param name name of the parameter to be added
 /// @param value value to be copied
 ///
 /// @return next unused offset
-///
-void TNotifyScriptParams::addParam(const char * value)
+void TNotifyScriptParams::addParam(const std::string& name, const std::string& value)
 {
     if (envCnt>=MAX_PARAMS) {
         Log(Error) << "Too many parameter for script: " << envCnt << LogEnd;
         return;
     }
 
-    char * tmp = new char[strlen(value)+1];
-    strncpy(tmp, value, strlen(value)+1);
+    // +2, because = and \n have to be added.
+    size_t len = name.length() + value.length() + 2;
+    char * tmp = new char[len];
+    snprintf(tmp, len, "%s=%s", name.c_str(), value.c_str());
     env[envCnt] = tmp;
     envCnt++;
 }
@@ -53,36 +57,47 @@ TNotifyScriptParams::~TNotifyScriptParams()
 
 void TNotifyScriptParams::addAddr(SPtr<TIPv6Addr> addr, unsigned int prefered, unsigned int valid, 
                                   std::string txt /*= std::string("")*/ ) {
-    stringstream tmp;
-    tmp << "ADDR" << ipCnt << "=" << addr->getPlain();
-    addParam(tmp.str().c_str());
-    tmp.str("");
-    tmp << "ADDR" << ipCnt << "PREF=" << prefered;
-    addParam(tmp.str().c_str());
-    tmp.str("");
-    tmp << "ADDR" << ipCnt << "VALID=" << valid;
-    addParam(tmp.str().c_str());
+    stringstream name, value;
+    name << "ADDR" << ipCnt;
+    addParam(name.str(), addr->getPlain());
+    name.str("");
+
+    name << "ADDR" << ipCnt << "PREF";
+    value << prefered;
+    addParam(name.str(), value.str());
+    name.str("");
+    value.str("");
+
+    name << "ADDR" << ipCnt << "VALID";
+    value << valid;
+    addParam(name.str(), value.str());
     ipCnt++;
 }
 
 void TNotifyScriptParams::addPrefix(SPtr<TIPv6Addr> prefix, unsigned short length, unsigned int prefered, 
                                     unsigned int valid, std::string txt /*= std::string("") */ ) {
-    stringstream tmp;
-    tmp << "PREFIX" << pdCnt << "=" << prefix->getPlain();
-    addParam(tmp.str().c_str());
-    tmp.str("");
+    stringstream name, value;
+    name << "PREFIX" << pdCnt;
+    addParam(name.str(), prefix->getPlain());
+    name.str("");
 
-    tmp << "PREFIX" << pdCnt << "LEN=" << length;
-    addParam(tmp.str().c_str());
-    tmp.str("");
+    name << "PREFIX" << pdCnt << "LEN";
+    value << length;
+    addParam(name.str(), value.str());
+    name.str("");
+    value.str("");
 
-    tmp << "PREFIX" << pdCnt << "PREF=" << prefered;
-    addParam(tmp.str().c_str());
-    tmp.str("");
+    name << "PREFIX" << pdCnt << "PREF";
+    value << prefered;
+    addParam(name.str(), value.str());
+    name.str("");
+    value.str("");
 
-    tmp << "PREFIX" << pdCnt << "VALID=" << valid;
-    addParam(tmp.str().c_str());
-    tmp.str("");
+    name << "PREFIX" << pdCnt << "VALID";
+    value << valid;
+    addParam(name.str(), value.str());
+    name.str("");
+    value.str("");
 
     pdCnt++;
 }

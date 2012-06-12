@@ -5,7 +5,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.10 2008-01-01 20:21:14 thomson Exp $
  */
 
 #include <stdio.h>
@@ -21,14 +20,17 @@
 #include "OptStringLst.h"
 #include "Portable.h"
 
+using namespace std;
+
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
+    :CfgMgr(NULL)
 {
-    this->IfaceMgr = ifaceMgr;
+    IfaceMgr = ifaceMgr;
 }
 
 void ReqTransMgr::SetParams(ReqCfgMgr * cfgMgr)
 {
-    this->CfgMgr = cfgMgr;
+    CfgMgr = cfgMgr;
 }
 
 bool ReqTransMgr::BindSockets()
@@ -145,7 +147,7 @@ bool ReqTransMgr::SendMsg()
         TReqOptAddr * optAddr = new TReqOptAddr(OPTION_IAADDR, a, msg);
         optAddr->storeSelf(buf+bufLen);
         bufLen += optAddr->getSize();
-        free(optAddr);
+        delete optAddr;
         
     } else {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
@@ -166,7 +168,7 @@ bool ReqTransMgr::SendMsg()
         optDuid->storeSelf(buf+bufLen);
         bufLen += optDuid->getSize();
 
-        free(optDuid);
+        delete optDuid;
     }
 
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");

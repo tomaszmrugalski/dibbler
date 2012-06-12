@@ -6,13 +6,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgRenew.cpp,v 1.6 2008-08-29 00:07:35 thomson Exp $
- *
  */
 
 #include "SrvMsgRenew.h"
-#include "SrvOptClientIdentifier.h"
-#include "SrvOptServerIdentifier.h"
 #include "SrvCfgMgr.h"
 #include "DHCPConst.h"
 
@@ -32,7 +28,7 @@ bool TSrvMsgRenew::check() {
     return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-string TSrvMsgRenew::getName() {
+std::string TSrvMsgRenew::getName() const {
     return "RENEW";
 }
 
