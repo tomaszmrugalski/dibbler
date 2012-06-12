@@ -487,3 +487,11 @@ bool TMsg::delOption(int code)
     }
     return false;
 }
+
+void* TMsg::getNotifyScriptParams() {
+    if (!NotifyScripts) {
+	NotifyScripts = new TNotifyScriptParams();
+    }
+
+    return NotifyScripts;
+}

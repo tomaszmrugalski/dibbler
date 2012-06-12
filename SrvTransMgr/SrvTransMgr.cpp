@@ -280,7 +280,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     if (a) {
-        /// @todo: messages should not call send() in their cstors, send should be done here
+        /// @todo: messages should not call send() in their ctors, send should be done here
         MsgLst.append((Ptr*)a);
         SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
     }

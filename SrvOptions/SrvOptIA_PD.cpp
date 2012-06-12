@@ -31,21 +31,24 @@ using namespace std;
 
 TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code,
                            const std::string& Text, TMsg* parent)
-    :TOptIA_PD(iaid, t1, t2, parent)
-{
+    :TOptIA_PD(iaid, t1, t2, parent), PDLength(0) {
+    Iface = parent->getIface();
     SubOptions.append(new TOptStatusCode(Code, Text, parent));
 }
 
 TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
-    :TOptIA_PD(iaid, t1, t2, parent) {
+    :TOptIA_PD(iaid, t1, t2, parent), PDLength(0) {
+    Iface = parent->getIface();
 }
 
 /*
  * Create IA_PD option based on receive buffer
  */
 TSrvOptIA_PD::TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent)
-    :TOptIA_PD(buf, bufsize, parent) {
+    :TOptIA_PD(buf, bufsize, parent), PDLength(0) {
     int pos=0;
+
+    Iface = parent->getIface();
 
     /// @todo: implement unpack
     while(pos<bufsize)
@@ -268,11 +271,13 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
  * this method is used to prepare response to IA_PD received in SOLICIT and REQUEST messages
  * (i.e. it tries to assign prefix as requested by client)
  *
- * @param queryOpt
- * @param ptrIface
- * @param fake
+ * @param clientMsg original message received from a client
+ * @param queryOpt specific option in clientMsg that we are answering now
+ * @param ptrIface pointer to SrvCfgIface
+ * @param fake is this fake request? (fake = solicit, so nothing is actually assigned)
  */
-void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptrIface, bool fake) {
+void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
+                                  SPtr<TSrvCfgIface> ptrIface, bool fake) {
 
     // --- Is this PD without IAPREFIX options? ---
     SPtr<TIPv6Addr> hint = 0;
@@ -515,7 +520,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
     ptrIface->firstPD();
     ptrPD = ptrIface->getPD();
     // should be ==, asigned>total should never happen
-    if (ptrPD->getAssignedCount() >= ptrPD->getTotalCount()) { 
+    if (ptrPD->getAssignedCount() >= ptrPD->getTotalCount()) {
       Log(Error) << "PD: Unable to grant any prefixes: Already asigned " << ptrPD->getAssignedCount()
                  << " out of " << ptrPD->getTotalCount() << "." << LogEnd;
       return lst; // empty list

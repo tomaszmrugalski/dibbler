@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: IfaceMgr.cpp,v 1.28 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -245,7 +243,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
  * returns interface count
  */
 int TIfaceMgr::countIface() {
-        return IfaceLst.count();
+    return IfaceLst.count();
 }
 
 /*
@@ -326,7 +324,7 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
             // Will define something like this: OPTION_NEXT_HOP=2001:db8:1::1
             params.addParam("OPTION_NEXT_HOP", opt->getPlain());
         }
-	break;
+        break;
     }
     case OPTION_RTPREFIX: {
         params.addParam("OPTION_RTPREFIX", opt->getPlain());
@@ -346,7 +344,7 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
 
 
 
-void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
+void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question, SPtr<TMsg> reply)
 {
     TNotifyScriptParams* params = (TNotifyScriptParams*)reply->getNotifyScriptParams();
     if (params) {
@@ -357,7 +355,8 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     }
 }
 
-void TIfaceMgr::notifyScript(std::string scriptName, std::string action, TNotifyScriptParams& params) {
+void TIfaceMgr::notifyScript(const std::string& scriptName, std::string action,
+                             TNotifyScriptParams& params) {
     const char * argv[3];
 
     // get PATH
@@ -370,7 +369,7 @@ void TIfaceMgr::notifyScript(std::string scriptName, std::string action, TNotify
     argv[0] = scriptName.c_str();
     argv[1] = action.c_str();
     argv[2] = NULL;
-    
+
     Log(Debug) << "About to execute " << scriptName << " script, "
                << params.envCnt << " variables." << LogEnd;
     int returnCode = execute(scriptName.c_str(), argv, params.env);
@@ -383,14 +382,14 @@ void TIfaceMgr::notifyScript(std::string scriptName, std::string action, TNotify
     }
 }
 
-void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> reply,
-                              TNotifyScriptParams& params)
+void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
+                              SPtr<TMsg> reply, TNotifyScriptParams& params)
 {
     if (!scriptName.length()) {
         Log(Debug) << "Not executing external script (Notify script disabled)." << LogEnd;
         return;
     }
-    
+
     stringstream tmp;
     string action;
 
@@ -408,15 +407,16 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
         action = "update";
         break;
     default:
-        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to " << question->getName() 
-                   << ". No action needed for this type of message." << LogEnd;
+        Log(Debug) << "Script execution skipped for " << reply->getName() << " response to "
+                   << question->getName() << ". No action needed for this message type." << LogEnd;
         return;
     }
 
     int ifindex = reply->getIface();
     SPtr<TIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
     if (!iface) {
-        Log(Error) << "Unable to find interface with ifindex=" << ifindex << ". Script NOT called." << LogEnd;
+        Log(Error) << "Unable to find interface with ifindex=" << ifindex
+                   << ". Script NOT called." << LogEnd;
         return;
     }
 
@@ -431,8 +431,6 @@ void TIfaceMgr::notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<
     params.addParam("CLNT_MESSAGE", question->getName());
 
     params.addParam("SRV_MESSAGE", reply->getName());
-
-    SPtr<TIPv6Addr> ip;
 
     // add options from server REPLY
     reply->firstOption();
