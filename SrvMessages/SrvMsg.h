@@ -13,6 +13,7 @@
 #ifndef SRVMSG_H
 #define SRVMSG_H
 
+#include <vector>
 #include "Msg.h"
 #include "SmartPtr.h"
 #include "SrvAddrMgr.h"
@@ -30,6 +31,15 @@
 class TSrvMsg : public TMsg
 {
 public:
+    struct RelayInfo {
+        SPtr<TIPv6Addr> LinkAddr_;
+        SPtr<TIPv6Addr> PeerAddr_;
+        SPtr<TSrvOptInterfaceID> InterfaceID_;
+        size_t Len_;
+        int Hop_;
+        List(TOptGeneric) EchoList_;
+    };
+
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
@@ -46,12 +56,15 @@ public:
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
 
+    /// @todo: modify this to use RelayInfo structure
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                       SPtr<TIPv6Addr> peerAddr,
                       int hop,
                       SPtr<TSrvOptInterfaceID> interfaceID,
                       List(TOptGeneric) echoList);
+    const std::vector<RelayInfo>& getRelayInfo() const { return RelayInfo_; };
 
+    /// @todo: redundant (can be replaced with getRelayInfo().size())
     int getRelayCount();
 
     bool releaseAll(bool quiet);
@@ -96,24 +109,17 @@ protected:
     void delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
 
 
-    int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
+    int storeSelfRelay(char * buf, uint8_t relayLevel, ESrvIfaceIdOrder order);
 
-
-    /// @todo: convert this into RelayInfo structure
-    // relay
-    SPtr<TIPv6Addr> LinkAddrTbl_[HOP_COUNT_LIMIT];
-    SPtr<TIPv6Addr> PeerAddrTbl_[HOP_COUNT_LIMIT];
-    SPtr<TSrvOptInterfaceID> InterfaceIDTbl_[HOP_COUNT_LIMIT];
-    List(TOptGeneric) EchoListTbl_[HOP_COUNT_LIMIT];  // list of options to be echoed back
-    int Len_[HOP_COUNT_LIMIT];
-    int HopTbl_[HOP_COUNT_LIMIT];
-    int Relays_;
+    // relay information
+    std::vector<RelayInfo> RelayInfo_;
 
     unsigned long FirstTimeStamp_; // timestamp of first message transmission
     unsigned long MRT_;            // maximum retransmission timeout
 
-    /// @todo: this should be removed
-    SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
+    /// @todo: this should be moved to RelayInfo_ structure
+    SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay
+                                   // AND relay appended RemoteID
 };
 
 #endif

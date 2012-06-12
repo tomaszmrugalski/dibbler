@@ -81,7 +81,7 @@ class TMsg
     SPtr<KeyList> AuthKeys;
 
     // notify scripts stuff
-    void* getNotifyScriptParams() { return NotifyScripts; }
+    void* getNotifyScriptParams();
 
   protected:
     int MsgType;

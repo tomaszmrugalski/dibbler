@@ -213,13 +213,6 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 }
 
 void TSrvMsg::setDefaults() {
-    for (int i=0; i<32; i++) {
-        HopTbl_[i] = 0;
-        Len_[i] = 0;
-    }
-
-    Relays_ = 0;
-
 #ifndef MOD_DISABLE_AUTH
     DigestType = SrvCfgMgr().getDigest();
     AuthKeys = SrvCfgMgr().AuthKeys;
@@ -368,16 +361,18 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                            int hop,
                            SPtr<TSrvOptInterfaceID> interfaceID,
                            List(TOptGeneric) echolist) {
-    LinkAddrTbl_[Relays_] = linkAddr;
-    PeerAddrTbl_[Relays_] = peerAddr;
-    HopTbl_[Relays_]      = hop;
-    InterfaceIDTbl_[Relays_] = interfaceID;
-    EchoListTbl_[Relays_]    = echolist;
-    Relays_++;
+    RelayInfo info;
+    info.LinkAddr_ = linkAddr;
+    info.PeerAddr_ = peerAddr;
+    info.InterfaceID_ = interfaceID;
+    info.Hop_      = hop;
+    info.EchoList_ = echolist;
+    info.Len_      = 0; /// @todo: what about this?
+    RelayInfo_.push_back(info);
 }
 
 int TSrvMsg::getRelayCount() {
-    return Relays_;
+    return RelayInfo_.size();
 }
 
 void TSrvMsg::send()
@@ -396,17 +391,40 @@ void TSrvMsg::send()
     this->firstOption();
     while (ptrOpt = this->getOption() )
         Log(Cont) << " " << ptrOpt->getOptType();
-    Log(Cont) << ", " << Relays_ << " relay(s)." << LogEnd;
+    Log(Cont) << ", " << RelayInfo_.size() << " relay(s)." << LogEnd;
 
     port = DHCPCLIENT_PORT;
-    if (Relays_>0) {
+    if (RelayInfo_.size() > 0) {
         port = DHCPSERVER_PORT;
-        if (Relays_>HOP_COUNT_LIMIT) {
-            Log(Error) << "Unable to send message. Got " << Relays_ << " relay entries (" << HOP_COUNT_LIMIT
+        if (RelayInfo_.size() > HOP_COUNT_LIMIT) {
+            Log(Error) << "Unable to send message. Got " << RelayInfo_.size()
+                       << " relay entries (" << HOP_COUNT_LIMIT
                        << " is allowed maximum." << LogEnd;
             return;
         }
 
+
+        size_t len = getSize();
+        RelayInfo_.back().Len_ = len;
+
+
+
+        for (int i = RelayInfo_.size() - 1; i > 0; i--) {
+            // 38 = 34 bytes (relay header) + 4 bytes (relay-msg option header)
+            RelayInfo_[i-1].Len_ = RelayInfo_[i].Len_ + 38;
+            if (RelayInfo_[i].InterfaceID_ && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
+                RelayInfo_[i-1].Len_ += RelayInfo_[i].InterfaceID_->getSize();
+
+                RelayInfo_[i].EchoList_.first();
+                while (gen = RelayInfo_[i].EchoList_.get()) {
+                    RelayInfo_[i-1].Len_ += gen->getSize();
+                }
+
+            }
+
+        }
+
+#if 0
         // calculate lengths of all relays
         Len_[Relays_ - 1] = getSize();
         for (int i = Relays_ - 1; i > 0; i--) {
@@ -421,15 +439,16 @@ void TSrvMsg::send()
 
             }
         }
+#endif
 
         // recursive storeSelf
         offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
         // check if there are underlaying interfaces
-        for (int i=0; i < Relays_; i++) {
+        for (unsigned int i=0; i < RelayInfo_.size(); i++) {
             under = ptrIface->getUnderlaying();
             if (!under) {
-                Log(Error) << "Sending message on the " << ptrIface->getName() << "/" << ptrIface->getID()
+                Log(Error) << "Sending message on the " << ptrIface->getFullName()
                            << " failed: No underlaying interface found." << LogEnd;
                 return;
             }
@@ -641,22 +660,14 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
 
 SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
 {
-   if (Relays_ > 0)
-   {
-       return PeerAddrTbl_[0]; //first hop ?
+    if (RelayInfo_.size() > 0) {
+       return RelayInfo_[0].PeerAddr_; //first hop ?
    }
    return PeerAddr;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
-    Relays_ = q->Relays_;
-    for (int i=0; i < Relays_; i++) {
-        LinkAddrTbl_[i]   = q->LinkAddrTbl_[i];
-        PeerAddrTbl_[i]   = q->PeerAddrTbl_[i];
-        InterfaceIDTbl_[i]= q->InterfaceIDTbl_[i];
-        HopTbl_[i]        = q->HopTbl_[i];
-        EchoListTbl_[i]   = q->EchoListTbl_[i];
-    }
+    RelayInfo_ = q->RelayInfo_;
 }
 
 
@@ -669,45 +680,45 @@ void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
  *
  * @return - number of bytes used
  */
-int TSrvMsg::storeSelfRelay(char * buf, int relayDepth, ESrvIfaceIdOrder order)
+int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder order)
 {
     int offset = 0;
-    if (relayDepth == Relays_) {
+    if (relayDepth == RelayInfo_.size()) {
         return storeSelf(buf);
     }
     buf[offset++] = RELAY_REPL_MSG;
-    buf[offset++] = HopTbl_[relayDepth];
-    LinkAddrTbl_[relayDepth]->storeSelf(buf+offset);
-    PeerAddrTbl_[relayDepth]->storeSelf(buf+offset+16);
+    buf[offset++] = RelayInfo_[relayDepth].Hop_;
+    RelayInfo_[relayDepth].LinkAddr_->storeSelf(buf+offset);
+    RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf+offset+16);
     offset += 32;
 
     if (order == SRV_IFACE_ID_ORDER_BEFORE)
     {
-        if (InterfaceIDTbl_[relayDepth]) {
-            InterfaceIDTbl_[relayDepth]->storeSelf(buf+offset);
-            offset += InterfaceIDTbl_[relayDepth]->getSize();
+        if (RelayInfo_[relayDepth].InterfaceID_) {
+            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
+            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
         }
     }
 
     writeUint16((buf+offset), OPTION_RELAY_MSG);
     offset += sizeof(uint16_t);
-    writeUint16((buf+offset), Len_[relayDepth]);
+    writeUint16((buf+offset), RelayInfo_[relayDepth].Len_);
     offset += sizeof(uint16_t);
 
     offset += storeSelfRelay(buf+offset, relayDepth+1, order);
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)
     {
-        if (InterfaceIDTbl_[relayDepth]) {
-            InterfaceIDTbl_[relayDepth]->storeSelf(buf+offset);
-            offset += InterfaceIDTbl_[relayDepth]->getSize();
+        if (RelayInfo_[relayDepth].InterfaceID_) {
+            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
+            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
         }
     }
 
     SPtr<TOptGeneric> gen;
-    EchoListTbl_[relayDepth].first();
-    while (gen = EchoListTbl_[relayDepth].get()) {
-        Log(Debug) << "Echoing back option " << gen->getOptType() << ", length " 
+    RelayInfo_[relayDepth].EchoList_.first();
+    while (gen = RelayInfo_[relayDepth].EchoList_.get()) {
+        Log(Debug) << "Echoing back option " << gen->getOptType() << ", length "
                    << gen->getSize() << LogEnd;
         gen->storeSelf(buf+offset);
         offset += gen->getSize();
