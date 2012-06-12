@@ -101,9 +101,11 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * Also note that FlexLexer.h is modified (std:: added in several places,
  * @code <fstream.h> @endcode is replaced with @code <fstream> @endcode etc.)
  *
+ * @code
  * %% In file ClntParser.cpp, substitute line (around 1860): 
  * %% ++yyvsp = yylval; with: *++yyvsp = ::yylval;
  * %% This trick is supposed to fix numerous parser problems.
+ * @endcode
  * 
  * Keep in mind that author is in no way a flex/bison guru and found this method
  * in a painful trial-and-error way. Also, it is strongly recommended to get

@@ -33,7 +33,9 @@ class TSrvOptTA : public TOptTA
  private:
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
-    int                   Iface;
+
+    /// @todo: replace with Parent->getIface();
+    int Iface;
     
     SPtr<TSrvOptIAAddress> assignAddr(SPtr<TSrvMsg> clientMsg);
     void solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);

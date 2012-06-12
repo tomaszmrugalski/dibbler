@@ -12,8 +12,8 @@
 #include "RelParsIfaceOpt.h"
 
 TRelParsIfaceOpt::TRelParsIfaceOpt(void)
-    :ClientUnicast_(RELAY_CLIENT_UNICAST), ServerUnicast_(RELAY_SERVER_UNICAST),
-     ClientMulticast_(RELAY_CLIENT_MULTICAST), ServerMulticast_(RELAY_CLIENT_MULTICAST),
+    :ClientUnicast_(0), ServerUnicast_(0),
+     ClientMulticast_(false), ServerMulticast_(false),
      InterfaceID_(-1) {
 }
 

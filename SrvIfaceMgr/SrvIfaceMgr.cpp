@@ -12,6 +12,7 @@
 
 #include <sstream>
 #include <cstdlib>
+#include <vector>
 #include <stdio.h>
 #include "Portable.h"
 #include "SmartPtr.h"
@@ -649,6 +650,34 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
 
     return success;
 
+}
+
+void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
+                                 SPtr<TMsg> answer) {
+    TNotifyScriptParams* params = (TNotifyScriptParams*)answer->getNotifyScriptParams();
+
+    // add info about relays
+    SPtr<TSrvMsg> reply = (Ptr*)answer;
+
+    const vector<TSrvMsg::RelayInfo> relayInfo = reply->getRelayInfo();
+
+    stringstream relaysNum;
+    relaysNum << relayInfo.size();
+    params->addParam("RELAYS", relaysNum.str());
+
+    int cnt = 1;
+    for (vector<TSrvMsg::RelayInfo>::const_reverse_iterator relay = relayInfo.rbegin();
+         relay != relayInfo.rend(); ++relay) {
+        stringstream peer;
+        stringstream link;
+        peer << "RELAY" << cnt << "_PEER";
+        link << "RELAY" << cnt << "_LINK";
+
+        params->addParam(peer.str(), relay->PeerAddr_->getPlain());
+        params->addParam(link.str(), relay->LinkAddr_->getPlain());
+    }
+
+    TIfaceMgr::notifyScripts(scriptName, question, answer);
 }
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {

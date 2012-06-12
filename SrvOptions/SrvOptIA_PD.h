@@ -33,7 +33,8 @@ class TSrvOptIA_PD : public TOptIA_PD
 
     void releaseAllPrefixes(bool quiet);
 
-    void solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> ptr, bool fake);
+    void solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
+                        SPtr<TSrvCfgIface> ptr, bool fake);
     void renew         (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     void rebind        (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     void release       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
@@ -41,9 +42,11 @@ class TSrvOptIA_PD : public TOptIA_PD
     void decline       (SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface);
     bool doDuties();
  private:
-    SPtr<TIPv6Addr>   ClntAddr;
-    SPtr<TDUID>       ClntDuid;
-    int                   Iface;
+    SPtr<TIPv6Addr> ClntAddr;
+    SPtr<TDUID> ClntDuid;
+
+    /// @todo: replace with Parent->getIface();
+    int Iface;
 
     bool existingLease();
     bool assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, bool fake);
