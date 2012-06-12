@@ -13,6 +13,7 @@
 #ifndef SRVMSG_H
 #define SRVMSG_H
 
+#include <vector>
 #include "Msg.h"
 #include "SmartPtr.h"
 #include "SrvAddrMgr.h"
@@ -30,6 +31,15 @@
 class TSrvMsg : public TMsg
 {
 public:
+    struct RelayInfo {
+        SPtr<TIPv6Addr> LinkAddr_;
+        SPtr<TIPv6Addr> PeerAddr_;
+        SPtr<TSrvOptInterfaceID> InterfaceID_;
+        size_t Len_;
+        int Hop_;
+        List(TOptGeneric) EchoList_;
+    };
+
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
@@ -46,12 +56,15 @@ public:
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
 
+    /// @todo: modify this to use RelayInfo structure
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                       SPtr<TIPv6Addr> peerAddr,
                       int hop,
                       SPtr<TSrvOptInterfaceID> interfaceID,
                       List(TOptGeneric) echoList);
+    const std::vector<RelayInfo>& getRelayInfo() const { return RelayInfo_; };
 
+    /// @todo: redundant (can be replaced with getRelayInfo().size())
     int getRelayCount();
 
     bool releaseAll(bool quiet);
@@ -69,9 +82,10 @@ public:
 
     void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
     SPtr<TDUID> getClientDUID();
-                SPtr<TIPv6Addr> getClientPeer();
+    SPtr<TIPv6Addr> getClientPeer();
 
 protected:
+    void setDefaults();
     SPtr<TOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
     void getORO(SPtr<TMsg> clientMessage);
@@ -95,24 +109,17 @@ protected:
     void delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
 
 
-    int storeSelfRelay(char * buf, int relayLevel, ESrvIfaceIdOrder order);
+    int storeSelfRelay(char * buf, uint8_t relayLevel, ESrvIfaceIdOrder order);
 
+    // relay information
+    std::vector<RelayInfo> RelayInfo_;
 
-    // relay
-    SPtr<TIPv6Addr> LinkAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TIPv6Addr> PeerAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TSrvOptInterfaceID> InterfaceIDTbl[HOP_COUNT_LIMIT];
-    List(TOptGeneric) EchoListTbl[HOP_COUNT_LIMIT];  // list of options to be echoed back
-    int len[HOP_COUNT_LIMIT];
-    int HopTbl[HOP_COUNT_LIMIT];
+    unsigned long FirstTimeStamp_; // timestamp of first message transmission
+    unsigned long MRT_;            // maximum retransmission timeout
 
-    unsigned long FirstTimeStamp; // timestamp of first message transmission
-    unsigned long MRT;            // maximum retransmission timeout
-    int Relays;
-
-    SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay AND relay appended this RemoteID
-    int Parent; // type of the parent message (used in ADVERTISE and REPLY)
-
+    /// @todo: this should be moved to RelayInfo_ structure
+    SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay
+                                   // AND relay appended RemoteID
 };
 
 #endif

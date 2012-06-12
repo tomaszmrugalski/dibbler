@@ -17024,11 +17024,19 @@ fi
 
 
   if test x$debug = xyes; then
-     CPPFLAGS="${CPPFLAGS} -O0 -g"
+     OPTFLAG="-O0"
+     CPPFLAGS="-g ${CPPFLAGS}"
      LINKPRINT="${LINKPRINT} debug"
   else
-     CPPFLAGS="${CPPFLAGS} -O2"
+     OPTFLAG="-O2"
   fi
+
+  # add -O2 or -O0 only if it isn't specified already by user
+  TMP=`echo "$CPPFLAGS" | grep "\-O" -`
+  if test "$CPPFLAGS" != "$TMP"; then
+     CPPFLAGS="${OPTFLAG} ${CPPFLAGS}"
+  fi
+
 
 ### electric-fence ####################
   # Check whether --enable-efence was given.

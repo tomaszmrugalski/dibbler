@@ -41,10 +41,12 @@ class TIfaceMgr {
     void dump();
     bool isDone();
 
-    void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer);
-    void notifyScripts(std::string scriptName, SPtr<TMsg> question, SPtr<TMsg> answer,
-                       TNotifyScriptParams& params);
-    void notifyScript(std::string scriptName, std::string action, TNotifyScriptParams& params);
+    virtual void notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
+                               SPtr<TMsg> answer);
+    virtual void notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
+                               SPtr<TMsg> answer, TNotifyScriptParams& params);
+    virtual void notifyScript(const std::string& scriptName, std::string action,
+                              TNotifyScriptParams& params);
 
     virtual ~TIfaceMgr();
 
@@ -53,7 +55,7 @@ class TIfaceMgr {
 
     std::string XmlFile;
     List(TIfaceIface) IfaceLst; //Interface list
-    bool IsDone; 
+    bool IsDone;
 };
 
 #endif

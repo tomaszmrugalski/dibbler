@@ -426,12 +426,8 @@ bool TSrvAddrMgr::taAddrIsFree(SPtr<TIPv6Addr> addr)
     return true;
 }
 
-void TSrvAddrMgr::getAddrsCount(
-     SPtr<TContainer<SPtr<TSrvCfgAddrClass> > > classes,
-     long    *clntCnt,
-     long    *addrCnt,
-     SPtr<TDUID> duid,
-     int iface)
+void TSrvAddrMgr::getAddrsCount(SPtr< List(TSrvCfgAddrClass) > classes,
+     long *clntCnt, long *addrCnt, SPtr<TDUID> duid, int iface)
 {
     memset(clntCnt,0,sizeof(long)*classes->count());
     memset(addrCnt,0,sizeof(long)*classes->count());
