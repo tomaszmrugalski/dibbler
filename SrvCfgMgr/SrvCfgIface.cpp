@@ -17,10 +17,7 @@
 #include "Logger.h"
 #include "Opt.h"
 #include "SrvMsg.h"
-
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
-#endif
 
 using namespace std;
 
