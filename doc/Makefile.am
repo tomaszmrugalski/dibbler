@@ -62,8 +62,10 @@ devel: $(DOXYGEN)
 
 cppcheck:
 	mkdir -p html
-	cd .. && cppcheck --enable=all --suppressions-list=doc/cppcheck-skip.txt -f -v -j 2 \
-        -i bison++/ -i tests/ -i dibbler-*/ . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
+	cd .. && cppcheck --enable=all --inline-suppr \
+          --suppressions-list=doc/cppcheck-skip.txt \
+          -f -v -j 2 -i bison++/ -i tests/ -i dibbler-*/ \
+          . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html

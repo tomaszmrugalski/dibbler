@@ -112,7 +112,7 @@ void pos_resolver::tcpwaitanswer(DnsMessage*& ans, int sockid) {
 /* stand-alone client resolver */
 
 pos_cliresolver::pos_cliresolver() :
-  pos_resolver() {
+    pos_resolver(), is_tcp(false) {
   sockid = -1;
   quit_flag = false;
 #ifndef _WIN32

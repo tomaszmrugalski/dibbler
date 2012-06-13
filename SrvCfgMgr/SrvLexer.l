@@ -338,7 +338,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {hexnumber} {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20x",&(yylval.ival))) {
       Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd;
       YYABORT;
     }
@@ -347,7 +347,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 {integer} {
     // DECIMAL NUMBER
-    if(!sscanf(yytext,"%u",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20u",&(yylval.ival))) {
 	Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd;
 	YYABORT;
     }
