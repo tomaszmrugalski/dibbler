@@ -6,9 +6,9 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: SrvService.cpp,v 1.20 2008-08-30 20:41:06 thomson Exp $
  */
 
+#include <string>
 #include <winsock2.h>
 #include <direct.h>
 #include "SrvService.h"
@@ -18,6 +18,8 @@
 
 TDHCPServer * srvPtr;
 TSrvService StaticService;
+
+using namespace std;
 
 TSrvService::TSrvService() 
  :TWinService("DHCPv6Server","Dibbler - a DHCPv6 server",SERVICE_AUTO_START,

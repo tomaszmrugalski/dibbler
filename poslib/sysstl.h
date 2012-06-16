@@ -34,7 +34,7 @@
 #    define HAVE_SLIST
 #    include <ext/slist>
 #  else
-#    define slist list
+#    define slist std::list
 #  endif
 #endif
 
