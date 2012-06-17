@@ -7,7 +7,7 @@
  * released under GNU GPL v2 or later licence
  *
  */
-
+#include <string>
 using namespace std;
 
 #include "SrvCfgClientClass.h"

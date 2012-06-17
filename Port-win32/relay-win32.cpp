@@ -4,7 +4,6 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.8 2008-08-30 20:41:07 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -24,6 +23,8 @@
 
 extern "C" int lowlevelInit();
 extern TDHCPRelay * relPtr;
+
+using namespace std;
 
 void usage() {
 	cout << "Usage:" << endl;
