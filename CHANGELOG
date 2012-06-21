@@ -17,6 +17,7 @@
   - Srv: out-of-pool reservations now use T1,T2,preferred,valid times from the interface
   - Rel: Recent regression (complain about server and client on the same link) fixed
   - Srv: relays parameters (link, peer address) are now passed to the notify script
+  - Cli: client no longer crashes, when client-AddrMgr.xml is empty (bug #245)
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
