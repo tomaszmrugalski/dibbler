@@ -52,7 +52,7 @@ class DNSUpdate {
 private:
     DnsMessage *message;
     _addr server;
-    char* _hostname;
+    std::string Hostname_;
     char* hostip;
     domainname* zoneroot;
     char* ttl;

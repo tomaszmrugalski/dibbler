@@ -633,15 +633,17 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
 
         if (foo->isUsed()) {
             // client sent a hint, but it is used currently
-            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) && (*foo->getAddr() == *addr)) {
+            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) && 
+		 (foo->getAddr()) && (*foo->getAddr() == *addr)) {
                 Log(Debug) << "FQDN: This client (DUID=" << duid->getPlain()
                            << ") has already assigned name " << foo->getName()
                            <<" to its address " << foo->getAddr()->getPlain() << "." << LogEnd;
                 return foo;
             }
 
-            if (foo->getName() == hint) {
-                Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
+            if ( (foo->getName() == hint) && (*foo->getDuid() == *duid) ) {
+                Log(Debug) << "FQDN: Client requested " << hint << ", it is already assinged to this client. Reusing." << LogEnd;
+		return foo;
             }
             continue;
         }
@@ -694,9 +696,9 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     case UNKNOWN_FQDN_ACCEPT:
     {
         Log(Info) << "FQDN: Accepting unknown (" << hint <<") FQDN requested by client." <<LogEnd;
-        SPtr<TFQDN> newEntry = new TFQDN(hint,false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, hint, false);
         FQDNLst_.append(newEntry);
-        Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
+        // Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
         return newEntry;
     }
     case UKNNOWN_FQDN_APPEND:
@@ -714,7 +716,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         }
 
         assignedDomain += "." + FQDNDomain_;
-        SPtr<TFQDN> newEntry = new TFQDN(assignedDomain, false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, assignedDomain, false);
         FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assigning (" << assignedDomain << ")." <<LogEnd;
         return newEntry;
@@ -728,7 +730,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         while ( (j = tmp.find(':')) != std::string::npos)
             tmp.replace(j, 1, "-");
         tmp = tmp + "." + FQDNDomain_;
-        SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, tmp, false);
         FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << tmp << ")." <<LogEnd;
         return newEntry;
