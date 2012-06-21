@@ -77,5 +77,8 @@
   - Christof Schulz (develop(at)kristov(dot)de>
     2012-02: Fix for prefix delegation segfault
 
+  - Mickael Marchand <mikmak(at)freenux(dot)org>
+    2012-03: link-local client reservation, several fixes
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
