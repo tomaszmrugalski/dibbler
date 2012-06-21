@@ -72,13 +72,13 @@ class TOpt
 
     int getOptType();
 
-    SPtr<TOpt> getOption(int optType);
+    SPtr<TOpt> getOption(int type);
 
     // suboptions management
     void firstOption();
     SPtr<TOpt> getOption();
     void addOption(SPtr<TOpt> opt);
-    void delOption();
+    bool delOption(uint16_t type);
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);

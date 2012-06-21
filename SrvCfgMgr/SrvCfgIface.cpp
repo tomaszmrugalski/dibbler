@@ -129,7 +129,7 @@ bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid,
 
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
-    Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
+    Log(Debug) << "Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
     while (x=ExceptionsLst_.get()) {
 
         if (!x->getPrefix()) // that is not prefix reservation
