@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: Opt.h,v 1.12 2009-03-24 23:17:18 thomson Exp $
- *
  */
 
 #ifndef OPT_H
