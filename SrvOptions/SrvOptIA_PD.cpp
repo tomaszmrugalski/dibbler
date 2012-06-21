@@ -552,7 +552,7 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
 
 
     SPtr<TOptVendorData> remoteID;
-    TSrvMsg * par = dynamic_cast<TSrvMsg*>(Parent);
+    TSrvMsg * par = (TSrvMsg*)(Parent);
     if (par) {
       remoteID = par->getRemoteID();
     }

@@ -36,7 +36,7 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
                                                       TMsg * parent, bool quiet) {
 
     SPtr<TOptVendorData> remoteID;
-    TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
+    TSrvMsg* par = (TSrvMsg*)(parent);
     SPtr<TIPv6Addr> peer;
     if (par) {
         remoteID = par->getRemoteID();
