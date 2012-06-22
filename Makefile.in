@@ -376,12 +376,12 @@ dibbler_server_LDADD = -L$(top_builddir)/SrvOptions -lSrvOptions \
 	-L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr \
 	-L$(top_builddir)/AddrMgr -lAddrMgr -L$(top_builddir)/poslib \
-	-lposlib -L$(top_builddir)/nettle -lnettle \
+	-lPoslib -L$(top_builddir)/nettle -lNettle \
 	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
 	-lMessages -L$(top_builddir)/CfgMgr -lCfgMgr \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lSrvCfgMgr -lSrvMessages \
-	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib -lMisc
+	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lPoslib -lMisc
 dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.cpp \
 	$(top_srcdir)/Misc/DHCPRelay.h
@@ -398,7 +398,7 @@ dibbler_relay_LDADD = -L$(top_builddir)/RelTransMgr -lRelTransMgr \
 	-L$(top_builddir)/RelMessages -lRelMessages -lRelCfgMgr \
 	-L$(top_builddir)/CfgMgr -lCfgMgr -L$(top_builddir)/RelOptions \
 	-lRelOptions -L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/poslib -lposlib -L$(top_builddir)/Options \
+	-L$(top_builddir)/poslib -lPoslib -L$(top_builddir)/Options \
 	-lOptions -L$(top_builddir)/Messages -lMessages \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc
