@@ -309,6 +309,16 @@ class domainname {
    * \sa tostring()
    */
   stl_string torelstring(const domainname &root) const;
+  
+  /*!
+   * \brief RFC 2345 canonical form
+   *
+   * Returns the RFC 2535 canonical form of the domain name. The canonical form
+   * is a unique binary representation of a domain name that is used for
+   * checksummming domain names.
+   * \return The Canonical form of the RR
+   */
+  stl_string canonical () const;
 
   /*!
    * \brief check label match count

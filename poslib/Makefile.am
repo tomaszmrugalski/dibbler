@@ -4,6 +4,8 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/Misc
 libposlib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \
+  dnssec-sign.cpp \
+  dnssec-sign.h \
   exception.cpp \
   lexfn.cpp \
   masterfile.cpp \

@@ -403,12 +403,13 @@ unsigned char *get_ipv6_ptr(_addr *a) {
 #endif
 
 
-stl_string addr_to_string(_addr *addr, bool include_port) {
-  char *caddr, msg[64];
+stl_string addr_to_string(const _addr *addr, bool include_port) {
+  unsigned char *caddr;
+  char msg[64];
 
   if (addr->s_family == AF_INET) {
     /* IPv4 */
-    caddr = (char *)&((sockaddr_in *)addr)->sin_addr;
+    caddr = (unsigned char *)&((sockaddr_in *)addr)->sin_addr;
     sprintf(msg, "%d.%d.%d.%d", caddr[0], caddr[1], caddr[2], caddr[3]);
     if (include_port)
       sprintf(msg + strlen(msg),"#%d", ntohs(((sockaddr_in *)addr)->sin_port) & 32767);
@@ -417,7 +418,7 @@ stl_string addr_to_string(_addr *addr, bool include_port) {
 #ifdef HAVE_IPV6
   if (addr->s_family == AF_INET6) {
     /* IPv6 */
-    caddr = (char *)&((sockaddr_in6 *)addr)->sin6_addr;
+    caddr = (unsigned char *)&((sockaddr_in6 *)addr)->sin6_addr;
     sprintf(msg, "%x:%x:%x:%x:%x:%x:%x:%x",
             caddr[0]*256+ caddr[1], caddr[2]*256+ caddr[3], caddr[4]*256+ caddr[5],
             caddr[6]*256+ caddr[7], caddr[8]*256+ caddr[9], caddr[10]*256+ caddr[11],

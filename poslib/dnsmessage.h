@@ -18,6 +18,8 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+class DnsRR;
+
 #ifndef __POSLIB_DNSMESSAGE_H
 #define __POSLIB_DNSMESSAGE_H
 
@@ -469,11 +471,21 @@ class DnsMessage {
    * \brief read DNS message
    *
    * This function will read DNS message information from the binary DNS
-   * message pointed to by data.
-   * \param data Binary DNS message
-   * \param len Length of message
+   * message pointed to by data. If the DNS message contains a TSIG record, the
+   * function returns the number of bytes read before the TSIG record.
+   * This information is nessecary in case you want to call #verify_signature on
+   * the message manually.
+   *
+   * If the #tsig_rr is non-NULL, the message is verified; if it is NULL and
+   * the message still contains a TSIG record, then #tsig_rr is set to the
+   * TSIG record found in the message (for use in later checking).
+   *
+   * \param  data Binary DNS message
+   * \param  len Length of message
+   * \return The length of the data read, not including a TSIG record if it is
+   *         present
    */
-  void read_from_data(unsigned char *data, int len);
+  int read_from_data(unsigned char *data, int len);
 
   /*!
    * \brief compile DNS message
@@ -491,15 +503,51 @@ class DnsMessage {
   static void write_rr(DnsRR &rr, stl_string &message, stl_slist(dom_compr_info) *comprinfo,
   int flags = 0);
   void write_section(stl_list(DnsRR)& section, int lenpos, stl_string& message, stl_slist(dom_compr_info) &comprinfo, int maxlen, bool is_additional = false);
-  void read_section(stl_list(DnsRR)& section, int count, message_buff &buff, int &pos);
+  void read_section(stl_list(DnsRR)& section, int count, message_buff &buff, int &pos, unsigned int *tsig_pos = NULL);
   static DnsRR read_rr(message_buff &buff, int &pos, int flags = 0);
+  
+  /*!
+   * \brief TSIG record for message
+   *
+   * When compiling a message, if tsig_rr is non-null, this TSIG record will be
+   * used to sign the DNS message, in combination with the key sign_key.
+   *
+   * When reading a message, if tsig_rr is non-null, this TSIG record will be
+   * used to verify the DNS message, in combination with the key sign_key
+   * (i.e., #verify_signature will be called automatically). If it is set to
+   * NULL and the message is signed, instead, it will be set to the TSIG record
+   * found in the message.
+   *
+   * When calling #verify_signature, this record will be used to
+   * verify the DNS message.
+   */
+  DnsRR *tsig_rr;
+  
+  /*!
+   * \brief TSIG key for message
+   *
+   * Key to use when signing or verifying a signed message; see #tsig_rr.
+   */
+  stl_string sign_key;  
+  
+  /*!
+   * \brief create answer message
+   * TODO: rename?
+   * Creates a DNS message that has the same sign key, so that #read_data
+   * can check whether it is an answer to the DNS message.
+   * TODO: note: not for clients
+   * \return the answer message
+   */
+  DnsMessage *initialize_answer();
 };
 
 u_int16 uint16_value(const unsigned char *buff);
 u_int32 uint32_value(const unsigned char *buff);
+u_int48 uint48_value(const unsigned char *buff);
 
 unsigned char *uint16_buff(uint16_t val);
 unsigned char *uint32_buff(uint32_t val);
+unsigned char *uint48_buff(u_int48 val);
 
 /*!
  * \brief create a query message
@@ -603,4 +651,3 @@ _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtyp
 bool has_rrset(stl_list(DnsRR) &rrlist, domainname &QNAME, uint16_t QTYPE = QTYPE_ANY);
 
 #endif /* __POSLIB_DNSMESSAGE_H */
-

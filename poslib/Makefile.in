@@ -57,9 +57,10 @@ am__v_at_0 = @
 libposlib_a_AR = $(AR) $(ARFLAGS)
 libposlib_a_LIBADD =
 am_libposlib_a_OBJECTS = dnsmessage.$(OBJEXT) domainfn.$(OBJEXT) \
-	exception.$(OBJEXT) lexfn.$(OBJEXT) masterfile.$(OBJEXT) \
-	postime.$(OBJEXT) random.$(OBJEXT) resolver.$(OBJEXT) \
-	rr.$(OBJEXT) socket.$(OBJEXT) vsnprintf.$(OBJEXT)
+	dnssec-sign.$(OBJEXT) exception.$(OBJEXT) lexfn.$(OBJEXT) \
+	masterfile.$(OBJEXT) postime.$(OBJEXT) random.$(OBJEXT) \
+	resolver.$(OBJEXT) rr.$(OBJEXT) socket.$(OBJEXT) \
+	vsnprintf.$(OBJEXT)
 libposlib_a_OBJECTS = $(am_libposlib_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -245,6 +246,8 @@ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/Misc
 libposlib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \
+  dnssec-sign.cpp \
+  dnssec-sign.h \
   exception.cpp \
   lexfn.cpp \
   masterfile.cpp \
@@ -324,6 +327,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dnsmessage.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dnssec-sign.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/domainfn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exception.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lexfn.Po@am__quote@

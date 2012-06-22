@@ -683,6 +683,9 @@ stl_string str_rcode(int rcode) {
   if (rcode == RCODE_NXRRSET) return "NXRRSET";
   if (rcode == RCODE_NOTAUTH) return "NOTAUTH";
   if (rcode == RCODE_NOTZONE) return "NOTZONE";
+  if (rcode == RCODE_BADSIG) return "BADSIG";
+  if (rcode == RCODE_BADKEY) return "BADKEY";
+  if (rcode == RCODE_BADTIME) return "BADTIME";
   return intstring(rcode);
 }
 

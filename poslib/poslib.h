@@ -113,6 +113,7 @@
 #include "bits.h"
 #include "dnsdefs.h"
 #include "dnsmessage.h"
+#include "dnssec-sign.h"
 #include "domainfn.h"
 #include "exception.h"
 #include "lexfn.h"

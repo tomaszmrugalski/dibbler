@@ -153,7 +153,7 @@ class pos_resolver {
    * \param server The server to query
    * \param flags Flags controlling query behavior.
    */
-  virtual void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL);
+  virtual void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL) = 0;
 
   /*!
    * \brief high-level query function using multiple servers
@@ -166,9 +166,10 @@ class pos_resolver {
    * querying at a random place in the servers list; after that, it will run
    * through all servers listed in the order in which you specify them.
    * \param servers List of servers to query
+   * \return The address of the server that returned this answer
    * \sa query()
    */
-  virtual void query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL);
+  virtual _addr query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL) = 0;
 
   /*!
    * \brief low-level resolver function for sending a message
@@ -178,7 +179,7 @@ class pos_resolver {
    * \param res The host to send the message to
    * \param sockid Implementation-dependent argument.
    */
-  virtual void sendmessage(DnsMessage *msg, _addr *res, int sockid = -1);
+  virtual void sendmessage(DnsMessage *msg, _addr *res, int sockid = -1) = 0;
 
   /*!
    * \brief low-level resolver function for waiting for an answer
@@ -189,14 +190,16 @@ class pos_resolver {
    * of sent queries.
    *
    * If no answer is received in time, this function will raise an exception.
-   * \param ans If an answer is received, it will be put in this variable
+   * \param ans If an answer is received, it will be put in this variable. This
+   *            should already be a valid DNS message, presumably initialized
+   *            with q->initialize_answer()
    * \param wait List of sent queries we might get an answer to
    * \param timeout Number of milliseconds to wait at most
    * \param it If an answer is received, this iterator will point to the
    *           message this was an answer to.
    * \param sockid Implementation-dependent argument.
    */
-  virtual bool waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& it, int sockid = -1);
+  virtual bool waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& it, int sockid = -1) = 0;
 
   /*!
    * \brief establishes a TCP connection to a DNS server
@@ -248,7 +251,10 @@ class pos_resolver {
    * receives an answer from the server on the other end of the line. Unlike
    * its UDP conterpart, this function does not check whether the server
    * actually answered our query.
-   * \param ans Variable to put the received message in
+   * \param ans Variable to put the received message in. This should already
+   *            point to an existing DNS message, which should be initialized
+   *            by calling q->initialize_answer(); even if an error occurs,
+   *            this may be non-NULL.
    * \param sockid The TCP connection (as returned by tcpconnect())
    */
   virtual void tcpwaitanswer(DnsMessage*& ans, int sockid);
@@ -284,7 +290,7 @@ class pos_cliresolver : public pos_resolver {
   virtual ~pos_cliresolver();
   
   void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL);
-  void query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL);
+  _addr query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL);
   /*!
    * \brief low-level resolver function for sending a message
    *
@@ -303,7 +309,9 @@ class pos_cliresolver : public pos_resolver {
    * of sent queries.
    *
    * If no answer is received in time, this function will raise an exception.
-   * \param ans If an answer is received, it will be put in this variable
+   * \param ans If an answer is received, it ill be put in this variable. This
+   *            should already be a valid DNS message, presumably initialized
+   *            with q->initialize_answer()
    * \param wait List of sent queries we might get an answer to
    * \param timeout Number of milliseconds to wait at most
    * \param it If an answer is received, this iterator will point to the

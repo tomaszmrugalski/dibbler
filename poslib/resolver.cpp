@@ -52,11 +52,6 @@ pos_resolver::~pos_resolver() {
   free(udp_tries);
 }
 
-void pos_resolver::query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags) { }
-void pos_resolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags) { }
-void pos_resolver::sendmessage(DnsMessage *msg, _addr *res, int sockid) { }
-bool pos_resolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& it, int sockid) { return false; }
-
 /* tcp queries */
 
 int pos_resolver::tcpconnect(_addr *res) {
@@ -70,7 +65,15 @@ void pos_resolver::tcpdisconnect(int sockid) {
 void pos_resolver::tcpquery(DnsMessage *q, DnsMessage*& a, int sockid) {
   q->ID = posrandom();
   tcpsendmessage(q, sockid);
-  tcpwaitanswer(a, sockid);
+  if (!a) a = q->initialize_answer ();
+  
+  try {
+    tcpwaitanswer(a, sockid);
+  } catch (PException p) {
+    if (a) delete a; a = NULL;
+    throw p;
+  }
+    
   if (a->ID != q->ID) {
     delete a; a = NULL;
     throw PException("Answer ID does not match question ID!");
@@ -94,15 +97,12 @@ void pos_resolver::tcpwaitanswer(DnsMessage*& ans, int sockid) {
   postime_t end = getcurtime() + tcp_timeout;
 
   try {
-    ans = NULL;
     tcpreadall(sockid, (char*)len_b, 2, end.after(getcurtime()));
     len = len_b[0] * 256 + len_b[1];
     msg = new unsigned char[len];
     tcpreadall(sockid, (char*)msg, len, end.after(getcurtime()));
-    ans = new DnsMessage();
     ans->read_from_data(msg, len);
   } catch(PException p) {
-    if (ans) { delete ans; ans = NULL; }
     if (msg) { delete [] msg; msg = NULL; }
     throw p;
   }
@@ -116,9 +116,9 @@ pos_cliresolver::pos_cliresolver() :
   sockid = -1;
   quit_flag = false;
 #ifndef _WIN32
-  if (pipe(clipipes) != 0) {
-      throw PException("Failed to create pipe.");
-  }
+   if (pipe(clipipes) != 0) {
+       throw PException("Failed to create pipe.");
+   }
 #endif
 }
 
@@ -170,7 +170,7 @@ void pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, _addr *server, int fl
 }
 
 
-void pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags) {
+_addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags) {
   int x = -1;
   stl_slist(_addr)::iterator server, sbegin;
   stl_slist(WaitAnswerData) waitdata;
@@ -214,11 +214,12 @@ void pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &ser
         } else throw PException("Unknown address family");
         sendmessage(q, &*server, sockid);
         waitdata.push_front(WaitAnswerData(q->ID, *server));
+        if (a) delete a; a = q->initialize_answer ();
         if (waitanswer(a, waitdata, udp_tries[x], it, sockid)) {
           /* answer received */
           if (a->TC && flags == Q_DFL) {
             delete a;
-            a = NULL;
+            a = q->initialize_answer ();
             /* retry using TCP */
             sockid = 0;
             try {
@@ -240,9 +241,10 @@ void pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &ser
           if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
 #endif
           if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
-          return;
+          return it->from;
         } else if (quit_flag) throw PException("Interrupted");
       } catch(PException p) {
+        if (a) delete a; a = NULL;
 #ifdef HAVE_IPV6
         if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
 #endif
@@ -300,7 +302,6 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
       while (wit != wait.end()) {
         if (address_matches(&wit->from, &src)) {
           try {
-            ans = new DnsMessage();
             ans->read_from_data(msg, len);
           } catch (PException p) {
             if (len >= 12 && (msg[2]&2)) {
@@ -310,8 +311,6 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
               ans->TC = true;
               return true;
             }
-            delete ans;
-            ans = NULL;
             throw p;
           }
           return true;
@@ -324,4 +323,3 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
   }
 //  return false;
 }
-
