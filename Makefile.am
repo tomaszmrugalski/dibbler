@@ -69,15 +69,15 @@ dibbler_server_LDADD += -L$(top_builddir)/SrvTransMgr -lSrvTransMgr
 dibbler_server_LDADD += -L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_server_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
-dibbler_server_LDADD += -L$(top_builddir)/poslib -lposlib
-dibbler_server_LDADD += -L$(top_builddir)/nettle -lnettle
+dibbler_server_LDADD += -L$(top_builddir)/poslib -lPoslib
+dibbler_server_LDADD += -L$(top_builddir)/nettle -lNettle
 dibbler_server_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions
-dibbler_server_LDADD += -lIfaceMgr -lposlib -lMisc
+dibbler_server_LDADD += -lIfaceMgr -lPoslib -lMisc
 
 relay: dibbler-relay
 
@@ -100,7 +100,7 @@ dibbler_relay_LDADD += -lRelCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/RelOptions -lRelOptions
 dibbler_relay_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
-dibbler_relay_LDADD += -L$(top_builddir)/poslib -lposlib
+dibbler_relay_LDADD += -L$(top_builddir)/poslib -lPoslib
 dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
