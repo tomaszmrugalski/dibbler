@@ -54,14 +54,14 @@ am__v_AR_0 = @echo "  AR    " $@;
 AM_V_at = $(am__v_at_$(V))
 am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
-libposlib_a_AR = $(AR) $(ARFLAGS)
-libposlib_a_LIBADD =
-am_libposlib_a_OBJECTS = dnsmessage.$(OBJEXT) domainfn.$(OBJEXT) \
+libPoslib_a_AR = $(AR) $(ARFLAGS)
+libPoslib_a_LIBADD =
+am_libPoslib_a_OBJECTS = dnsmessage.$(OBJEXT) domainfn.$(OBJEXT) \
 	dnssec-sign.$(OBJEXT) exception.$(OBJEXT) lexfn.$(OBJEXT) \
 	masterfile.$(OBJEXT) postime.$(OBJEXT) random.$(OBJEXT) \
 	resolver.$(OBJEXT) rr.$(OBJEXT) socket.$(OBJEXT) \
 	vsnprintf.$(OBJEXT)
-libposlib_a_OBJECTS = $(am_libposlib_a_OBJECTS)
+libPoslib_a_OBJECTS = $(am_libPoslib_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -104,8 +104,8 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(libposlib_a_SOURCES)
-DIST_SOURCES = $(libposlib_a_SOURCES)
+SOURCES = $(libPoslib_a_SOURCES)
+DIST_SOURCES = $(libPoslib_a_SOURCES)
 DATA = $(dist_noinst_DATA)
 ETAGS = etags
 CTAGS = ctags
@@ -241,9 +241,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libposlib.a
+noinst_LIBRARIES = libPoslib.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
-libposlib_a_SOURCES = \
+libPoslib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \
   dnssec-sign.cpp \
@@ -315,10 +315,10 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libposlib.a: $(libposlib_a_OBJECTS) $(libposlib_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libposlib.a
-	$(AM_V_AR)$(libposlib_a_AR) libposlib.a $(libposlib_a_OBJECTS) $(libposlib_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libposlib.a
+libPoslib.a: $(libPoslib_a_OBJECTS) $(libPoslib_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libPoslib.a
+	$(AM_V_AR)$(libPoslib_a_AR) libPoslib.a $(libPoslib_a_OBJECTS) $(libPoslib_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libPoslib.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
