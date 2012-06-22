@@ -23,7 +23,7 @@ TEST_F(ServerTest, CfgMgr_options1) {
     ASSERT_TRUE(opt); // check that NIS-servers are supported
     List(TIPv6Addr) addrLst = opt->getAddrLst();
 
-    ASSERT_EQ(5, addrLst.count());
+    ASSERT_EQ(5u, addrLst.count());
     addrLst.first();
 
     EXPECT_EQ(string("2000::400"), addrLst.get()->getPlain());

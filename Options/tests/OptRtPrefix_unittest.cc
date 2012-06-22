@@ -41,15 +41,15 @@ TEST(OptAddrTest, rtPrefixStoreSelf) {
     EXPECT_TRUE(rtPrefix->isValid());
     EXPECT_TRUE(nextHop->isValid());
 
-    EXPECT_EQ(1000, rtPrefix->getLifetime());
+    EXPECT_EQ(1000u, rtPrefix->getLifetime());
     EXPECT_EQ(64, rtPrefix->getPrefixLen());
     EXPECT_EQ(42, rtPrefix->getMetric());
 
     // rt-rprefix on its own takes 26 bytes
-    EXPECT_EQ(26, rtPrefix->getSize());
+    EXPECT_EQ(26u, rtPrefix->getSize());
 
     // next-hop on its own takes 20 bytes
-    EXPECT_EQ(20, nextHop->getSize());
+    EXPECT_EQ(20u, nextHop->getSize());
 
     nextHop->addOption((Ptr*)rtPrefix);
 

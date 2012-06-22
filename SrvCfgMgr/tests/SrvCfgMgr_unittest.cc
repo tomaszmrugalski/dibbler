@@ -75,7 +75,7 @@ TEST_F(SrvCfgMgrTest, constructor) {
         EXPECT_TRUE(opt);
         List(TIPv6Addr) addrLst = opt->getAddrLst();
 
-        ASSERT_EQ(5, addrLst.count());
+        ASSERT_EQ(5u, addrLst.count());
         SPtr<TIPv6Addr> addr;
         addrLst.first();
 
