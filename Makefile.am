@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr Messages poslib
+CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr Messages poslib nettle
 CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
 CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
@@ -41,6 +41,7 @@ dibbler_client_LDADD += -L$(top_builddir)/ClntAddrMgr -lClntAddrMgr
 dibbler_client_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_client_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
 dibbler_client_LDADD += -L$(top_builddir)/poslib -lposlib
+dibbler_client_LDADD += -L$(top_builddir)/nettle -lnettle
 dibbler_client_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_client_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_client_LDADD +=                  -lOptions -lMessages
@@ -69,6 +70,7 @@ dibbler_server_LDADD += -L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_server_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/poslib -lposlib
+dibbler_server_LDADD += -L$(top_builddir)/nettle -lnettle
 dibbler_server_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr

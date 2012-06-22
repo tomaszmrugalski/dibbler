@@ -325,10 +325,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr \
-	Messages poslib SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages \
-	SrvTransMgr SrvCfgMgr RelCfgMgr RelIfaceMgr RelMessages \
-	RelOptions RelTransMgr ClntOptions ClntTransMgr ClntAddrMgr \
-	ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
+	Messages poslib nettle SrvOptions SrvIfaceMgr SrvAddrMgr \
+	SrvMessages SrvTransMgr SrvCfgMgr RelCfgMgr RelIfaceMgr \
+	RelMessages RelOptions RelTransMgr ClntOptions ClntTransMgr \
+	ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
 SUBDIRS = $(CODE_SUBDIRS) $(am__append_1)
 DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 dibbler_client_SOURCES =  \
@@ -351,8 +351,9 @@ dibbler_client_LDADD = -L$(top_builddir)/ClntTransMgr -lClntTransMgr \
 	-L$(top_builddir)/ClntAddrMgr -lClntAddrMgr \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr \
 	-L$(top_builddir)/AddrMgr -lAddrMgr -L$(top_builddir)/poslib \
-	-lposlib -L$(top_builddir)/Options -lOptions \
-	-L$(top_builddir)/Messages -lMessages -lOptions -lMessages \
+	-lposlib -L$(top_builddir)/nettle -lnettle \
+	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
+	-lMessages -lOptions -lMessages \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lClntOptions -lOptions
 dibbler_server_SOURCES =  \
@@ -375,9 +376,10 @@ dibbler_server_LDADD = -L$(top_builddir)/SrvOptions -lSrvOptions \
 	-L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr \
 	-L$(top_builddir)/AddrMgr -lAddrMgr -L$(top_builddir)/poslib \
-	-lposlib -L$(top_builddir)/Options -lOptions \
-	-L$(top_builddir)/Messages -lMessages -L$(top_builddir)/CfgMgr \
-	-lCfgMgr -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
+	-lposlib -L$(top_builddir)/nettle -lnettle \
+	-L$(top_builddir)/Options -lOptions -L$(top_builddir)/Messages \
+	-lMessages -L$(top_builddir)/CfgMgr -lCfgMgr \
+	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc -lSrvCfgMgr -lSrvMessages \
 	-lCfgMgr -lSrvOptions -lOptions -lIfaceMgr -lposlib -lMisc
 dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp \

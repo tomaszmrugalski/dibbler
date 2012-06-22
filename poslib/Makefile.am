@@ -1,5 +1,5 @@
 noinst_LIBRARIES = libposlib.a
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/Misc
+INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
 
 libposlib_a_SOURCES = \
   dnsmessage.cpp \

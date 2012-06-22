@@ -22,11 +22,11 @@
 #include "poslib.h"
 #include "dnssec-sign.h"
 
-#if 0
+#if 1
 extern "C" {
-#include <nettle/hmac.h>
-#include <nettle/base64.h>
-};
+#include "hmac.h"
+#include "base64.h"
+}
 #endif
 
 //void print_buff(int len, const unsigned char *buff) {
