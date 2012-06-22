@@ -23,6 +23,8 @@
 extern "C" int lowlevelInit();
 extern TDHCPServer * srvPtr;
 
+using namespace std;
+
 void usage() {
 	cout << "Usage:" << endl;
 	cout << " dibbler-server.exe ACTION [-d c:\\path\\to\\config\\file]" << endl

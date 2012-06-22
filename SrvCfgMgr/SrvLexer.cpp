@@ -3152,7 +3152,7 @@ YY_RULE_SETUP
 {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20x",&(yylval.ival))) {
       Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd;
       YYABORT;
     }
@@ -3164,7 +3164,7 @@ YY_RULE_SETUP
 #line 357 "SrvLexer.l"
 {
     // DECIMAL NUMBER
-    if(!sscanf(yytext,"%u",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20u",&(yylval.ival))) {
 	Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd;
 	YYABORT;
     }

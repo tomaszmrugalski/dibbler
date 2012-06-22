@@ -28,7 +28,7 @@ TEST(OptIAAddressTest, storeSelf) {
     EXPECT_EQ(1000U, opt->getPref() );
     EXPECT_EQ(2000U, opt->getValid() );
 
-    ASSERT_EQ(28, opt->getSize());
+    ASSERT_EQ(28u, opt->getSize());
 
     ASSERT_FALSE( memcmp(buf, expected, 28) );
 
@@ -51,8 +51,8 @@ TEST(OptIAAddressTest, parse) {
 
     EXPECT_EQ(OPTION_IAADDR, opt->getOptType() );
 
-    EXPECT_EQ( 1000, opt->getPref() );
-    EXPECT_EQ( 2000, opt->getValid() );
+    EXPECT_EQ(1000u, opt->getPref() );
+    EXPECT_EQ(2000u, opt->getValid() );
 
     opt->storeSelf(buf);
 

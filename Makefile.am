@@ -121,7 +121,7 @@ dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
 nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify.sh scripts/notify-scripts/server-notify.sh
-nobase_dist_doc_DATA += scripts/INFO scripts/remote-autoconf scripts/xtract_version
+nobase_dist_doc_DATA += scripts/bison-sanitizer.py scripts/remote-autoconf scripts/xtract_version
 
 dist_noinst_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
 dist_noinst_DATA += scripts

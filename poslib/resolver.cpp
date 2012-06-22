@@ -112,11 +112,13 @@ void pos_resolver::tcpwaitanswer(DnsMessage*& ans, int sockid) {
 /* stand-alone client resolver */
 
 pos_cliresolver::pos_cliresolver() :
-  pos_resolver() {
+    pos_resolver(), is_tcp(false) {
   sockid = -1;
   quit_flag = false;
 #ifndef _WIN32
-  pipe(clipipes);
+  if (pipe(clipipes) != 0) {
+      throw PException("Failed to create pipe.");
+  }
 #endif
 }
 
@@ -137,7 +139,9 @@ void pos_cliresolver::stop() {
 	udpclose(sockid);
     sockid = -1;
 #else
-    write(clipipes[1], "x", 1);
+    if (write(clipipes[1], "x", 1) == -1) {
+      throw PException("Pipe write failed.");
+    }
 #endif
   }
 }
@@ -151,7 +155,9 @@ void pos_cliresolver::clrstop() {
   set.set(0, clipipes[0]);
   set.check();
   while (set.isdata(0)) {
-    read(clipipes[0], &buff, 1);
+      if (read(clipipes[0], &buff, 1) == -1) {
+          throw PException("Client pipe read failed");
+      }
     set.check();
   }
 #endif
@@ -280,7 +286,9 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
 #ifndef _WIN32
     if (set.isdata(1)) {
       char data;
-      read(clipipes[0], &data, 1);
+      if (read(clipipes[0], &data, 1) == -1) {
+          throw PException("Socket read failed");
+      }
     }
 #endif
 

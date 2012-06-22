@@ -17,10 +17,7 @@
 #include "Logger.h"
 #include "Opt.h"
 #include "SrvMsg.h"
-
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
-#endif
 
 using namespace std;
 
@@ -39,7 +36,7 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
                                                       TMsg * parent, bool quiet) {
 
     SPtr<TOptVendorData> remoteID;
-    TSrvMsg* par = dynamic_cast<TSrvMsg*>(parent);
+    TSrvMsg* par = (TSrvMsg*)(parent);
     SPtr<TIPv6Addr> peer;
     if (par) {
         remoteID = par->getRemoteID();
@@ -132,7 +129,7 @@ bool TSrvCfgIface::checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid,
 
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
-    Log(Debug) << " Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
+    Log(Debug) << "Checking prefix " << pfx->getPlain() << " against reservations ... " << LogEnd;
     while (x=ExceptionsLst_.get()) {
 
         if (!x->getPrefix()) // that is not prefix reservation

@@ -6,9 +6,9 @@
  *
  * Released under GNU GPL v2 licence                                
  *
- * $Id: RelService.cpp,v 1.9 2008-08-30 20:41:06 thomson Exp $
  */
 
+#include <string>
 #include <winsock2.h>
 #include <direct.h>
 #include "RelService.h"
@@ -16,6 +16,8 @@
 #include "Portable.h"
 #include "Logger.h"
 #include "DHCPConst.h"
+
+using namespace std;
 
 TDHCPRelay * relPtr;
 TRelService StaticService;
