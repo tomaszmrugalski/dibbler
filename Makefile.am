@@ -70,7 +70,6 @@ dibbler_server_LDADD += -L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_server_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/poslib -lPoslib
-dibbler_server_LDADD += -L$(top_builddir)/nettle -lNettle
 dibbler_server_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
@@ -78,6 +77,7 @@ dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions
 dibbler_server_LDADD += -lIfaceMgr -lPoslib -lMisc
+dibbler_server_LDADD += -L$(top_builddir)/nettle -lNettle
 
 relay: dibbler-relay
 
