@@ -1,7 +1,7 @@
-noinst_LIBRARIES = libposlib.a
+noinst_LIBRARIES = libPoslib.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
 
-libposlib_a_SOURCES = \
+libPoslib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \
   dnssec-sign.cpp \
