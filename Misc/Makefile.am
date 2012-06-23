@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libMisc.a
 
-libMisc_a_CFLAGS = -std=c99 $(CFLAGS)
+libMisc_a_CFLAGS = -std=c99
 
 libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h
 libMisc_a_SOURCES += DHCPConst.cpp DHCPConst.h DHCPDefaults.h

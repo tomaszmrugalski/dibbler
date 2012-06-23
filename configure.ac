@@ -206,21 +206,21 @@ dnl ---------------------------------------------
     Linux)
       ARCH="LINUX"
       PORT_SUBDIR="Port-linux"
-      PORT_CFLAGS="-std=c99"
+      PORT_CFLAGS=""
       PORT_LDFLAGS="-lpthread"
       EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS="-std=c99"
+      PORT_CFLAGS=""
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
     OpenBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS="-std=c99 -DOPENBSD"
+      PORT_CFLAGS="-DOPENBSD"
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
