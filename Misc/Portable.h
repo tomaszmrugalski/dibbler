@@ -206,35 +206,36 @@ struct link_state_notify_t
    returned by if_list_get(). They are highly system specific. */
 #define LOGLEVEL          0
 
+
 #ifdef WIN32
-#define IF_RUNNING        0x1
-#define IF_UP             0x1
-#define IF_MULTICAST      0x4
-#define IF_LOOPBACK       0x8
+#define IFF_RUNNING        0x1
+#define IFF_UP             0x1
+#define IFF_MULTICAST      0x4
+#define IFF_LOOPBACK       0x8
 #endif
 
-#ifdef LINUX
+#if 0
+#if defined(LINUX)
 #define IF_UP		      0x1
 #define IF_LOOPBACK	      0x8
 #define IF_RUNNING	      0x40
 #define IF_MULTICAST	      0x1000
 #endif
 
-#ifdef BSD
+#if defined(BSD)
 #define IF_UP        0x1
 #define IF_LOOPBACK  0x8
 #define IF_RUNNING   0x40
 #define IF_MULTICAST 0x8000
 #endif
 
-#ifdef SUNOS
-/** @todo: Fix those values */
-#define IF_UP        0x1
-#define IF_LOOPBACK  0x8
-#define IF_RUNNING   0x40
-#define IF_MULTICAST 0x8000
+#if defined(SUNOS)
+#define IF_UP        IFF_UP
+#define IF_LOOPBACK  IFF_LOOPBACK
+#define IF_RUNNING   IFF_LOOPBACK
+#define IF_MULTICAST IFF_MULTICAST
 #endif
-
+#endif
 
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */

@@ -18,6 +18,7 @@
   - Rel: Recent regression (complain about server and client on the same link) fixed
   - Srv: relays parameters (link, peer address) are now passed to the notify script
   - Cli: client no longer crashes, when client-AddrMgr.xml is empty (bug #245)
+  - Experimental port to Solaris 11
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

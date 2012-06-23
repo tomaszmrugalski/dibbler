@@ -12,6 +12,7 @@
  *   - @subpage compilationLinux
  *   - @subpage compilationMac
  *   - @subpage compilationBSD
+ *   - @subpage compilationSol
  *   - @subpage autotools
  *   - @subpage compilationWin32
  *   - @subpage compilationWinNT

@@ -70,6 +70,8 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
+
+    dump();
 }
 
 /*

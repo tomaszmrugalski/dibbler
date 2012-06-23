@@ -201,6 +201,7 @@ TClntIfaceMgr::TClntIfaceMgr(const std::string& xmlFile)
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 
+    dump();
 }
 
 TClntIfaceMgr::~TClntIfaceMgr() {

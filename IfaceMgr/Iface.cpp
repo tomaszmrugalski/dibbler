@@ -8,14 +8,17 @@
  *
  */
 
+#include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <iostream>
-#include <sstream>
+#include <net/if.h>
 #include "Iface.h"
 #include "Portable.h"
 #include "Logger.h"
+
+
 
 using namespace std;
 /*
@@ -120,7 +123,7 @@ void TIfaceIface::updateState(struct iface *x)
  */
 bool TIfaceIface::flagUp()
 {
-    return this->Flags&IF_UP;
+    return this->Flags & IFF_UP;
 }
 
 /**
@@ -128,7 +131,7 @@ bool TIfaceIface::flagUp()
  */
 bool TIfaceIface::flagRunning()
 {
-    return (bool)(this->Flags & IF_RUNNING);
+    return (bool)(this->Flags & IFF_RUNNING);
 }
 
 /**
@@ -136,7 +139,7 @@ bool TIfaceIface::flagRunning()
  */
 bool TIfaceIface::flagMulticast()
 {
-    return (Flags&IF_MULTICAST)?true:false;
+    return (Flags&IFF_MULTICAST)?true:false;
 }
 
 /**
@@ -144,7 +147,7 @@ bool TIfaceIface::flagMulticast()
  */
 bool TIfaceIface::flagLoopback()
 {
-    return (Flags&IF_LOOPBACK)?true:false;
+    return (Flags&IFF_LOOPBACK)?true:false;
 }
 
 /**
@@ -398,7 +401,7 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
     strum << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 

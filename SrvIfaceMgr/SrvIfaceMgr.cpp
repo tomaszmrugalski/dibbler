@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <vector>
 #include <stdio.h>
+#include <net/if.h>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "SrvIfaceMgr.h"
@@ -87,6 +88,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 
+    dump();
 }
 
 TSrvIfaceMgr::~TSrvIfaceMgr() {
@@ -242,7 +244,7 @@ bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
     }
 
     SPtr<TSrvIfaceIface> relay = new TSrvIfaceIface((const char*)name.c_str(), ifindex,
-                                                        IF_UP | IF_RUNNING | IF_MULTICAST,   // flags
+                                                        IFF_UP | IFF_RUNNING | IFF_MULTICAST,   // flags
                                                         0,   // MAC
                                                         0,   // MAC length
                                                         0,0, // link address

@@ -694,7 +694,7 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
