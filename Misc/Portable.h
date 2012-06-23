@@ -50,7 +50,7 @@
 #define snprintf _snprintf
 #endif
 
-#ifdef BSD
+#if defined(BSD) || defined(SUNOS)
 #include <stdint.h>
 #endif
 
@@ -156,43 +156,28 @@ struct link_state_notify_t
 #define NULLFILE           "nul"
 #endif
 
-#ifdef LINUX
+#if defined(LINUX) || defined(BSD) || defined(SUNOS)
 #define WORKDIR            "/var/lib/dibbler"
 #define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define RESOLVCONF         "/sbin/resolvconf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
+#define RADVD_FILE         "/etc/dibbler/radvd.conf"
+#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
+#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
+#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
+#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
+#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
+#define NULLFILE           "/dev/null"
+
+/* those defines were initially used on Linux only, but hopefully 
+   they will work on other Posix systems as well */
+#define RESOLVCONF         "/sbin/resolvconf"
 #define TIMEZONE_FILE      "/etc/localtime"
 #define TIMEZONES_DIR      "/usr/share/zoneinfo"
-#define RADVD_FILE         "/etc/dibbler/radvd.conf"
-#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
-#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
-#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
-#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
-#define NULLFILE           "/dev/null"
-#endif
-
-#ifdef BSD
-#define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPT     ""
-#define CLNTCONF_FILE      "/etc/dibbler/client.conf"
-#define SRVCONF_FILE       "/etc/dibbler/server.conf"
-#define RELCONF_FILE       "/etc/dibbler/relay.conf"
-#define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define NTPCONF_FILE       "/etc/ntp.conf"
-#define RADVD_FILE         "/etc/dibbler/radvd.conf"
-#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
-#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
-#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
-#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
-#define NULLFILE           "/dev/null"
 #endif
 
 /* --- options --- */
