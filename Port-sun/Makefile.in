@@ -241,6 +241,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
+
+# Don't use -std=c99
+libLowLevel_a_CFLAGS = $(PORT_CFLAGS)
 libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-sun.c lowlevel-options-sun.c malloc.h dibbler-client.cpp dibbler-server.cpp dibbler-relay.cpp
 all: all-am
 
@@ -322,36 +325,36 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 libLowLevel_a-lowlevel-sun.o: lowlevel-sun.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-sun.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo -c -o libLowLevel_a-lowlevel-sun.o `test -f 'lowlevel-sun.c' || echo '$(srcdir)/'`lowlevel-sun.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-sun.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo -c -o libLowLevel_a-lowlevel-sun.o `test -f 'lowlevel-sun.c' || echo '$(srcdir)/'`lowlevel-sun.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-sun.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-sun.c' object='libLowLevel_a-lowlevel-sun.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-sun.o `test -f 'lowlevel-sun.c' || echo '$(srcdir)/'`lowlevel-sun.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-sun.o `test -f 'lowlevel-sun.c' || echo '$(srcdir)/'`lowlevel-sun.c
 
 libLowLevel_a-lowlevel-sun.obj: lowlevel-sun.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-sun.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo -c -o libLowLevel_a-lowlevel-sun.obj `if test -f 'lowlevel-sun.c'; then $(CYGPATH_W) 'lowlevel-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-sun.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-sun.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo -c -o libLowLevel_a-lowlevel-sun.obj `if test -f 'lowlevel-sun.c'; then $(CYGPATH_W) 'lowlevel-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-sun.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-sun.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-sun.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-sun.c' object='libLowLevel_a-lowlevel-sun.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-sun.obj `if test -f 'lowlevel-sun.c'; then $(CYGPATH_W) 'lowlevel-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-sun.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-sun.obj `if test -f 'lowlevel-sun.c'; then $(CYGPATH_W) 'lowlevel-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-sun.c'; fi`
 
 libLowLevel_a-lowlevel-options-sun.o: lowlevel-options-sun.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-sun.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo -c -o libLowLevel_a-lowlevel-options-sun.o `test -f 'lowlevel-options-sun.c' || echo '$(srcdir)/'`lowlevel-options-sun.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-sun.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo -c -o libLowLevel_a-lowlevel-options-sun.o `test -f 'lowlevel-options-sun.c' || echo '$(srcdir)/'`lowlevel-options-sun.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-options-sun.c' object='libLowLevel_a-lowlevel-options-sun.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-sun.o `test -f 'lowlevel-options-sun.c' || echo '$(srcdir)/'`lowlevel-options-sun.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-sun.o `test -f 'lowlevel-options-sun.c' || echo '$(srcdir)/'`lowlevel-options-sun.c
 
 libLowLevel_a-lowlevel-options-sun.obj: lowlevel-options-sun.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-sun.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo -c -o libLowLevel_a-lowlevel-options-sun.obj `if test -f 'lowlevel-options-sun.c'; then $(CYGPATH_W) 'lowlevel-options-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-sun.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-sun.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo -c -o libLowLevel_a-lowlevel-options-sun.obj `if test -f 'lowlevel-options-sun.c'; then $(CYGPATH_W) 'lowlevel-options-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-sun.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-options-sun.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-options-sun.c' object='libLowLevel_a-lowlevel-options-sun.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-sun.obj `if test -f 'lowlevel-options-sun.c'; then $(CYGPATH_W) 'lowlevel-options-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-sun.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-sun.obj `if test -f 'lowlevel-options-sun.c'; then $(CYGPATH_W) 'lowlevel-options-sun.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-sun.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
