@@ -31,6 +31,13 @@
 #ifdef WIN32
 #define strcasecmp strcmpi
 
+#define snprintf _snprintf
+#endif
+
+#if defined (BSD) || defined(SUNOS)
+#include <stdint.h>
+#endif
+
 #ifndef uint8_t
 #define uint8_t  unsigned char
 #endif
@@ -43,16 +50,9 @@
 #define uint32_t unsigned int
 #endif
 
-#ifndef uint64_t
-#define uint64_t unsigned long long int
-#endif
-
-#define snprintf _snprintf
-#endif
-
-#if defined(BSD) || defined(SUNOS)
-#include <stdint.h>
-#endif
+//#ifndef uint64_t
+//#define uint64_t unsigned long long int
+//#endif
 
 /* this should look like this: 
 uint16_t readUint16(uint8_t* buf);
@@ -178,6 +178,7 @@ struct link_state_notify_t
 #define RESOLVCONF         "/sbin/resolvconf"
 #define TIMEZONE_FILE      "/etc/localtime"
 #define TIMEZONES_DIR      "/usr/share/zoneinfo"
+
 #endif
 
 /* --- options --- */
@@ -225,6 +226,15 @@ struct link_state_notify_t
 #define IF_RUNNING   0x40
 #define IF_MULTICAST 0x8000
 #endif
+
+#ifdef SUNOS
+/** @todo: Fix those values */
+#define IF_UP        0x1
+#define IF_LOOPBACK  0x8
+#define IF_RUNNING   0x40
+#define IF_MULTICAST 0x8000
+#endif
+
 
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */

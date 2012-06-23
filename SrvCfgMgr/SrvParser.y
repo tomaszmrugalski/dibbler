@@ -3,7 +3,9 @@
 %header{
 #include <iostream>
 #include <string>
-#include <malloc.h>
+#include <cstdint>
+#include <sstream>
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -15,26 +17,23 @@
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
 #include "OptString.h"
+#include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
+#include "SrvOptAddrParams.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
+#include "SrvCfgClientClass.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "SrvCfgOptions.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-#include "OptVendorSpecInfo.h"
-#include "OptRtPrefix.h"
-#include "SrvOptAddrParams.h"
-#include "Portable.h"
-#include "SrvCfgClientClass.h"
 #include "Node.h"
 #include "NodeConstant.h"
 #include "NodeClientSpecific.h"
 #include "NodeOperator.h"
-#include "CfgMgr.h"
-#include <sstream>
 
 using namespace std;
 
