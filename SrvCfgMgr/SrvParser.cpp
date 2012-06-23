@@ -103,7 +103,7 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 
 #include <iostream>
 #include <string>
-#include <cstdint>
+#include <stdint.h>
 #include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -3157,7 +3157,7 @@ case 271:
 {
     SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
                                           OPTION_INFORMATION_REFRESH_TIME_LEN, 
-                                          uint32_t(yyvsp[0].ival), NULL);
+                                          (uint32_t)(yyvsp[0].ival), NULL);
     ParserOptStack.getLast()->addExtraOption(lifetime, false);
     //ParserOptStack.getLast()->setLifetime($3);
 ;

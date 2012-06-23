@@ -3,7 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
-#include <cstdint>
+#include <stdint.h>
 #include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -1427,7 +1427,7 @@ LifetimeOption
 {
     SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
                                           OPTION_INFORMATION_REFRESH_TIME_LEN, 
-                                          uint32_t($3), NULL);
+                                          (uint32_t)($3), NULL);
     ParserOptStack.getLast()->addExtraOption(lifetime, false);
     //ParserOptStack.getLast()->setLifetime($3);
 }

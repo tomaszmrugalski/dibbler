@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <string>
-#include <cstdint>
+#include <stdint.h>
 #include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"

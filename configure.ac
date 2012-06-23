@@ -228,7 +228,7 @@ dnl ---------------------------------------------
       ARCH="SUNOS"
       PORT_SUBDIR="Port-sun"
       PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__"
-      PORT_LDFLAGS=
+      PORT_LDFLAGS="-lsocket -lnsl"
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
       ;;
     MINGW32*)
