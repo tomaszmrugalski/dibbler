@@ -7,12 +7,13 @@
  *
  */
 
-#include <signal.h>
+#include <cstring>
+#include <csignal>
+#include <cstdlib>
 #include "DHCPClient.h"
 #include "Portable.h"
 #include "Logger.h"
 #include "daemon.h"
-//#include "ClntCfgMgr.h"
 
 using namespace std;
 

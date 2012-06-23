@@ -5,11 +5,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-relay.cpp,v 1.2 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
-#include <signal.h>
+#include <cstring>
+#include <cstdlib>
+#include <csignal>
 #include "DHCPRelay.h"
 #include "Portable.h"
 #include "Logger.h"
