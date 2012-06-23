@@ -227,7 +227,7 @@ dnl ---------------------------------------------
     SunOS)
       ARCH="SUNOS"
       PORT_SUBDIR="Port-sun"
-      PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__ -D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1"
+      PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__"
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
       ;;
