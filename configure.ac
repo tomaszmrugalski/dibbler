@@ -206,35 +206,35 @@ dnl ---------------------------------------------
     Linux)
       ARCH="LINUX"
       PORT_SUBDIR="Port-linux"
-      PORT_CFLAGS=
+      PORT_CFLAGS="-std=c99"
       PORT_LDFLAGS="-lpthread"
       EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=
+      PORT_CFLAGS="-std=c99"
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
     OpenBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=-DOPENBSD
+      PORT_CFLAGS="-std=c99 -DOPENBSD"
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
     SunOS)
       ARCH="SUNOS"
       PORT_SUBDIR="Port-sun"
-      PORT_CFLAGS="-DSUNOS"
+      PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__ -D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1"
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
       ;;
     MINGW32*)
       ARCH="WIN2K"
       PORT_LDFLAGS = "-lws2_32"
-      PORT_CFLAGS  = "-DMINGWBUILD"
+      PORT_CFLAGS  = "-std=c99 -DMINGWBUILD"
       PORT_SUBDIR  = "Port-win2k"
       EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
@@ -244,7 +244,7 @@ dnl ---------------------------------------------
   esac
   AC_MSG_RESULT($PORT_SUBDIR)
 
-CFLAGS="${CFLAGS} -std=c99 ${PORT_CFLAGS}"
+CFLAGS="${CFLAGS} ${PORT_CFLAGS}"
 LDFLAGS="${LDFLAGS} ${PORT_LDFLAGS}"
 CPPFLAGS="${CPPFLAGS} -D${ARCH}"
 
