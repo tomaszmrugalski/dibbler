@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <vector>
 #include <stdio.h>
+#include <sys/socket.h>
 #include <net/if.h>
 #include "Portable.h"
 #include "SmartPtr.h"

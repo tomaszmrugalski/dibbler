@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 #include <net/if.h>
 #include "Iface.h"
 #include "Portable.h"
