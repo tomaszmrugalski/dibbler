@@ -6,7 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvCfgTA.cpp,v 1.5 2008-10-12 20:07:31 thomson Exp $
  */
 
 #include "SrvCfgTA.h"
@@ -15,18 +14,19 @@
 #include "DHCPConst.h"
 #include "Logger.h"
 #include "SrvMsg.h"
+
+using namespace std;
+
 /*
  * static field initialization
  */
 unsigned long TSrvCfgTA::staticID=0;
 
 
-TSrvCfgTA::TSrvCfgTA() {
-    this->Pref  = SERVER_DEFAULT_TA_PREF_LIFETIME;
-    this->Pref  = SERVER_DEFAULT_TA_VALID_LIFETIME;
-    this->ID    = staticID++;
-    this->AddrsAssigned = 0;
-    this->AddrsCount = 0;
+TSrvCfgTA::TSrvCfgTA() 
+    :Pref(SERVER_DEFAULT_TA_PREF_LIFETIME), Valid(SERVER_DEFAULT_TA_VALID_LIFETIME),
+     ClassMaxLease(SERVER_DEFAULT_CLASS_MAX_LEASE), AddrsAssigned(0), AddrsCount(0) {
+    ID = staticID++;
 }
 
 TSrvCfgTA::~TSrvCfgTA() {
@@ -42,7 +42,7 @@ TSrvCfgTA::~TSrvCfgTA() {
  */
 bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -84,7 +84,7 @@ bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
  			return true;
  	}
 
-     SPtr<TStationRange> range;
+     SPtr<THostRange> range;
      RejedClnt.first();
 
      // is client on black list?
@@ -115,7 +115,7 @@ bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
  */
 bool TSrvCfgTA::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
 {
-    SPtr<TStationRange> range;
+    SPtr<THostRange> range;
     RejedClnt.first();
     // is client on black list?
     while(range=RejedClnt.get())
@@ -158,7 +158,7 @@ void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt)
     ClassMaxLease = opt->getClassMaxLease();
 
     // copy black-list
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     opt->firstRejedClnt();
     while(statRange=opt->getRejedClnt())
         this->RejedClnt.append(statRange);
@@ -234,7 +234,7 @@ ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
 
-    SPtr<TStationRange> statRange;
+    SPtr<THostRange> statRange;
     out << "      <!-- address range -->" << endl;
     out << *addrClass.Pool;
 

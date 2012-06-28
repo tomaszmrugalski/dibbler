@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Header: /var/cvs/dibbler/SrvIfaceMgr/SrvIfaceIface.h,v 1.8 2008-11-11 22:41:49 thomson Exp $
- *
  */
 
 class TSrvIfaceIface;
@@ -22,6 +20,7 @@ struct Relay {
     SPtr<TSrvIfaceIface> iface;
     int ifindex;
     SPtr<TSrvOptInterfaceID> interfaceID;
+Relay() : ifindex(-1) {}
 };
 typedef struct Relay TRelay;
 
@@ -31,7 +30,7 @@ class TSrvIfaceIface: public TIfaceIface {
 		   int maclen, char* llAddr, int llAddrCnt, char * globalAddr, 
 		   int globalAddrCnt, int hwType);
 
-    friend ostream & operator <<(ostream & strum, TSrvIfaceIface &x);
+    friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x);
 
     void setUnderlaying(SPtr<TSrvIfaceIface> under);
     bool appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);
@@ -42,11 +41,11 @@ class TSrvIfaceIface: public TIfaceIface {
     int getRelayCnt();
 
  private:
-    SPtr<TSrvIfaceIface> UnderRelay;
-    bool Relay;
+    SPtr<TSrvIfaceIface> UnderRelay_;
+    bool Relay_;
 
-    TRelay Relays[HOP_COUNT_LIMIT];
-    int RelaysCnt;
+    TRelay Relays_[HOP_COUNT_LIMIT];
+    int RelaysCnt_;
 };
 
 #endif

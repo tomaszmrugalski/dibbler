@@ -21,7 +21,7 @@ class TClntMsgReconfigure : public TClntMsg
 
     bool check();
     void doDuties();
-    std::string getName() { return std::string("RECONFIGURE"); }
+    std::string getName() const { return std::string("RECONFIGURE"); }
     ~TClntMsgReconfigure();
 };
 

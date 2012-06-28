@@ -6,9 +6,16 @@
 #define strncasecmp _strnicmp
 #endif
 
+using namespace std;
+
 #include "SrvParser.h"
 #include "Portable.h"
 #define YYABORT yyterminate();
+
+/* duplicate default definition from flex. This makes cppcheck
+   check for defined YY_FATAL_ERROR() go away. */
+#define YY_FATAL_ERROR(msg) LexerError(msg)
+
 %}
 
 %x COMMENT
@@ -65,6 +72,7 @@ reject-clients      { return SrvParser::REJECT_CLIENTS_;}
 
 T1                  { return SrvParser::T1_;}
 T2                  { return SrvParser::T2_;}
+preferred-lifetime  { return SrvParser::PREF_TIME_;}
 prefered-lifetime   { return SrvParser::PREF_TIME_;}
 valid-lifetime      { return SrvParser::VALID_TIME_;}
 
@@ -79,7 +87,9 @@ client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
 client              { return SrvParser::CLIENT_; }
 duid                { return SrvParser::DUID_KEYWORD_; }
 remote-id           { return SrvParser::REMOTE_ID_; }
+link-local					{ return SrvParser::LINK_LOCAL_; }
 address             { return SrvParser::ADDRESS_;}
+prefix              { return SrvParser::PREFIX_; }
 guess-mode          { return SrvParser::GUESS_MODE_; }
 
 option              { return SrvParser::OPTION_; }
@@ -89,7 +99,10 @@ ntp-server          { return SrvParser::NTP_SERVER_;}
 time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
+next-hop            { return SrvParser::NEXT_HOP_; }
+route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
+infinite            { return SrvParser::INFINITE_; }
 accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
 fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
 ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }
@@ -104,6 +117,7 @@ pd-class	    { return SrvParser::PDCLASS_; }
 pd-length	    { return SrvParser::PD_LENGTH_; }
 pd-pool             { return SrvParser::PD_POOL_;}
 vendor-spec         { return SrvParser::VENDOR_SPEC_; }
+script              { return SrvParser::SCRIPT_; }
 
 experimental        { return SrvParser::EXPERIMENTAL_; }
 addr-params         { return SrvParser::ADDR_PARAMS_; }
@@ -324,7 +338,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {hexnumber} {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    if(!sscanf(yytext,"%x",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20x",&(yylval.ival))) {
       Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd;
       YYABORT;
     }
@@ -333,7 +347,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 
 {integer} {
     // DECIMAL NUMBER
-    if(!sscanf(yytext,"%u",&(yylval.ival))) {
+    if(!sscanf(yytext,"%20u",&(yylval.ival))) {
 	Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd;
 	YYABORT;
     }

@@ -23,7 +23,7 @@ class TSrvMsgReconfigure : public TSrvMsg
     bool check();
     void doDuties();
     unsigned long getTimeout();
-    string getName();
+    std::string getName() const;
     ~TSrvMsgReconfigure();
 };
 

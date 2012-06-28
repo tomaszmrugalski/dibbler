@@ -18,6 +18,7 @@ class ClntParser;
 #define CLNTCFGMGR_H
 
 #include <string>
+#include <vector>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "ClntCfgIface.h"
@@ -34,13 +35,13 @@ class ClntParser;
 
 class TClntCfgMgr : public TCfgMgr
 {
-    friend ostream & operator<<(ostream &strum, TClntCfgMgr &x);
+    friend std::ostream & operator<<(std::ostream &strum, TClntCfgMgr &x);
  private:
-    TClntCfgMgr(const std::string cfgFile);
+    TClntCfgMgr(const std::string& cfgFile);
 
  public:
     static TClntCfgMgr & instance();
-    static void instanceCreate(const std::string cfgFile);
+    static void instanceCreate(const std::string& cfgFile);
     ~TClntCfgMgr();
     
     // --- Iface related ---
@@ -53,6 +54,9 @@ class TClntCfgMgr : public TCfgMgr
     void makeInactiveIface(int ifindex, bool inactive);
     int countIfaces();
     void dump();
+
+    void setDownlinkPrefixIfaces(List(std::string)& ifaces);
+    const std::vector<std::string>& getDownlinkPrefixIfaces() { return DownlinkPrefixIfaces_; }
     
     void setReconfigure(bool enable);
     bool getReconfigure();
@@ -67,8 +71,8 @@ class TClntCfgMgr : public TCfgMgr
     DigestTypes getDigest();
     void setDigest(DigestTypes value);
 
-    string getScriptsDir();
-    bool getNotifyScripts();
+    void setScript(std::string script) { ScriptName = script; }
+    std::string getScript() { return ScriptName; }
 
     bool anonInfRequest();
     bool insistMode();
@@ -93,7 +97,6 @@ class TClntCfgMgr : public TCfgMgr
 #endif
 
     bool getFQDNFlagS();
-    bool getMappingPrefix();
 
     bool useConfirm();
 private:
@@ -104,13 +107,12 @@ private:
     bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
 		      SPtr<TClntCfgIA> ptrIA,
 		      SPtr<TClntCfgAddr> ptrAddr);
-    bool parseConfigFile(string cfgFile);
+    bool parseConfigFile(const std::string& cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
     List(TClntCfgIface) ClntCfgIfaceLst;
     List(TClntCfgIface) InactiveLst;
-    string ScriptsDir;
-    bool NotifyScripts;
+    std::string ScriptName;
 
     bool AnonInfRequest;
     bool InsistMode;
@@ -125,14 +127,17 @@ private:
     uint32_t AAASPI;
 #endif
 
+#ifdef MOD_REMOTE_AUTOCONF
     bool RemoteAutoconf;
+#endif
 
     bool FQDNFlagS; // S bit in the FQDN option
-    bool MappingPrefix;
+
+    std::vector<std::string> DownlinkPrefixIfaces_;
 
     static TClntCfgMgr * Instance;
 };
 
-typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, string params);
+typedef bool HardcodedCfgFunc(TClntCfgMgr *cfgMgr, std::string params);
 
 #endif

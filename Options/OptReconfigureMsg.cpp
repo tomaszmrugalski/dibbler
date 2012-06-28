@@ -47,7 +47,7 @@ TOptReconfigureMsg::TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent)
     }
 }
 
-int TOptReconfigureMsg::getSize()
+size_t TOptReconfigureMsg::getSize()
 {
     return 4 + 1; // header (4) + data-length (1)
 }

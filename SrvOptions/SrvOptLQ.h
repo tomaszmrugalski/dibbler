@@ -31,7 +31,7 @@ class TSrvOptLQ : public TOpt
     TSrvOptLQ(char * buf, int bufsize, TMsg* parent);    
     bool doDuties();
     ELeaseQueryType getQueryType();
-    int getSize();
+    size_t getSize();
     char * storeSelf(char* buf);
     SPtr<TIPv6Addr> getLinkAddr();
  private:
@@ -45,7 +45,7 @@ class TSrvOptLQ : public TOpt
 class TSrvOptLQClientData : public TOpt
 {
 public:
-    int getSize();
+    size_t getSize();
     char* storeSelf(char*);
     bool doDuties();
 

@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-relay.cpp,v 1.13 2008-10-10 20:39:12 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -17,7 +15,9 @@
 #include "Logger.h"
 #include "daemon.h"
 
-TDHCPRelay * ptr;
+using namespace std;
+
+TDHCPRelay * ptr = 0;
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
@@ -91,16 +91,15 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result=-1;
-    int len;
 
     logStart("(RELAY, Linux port)", "Relay", RELLOG_FILE);
 
     // parse command line parameters
     if (argc>1) {
-	len = strlen(argv[1])+1;
-	if (len>255)
+	int len = strlen(argv[1])+1;
+	if (len > 255)
 	    len = 255;
-	strncpy(command,argv[1],len);
+	strncpy(command, argv[1], len);
     } else {
 	memset(command,0,256);
     }

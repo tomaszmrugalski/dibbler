@@ -6,95 +6,87 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptIAAddress.cpp,v 1.7 2007-08-26 10:26:19 thomson Exp $
- *
  */
 
 //#include <netinet/in.h>
 #include <string.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAAddress.h"
 
-TOptIAAddress::TOptIAAddress( char * &buf, int &n, TMsg* parent)
-	:TOpt(OPTION_IAADDR, parent)
+TOptIAAddress::TOptIAAddress(char * &buf, int& n, TMsg* parent)
+    :TOpt(OPTION_IAADDR, parent), Valid_(false)
 {
-    this->ValidOpt=false;
-    if (n>=24)
-    {
-        Addr=new TIPv6Addr(buf);
-        buf+= 16; n-=16;
-        this->Pref  = ntohl(*((long*)buf));
-        buf+= 4;  n-=4;
-        this->Valid = ntohl(*((long*)buf));
-        buf+= 4;  n-=4;    
-        this->ValidOpt=true;
+    if ( n >= 24) {
+        Addr_ = new TIPv6Addr(buf);
+        buf += 16;
+        n -= 16;
+        PrefLifetime_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        n -= sizeof(uint32_t);
+        ValidLifetime_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        n -= sizeof(uint32_t);
+
+        Valid_ = true;
     }
 }
 
-TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
-			     unsigned long valid, TMsg* parent)
-    :TOpt(OPTION_IAADDR, parent) {
+TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
+                             unsigned long valid, TMsg* parent)
+    :TOpt(OPTION_IAADDR, parent), Valid_(true) {
     if(addr)
-        Addr=addr;
+        Addr_ = addr;
     else
-        Addr=new TIPv6Addr();
-    this->Pref = pref;
-    this->Valid = valid;
+        Addr_ = new TIPv6Addr();
+    PrefLifetime_  = pref;
+    ValidLifetime_ = valid;
 }
 
-int TOptIAAddress::getSize() {
+size_t TOptIAAddress::getSize() {
     int mySize = 28;
-    return mySize+getSubOptSize();
+    return mySize + getSubOptSize();
 }
 
 void TOptIAAddress::setPref(unsigned long pref) {
-    this->Pref = pref;
+    PrefLifetime_ = pref;
 }
 
 void TOptIAAddress::setValid(unsigned long valid) {
-    this->Valid = valid;
+    ValidLifetime_ = valid;
 }
 
  char * TOptIAAddress::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    memcpy(buf,Addr->getAddr(),16);
-    buf+=16;
-    *(uint32_t*)buf = htonl(Pref);
-    buf+=4;
-    *(uint32_t*)buf = htonl(Valid);
-    buf+=4;
-	buf=storeSubOpt(buf);
+    buf = writeUint16(buf, OptType);
+
+    buf = writeUint16(buf, getSize() - 4 );
+
+    memcpy(buf, Addr_->getAddr(), 16);
+    buf += 16;
+
+    buf = writeUint32(buf, PrefLifetime_);
+
+    buf = writeUint32(buf, ValidLifetime_);
+
+    buf = storeSubOpt(buf);
+
     return buf;
 }
 
- SPtr<TIPv6Addr> TOptIAAddress::getAddr()
-{
-	return this->Addr;
+SPtr<TIPv6Addr> TOptIAAddress::getAddr() {
+    return Addr_;
 }
 
-unsigned long TOptIAAddress::getPref()
-{
-	return this->Pref;
+unsigned long TOptIAAddress::getPref() {
+    return PrefLifetime_;
 }
 
-unsigned long TOptIAAddress::getValid()
-{
-	return this->Valid;
+unsigned long TOptIAAddress::getValid() {
+    return ValidLifetime_;
 }
 
-bool TOptIAAddress::isValid()
-{
-    return this->ValidOpt;
+bool TOptIAAddress::isValid() {
+    return Valid_;
 }

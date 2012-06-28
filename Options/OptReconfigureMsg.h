@@ -18,7 +18,7 @@ class TOptReconfigureMsg : public TOpt
   public:
     TOptReconfigureMsg(int msgType, TMsg* parent);
     TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent);
-    int getSize();
+    size_t getSize();
 
     char * storeSelf(char* buf);
     bool doDuties() { return true; }

@@ -13,6 +13,7 @@
 #include "SrvParsIfaceOpt.h"
 #include "OptAddr.h"
 #include "OptAddrLst.h"
+#include "OptDomainLst.h"
 #include "OptString.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
@@ -24,6 +25,7 @@
 #include "Logger.h"
 #include "FQDN.h"
 #include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
 #include "SrvOptAddrParams.h"
 #include "Portable.h"
 #include "SrvCfgClientClass.h"
@@ -33,6 +35,8 @@
 #include "NodeOperator.h"
 #include "CfgMgr.h"
 #include <sstream>
+
+using namespace std;
 
 #define YY_USE_CLASS
 %}
@@ -50,12 +54,12 @@ List(TSrvCfgTA) SrvCfgTALst;               /* list of SrvCfg TA objects */      
 List(TSrvCfgPD) SrvCfgPDLst;		   /* list of SrvCfg PD objects */           \
 List(TSrvCfgClientClass) SrvCfgClientClassLst; /* list of SrvCfgClientClass objs */  \
 List(TIPv6Addr) PresentAddrLst;            /* address list (used for DNS,NTP,etc.)*/ \
-List(string) PresentStringLst;             /* string list */                         \
+List(std::string) PresentStringLst;             /* string list */                    \
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-List(TStationRange) PresentRangeLst;                                                 \
-List(TStationRange) PDLst;                                                           \
+List(THostRange) PresentRangeLst;                                                 \
+List(THostRange) PDLst;                                                           \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -72,13 +76,19 @@ bool EndTAClassDeclaration();                                                   
 void StartPDDeclaration();                                                           \
 bool EndPDDeclaration();                                                             \
 TSrvCfgMgr * CfgMgr;                                                                 \
+SPtr<TOpt> nextHop;                                                                  \
 virtual ~SrvParser();
 
 // constructor
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
-%define CONSTRUCTOR_CODE                                                          \
-    ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;
+%define CONSTRUCTOR_CODE                                                \
+                     ParserOptStack.append(new TSrvParsGlobalOpt());    \
+                     this->lex = lex;                                   \
+                     CfgMgr = 0;                                        \
+                     nextHop = 0;                                       \
+                     yynerrs = 0;                                       \
+                     yychar = 0;                                        \
+                     PDPrefix = 0;
 
 %union
 {
@@ -104,8 +114,9 @@ virtual ~SrvParser();
 %token STATELESS_
 %token CACHE_SIZE_
 %token PDCLASS_, PD_LENGTH_, PD_POOL_
+%token SCRIPT_
 %token VENDOR_SPEC_
-%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, ADDRESS_, GUESS_MODE_
+%token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, LINK_LOCAL_, ADDRESS_, PREFIX_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
@@ -125,7 +136,7 @@ virtual ~SrvParser();
 %token DENY_
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
-
+%token NEXT_HOP_, ROUTE_, INFINITE_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -169,8 +180,10 @@ GlobalOption
 | IfaceIDOrder
 | FqdnDdnsAddress
 | DdnsProtocol
+| DdnsTimeout
 | GuessMode
 | ClientClass
+| ScriptName
 ;
 
 
@@ -241,8 +254,12 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList InterfaceOptionDeclaration
 | ClassDeclaration
 | TAClassDeclaration
+| NextHopDeclaration
+| Route
 | InterfaceDeclarationsList TAClassDeclaration
 | InterfaceDeclarationsList ClassDeclaration
+| InterfaceDeclarationsList NextHopDeclaration
+| InterfaceDeclarationsList Route
 ;
 
 Client
@@ -272,6 +289,20 @@ Client
     // copy all defined options
     ClientLst.getLast()->setOptions(ParserOptStack.getLast());
     ParserOptStack.delLast();
+}
+
+| CLIENT_ LINK_LOCAL_ IPV6ADDR_ '{'
+{
+		ParserOptStack.append(new TSrvParsGlobalOpt());
+		SPtr<TIPv6Addr> clntaddr = new TIPv6Addr($3);
+		ClientLst.append(new TSrvCfgOptions(clntaddr));
+} ClientOptions
+'}'
+{
+		Log(Debug) << "Exception: Link-local-based exception specified." << LogEnd;
+		// copy all defined options
+		ClientLst.getLast()->setOptions(ParserOptStack.getLast());
+		ParserOptStack.delLast();
 };
 
 ClientOptions
@@ -295,6 +326,7 @@ ClientOption
 | ExtraOption
 | DsLiteAftrName
 | AddressReservation
+| PrefixReservation
 ;
 
 AddressReservation:
@@ -304,6 +336,14 @@ ADDRESS_ IPV6ADDR_
     Log(Info) << "Exception: Address " << addr->getPlain() << " reserved." << LogEnd;
     ClientLst.getLast()->setAddr(addr);
 };
+
+PrefixReservation:
+PREFIX_ IPV6ADDR_ '/' Number
+{
+    addr = new TIPv6Addr($2);
+    Log(Info) << "Exception: Prefix " << addr->getPlain() << "/" << $4 << " reserved." << LogEnd;
+    ClientLst.getLast()->setPrefix(addr, $4);
+}
 
 /* class { ... } */
 ClassDeclaration:
@@ -376,6 +416,64 @@ PDOptions
 | DenyClientClassDeclaration
 ;
 
+////////////////////////////////////////////////////////////
+/// Route Option ///////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+NextHopDeclaration:
+NEXT_HOP_ IPV6ADDR_ '{'
+{
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    nextHop = myNextHop; 
+}
+RouteList '}'
+{
+    SrvCfgIfaceLst.getLast()->addExtraOption(nextHop, false);
+    nextHop = 0;
+    //should we call YYABORT;?
+}
+| NEXT_HOP_ IPV6ADDR_
+{
+    SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
+    SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
+    SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
+}
+;
+
+RouteList
+: Route
+| RouteList Route
+;
+
+Route:
+ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_ 
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix($6, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+}
+| ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
+{
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr($2);
+    SPtr<TOpt> rtPrefix = new TOptRtPrefix(DHCPV6_INFINITY, $4, 42, prefix, NULL);
+    if (nextHop)
+        nextHop->addOption(rtPrefix);
+    else
+        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
@@ -413,14 +511,13 @@ FQDNList
 {
     TDUID* duidNew = new TDUID($3.duid,$3.length);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
-    // FIXME: Use SPtr()
+    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
 }
 | STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($3);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for address "<<*addr<<LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($3), $1,false));
 }
 | FQDNList ',' STRING_
@@ -432,14 +529,12 @@ FQDNList
 {
     TDUID* duidNew = new TDUID($5.duid,$5.length);
     Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN( duidNew, $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
     addr = new TIPv6Addr($5);
     Log(Debug)<< "FQDN:" << $3<<" reserved for address "<< addr->getPlain() << LogEnd;
-    // FIXME: Use SPtr()
     PresentFQDNLst.append(new TFQDN(new TIPv6Addr($5), $3,false));
 }
 ;
@@ -484,16 +579,16 @@ StringList
 ADDRESSRangeList
     : IPV6ADDR_
     {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr($1),new TIPv6Addr($1)));
     }
     |   IPV6ADDR_ '-' IPV6ADDR_
     {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
     |  IPV6ADDR_ '/' INTNUMBER_
     {
@@ -507,22 +602,22 @@ ADDRESSRangeList
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
     | ADDRESSRangeList ',' IPV6ADDR_
     {
-	PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+	PresentRangeLst.append(new THostRange(new TIPv6Addr($3),new TIPv6Addr($3)));
     }
     |   ADDRESSRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
     {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
 	if (*addr1<=*addr2)
-	    PresentRangeLst.append(new TStationRange(addr1,addr2));
+	    PresentRangeLst.append(new THostRange(addr1,addr2));
 	else
-	    PresentRangeLst.append(new TStationRange(addr2,addr1));
+	    PresentRangeLst.append(new THostRange(addr2,addr1));
     }
 ;
 
@@ -539,11 +634,11 @@ PDRangeList
 
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-	SPtr<TStationRange> range = 0;
+	SPtr<THostRange> range = 0;
 	if (*addr1<=*addr2)
-	    range = new TStationRange(addr1,addr2);
+	    range = new THostRange(addr1,addr2);
 	else
-	    range = new TStationRange(addr2,addr1);
+	    range = new THostRange(addr2,addr1);
 	range->setPrefixLength(prefix);
 	PDLst.append(range);
     }
@@ -552,33 +647,34 @@ PDRangeList
 ADDRESSDUIDRangeList
 : IPV6ADDR_
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr($1),new TIPv6Addr($1)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr($1),new TIPv6Addr($1)));
 }
 |   IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($1));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($3));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 }
 | ADDRESSDUIDRangeList ',' IPV6ADDR_
 {
-    PresentRangeLst.append(new TStationRange(new TIPv6Addr($3),new TIPv6Addr($3)));
+    PresentRangeLst.append(new THostRange(new TIPv6Addr($3),new TIPv6Addr($3)));
 }
 |   ADDRESSDUIDRangeList ',' IPV6ADDR_ '-' IPV6ADDR_
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr($3));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr($5));
     if (*addr1<=*addr2)
-	PresentRangeLst.append(new TStationRange(addr1,addr2));
+	PresentRangeLst.append(new THostRange(addr1,addr2));
     else
-	PresentRangeLst.append(new TStationRange(addr2,addr1));
+	PresentRangeLst.append(new THostRange(addr2,addr1));
 }
 | DUID_
 {
-    PresentRangeLst.append(new TStationRange(new TDUID($1.duid,$1.length)));
+    SPtr<TDUID> duid(new TDUID($1.duid, $1.length));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete $1.duid;
 }
 | DUID_ '-' DUID_
@@ -587,13 +683,16 @@ ADDRESSDUIDRangeList
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
 
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
+
+    /// @todo: delete [] $1.duid; delete [] $3.duid?
 }
 | ADDRESSDUIDRangeList ',' DUID_
 {
-    PresentRangeLst.append(new TStationRange(new TDUID($3.duid,$3.length)));
+    SPtr<TDUID> duid(new TDUID($3.duid, $3.length));
+    PresentRangeLst.append(new THostRange(duid, duid));
     delete $3.duid;
 }
 | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_
@@ -601,9 +700,9 @@ ADDRESSDUIDRangeList
     SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
     SPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
     if (*duid1<=*duid2)
-	PresentRangeLst.append(new TStationRange(duid1,duid2));
+	PresentRangeLst.append(new THostRange(duid1,duid2));
     else
-	PresentRangeLst.append(new TStationRange(duid2,duid1));
+	PresentRangeLst.append(new THostRange(duid2,duid1));
     delete $3.duid;
     delete $5.duid;
 }
@@ -754,7 +853,7 @@ DsLiteAftrName
 };
 
 ExtraOption
-:OPTION_ Number '-' DUID_
+:OPTION_ Number DUID_KEYWORD_ DUID_
 {
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
     SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
@@ -889,6 +988,13 @@ GuessMode
     Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 };
+
+ScriptName
+: SCRIPT_ STRING_
+{
+    CfgMgr->setScriptName($2);
+};
+
 
 InactiveMode
 : INACTIVE_MODE_
@@ -1100,7 +1206,10 @@ DNSServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
+    SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_servers, false);
+
+    // ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1112,7 +1221,9 @@ DomainOption
     PresentStringLst.clear();
 } StringList
 {
-    ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
+    SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(domains, false);
+    // ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
 ;
 
@@ -1125,7 +1236,9 @@ NTPServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
+    SPtr<TOpt> ntp_servers = new TOptAddrLst(OPTION_SNTP_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(ntp_servers, false);
+    // ParserOptStack.getLast()->setNTPServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1135,7 +1248,9 @@ NTPServerOption
 TimeZoneOption
 : OPTION_ TIME_ZONE_ STRING_
 {
-    ParserOptStack.getLast()->setTimezone($3);
+    SPtr<TOpt> timezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(timezone, false);
+    // ParserOptStack.getLast()->setTimezone($3);
 }
 ;
 
@@ -1147,7 +1262,9 @@ SIPServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
+    SPtr<TOpt> sip_servers = new TOptAddrLst(OPTION_SIP_SERVER_A, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(sip_servers, false);
+    // ParserOptStack.getLast()->setSIPServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1159,7 +1276,9 @@ SIPDomainOption
     PresentStringLst.clear();
 } StringList
 {
-    ParserOptStack.getLast()->setSIPDomainLst(&PresentStringLst);
+    SPtr<TOpt> sip_domains = new TOptDomainLst(OPTION_SIP_SERVER_D, PresentStringLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(sip_domains, false);
+    //ParserOptStack.getLast()->setSIPDomainLst(&PresentStringLst);
 }
 ;
 
@@ -1222,7 +1341,7 @@ FqdnDdnsAddress
 :FQDN_DDNS_ADDRESS_ IPV6ADDR_
 {
     addr = new TIPv6Addr($2);
-    CfgMgr->fqdnDdnsAddress( addr );
+    CfgMgr->setDDNSAddress(addr);
     Log(Info) << "FQDN: DDNS updates will be performed to " << addr->getPlain() << "." << LogEnd;
 };
 
@@ -1235,6 +1354,12 @@ DdnsProtocol
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_UDP);
     else if (!strcasecmp($2,"any"))
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_ANY);
+    else {
+        Log(Crit) << "Invalid ddns-protocol specifed:" << ($2) 
+                  << ", supported values are tcp, udp, any." << LogEnd;
+        YYABORT;
+    }
+    Log(Debug) << "DDNS: Setting protocol to " << ($2) << LogEnd;
 };
 
 DdnsTimeout
@@ -1252,7 +1377,9 @@ NISServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
+    SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_NIS_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_servers, false);
+    ///ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1264,7 +1391,9 @@ NISPServerOption
     PresentAddrLst.clear();
 } ADDRESSList
 {
-    ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
+    SPtr<TOpt> nisp_servers = new TOptAddrLst(OPTION_NISP_SERVERS, PresentAddrLst, NULL);
+    ParserOptStack.getLast()->addExtraOption(nisp_servers, false);
+    // ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1274,7 +1403,9 @@ NISPServerOption
 NISDomainOption
 :OPTION_ NIS_DOMAIN_ STRING_
 {
-    ParserOptStack.getLast()->setNISDomain($3);
+    SPtr<TOpt> nis_domain = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(nis_domain, false);
+    // ParserOptStack.getLast()->setNISDomain($3);
 }
 ;
 
@@ -1284,7 +1415,8 @@ NISDomainOption
 NISPDomainOption
 :OPTION_ NISP_DOMAIN_ STRING_
 {
-    ParserOptStack.getLast()->setNISPDomain($3);
+    SPtr<TOpt> nispdomain = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, string($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(nispdomain, false);
 }
 ;
 
@@ -1294,7 +1426,11 @@ NISPDomainOption
 LifetimeOption
 :OPTION_ LIFETIME_ Number
 {
-    ParserOptStack.getLast()->setLifetime($3);
+    SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+                                          OPTION_INFORMATION_REFRESH_TIME_LEN, 
+                                          uint32_t($3), NULL);
+    ParserOptStack.getLast()->addExtraOption(lifetime, false);
+    //ParserOptStack.getLast()->setLifetime($3);
 }
 ;
 
@@ -1593,7 +1729,7 @@ bool SrvParser::EndPDDeclaration()
 
     int len = 0;
     this->PDLst.first();
-    while ( SPtr<TStationRange> pool = PDLst.get() ) {
+    while ( SPtr<THostRange> pool = PDLst.get() ) {
 	if (!len)
 	    len = pool->getPrefixLength();
 	if (len!=pool->getPrefixLength()) {

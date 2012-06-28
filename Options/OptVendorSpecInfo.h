@@ -19,7 +19,7 @@ class TOptVendorSpecInfo : public TOpt
     TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* parent);
     TOptVendorSpecInfo(int type, int enterprise, char *data, int dataLen, TMsg* parent);
 
-    int getSize();
+    size_t getSize();
     char * storeSelf( char* buf);
     bool isValid();
 

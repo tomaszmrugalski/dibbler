@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntParsGlobalOpt.h,v 1.19 2008-08-30 21:41:11 thomson Exp $
- *
  */
 
 class TClntParsGlobalOpt;
@@ -23,16 +21,12 @@ public:
     TClntParsGlobalOpt();
     ~TClntParsGlobalOpt();
 
-    void setWorkDir(string dir);
-    string getWorkDir();
-    void setPrefixLength(int len);
-    int getPrefixLength();
+    void setWorkDir(const std::string& dir);
+    std::string getWorkDir();
+    void setOnLinkPrefixLength(int len);
+    int getOnLinkPrefixLength();
     void setDigest(DigestTypes digest);
     DigestTypes getDigest();
-    void setScriptsDir(string dir);
-    string getScriptsDir();
-    void setNotifyScripts(bool useScripts);
-    bool getNotifyScripts();
     void setAnonInfRequest(bool anonymous);
     bool getAnonInfRequest();
     void setInsistMode(bool insist);
@@ -48,9 +42,6 @@ public:
     void setExperimental();
     bool getExperimental();
 
-    void setMappingPrefix(bool useMP);
-    bool getMappingPrefix();
-
     void setFQDNFlagS(bool s);
     bool getFQDNFlagS();
 
@@ -59,11 +50,9 @@ public:
 
 
 private:
-    string WorkDir;
+    std::string WorkDir;
     int PrefixLength;
     DigestTypes Digest;
-    string ScriptsDir;
-    bool   NotifyScripts;
     bool   AnonInfRequest;
     bool   InactiveMode;
     bool   InsistMode;
@@ -74,7 +63,6 @@ private:
     bool FQDNFlagS;
 
     bool Experimental;
-    bool ExperimentalMappingPrefix;
 };
 
 #endif

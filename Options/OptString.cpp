@@ -13,12 +13,6 @@
 #include "Portable.h"
 #include "OptString.h"
 #include "DHCPConst.h"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
 
 using namespace std;
 
@@ -38,10 +32,8 @@ TOptString::TOptString(int type, const char *buf, unsigned short bufsize, TMsg* 
 
 char * TOptString::storeSelf(char* buf)
 {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     memcpy(buf,Str.c_str(),Str.length());
     buf[Str.length()]=0;  // null-terminated
     return buf+this->Str.length()+1;
@@ -54,10 +46,10 @@ char * TOptString::storeSelf(char* buf)
     return buf+1;
 }
 
-int TOptString::getSize() {
+size_t TOptString::getSize() {
     return (int)(Str.length()+6); // 4-normal header + 1 (strlen) + 1 (final 0)
 }
 
-string TOptString::getString() {
+std::string TOptString::getString() {
     return Str;
 }

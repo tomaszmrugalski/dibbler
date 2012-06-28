@@ -28,6 +28,8 @@
 
 #include "lexfn.h"
 
+using namespace std;
+
 bool txt_to_bool(const char *buff) {
   if (strcmpi(buff, "yes") == 0) return true;
   if (strcmpi(buff, "true") == 0) return true;
@@ -502,7 +504,7 @@ u_int32 poslib_degstr(char *&src, char pre, char post) {
     tmp = read_entry(src);
     if (isdigit(tmp[0])) {
       if (strchr(tmp.c_str(), '.')) {
-        if (sscanf(tmp.c_str(), "%d.%d", &sec, &msec) != 2)
+        if (sscanf(tmp.c_str(), "%10d.%10d", &sec, &msec) != 2)
           throw PException(true, "Malformed LOC RR: invalid angle seconds %s", tmp.c_str());
       } else sec = txt_to_int(tmp.c_str());
       tmp = read_entry(src);
@@ -522,7 +524,7 @@ u_int32 poslib_degstr(char *&src, char pre, char post) {
 unsigned char poslib_loc_precision(const char *str) {
   int x, y = 0;
   int n = 0;
-  if (sscanf(str, "%d.%dm", &x, &y) < 1) throw PException(true, "Invalid precision: %s", str);
+  if (sscanf(str, "%4d.%6dm", &x, &y) < 1) throw PException(true, "Invalid precision: %s", str);
   x = x*100+y;  
   while (x >= 10) {
     x/=10; n++;
@@ -546,7 +548,7 @@ void txt_to_loc(unsigned char *res, char *&src) {
   /* read altitude */
   x = y = 0;
   tmp = read_entry(src);
-  if (sscanf(tmp.c_str(), "%d.%dm", &x, &y) <= 0) throw PException("Invalid altitude");
+  if (sscanf(tmp.c_str(), "%4d.%10dm", &x, &y) <= 0) throw PException("Invalid altitude");
   memcpy(res + 12, uint32_buff((x*100+y)+10000000), 4);
 
   if (src[0]) /* size */
@@ -624,7 +626,7 @@ uint16_t txt_to_qclass(const char *str, bool allow_q) {
 
 stl_string intstring(u_int16 x) {
   char tmp[16];
-  sprintf(tmp, "%d", x);
+  snprintf(tmp, 15, "%d", x);
   return stl_string(tmp);
 }
 

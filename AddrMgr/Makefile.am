@@ -1,3 +1,9 @@
+SUBDIRS= .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
 noinst_LIBRARIES = libAddrMgr.a
 
 libAddrMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc

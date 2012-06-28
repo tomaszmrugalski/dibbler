@@ -16,7 +16,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <ctype.h>
+#include "Portable.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -163,8 +165,10 @@ char * inet_ntop4(const char * src, char * dst)
 }
 
 
-char * inet_ntop6(const unsigned char * src, char * dst)
+char * inet_ntop6(const char * src2, char * dst)
 {
+    const unsigned char* src = (unsigned char*)src2;
+
 	char tmp[sizeof "ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255"], *tp;
 	struct { int base, len; } best, cur;
 	u_int words[NS_IN6ADDRSZ / NS_INT16SZ];
@@ -335,4 +339,98 @@ uint64_t ntohll(uint64_t n) {
 #else
     return (((uint64_t)ntohl(n)) << 32) + ntohl(n >> 32);
 #endif
+}
+
+/// @brief reads uint16_t from buffer in a portable way
+///
+/// Buffer must be at least 2 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+///
+/// @return read 16-bits value
+uint16_t readUint16(const BUFFER_TYPE * buf) {
+    uint16_t value = ( ((uint16_t)buf[0]) << 8) + buf[1];
+    return value;
+}
+
+/// @brief stores uint16_t to a buffer in a portable way
+///
+/// Buffer must be at least 2 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param word 16-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word) {
+    buf[0] = (uint8_t)( (word >> 8) & 0xff );
+    buf[1] = (uint8_t)( (word) & 0xff );
+    return buf + sizeof(uint16_t);
+}
+
+/// @brief reads uint32_t from buffer in a portable way
+///
+/// Buffer must be at least 4 bytes long.
+///
+/// @param buf pointer to first address of buffer
+///
+/// @return read value
+uint32_t readUint32(const BUFFER_TYPE * buf) {
+    uint32_t value = ( ( (uint32_t)(buf[0]) ) << 24)
+        + ( ( (uint32_t)(buf[1])) << 16)
+        + ( ( (uint32_t)(buf[2])) << 8) + buf[3];
+    return value;
+}
+
+/// @brief stores uint32_t to a buffer in a portable way
+///
+/// Buffer must be at least 4 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param dword 32-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword) {
+    buf[0] = (uint8_t)( (dword >> 24) & 0xff );
+    buf[1] = (uint8_t)( (dword >> 16) & 0xff );
+    buf[2] = (uint8_t)( (dword >> 8) & 0xff );
+    buf[3] = (uint8_t)( (dword) & 0xff );
+    return buf + sizeof(uint32_t);
+}
+
+/// @brief reads uint64_t from buffer in a portable way
+///
+/// Buffer must be at least 8 bytes long.
+///
+/// @param buf pointer to first address of buffer
+///
+/// @return read value
+uint64_t readUint64(const BUFFER_TYPE * buf) {
+    uint64_t value = ( ( (uint64_t)(buf[0]) ) << 56)
+        + ( ( (uint64_t)(buf[1])) << 48)
+	+ ( ( (uint64_t)(buf[2])) << 40)
+	+ ( ( (uint64_t)(buf[3])) << 32)
+	+ ( ( (uint64_t)(buf[4])) << 24)
+	+ ( ( (uint64_t)(buf[5])) << 16)
+        + ( ( (uint64_t)(buf[6])) << 8) + buf[7];
+    return value;
+}
+
+/// @brief stores uint64_t to a buffer in a portable way
+///
+/// Buffer must be at least 8 bytes long.
+///
+/// @param buf pointer to first byte of buffer
+/// @param qword 64-bits value to be stored
+///
+/// @return pointer to the next byte after stored value
+BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword) {
+    buf[0] = (uint8_t)( (qword >> 56) & 0xff );
+    buf[1] = (uint8_t)( (qword >> 48) & 0xff );
+    buf[2] = (uint8_t)( (qword >> 40) & 0xff );
+    buf[3] = (uint8_t)( (qword >> 32) & 0xff );
+    buf[4] = (uint8_t)( (qword >> 24) & 0xff );
+    buf[5] = (uint8_t)( (qword >> 16) & 0xff );
+    buf[6] = (uint8_t)( (qword >> 8) & 0xff );
+    buf[7] = (uint8_t)( (qword) & 0xff );
+    return buf + sizeof(uint64_t);
 }

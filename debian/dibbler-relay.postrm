@@ -1,8 +1,0 @@
-#!/bin/sh
-set -e
-
-#if [ "$1" = "purge" ] ; then
-#	update-rc.d dibbler-relay remove >/dev/null || exit 0
-#fi
-
-#DEBHELPER#

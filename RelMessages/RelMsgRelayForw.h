@@ -20,7 +20,7 @@ class TRelMsgRelayForw: public TRelMsg {
 
  public:
     TRelMsgRelayForw(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
-    string getName();
+    std::string getName() const;
     bool check();
 
     int storeSelf(char * buffer);

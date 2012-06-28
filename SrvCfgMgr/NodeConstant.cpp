@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 or later licence
  *
- * $Id: NodeConstant.cpp,v 1.1 2008-10-12 19:36:58 thomson Exp $
- *
  */
 
 #ifndef NODECONSTANT_CPP_
@@ -17,34 +15,29 @@
 #include "SrvMsg.h"
 #include "SrvMsg.h"
 
+using namespace std;
+
 NodeConstant::NodeConstant()
-    :Node(NODE_CONST)
-{
+    :Node(NODE_CONST) {
 }
 
-NodeConstant::~NodeConstant()
-{
+NodeConstant::~NodeConstant() {
 }
 
-NodeConstant::NodeConstant(string v)
-    :Node(NODE_CONST)
-{
-    value = v;
+NodeConstant::NodeConstant(std::string v)
+    :Node(NODE_CONST), value(v) {
 }
 
 
-string NodeConstant::getStringValue()
-{
+std::string NodeConstant::getStringValue() {
     return value;
 }
 
-string NodeConstant::exec()
-{
+std::string NodeConstant::exec() {
     return value;
 }
 
-string NodeConstant::exec(SPtr<TSrvMsg> msg)
-{
+string NodeConstant::exec(SPtr<TSrvMsg> msg) {
     return value;
 }
 #endif /* NODECONSTANT_CPP_ */

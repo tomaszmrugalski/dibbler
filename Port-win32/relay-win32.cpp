@@ -4,7 +4,6 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  *
- * $Id: relay-win32.cpp,v 1.8 2008-08-30 20:41:07 thomson Exp $
  *
  * Released under GNU GPL v2 licence
  *
@@ -24,6 +23,8 @@
 
 extern "C" int lowlevelInit();
 extern TDHCPRelay * relPtr;
+
+using namespace std;
 
 void usage() {
 	cout << "Usage:" << endl;
@@ -58,7 +59,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[]) {
 
-    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista port)" << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista/7 port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
     cout << DIBBLER_COPYRIGHT3 << endl;
     cout << DIBBLER_COPYRIGHT4 << endl;

@@ -6,15 +6,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgInfRequest.cpp,v 1.7 2008-08-29 00:07:34 thomson Exp $
- *
  */
 
 #include "SrvMsgInfRequest.h"
 #include "SmartPtr.h"
 #include "DHCPConst.h"
 #include "SrvMsgAdvertise.h"
-#include "SrvOptServerIdentifier.h"
 
 TSrvMsgInfRequest::TSrvMsgInfRequest(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TSrvMsg(iface, addr, buf, bufSize) {
@@ -33,7 +30,7 @@ unsigned long TSrvMsgInfRequest::getTimeout() {
     return 0;
 }
 
-string TSrvMsgInfRequest::getName() {
+std::string TSrvMsgInfRequest::getName() const {
     return "INF-REQUEST";
 }
 

@@ -23,9 +23,9 @@ class TSrvOptTA : public TOptTA
 {
   public:
 /* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and REQUEST */
-    TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,  int iface, int msgType, TMsg* parent);
+    TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg, int msgType, TMsg* parent);
     TSrvOptTA(char * buf, int bufsize, TMsg* parent);
-    TSrvOptTA(int iaid, int statusCode, string txt, TMsg* parent);
+    TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent);
     /// @todo: Why 3 construstors?
     void releaseAllAddrs(bool quiet);
 
@@ -33,15 +33,17 @@ class TSrvOptTA : public TOptTA
  private:
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
-    int                   Iface;
+
+    /// @todo: replace with Parent->getIface();
+    int Iface;
     
-    SPtr<TSrvOptIAAddress> assignAddr();
-    void solicit(SPtr<TSrvOptTA> queryOpt);
-    void request(SPtr<TSrvOptTA> queryOpt);
+    SPtr<TSrvOptIAAddress> assignAddr(SPtr<TSrvMsg> clientMsg);
+    void solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
+    void request(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
     void release(SPtr<TSrvOptTA> queryOpt);
     void confirm(SPtr<TSrvOptTA> queryOpt);
 
-    void solicitRequest(SPtr<TSrvOptTA> queryOpt, bool solicit);
+    void solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt, bool solicit);
 
     int OrgMessage; // original message, which we are responding to 
 };

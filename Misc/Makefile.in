@@ -35,14 +35,15 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = Misc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/Portable.h.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/dibbler-config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = Portable.h
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
@@ -58,7 +59,8 @@ am_libMisc_a_OBJECTS = addrpack.$(OBJEXT) base64.$(OBJEXT) \
 	DHCPConst.$(OBJEXT) DUID.$(OBJEXT) FQDN.$(OBJEXT) \
 	hmac-sha-md5.$(OBJEXT) IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) \
 	Logger.$(OBJEXT) long128.$(OBJEXT) md5.$(OBJEXT) \
-	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT)
+	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT) \
+	ScriptParams.$(OBJEXT) lowlevel-posix.$(OBJEXT)
 libMisc_a_OBJECTS = $(am_libMisc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -137,8 +139,12 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
+GTEST_INCLUDES = @GTEST_INCLUDES@
+GTEST_LDADD = @GTEST_LDADD@
+GTEST_LDFLAGS = @GTEST_LDFLAGS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -153,6 +159,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -227,18 +234,25 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libMisc.a
-libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h DHCPConst.cpp DHCPConst.h DHCPDefaults.h dibbler-config.h DUID.cpp DUID.h FQDN.cpp FQDN.h hmac.h hmac-sha-md5.c IPv6Addr.cpp IPv6Addr.h KeyList.cpp KeyList.h Logger.cpp Logger.h long128.cpp long128.h md5.c md5.h Portable.h sha1.c sha1.h sha256.c sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h
+libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h \
+	DHCPConst.cpp DHCPConst.h DHCPDefaults.h DUID.cpp DUID.h \
+	FQDN.cpp FQDN.h hmac.h hmac-sha-md5.c IPv6Addr.cpp IPv6Addr.h \
+	KeyList.cpp KeyList.h Logger.cpp Logger.h long128.cpp \
+	long128.h md5.c md5.h Portable.h sha1.c sha1.h sha256.c \
+	sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h \
+	ScriptParams.cpp ScriptParams.h lowlevel-posix.c
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -263,11 +277,13 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+Portable.h: $(top_builddir)/config.status $(srcdir)/Portable.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
@@ -288,10 +304,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IPv6Addr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Logger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptParams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/addrpack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac-sha-md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/long128.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lowlevel-posix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha256.Po@am__quote@

@@ -27,7 +27,7 @@
 class TSrvOptFQDN : public TOptFQDN
 {
 public:
-    TSrvOptFQDN(string fqdn, TMsg* parent);
+    TSrvOptFQDN(const std::string& fqdn, TMsg* parent);
     TSrvOptFQDN(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
 };

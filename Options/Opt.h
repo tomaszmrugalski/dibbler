@@ -6,13 +6,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: Opt.h,v 1.12 2009-03-24 23:17:18 thomson Exp $
- *
  */
 
 #ifndef OPT_H
 #define OPT_H
 
+#include <stdint.h>
 #include <list>
 #include "SmartPtr.h"
 #include "Container.h"
@@ -46,9 +45,9 @@ class TOpt
      *  - Option size
      *  - data
      *
-     * @return the size, I've already said that !
+     * @return the size
      */
-    virtual int getSize() = 0;
+    virtual size_t getSize() = 0;
 
     /**
      * This method transform the instance of the option class into bytecode
@@ -70,16 +69,14 @@ class TOpt
     virtual std::string getPlain();
 
     int getOptType();
-    int getSubOptSize();
 
-    char* storeSubOpt(char* buf);
-    SPtr<TOpt> getOption(int optType);
+    SPtr<TOpt> getOption(int type);
 
     // suboptions management
     void firstOption();
     SPtr<TOpt> getOption();
     void addOption(SPtr<TOpt> opt);
-    void delOption();
+    bool delOption(uint16_t type);
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);
@@ -87,7 +84,19 @@ class TOpt
     SPtr<TDUID> getDUID();
     void setDUID(SPtr<TDUID> duid);
 
+    static bool parseOptions(TContainer< SPtr<TOpt> >& options,
+                             const char* buf,
+                             size_t len,
+                             TMsg* parent,
+                             uint16_t placeId = 0, // 5 (option 5) or (message 5)
+                             std::string place = "option" // "option" or "message"
+                             );
+
  protected:
+    char* storeHeader(char* buf);
+    char* storeSubOpt(char* buf);
+    int getSubOptSize();
+
     TContainer< SPtr<TOpt> > SubOptions;
     int OptType;
     TMsg* Parent;

@@ -30,8 +30,8 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     TRelParsGlobalOpt(void);
     ~TRelParsGlobalOpt(void);
     
-    string getWorkDir();
-    void setWorkDir(string dir);
+    std::string getWorkDir();
+    void setWorkDir(std::string dir);
 
     void setGuessMode(bool guess);
     bool getGuessMode();
@@ -46,7 +46,7 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     SPtr<TRelOptEcho> getEcho();
 
 private:
-    string WorkDir;
+    std::string WorkDir;
     bool GuessMode;
 
     ERelIfaceIdOrder InterfaceIDOrder;

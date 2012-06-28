@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.cpp,v 1.24 2008-11-11 21:55:27 thomson Exp $
- *
  */
 
 #include <limits.h>
@@ -23,6 +21,8 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+
+using namespace std;
 
 /**
  * @brief constructor for new IA
@@ -213,11 +213,6 @@ int TAddrIA::delAddr(SPtr<TIPv6Addr> addr)
     return -1;
 }
 
-int TAddrIA::getAddrCount()
-{
-    return this->AddrLst.count();
-}
-
 // --------------------------------------------------------------------
 // --- prefix related methods -----------------------------------------
 // --------------------------------------------------------------------
@@ -241,7 +236,7 @@ void TAddrIA::addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long 
     PrefixLst.append(ptr);
 }
 
-int TAddrIA::getPrefixCount()
+int TAddrIA::countPrefix()
 {
     return this->PrefixLst.count();
 }
@@ -352,6 +347,14 @@ unsigned long TAddrIA::getValidTimeout() {
         if (ts > ptr->getValidTimeout()) 
             ts = ptr->getValidTimeout();
     }
+
+    SPtr<TAddrPrefix> prefix;
+    firstPrefix();
+    while (prefix = getPrefix()) {
+      if (ts > prefix->getValidTimeout())
+          ts = prefix->getValidTimeout();
+    }
+
     return ts;
 }
 
@@ -423,7 +426,7 @@ enum ETentative TAddrIA::getTentative()
     AddrLst.first();
 
     bool allChecked = true;
-    
+
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
 	case TENTATIVE_YES:
@@ -436,7 +439,7 @@ enum ETentative TAddrIA::getTentative()
 	case TENTATIVE_UNKNOWN:
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
-	    
+
             switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
             {
 	    case LOWLEVEL_TENTATIVE_YES:  
@@ -540,7 +543,7 @@ SPtr<TFQDN> TAddrIA::getFQDN()
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream & operator<<(ostream & strum,TAddrIA &x) {
+std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
 
     SPtr<TAddrAddr> ptr;
     SPtr<TAddrPrefix> prefix;
@@ -594,15 +597,18 @@ ostream & operator<<(ostream & strum,TAddrIA &x) {
     }
 
     // FQDN
-    if (x.fqdnDnsServer) {
-	strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
-    } else {
-	strum << "      <!--<fqdnDnsServer>-->" << endl;
-    }
-    if (x.fqdn) {
-	strum << "      " << *x.fqdn << endl;
-    } else {
-	strum << "      <!-- <fqdn>-->" << endl;
+    if (x.Type!=TAddrIA::TYPE_PD) {
+        // it does not make sense to mention FQDN in PD
+        if (x.fqdnDnsServer) {
+            strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
+        } else {
+            strum << "      <!--<fqdnDnsServer>-->" << endl;
+        }
+        if (x.fqdn) {
+            strum << "      " << *x.fqdn << endl;
+        } else {
+            strum << "      <!-- <fqdn>-->" << endl;
+        }
     }
 
     strum << "    </" << name << ">" << dec << endl;

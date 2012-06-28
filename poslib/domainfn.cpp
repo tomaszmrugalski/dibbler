@@ -251,6 +251,7 @@ domainname& domainname::operator=(const domainname& nam) {
   return *this;
 }
 
+// cppcheck-suppress operatorEqToSelf
 domainname& domainname::operator=(const char *buff) {
   unsigned char tmp[DOM_LEN];
 

@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 0.8.0 (WinXP/2003/Vista/Win7 port)
-OutputBaseFilename=dibbler-0.8.0-win32
+AppVerName=Dibbler 0.8.2 (WinXP/2003/Vista/Win7 port)
+OutputBaseFilename=dibbler-0.8.2-win32
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -25,23 +25,26 @@ Name: "Documentation"; Description: "User's Guide"; Types: Full Compact;
 Name: "Tools";  Description: "DHCPv6 requestor and other tools"; Types: Full;
 
 [Files]
-Source: "Debug\dibbler-client.exe"; DestDir: "{app}"; Components: Client;
-Source: "..\client*.conf"; DestDir: "{app}"; Components: Client;
+Source: "Debug32\dibbler-client.exe"; DestDir: "{app}"; Components: Client;
+Source: "..\doc\examples\client*.conf"; DestDir: "{app}\examples"; Components: Client;
+Source: "..\doc\examples\client-win32.conf"; DestDir: "{app}"; DestName: "client.conf"; Components: Client;
 Source: "client.log"; DestDir: "{app}"; Components: Client;
-Source: "Debug\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
-Source: "..\relay*.conf"; DestDir: "{app}"; Components: Relay;
+Source: "Debug32\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
+Source: "..\doc\examples\relay*.conf"; DestDir: "{app}\examples"; Components: Relay;
 Source: "relay.log"; DestDir: "{app}"; Components: Relay;
-Source: "Debug\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
-Source: "Debug\dibbler-requestor.exe"; DestDir: "{app}"; Components: Tools;
-Source: "..\server*.conf"; DestDir: "{app}"; Components: Server;
+Source: "Debug32\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
+Source: "Debug32\dibbler-requestor.exe"; DestDir: "{app}"; Components: Tools;
+Source: "..\doc\examples\server*.conf"; DestDir: "{app}\examples"; Components: Server;
+Source: "..\doc\examples\server-win32.conf"; DestDir: "{app}"; DestName: "server.conf"; Components: Server;
 Source: "server.log"; DestDir: "{app}"; Components: Server;
 Source: "..\doc\dibbler-user.pdf"; DestDir: "{app}"; Components: Documentation;
-Source: "..\CHANGELOG"; DestDir: "{app}"; Components: Documentation;
-Source: "..\RELNOTES"; DestDir: "{app}"; Components: Documentation;
+Source: "..\CHANGELOG"; DestDir: "{app}"; DestName: "CHANGELOG.txt";
+Source: "..\RELNOTES"; DestDir: "{app}"; DestName: "RELNOTES.txt"; Flags: isreadme;
+Source: "..\AUTHORS"; DestDir: "{app}"; DestName: "AUTHORS.txt";
 
 [Icons]
 Name: "{group}\User's Guide"; Filename: "{app}\dibbler-user.pdf"
-Name: "{group}\Release notes"; Filename: "notepad.exe"; Parameters: "{app}\RELNOTES"
+Name: "{group}\Release notes"; Filename: "notepad.exe"; Parameters: "{app}\RELNOTES.txt"
 
 Name: "{group}\Client Run in the console"; Filename: "{app}\dibbler-client.exe"; WorkingDir: "{app}"; Parameters: " run -d ""{app}"" ";
 Name: "{group}\Client Install as service"; Filename: "{app}\dibbler-client.exe"; WorkingDir: "{app}"; Parameters: "install -d ""{app}"" ";
@@ -62,5 +65,3 @@ Name: "{group}\Relay View log file"; Filename: "notepad.exe"; Parameters: "{app}
 Name: "{group}\Relay Edit config file"; Filename: "notepad.exe"; Parameters: "{app}\relay.conf"
 
 Name: "{group}\Remove Dibbler"; Filename: {app}\unins000.exe
-
-

@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: Iface.h,v 1.18 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #ifndef IFACEIFACE_H
@@ -25,13 +23,13 @@
  */
 class TIfaceIface{
  public:
-    friend ostream & operator <<(ostream & strum, TIfaceIface &x);
+    friend std::ostream & operator <<(std::ostream & strum, TIfaceIface &x);
 
     TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
                 int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType);
     char * getName();
     int getID();
-    string getFullName();
+    std::string getFullName();
 
     // ---flags related---
     unsigned int getFlags();

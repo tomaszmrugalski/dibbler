@@ -38,27 +38,27 @@
 using namespace std;
 
 #define YY_USE_CLASS
-#define YY_ClntParser_MEMBERS  yyFlexLexer * lex;                                          \
+#define YY_ClntParser_MEMBERS  yyFlexLexer * Lex_;                                         \
 /*List of options in scope stack,the most fresh is last in the list*/       \
-List(TClntParsGlobalOpt) ParserOptStack;			            \
+List(TClntParsGlobalOpt) ParserOptStack;                                    \
 /*List of parsed interfaces/IAs/Addresses, last */                          \
 /*interface/IA/address is just being parsing or have been just parsed*/     \
-List(TClntCfgIface) ClntCfgIfaceLst;	                                    \
-List(TClntCfgIA)    ClntCfgIALst;		                            \
+List(TClntCfgIface) ClntCfgIfaceLst;                                        \
+List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
 List(DigestTypes)   DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(TStationID) PresentStationLst;		                            \
-List(TIPv6Addr) PresentAddrLst;			                            \
+List(THostID) PresentStationLst;                                         \
+List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
-List(string) PresentStringLst;	                                            \
-List(TOptVendorSpecInfo) VendorSpec;					    \
+List(std::string) PresentStringLst;                                         \
+List(TOptVendorSpecInfo) VendorSpec;                                        \
 bool IfaceDefined(int ifaceNr);                                             \
-bool IfaceDefined(string ifaceName);                                        \
-bool StartIfaceDeclaration(string ifaceName);                               \
+bool IfaceDefined(const std::string& ifaceName);                            \
+bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
@@ -77,14 +77,20 @@ int DUIDEnterpriseNumber;                                                   \
 SPtr<TDUID> DUIDEnterpriseID;
 #define YY_ClntParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_ClntParser_CONSTRUCTOR_CODE                                                     \
-    this->lex = lex;                                                        \
+    Lex_ = lex;                                                             \
     ParserOptStack.append(new TClntParsGlobalOpt());                        \
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;
+    DUIDEnterpriseID = 0;                                                   \
+    CfgMgr = 0;                                                             \
+    iaidSet = false;                                                        \
+    iaid = 0xffffffff;                                                      \
+    DUIDEnterpriseNumber = -1;                                              \
+    yynerrs = 0;                                                            \
+    yychar = 0;
 
-#line 83 "ClntParser.y"
+#line 89 "ClntParser.y"
 typedef union
 {
     int ival;
@@ -158,6 +164,7 @@ typedef union
 #ifndef YY_ClntParser_DEBUG
 
  #line 71 "../bison++/bison.h"
+#define YY_ClntParser_DEBUG 1
 
 #line 71 "../bison++/bison.h"
 /* YY_ClntParser_DEBUG */
@@ -281,61 +288,65 @@ typedef
 #define	NISP_DOMAIN_	272
 #define	FQDN_	273
 #define	FQDN_S_	274
-#define	LIFETIME_	275
-#define	VENDOR_SPEC_	276
-#define	IFACE_	277
-#define	NO_CONFIG_	278
-#define	REJECT_SERVERS_	279
-#define	PREFERRED_SERVERS_	280
-#define	IA_	281
-#define	TA_	282
-#define	IAID_	283
-#define	ADDRESS_	284
-#define	NAME_	285
-#define	IPV6ADDR_	286
-#define	WORKDIR_	287
-#define	RAPID_COMMIT_	288
-#define	OPTION_	289
-#define	SCRIPTS_DIR_	290
-#define	NOTIFY_SCRIPTS_	291
-#define	LOGNAME_	292
-#define	LOGLEVEL_	293
-#define	LOGMODE_	294
-#define	LOGCOLORS_	295
-#define	STRING_	296
-#define	HEXNUMBER_	297
-#define	INTNUMBER_	298
-#define	DUID_	299
-#define	STRICT_RFC_NO_ROUTING_	300
-#define	SKIP_CONFIRM_	301
-#define	PD_	302
-#define	PREFIX_	303
-#define	DUID_TYPE_	304
-#define	DUID_TYPE_LLT_	305
-#define	DUID_TYPE_LL_	306
-#define	DUID_TYPE_EN_	307
-#define	AUTH_ENABLED_	308
-#define	AUTH_ACCEPT_METHODS_	309
-#define	DIGEST_NONE_	310
-#define	DIGEST_PLAIN_	311
-#define	DIGEST_HMAC_MD5_	312
-#define	DIGEST_HMAC_SHA1_	313
-#define	DIGEST_HMAC_SHA224_	314
-#define	DIGEST_HMAC_SHA256_	315
-#define	DIGEST_HMAC_SHA384_	316
-#define	DIGEST_HMAC_SHA512_	317
-#define	STATELESS_	318
-#define	ANON_INF_REQUEST_	319
-#define	INSIST_MODE_	320
-#define	INACTIVE_MODE_	321
-#define	EXPERIMENTAL_	322
-#define	ADDR_PARAMS_	323
-#define	REMOTE_AUTOCONF_	324
-#define	AFTR_	325
-#define	ADDRESS_LIST_	326
-#define	STRING_KEYWORD_	327
-#define	REQUEST_	328
-#define	RECONFIGURE_	329
+#define	DDNS_PROTOCOL_	275
+#define	DDNS_TIMEOUT_	276
+#define	LIFETIME_	277
+#define	VENDOR_SPEC_	278
+#define	IFACE_	279
+#define	NO_CONFIG_	280
+#define	REJECT_SERVERS_	281
+#define	PREFERRED_SERVERS_	282
+#define	IA_	283
+#define	TA_	284
+#define	IAID_	285
+#define	ADDRESS_	286
+#define	NAME_	287
+#define	IPV6ADDR_	288
+#define	WORKDIR_	289
+#define	RAPID_COMMIT_	290
+#define	OPTION_	291
+#define	SCRIPT_	292
+#define	LOGNAME_	293
+#define	LOGLEVEL_	294
+#define	LOGMODE_	295
+#define	LOGCOLORS_	296
+#define	STRING_	297
+#define	HEXNUMBER_	298
+#define	INTNUMBER_	299
+#define	DUID_	300
+#define	STRICT_RFC_NO_ROUTING_	301
+#define	SKIP_CONFIRM_	302
+#define	PD_	303
+#define	PREFIX_	304
+#define	DOWNLINK_PREFIX_IFACES_	305
+#define	DUID_TYPE_	306
+#define	DUID_TYPE_LLT_	307
+#define	DUID_TYPE_LL_	308
+#define	DUID_TYPE_EN_	309
+#define	AUTH_ENABLED_	310
+#define	AUTH_ACCEPT_METHODS_	311
+#define	DIGEST_NONE_	312
+#define	DIGEST_PLAIN_	313
+#define	DIGEST_HMAC_MD5_	314
+#define	DIGEST_HMAC_SHA1_	315
+#define	DIGEST_HMAC_SHA224_	316
+#define	DIGEST_HMAC_SHA256_	317
+#define	DIGEST_HMAC_SHA384_	318
+#define	DIGEST_HMAC_SHA512_	319
+#define	STATELESS_	320
+#define	ANON_INF_REQUEST_	321
+#define	INSIST_MODE_	322
+#define	INACTIVE_MODE_	323
+#define	EXPERIMENTAL_	324
+#define	ADDR_PARAMS_	325
+#define	REMOTE_AUTOCONF_	326
+#define	AFTR_	327
+#define	ROUTING_	328
+#define	ADDRESS_LIST_	329
+#define	STRING_KEYWORD_	330
+#define	DUID_KEYWORD_	331
+#define	REQUEST_	332
+#define	RECONFIGURE_	333
 
 
 #line 169 "../bison++/bison.h"
@@ -401,6 +412,8 @@ static const int NIS_DOMAIN_;
 static const int NISP_DOMAIN_;
 static const int FQDN_;
 static const int FQDN_S_;
+static const int DDNS_PROTOCOL_;
+static const int DDNS_TIMEOUT_;
 static const int LIFETIME_;
 static const int VENDOR_SPEC_;
 static const int IFACE_;
@@ -416,8 +429,7 @@ static const int IPV6ADDR_;
 static const int WORKDIR_;
 static const int RAPID_COMMIT_;
 static const int OPTION_;
-static const int SCRIPTS_DIR_;
-static const int NOTIFY_SCRIPTS_;
+static const int SCRIPT_;
 static const int LOGNAME_;
 static const int LOGLEVEL_;
 static const int LOGMODE_;
@@ -430,6 +442,7 @@ static const int STRICT_RFC_NO_ROUTING_;
 static const int SKIP_CONFIRM_;
 static const int PD_;
 static const int PREFIX_;
+static const int DOWNLINK_PREFIX_IFACES_;
 static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
@@ -452,8 +465,10 @@ static const int EXPERIMENTAL_;
 static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
+static const int ROUTING_;
 static const int ADDRESS_LIST_;
 static const int STRING_KEYWORD_;
+static const int DUID_KEYWORD_;
 static const int REQUEST_;
 static const int RECONFIGURE_;
 
@@ -481,61 +496,65 @@ static const int RECONFIGURE_;
 	,NISP_DOMAIN_=272
 	,FQDN_=273
 	,FQDN_S_=274
-	,LIFETIME_=275
-	,VENDOR_SPEC_=276
-	,IFACE_=277
-	,NO_CONFIG_=278
-	,REJECT_SERVERS_=279
-	,PREFERRED_SERVERS_=280
-	,IA_=281
-	,TA_=282
-	,IAID_=283
-	,ADDRESS_=284
-	,NAME_=285
-	,IPV6ADDR_=286
-	,WORKDIR_=287
-	,RAPID_COMMIT_=288
-	,OPTION_=289
-	,SCRIPTS_DIR_=290
-	,NOTIFY_SCRIPTS_=291
-	,LOGNAME_=292
-	,LOGLEVEL_=293
-	,LOGMODE_=294
-	,LOGCOLORS_=295
-	,STRING_=296
-	,HEXNUMBER_=297
-	,INTNUMBER_=298
-	,DUID_=299
-	,STRICT_RFC_NO_ROUTING_=300
-	,SKIP_CONFIRM_=301
-	,PD_=302
-	,PREFIX_=303
-	,DUID_TYPE_=304
-	,DUID_TYPE_LLT_=305
-	,DUID_TYPE_LL_=306
-	,DUID_TYPE_EN_=307
-	,AUTH_ENABLED_=308
-	,AUTH_ACCEPT_METHODS_=309
-	,DIGEST_NONE_=310
-	,DIGEST_PLAIN_=311
-	,DIGEST_HMAC_MD5_=312
-	,DIGEST_HMAC_SHA1_=313
-	,DIGEST_HMAC_SHA224_=314
-	,DIGEST_HMAC_SHA256_=315
-	,DIGEST_HMAC_SHA384_=316
-	,DIGEST_HMAC_SHA512_=317
-	,STATELESS_=318
-	,ANON_INF_REQUEST_=319
-	,INSIST_MODE_=320
-	,INACTIVE_MODE_=321
-	,EXPERIMENTAL_=322
-	,ADDR_PARAMS_=323
-	,REMOTE_AUTOCONF_=324
-	,AFTR_=325
-	,ADDRESS_LIST_=326
-	,STRING_KEYWORD_=327
-	,REQUEST_=328
-	,RECONFIGURE_=329
+	,DDNS_PROTOCOL_=275
+	,DDNS_TIMEOUT_=276
+	,LIFETIME_=277
+	,VENDOR_SPEC_=278
+	,IFACE_=279
+	,NO_CONFIG_=280
+	,REJECT_SERVERS_=281
+	,PREFERRED_SERVERS_=282
+	,IA_=283
+	,TA_=284
+	,IAID_=285
+	,ADDRESS_=286
+	,NAME_=287
+	,IPV6ADDR_=288
+	,WORKDIR_=289
+	,RAPID_COMMIT_=290
+	,OPTION_=291
+	,SCRIPT_=292
+	,LOGNAME_=293
+	,LOGLEVEL_=294
+	,LOGMODE_=295
+	,LOGCOLORS_=296
+	,STRING_=297
+	,HEXNUMBER_=298
+	,INTNUMBER_=299
+	,DUID_=300
+	,STRICT_RFC_NO_ROUTING_=301
+	,SKIP_CONFIRM_=302
+	,PD_=303
+	,PREFIX_=304
+	,DOWNLINK_PREFIX_IFACES_=305
+	,DUID_TYPE_=306
+	,DUID_TYPE_LLT_=307
+	,DUID_TYPE_LL_=308
+	,DUID_TYPE_EN_=309
+	,AUTH_ENABLED_=310
+	,AUTH_ACCEPT_METHODS_=311
+	,DIGEST_NONE_=312
+	,DIGEST_PLAIN_=313
+	,DIGEST_HMAC_MD5_=314
+	,DIGEST_HMAC_SHA1_=315
+	,DIGEST_HMAC_SHA224_=316
+	,DIGEST_HMAC_SHA256_=317
+	,DIGEST_HMAC_SHA384_=318
+	,DIGEST_HMAC_SHA512_=319
+	,STATELESS_=320
+	,ANON_INF_REQUEST_=321
+	,INSIST_MODE_=322
+	,INACTIVE_MODE_=323
+	,EXPERIMENTAL_=324
+	,ADDR_PARAMS_=325
+	,REMOTE_AUTOCONF_=326
+	,AFTR_=327
+	,ROUTING_=328
+	,ADDRESS_LIST_=329
+	,STRING_KEYWORD_=330
+	,DUID_KEYWORD_=331
+	,REQUEST_=332
+	,RECONFIGURE_=333
 
 
 #line 215 "../bison++/bison.h"

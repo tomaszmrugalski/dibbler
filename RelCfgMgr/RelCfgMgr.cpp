@@ -5,27 +5,27 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelCfgMgr.cpp,v 1.13 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
+#include <cstdlib>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "IfaceMgr.h"
 #include "RelIfaceMgr.h"
 #include "RelCfgIface.h"
+
+using namespace std;
 #include "FlexLexer.h"
 #include "RelParser.h"
 #include "RelCfgMgr.h"
-
-using namespace std;
 
 int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
-TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
+TRelCfgMgr::TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
     :TCfgMgr(), XmlFile(xmlFile)
 {
     // load config file
@@ -38,7 +38,7 @@ TRelCfgMgr::TRelCfgMgr(const std::string cfgFile, const std::string xmlFile)
     this->IsDone = false;
 }
 
-bool TRelCfgMgr::parseConfigFile(string cfgFile) {
+bool TRelCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
@@ -257,7 +257,7 @@ SPtr<TRelOptEcho> TRelCfgMgr::getEcho()
     return Echo;
 }
 
-void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xmlFile )
+void TRelCfgMgr::instanceCreate(const std::string& cfgFile, const std::string& xmlFile )
 {
     if (Instance)
         Log(Crit) << "RelCfgMgr instance already created. Application error!" << LogEnd;
@@ -266,8 +266,10 @@ void TRelCfgMgr::instanceCreate( const std::string cfgFile, const std::string xm
 
 TRelCfgMgr& TRelCfgMgr::instance()
 {
-    if (!Instance)
-        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+        Log(Crit) << "RelCfgMgr instance not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }
 

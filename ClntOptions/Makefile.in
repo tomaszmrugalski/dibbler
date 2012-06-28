@@ -58,8 +58,6 @@ am_libClntOptions_a_OBJECTS =  \
 	libClntOptions_a-ClntOptAAAAuthentication.$(OBJEXT) \
 	libClntOptions_a-ClntOptAddrParams.$(OBJEXT) \
 	libClntOptions_a-ClntOptAuthentication.$(OBJEXT) \
-	libClntOptions_a-ClntOptDNSServers.$(OBJEXT) \
-	libClntOptions_a-ClntOptDomainName.$(OBJEXT) \
 	libClntOptions_a-ClntOptElapsed.$(OBJEXT) \
 	libClntOptions_a-ClntOptFQDN.$(OBJEXT) \
 	libClntOptions_a-ClntOptIAAddress.$(OBJEXT) \
@@ -68,15 +66,8 @@ am_libClntOptions_a_OBJECTS =  \
 	libClntOptions_a-ClntOptIAPrefix.$(OBJEXT) \
 	libClntOptions_a-ClntOptKeyGeneration.$(OBJEXT) \
 	libClntOptions_a-ClntOptLifetime.$(OBJEXT) \
-	libClntOptions_a-ClntOptNISDomain.$(OBJEXT) \
-	libClntOptions_a-ClntOptNISPDomain.$(OBJEXT) \
-	libClntOptions_a-ClntOptNISPServer.$(OBJEXT) \
-	libClntOptions_a-ClntOptNISServer.$(OBJEXT) \
-	libClntOptions_a-ClntOptNTPServers.$(OBJEXT) \
 	libClntOptions_a-ClntOptOptionRequest.$(OBJEXT) \
 	libClntOptions_a-ClntOptPreference.$(OBJEXT) \
-	libClntOptions_a-ClntOptSIPDomain.$(OBJEXT) \
-	libClntOptions_a-ClntOptSIPServer.$(OBJEXT) \
 	libClntOptions_a-ClntOptStatusCode.$(OBJEXT) \
 	libClntOptions_a-ClntOptTA.$(OBJEXT) \
 	libClntOptions_a-ClntOptTimeZone.$(OBJEXT) \
@@ -161,8 +152,12 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DIST_SUBDIRS = @EXTRA_DIST_SUBDIRS@
 FGREP = @FGREP@
 GREP = @GREP@
+GTEST_INCLUDES = @GTEST_INCLUDES@
+GTEST_LDADD = @GTEST_LDADD@
+GTEST_LDFLAGS = @GTEST_LDFLAGS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -177,6 +172,7 @@ LINKPRINT = @LINKPRINT@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -251,6 +247,7 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -263,23 +260,24 @@ libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/IfaceMgr -I$(top_srcdir)/ClntCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/ClntAddrMgr \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
+#libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
+#libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 
+#libClntOptions_a_SOURCES += ClntOptNISDomain.cpp ClntOptNISDomain.h
+#libClntOptions_a_SOURCES += ClntOptNISPDomain.cpp ClntOptNISPDomain.h 
+#libClntOptions_a_SOURCES += ClntOptNTPServers.cpp ClntOptNTPServers.h
+#libClntOptions_a_SOURCES += ClntOptSIPDomain.cpp ClntOptSIPDomain.h
+#libClntOptions_a_SOURCES += ClntOptSIPServer.cpp ClntOptSIPServer.h
 libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp \
 	ClntOptAAAAuthentication.h ClntOptAddrParams.cpp \
 	ClntOptAddrParams.h ClntOptAuthentication.cpp \
-	ClntOptAuthentication.h ClntOptDNSServers.cpp \
-	ClntOptDNSServers.h ClntOptDomainName.cpp ClntOptDomainName.h \
-	ClntOptElapsed.cpp ClntOptElapsed.h ClntOptFQDN.cpp \
-	ClntOptFQDN.h ClntOptIAAddress.cpp ClntOptIAAddress.h \
-	ClntOptIA_NA.cpp ClntOptIA_NA.h ClntOptIA_PD.cpp \
-	ClntOptIA_PD.h ClntOptIAPrefix.cpp ClntOptIAPrefix.h \
-	ClntOptKeyGeneration.cpp ClntOptKeyGeneration.h \
-	ClntOptLifetime.cpp ClntOptLifetime.h ClntOptNISDomain.cpp \
-	ClntOptNISDomain.h ClntOptNISPDomain.cpp ClntOptNISPDomain.h \
-	ClntOptNISPServer.cpp ClntOptNISPServer.h ClntOptNISServer.cpp \
-	ClntOptNISServer.h ClntOptNTPServers.cpp ClntOptNTPServers.h \
+	ClntOptAuthentication.h ClntOptElapsed.cpp ClntOptElapsed.h \
+	ClntOptFQDN.cpp ClntOptFQDN.h ClntOptIAAddress.cpp \
+	ClntOptIAAddress.h ClntOptIA_NA.cpp ClntOptIA_NA.h \
+	ClntOptIA_PD.cpp ClntOptIA_PD.h ClntOptIAPrefix.cpp \
+	ClntOptIAPrefix.h ClntOptKeyGeneration.cpp \
+	ClntOptKeyGeneration.h ClntOptLifetime.cpp ClntOptLifetime.h \
 	ClntOptOptionRequest.cpp ClntOptOptionRequest.h \
-	ClntOptPreference.cpp ClntOptPreference.h ClntOptSIPDomain.cpp \
-	ClntOptSIPDomain.h ClntOptSIPServer.cpp ClntOptSIPServer.h \
+	ClntOptPreference.cpp ClntOptPreference.h \
 	ClntOptStatusCode.cpp ClntOptStatusCode.h ClntOptTA.cpp \
 	ClntOptTA.h ClntOptTimeZone.cpp ClntOptTimeZone.h \
 	ClntOptUserClass.cpp ClntOptUserClass.h ClntOptVendorClass.cpp \
@@ -288,7 +286,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -313,9 +311,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
@@ -335,8 +333,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAAAAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAddrParams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptDomainName.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptElapsed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptFQDN.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIAAddress.Po@am__quote@
@@ -345,15 +341,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIA_PD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptLifetime.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptNISServer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptOptionRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptPreference.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptStatusCode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptTA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptTimeZone.Po@am__quote@
@@ -432,38 +421,6 @@ libClntOptions_a-ClntOptAuthentication.obj: ClntOptAuthentication.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptAuthentication.cpp' object='libClntOptions_a-ClntOptAuthentication.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptAuthentication.obj `if test -f 'ClntOptAuthentication.cpp'; then $(CYGPATH_W) 'ClntOptAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptAuthentication.cpp'; fi`
-
-libClntOptions_a-ClntOptDNSServers.o: ClntOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptDNSServers.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Tpo -c -o libClntOptions_a-ClntOptDNSServers.o `test -f 'ClntOptDNSServers.cpp' || echo '$(srcdir)/'`ClntOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Tpo $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptDNSServers.cpp' object='libClntOptions_a-ClntOptDNSServers.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptDNSServers.o `test -f 'ClntOptDNSServers.cpp' || echo '$(srcdir)/'`ClntOptDNSServers.cpp
-
-libClntOptions_a-ClntOptDNSServers.obj: ClntOptDNSServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptDNSServers.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Tpo -c -o libClntOptions_a-ClntOptDNSServers.obj `if test -f 'ClntOptDNSServers.cpp'; then $(CYGPATH_W) 'ClntOptDNSServers.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptDNSServers.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Tpo $(DEPDIR)/libClntOptions_a-ClntOptDNSServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptDNSServers.cpp' object='libClntOptions_a-ClntOptDNSServers.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptDNSServers.obj `if test -f 'ClntOptDNSServers.cpp'; then $(CYGPATH_W) 'ClntOptDNSServers.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptDNSServers.cpp'; fi`
-
-libClntOptions_a-ClntOptDomainName.o: ClntOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptDomainName.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Tpo -c -o libClntOptions_a-ClntOptDomainName.o `test -f 'ClntOptDomainName.cpp' || echo '$(srcdir)/'`ClntOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Tpo $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptDomainName.cpp' object='libClntOptions_a-ClntOptDomainName.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptDomainName.o `test -f 'ClntOptDomainName.cpp' || echo '$(srcdir)/'`ClntOptDomainName.cpp
-
-libClntOptions_a-ClntOptDomainName.obj: ClntOptDomainName.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptDomainName.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Tpo -c -o libClntOptions_a-ClntOptDomainName.obj `if test -f 'ClntOptDomainName.cpp'; then $(CYGPATH_W) 'ClntOptDomainName.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptDomainName.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Tpo $(DEPDIR)/libClntOptions_a-ClntOptDomainName.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptDomainName.cpp' object='libClntOptions_a-ClntOptDomainName.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptDomainName.obj `if test -f 'ClntOptDomainName.cpp'; then $(CYGPATH_W) 'ClntOptDomainName.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptDomainName.cpp'; fi`
 
 libClntOptions_a-ClntOptElapsed.o: ClntOptElapsed.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptElapsed.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptElapsed.Tpo -c -o libClntOptions_a-ClntOptElapsed.o `test -f 'ClntOptElapsed.cpp' || echo '$(srcdir)/'`ClntOptElapsed.cpp
@@ -593,86 +550,6 @@ libClntOptions_a-ClntOptLifetime.obj: ClntOptLifetime.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptLifetime.obj `if test -f 'ClntOptLifetime.cpp'; then $(CYGPATH_W) 'ClntOptLifetime.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptLifetime.cpp'; fi`
 
-libClntOptions_a-ClntOptNISDomain.o: ClntOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISDomain.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Tpo -c -o libClntOptions_a-ClntOptNISDomain.o `test -f 'ClntOptNISDomain.cpp' || echo '$(srcdir)/'`ClntOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISDomain.cpp' object='libClntOptions_a-ClntOptNISDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISDomain.o `test -f 'ClntOptNISDomain.cpp' || echo '$(srcdir)/'`ClntOptNISDomain.cpp
-
-libClntOptions_a-ClntOptNISDomain.obj: ClntOptNISDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISDomain.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Tpo -c -o libClntOptions_a-ClntOptNISDomain.obj `if test -f 'ClntOptNISDomain.cpp'; then $(CYGPATH_W) 'ClntOptNISDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISDomain.cpp' object='libClntOptions_a-ClntOptNISDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISDomain.obj `if test -f 'ClntOptNISDomain.cpp'; then $(CYGPATH_W) 'ClntOptNISDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISDomain.cpp'; fi`
-
-libClntOptions_a-ClntOptNISPDomain.o: ClntOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISPDomain.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Tpo -c -o libClntOptions_a-ClntOptNISPDomain.o `test -f 'ClntOptNISPDomain.cpp' || echo '$(srcdir)/'`ClntOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISPDomain.cpp' object='libClntOptions_a-ClntOptNISPDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISPDomain.o `test -f 'ClntOptNISPDomain.cpp' || echo '$(srcdir)/'`ClntOptNISPDomain.cpp
-
-libClntOptions_a-ClntOptNISPDomain.obj: ClntOptNISPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISPDomain.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Tpo -c -o libClntOptions_a-ClntOptNISPDomain.obj `if test -f 'ClntOptNISPDomain.cpp'; then $(CYGPATH_W) 'ClntOptNISPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISPDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISPDomain.cpp' object='libClntOptions_a-ClntOptNISPDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISPDomain.obj `if test -f 'ClntOptNISPDomain.cpp'; then $(CYGPATH_W) 'ClntOptNISPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISPDomain.cpp'; fi`
-
-libClntOptions_a-ClntOptNISPServer.o: ClntOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISPServer.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Tpo -c -o libClntOptions_a-ClntOptNISPServer.o `test -f 'ClntOptNISPServer.cpp' || echo '$(srcdir)/'`ClntOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISPServer.cpp' object='libClntOptions_a-ClntOptNISPServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISPServer.o `test -f 'ClntOptNISPServer.cpp' || echo '$(srcdir)/'`ClntOptNISPServer.cpp
-
-libClntOptions_a-ClntOptNISPServer.obj: ClntOptNISPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISPServer.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Tpo -c -o libClntOptions_a-ClntOptNISPServer.obj `if test -f 'ClntOptNISPServer.cpp'; then $(CYGPATH_W) 'ClntOptNISPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISPServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISPServer.cpp' object='libClntOptions_a-ClntOptNISPServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISPServer.obj `if test -f 'ClntOptNISPServer.cpp'; then $(CYGPATH_W) 'ClntOptNISPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISPServer.cpp'; fi`
-
-libClntOptions_a-ClntOptNISServer.o: ClntOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISServer.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Tpo -c -o libClntOptions_a-ClntOptNISServer.o `test -f 'ClntOptNISServer.cpp' || echo '$(srcdir)/'`ClntOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISServer.cpp' object='libClntOptions_a-ClntOptNISServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISServer.o `test -f 'ClntOptNISServer.cpp' || echo '$(srcdir)/'`ClntOptNISServer.cpp
-
-libClntOptions_a-ClntOptNISServer.obj: ClntOptNISServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNISServer.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Tpo -c -o libClntOptions_a-ClntOptNISServer.obj `if test -f 'ClntOptNISServer.cpp'; then $(CYGPATH_W) 'ClntOptNISServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNISServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNISServer.cpp' object='libClntOptions_a-ClntOptNISServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNISServer.obj `if test -f 'ClntOptNISServer.cpp'; then $(CYGPATH_W) 'ClntOptNISServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNISServer.cpp'; fi`
-
-libClntOptions_a-ClntOptNTPServers.o: ClntOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNTPServers.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Tpo -c -o libClntOptions_a-ClntOptNTPServers.o `test -f 'ClntOptNTPServers.cpp' || echo '$(srcdir)/'`ClntOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNTPServers.cpp' object='libClntOptions_a-ClntOptNTPServers.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNTPServers.o `test -f 'ClntOptNTPServers.cpp' || echo '$(srcdir)/'`ClntOptNTPServers.cpp
-
-libClntOptions_a-ClntOptNTPServers.obj: ClntOptNTPServers.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptNTPServers.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Tpo -c -o libClntOptions_a-ClntOptNTPServers.obj `if test -f 'ClntOptNTPServers.cpp'; then $(CYGPATH_W) 'ClntOptNTPServers.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNTPServers.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Tpo $(DEPDIR)/libClntOptions_a-ClntOptNTPServers.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptNTPServers.cpp' object='libClntOptions_a-ClntOptNTPServers.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptNTPServers.obj `if test -f 'ClntOptNTPServers.cpp'; then $(CYGPATH_W) 'ClntOptNTPServers.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptNTPServers.cpp'; fi`
-
 libClntOptions_a-ClntOptOptionRequest.o: ClntOptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptOptionRequest.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptOptionRequest.Tpo -c -o libClntOptions_a-ClntOptOptionRequest.o `test -f 'ClntOptOptionRequest.cpp' || echo '$(srcdir)/'`ClntOptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptOptionRequest.Tpo $(DEPDIR)/libClntOptions_a-ClntOptOptionRequest.Po
@@ -704,38 +581,6 @@ libClntOptions_a-ClntOptPreference.obj: ClntOptPreference.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptPreference.cpp' object='libClntOptions_a-ClntOptPreference.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptPreference.obj `if test -f 'ClntOptPreference.cpp'; then $(CYGPATH_W) 'ClntOptPreference.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptPreference.cpp'; fi`
-
-libClntOptions_a-ClntOptSIPDomain.o: ClntOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptSIPDomain.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Tpo -c -o libClntOptions_a-ClntOptSIPDomain.o `test -f 'ClntOptSIPDomain.cpp' || echo '$(srcdir)/'`ClntOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptSIPDomain.cpp' object='libClntOptions_a-ClntOptSIPDomain.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptSIPDomain.o `test -f 'ClntOptSIPDomain.cpp' || echo '$(srcdir)/'`ClntOptSIPDomain.cpp
-
-libClntOptions_a-ClntOptSIPDomain.obj: ClntOptSIPDomain.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptSIPDomain.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Tpo -c -o libClntOptions_a-ClntOptSIPDomain.obj `if test -f 'ClntOptSIPDomain.cpp'; then $(CYGPATH_W) 'ClntOptSIPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptSIPDomain.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Tpo $(DEPDIR)/libClntOptions_a-ClntOptSIPDomain.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptSIPDomain.cpp' object='libClntOptions_a-ClntOptSIPDomain.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptSIPDomain.obj `if test -f 'ClntOptSIPDomain.cpp'; then $(CYGPATH_W) 'ClntOptSIPDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptSIPDomain.cpp'; fi`
-
-libClntOptions_a-ClntOptSIPServer.o: ClntOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptSIPServer.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Tpo -c -o libClntOptions_a-ClntOptSIPServer.o `test -f 'ClntOptSIPServer.cpp' || echo '$(srcdir)/'`ClntOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptSIPServer.cpp' object='libClntOptions_a-ClntOptSIPServer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptSIPServer.o `test -f 'ClntOptSIPServer.cpp' || echo '$(srcdir)/'`ClntOptSIPServer.cpp
-
-libClntOptions_a-ClntOptSIPServer.obj: ClntOptSIPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptSIPServer.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Tpo -c -o libClntOptions_a-ClntOptSIPServer.obj `if test -f 'ClntOptSIPServer.cpp'; then $(CYGPATH_W) 'ClntOptSIPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptSIPServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Tpo $(DEPDIR)/libClntOptions_a-ClntOptSIPServer.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntOptSIPServer.cpp' object='libClntOptions_a-ClntOptSIPServer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptSIPServer.obj `if test -f 'ClntOptSIPServer.cpp'; then $(CYGPATH_W) 'ClntOptSIPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptSIPServer.cpp'; fi`
 
 libClntOptions_a-ClntOptStatusCode.o: ClntOptStatusCode.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptStatusCode.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptStatusCode.Tpo -c -o libClntOptions_a-ClntOptStatusCode.o `test -f 'ClntOptStatusCode.cpp' || echo '$(srcdir)/'`ClntOptStatusCode.cpp

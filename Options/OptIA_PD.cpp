@@ -3,55 +3,50 @@
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * changes: Tomasz Mrugalski <thomson@klub.com.pl>
- * 
- * released under GNU GPL v2 only licence
  *
+ * released under GNU GPL v2 only licence
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-
+#include "Portable.h"
 #include "OptIA_PD.h"
 #include "OptIAPrefix.h"
 #include "OptStatusCode.h"
 
 
-TOptIA_PD::TOptIA_PD( long IAID, long t1,  long t2, TMsg* parent)
-	:TOpt(OPTION_IA_PD, parent) {
-    this->IAID = IAID;
-    this->T1   = t1;
-    this->T2   = t2;
+TOptIA_PD::TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
+    :TOpt(OPTION_IA_PD, parent), IAID_(iaid), T1_(t1), T2_(t2), Valid_(true)  {
 }
 
-unsigned long TOptIA_PD::getIAID() {
-    return IAID;
+uint32_t TOptIA_PD::getIAID() const {
+    return IAID_;
 }
 
-unsigned long TOptIA_PD::getT1() {
-    return T1;
+uint32_t TOptIA_PD::getT1() const {
+    return T1_;
 }
 
-unsigned long TOptIA_PD::getT2() {
-    return T2;
+uint32_t TOptIA_PD::getT2() const {
+    return T2_;
 }
 
-TOptIA_PD::TOptIA_PD( char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA_PD, parent) {
-    if (bufsize<12) {
-        Valid=false;
-        bufsize=0;
-	
+TOptIA_PD::TOptIA_PD(char * &buf, int &bufsize, TMsg* parent)
+    :TOpt(OPTION_IA_PD, parent), Valid_(false) {
+    if (bufsize < 12) {
+        bufsize = 0;
     } else {
-        Valid=true;
-        IAID = ntohl(*( long*)buf);
-        T1 = ntohl(*( long*)(buf+4));
-        T2 = ntohl(*( long*)(buf+8));
-        buf+=12; bufsize-=12;
+        IAID_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        bufsize -= sizeof(uint32_t);
+
+        T1_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        bufsize -= sizeof(uint32_t);
+
+        T2_ = readUint32(buf);
+        buf += sizeof(uint32_t);
+        bufsize -= sizeof(uint32_t);
+        Valid = true;
     }
 }
 
@@ -60,48 +55,30 @@ int TOptIA_PD::getStatusCode() {
     SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while ( ptrOpt = SubOptions.get() ) {
-	if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-	    SPtr <TOptStatusCode> ptrStatus;
-	    ptrStatus = (Ptr*) ptrOpt;
-	    return ptrStatus->getCode();
-	}
+        if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
+            SPtr <TOptStatusCode> ptrStatus;
+            ptrStatus = (Ptr*) ptrOpt;
+            return ptrStatus->getCode();
+        }
     }
     return -1;
 }
 
-int TOptIA_PD::getSize() {
+size_t TOptIA_PD::getSize() {
     int mySize = 16;
-    return mySize+getSubOptSize();
+    return mySize + getSubOptSize();
 }
 
 char * TOptIA_PD::storeSelf( char* buf) {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    *(uint32_t*)buf = htonl(IAID);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T1);
-    buf+=4;
-    *(uint32_t*)buf = htonl(T2);
-    buf+=4;
-    buf=this->storeSubOpt(buf);
-    return buf;
-}
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4 );
 
-unsigned long TOptIA_PD::getMaxValid() {
-    unsigned long maxValid=0;
-    SPtr<TOpt> ptrOpt;
-    SubOptions.first();
-    while (ptrOpt=SubOptions.get())
-    {
-        if (ptrOpt->getOptType()==OPTION_IAPREFIX) {
-            //SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
-            //if (maxValid<ptrIAAddr->getValid())
-            //    maxValid=ptrIAAddr->getValid();
-        }
-    }   
-    return maxValid;
+    buf = writeUint32(buf, IAID_);
+    buf = writeUint32(buf, T1_);
+    buf = writeUint32(buf, T2_);
+
+    buf = storeSubOpt(buf);
+    return buf;
 }
 
 bool TOptIA_PD::isValid() {
@@ -116,8 +93,20 @@ int TOptIA_PD::countPrefixes() {
     SPtr<TOpt> opt;
     this->firstOption();
     while (opt = this->getOption() ) {
-	if (opt->getOptType() == OPTION_IAPREFIX)
-	    cnt++;
+        if (opt->getOptType() == OPTION_IAPREFIX)
+            cnt++;
     }
     return cnt;
+}
+
+void TOptIA_PD::setT1(uint32_t t1) {
+    T1_ = t1;
+}
+
+void TOptIA_PD::setT2(uint32_t t2) {
+    T2_ = t2;
+}
+
+void TOptIA_PD::setIAID(uint32_t iaid) {
+    IAID_ = iaid;
 }

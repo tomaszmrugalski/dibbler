@@ -45,10 +45,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				DefaultCharIsUnsigned="true"
@@ -101,8 +102,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release32|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="Release32"
+			IntermediateDirectory="Release32"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
@@ -125,9 +126,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib\poslib"
+				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -431,6 +433,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptDomainLst.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptDUID.cpp"
 					>
 				</File>
@@ -479,15 +485,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptRtPrefix.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptStatusCode.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Options\OptString.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptStringLst.cpp"
 					>
 				</File>
 				<File
@@ -523,26 +529,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptClientIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptDNSServers.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptDomainName.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptEcho.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptElapsed.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptFQDN.cpp"
 					>
 				</File>
@@ -571,71 +557,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptLifetime.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptLQ.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptNISDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISPServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNISServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptNTPServers.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptOptionRequest.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptPreference.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerUnicast.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptSIPDomain.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptSIPServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptStatusCode.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptTA.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptTimeZone.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptUserClass.cpp"
 					>
 				</File>
 			</Filter>
@@ -707,11 +633,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\CfgMgr\StationID.cpp"
+					RelativePath="..\CfgMgr\HostID.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\CfgMgr\StationRange.cpp"
+					RelativePath="..\CfgMgr\HostRange.cpp"
 					>
 				</File>
 			</Filter>
@@ -760,6 +686,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.cpp"
 					>
 				</File>
 				<File
@@ -1064,19 +994,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptClientIdentifier.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptDNSServers.h"
 					>
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptDomainName.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptElapsed.h"
 					>
 				</File>
 				<File
@@ -1104,10 +1026,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptLifetime.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptNISDomain.h"
 					>
 				</File>
@@ -1128,19 +1046,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptOptionRequest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptPreference.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptRapidCommit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerIdentifier.h"
 					>
 				</File>
 				<File
@@ -1156,19 +1062,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptStatusCode.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptTA.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptTimeZone.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptUserClass.h"
 					>
 				</File>
 				<File
@@ -1273,6 +1167,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\Portable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\ScriptParams.h"
 					>
 				</File>
 				<File

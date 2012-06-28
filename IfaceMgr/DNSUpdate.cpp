@@ -9,8 +9,6 @@
  *          Tomasz Mrugalski <thomson@klub.com.pl>
  * released under GNU GPL v2 licence
  *
- * $Id: DNSUpdate.cpp,v 1.21 2008-02-25 17:49:08 thomson Exp $
- *
  */
 
 #include "DNSUpdate.h"
@@ -19,8 +17,10 @@
 #include <stdio.h>
 #include "sha256.h"
 
-DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
-		     string hostip, DnsUpdateMode updateMode,
+using namespace std;
+
+DNSUpdate::DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname,
+		     std::string hostip, DnsUpdateMode updateMode,
 		     DnsUpdateProtocol proto /* = DNSUPDATE_TCP */)
     :_hostname(NULL) { 
     message= NULL;
@@ -37,16 +37,22 @@ DNSUpdate::DNSUpdate(string dns_address, string zonename, string hostname,
     if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
 	splitHostDomain(hostname);
     } else {
-	_hostname=new char[hostname.length()+1];
-	strcpy(_hostname,hostname.c_str());
+        int len = hostname.length()+1;
+        _hostname=new char[len];
+        strncpy(_hostname,hostname.c_str(), len-1);
 	zoneroot = new domainname(zonename.c_str());
     }
     
     txt_to_addr(&server,dns_address.c_str());
-    this->hostip = new char[hostip.length()+1];
-    strcpy(this->hostip,hostip.c_str());
-    this->ttl=new char[strlen(DNSUPDATE_DEFAULT_TTL)+1];
-    strcpy(this->ttl,DNSUPDATE_DEFAULT_TTL);
+    int len = hostip.length()+1;
+    this->hostip = new char[len];
+    strncpy(this->hostip,hostip.c_str(), len-1);
+    hostip[len-1] = 0;
+    
+    len = strlen(DNSUPDATE_DEFAULT_TTL)+1;
+    this->ttl=new char[len];
+    strncpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len-1);
+    ttl[len-1]=0;
     this->updateMode = updateMode;
     _proto = proto;
 }
@@ -65,7 +71,7 @@ DNSUpdate::~DNSUpdate() {
  * 
  * @param fqdnName 
  */
-void DNSUpdate::splitHostDomain(string fqdnName) {
+void DNSUpdate::splitHostDomain(std::string fqdnName) {
     std::string::size_type dotpos = fqdnName.find(".");
     string hostname = "";
     string domain = "";
@@ -77,8 +83,9 @@ void DNSUpdate::splitHostDomain(string fqdnName) {
     if (dotpos == string::npos) {
 	Log(Warning) << "Name provided for DNS update is not a FQDN. [" << fqdnName
 		     << "]." << LogEnd;
-	_hostname = new char[fqdnName.length()+1];
-	strcpy(_hostname, fqdnName.c_str());
+	int len = fqdnName.length()+1;
+	_hostname = new char[len];
+	strncpy(_hostname, fqdnName.c_str(), len -1);
     }
     else {
 	string hostname = fqdnName.substr(0, dotpos);
@@ -122,7 +129,7 @@ DnsUpdateResult DNSUpdate::run(int timeout){
     try {
 	sendMsg(timeout);
     } 
-    catch (PException p) {
+    catch (const PException& p) {
 	DnsUpdateResult result = DNSUPDATE_ERROR;
 	if (strstr(p.message,"Could not connect TCP socket") ){
 	    result = DNSUPDATE_CONNFAIL;
@@ -235,7 +242,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
   message->authority.push_back(rr);
 
-  Log(Debug) << "DDNR: PTR record created: " << result << " -> " << tmp << LogEnd;
+  Log(Debug) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
 		
 /** 
@@ -336,6 +343,9 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	res.tcpsendmessage(q, sockid);
 	
 	res.tcpwaitanswer(a, sockid);
+        if (!a) {
+            throw PException("tcpwaitanswer returned NULL");
+        }
 	if (a->RCODE != RCODE_NOERROR){    
 	    
 	    throw PException((char*)str_rcode(a->RCODE).c_str()); 
@@ -351,7 +361,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	    }
 	
 	if (a) {
-	    // delete a; // FIXME: Why is this commented out? Memory leak!
+	    // delete a; /// @todo: Why is this commented out? Memory leak!
 	    a = 0;
 	}
 	if (q) {
@@ -364,7 +374,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	
 	return RemoteDnsRR;
 	
-    } catch (PException p) {
+    } catch (const PException& p) {
 	if (q) {
 	    delete q;
 	    q = NULL;
@@ -414,7 +424,7 @@ void DNSUpdate::sendMsgTCP(unsigned int timeout){
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;
@@ -441,7 +451,7 @@ void DNSUpdate::sendMsgUDP(unsigned int timeout) {
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
-    } catch (PException p) {
+    } catch (const PException& p) {
 	
 	if (a) 
 	    delete a;
@@ -473,7 +483,7 @@ void DNSUpdate::showResult(int result)
 	Log(Warning) << "DDNS: Unable to establish connection to the DNS server." << LogEnd;
 	break;
     case DNSUPDATE_SRVNOTAUTH:
-	Log(Warning) << "DDNS: DNS Update failed: server is not not authoritative." << LogEnd;
+	Log(Warning) << "DDNS: DNS Update failed: server returned NOTAUTH." << LogEnd;
 	break;
     case DNSUPDATE_SKIP:
 	Log(Notice) << "DDNS: DNS Update was skipped." << LogEnd;

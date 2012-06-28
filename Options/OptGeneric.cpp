@@ -6,24 +6,16 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptGeneric.cpp,v 1.4 2008-11-11 22:41:48 thomson Exp $
- *
  */
 
 #include <stdlib.h>
 #include <string.h>
-// #include <arpa/inet.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
-#include <sstream>
 #include "Portable.h"
+#include <sstream>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
+
+using namespace std;
 
 TOptGeneric::TOptGeneric(int optType, const char* data, unsigned short dataLen, TMsg* parent)
     :TOpt(optType, parent) {
@@ -44,17 +36,14 @@ TOptGeneric::~TOptGeneric() {
     }
 }
 
-int TOptGeneric::getSize()
+size_t TOptGeneric::getSize()
 {
-    return this->DataLen+4;
+    return DataLen + 4;
 }
 
- char * TOptGeneric::storeSelf( char* buf)
-{
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons(this->DataLen);
-    buf+=2;
+char * TOptGeneric::storeSelf(char* buf) {
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, this->DataLen);
     memmove(buf, this->Data, this->DataLen);
     return buf+this->DataLen;
 }
@@ -83,4 +72,9 @@ std::string TOptGeneric::getPlain()
 bool TOptGeneric::isValid()
 {
     return true;
+}
+
+bool TOptGeneric::operator == (const TOptGeneric &other) {
+    /// @todo: Implement comparison for real
+    return false;
 }

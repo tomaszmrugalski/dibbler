@@ -6,17 +6,9 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptIAAddress.cpp,v 1.8 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "Opt.h"
 #include "OptIAAddress.h"
@@ -27,7 +19,7 @@
 #include "IPv6Addr.h"
 #include "Msg.h"
 
-TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
+TClntOptIAAddress::TClntOptIAAddress(char * buf, int bufSize, TMsg* parent)
 	:TOptIAAddress(buf, bufSize, parent)
 {
     SPtr<TOpt> opt = 0;
@@ -43,10 +35,10 @@ TClntOptIAAddress::TClntOptIAAddress( char * buf, int bufSize, TMsg* parent)
 		       << " bytes left to parse. Bytes ignored." << LogEnd;
 	    break;
 	}
-        unsigned short code   = ntohs( *((unsigned short*) (buf+pos)));
-        pos+=2;
-        unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
-        pos+=2;
+        unsigned short code   = readUint16(buf+pos);
+        pos += sizeof(uint16_t);
+        unsigned short length = readUint16(buf+pos);
+        pos += sizeof(uint16_t);
 	if (pos+length>bufSize) {
 	    Log(Error) << "Invalid option (type=" << code << ", len=" << length 
 		       << " received (msgtype=" << MsgType << "). Message dropped." << LogEnd;

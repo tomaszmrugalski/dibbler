@@ -44,26 +44,41 @@
 
   - Michal Kowalczuk <michal(at)kowalczuk.eu>
     2007-12: Authentication and authorization
-    
+
   - Liu Ming/BII group <extrafliu(at)gmail.com>
     2008-08: CONFIRM support fixes
     2009-03: link state change detection added
 
   - Nghiem Nguyen/Orange FT group <vinhnghiem.nguyen(at)orange-ftgroup.com>
     2008-10: Client classification
-    
+
   - Paul Schauer <p.schauer(at)comcast(dot)net> 
     2009-04: MacOSX port.
     2011-04: MacOSX debugging/improvements.
 
   - Christopher Small <chsmall(at)grnoc(dot)iu(dot)edu>
     2009-05: MaxOSX fixes.
-  
+
   - Wojciech Guminski <wojciech.guminski(at)eti(dot)pg(dot)gda(dot)pl>
     2010-11: Windows/Linux compilation fixes
-    
+
   - Aniela Mrugalska <ania.mrugalska(at)gmail(dot)com>
     2011-05: Relay compilation fix on Windows.
+
+  - Tomasz Gierszewski <tomag(at)eti(dot)pg(dot)gda(dot)pl>
+    2011-07: NetBSD compilation fix.
+
+  - Harro Haan <hrhaan(at)gmail(dot)com>
+    2011-10: fix alignment errors (ARMv5)
+
+  - Mateusz Ozga <matozga(at)gmail(dot)com>
+    2011-11: Routing configuration
+
+  - Christof Schulz (develop(at)kristov(dot)de>
+    2012-02: Fix for prefix delegation segfault
+
+  - Mickael Marchand <mikmak(at)freenux(dot)org>
+    2012-03: link-local client reservation, several fixes
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

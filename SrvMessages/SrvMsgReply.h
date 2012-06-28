@@ -24,7 +24,7 @@ class TSrvMsgReply;
 #include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
 
-#include "SrvOptClientIdentifier.h"
+#include "OptDUID.h"
 
 class TSrvMsgReply : public TSrvMsg
 {
@@ -41,7 +41,7 @@ class TSrvMsgReply : public TSrvMsg
     void doDuties();
     unsigned long getTimeout();
     bool check();
-    string getName();
+    std::string getName() const;
     
     ~TSrvMsgReply();
 private:

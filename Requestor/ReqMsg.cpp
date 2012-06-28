@@ -27,7 +27,7 @@ TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 
-string TReqMsg::getName() 
+std::string TReqMsg::getName() const
 {
     switch (MsgType) {
     case LEASEQUERY_MSG:

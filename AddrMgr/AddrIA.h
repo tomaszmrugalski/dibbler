@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: AddrIA.h,v 1.11 2009-03-24 23:17:16 thomson Exp $
- *
  */
 
 class TAddrIA;
@@ -24,8 +22,6 @@ class TAddrIA;
 #include "DUID.h"
 #include "FQDN.h"
 
-using namespace std;
-
 class TAddrIA
 {
   public:
@@ -36,7 +32,7 @@ class TAddrIA
 	TYPE_PD
     } TIAType;
 
-    friend ostream & operator<<(ostream & strum,TAddrIA &x);
+    friend std::ostream & operator<<(std::ostream & strum,TAddrIA &x);
     TAddrIA(int iface, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
 	    unsigned long T1, unsigned long T2,unsigned long ID);
     ~TAddrIA();
@@ -68,7 +64,6 @@ class TAddrIA
     void addAddr(SPtr<TAddrAddr> x);
     void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid);
     void addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix);
-    int getAddrCount();
 
     //--- prefix list related methods ---
     void firstPrefix();
@@ -76,7 +71,7 @@ class TAddrIA
 
     void addPrefix(SPtr<TAddrPrefix> x);
     void addPrefix(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int length);
-    int getPrefixCount();
+    int countPrefix();
     bool delPrefix(SPtr<TAddrPrefix> x);
     bool delPrefix(SPtr<TIPv6Addr> x);
 

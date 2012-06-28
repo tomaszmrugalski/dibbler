@@ -6,22 +6,12 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptAddrLst.cpp,v 1.1 2004-11-02 01:23:13 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/03/29 18:53:08  thomson
- * Author/Licence/cvs log/cvs version headers added.
- *
  */
 
 
 #include <stdlib.h>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif
+#include <sstream>
+#include "Portable.h"
 #include "OptAddrLst.h"
 #include "DHCPConst.h"
 
@@ -49,17 +39,15 @@ TOptAddrLst::TOptAddrLst(int type, const char* buf, unsigned short bufSize, TMsg
 char * TOptAddrLst::storeSelf(char* buf) {
     SPtr<TIPv6Addr> addr;
 
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(getSize()-4);
-    buf+=2;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
     AddrLst.first();
     while(addr=AddrLst.get())
 	buf=addr->storeSelf(buf);
     return buf;
 }
 
-int TOptAddrLst::getSize()
+size_t TOptAddrLst::getSize()
 {
     return 4+16*AddrLst.count();
 }
@@ -78,3 +66,12 @@ bool TOptAddrLst::isValid()
     return this->Valid;
 }
 
+std::string TOptAddrLst::getPlain() {
+    std::stringstream tmp;
+    AddrLst.first();
+    SPtr<TIPv6Addr> addr;
+    while (addr = AddrLst.get()) {
+        tmp << addr->getPlain() << " ";
+    }
+    return tmp.str();
+}

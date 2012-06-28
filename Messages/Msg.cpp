@@ -10,21 +10,19 @@
 
 #include <stdlib.h>
 #include <cmath>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
-
 #include "Msg.h"
 #include "Opt.h"
 #include "Logger.h"
 #include "hmac.h"
 
+class TNotifyScriptParams;
+
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
-    :pkt(0)
+    :pkt(0), NotifyScripts(NULL)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -36,26 +34,27 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
-    :pkt(0)
+    :pkt(0), NotifyScripts(NULL)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
+    :NotifyScripts(NULL)
 {
     setAttribs(iface,addr,msgType,transID);
 }
 
 void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {
-    PeerAddr=addr;
+    PeerAddr = addr;
 
-    this->Iface=iface;
-    TransID=transID;
-    IsDone=false;
-    MsgType=msgType;
-    this->pkt=NULL;
+    Iface = iface;
+    TransID = transID;
+    IsDone = false;
+    MsgType = msgType;
+    pkt = NULL;
     DigestType = DIGEST_NONE; /* by default digest is none */
     AuthInfoPtr = NULL;
     AuthInfoKey = NULL;
@@ -187,6 +186,9 @@ SPtr<TOpt> TMsg::getOption() {
 }
 
 TMsg::~TMsg() {
+    if (NotifyScripts) {
+        delete NotifyScripts;
+    }
 }
 
 SPtr<TIPv6Addr> TMsg::getAddr() {
@@ -236,13 +238,14 @@ int TMsg::setAuthInfoKey() {
     KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
 
     AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
-    string fname = getAAAKeyFilename(AAASPI);
+    std::string fname = getAAAKeyFilename(AAASPI);
 
     // error, no file?
     if (!AAAkey) {
-        Log(Error) << "Auth: Unable to load key file for SPI " << hex << AAASPI <<": " << fname << " not found." << dec << LogEnd;
+        Log(Error) << "Auth: Unable to load key file for SPI " << std::hex << AAASPI <<": " << fname 
+                   << " not found." << std::dec << LogEnd;
         AuthInfoKey = NULL;
-        delete KeyGenNonce_ClientID;
+        delete [] KeyGenNonce_ClientID;
         return -1;
     }
     Log(Debug) << "Auth: AAA-key loaded from file " << fname << "." << LogEnd;
@@ -263,7 +266,7 @@ int TMsg::setAuthInfoKey() {
 
     PrintHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
 
-    delete KeyGenNonce_ClientID;
+    delete [] KeyGenNonce_ClientID;
 #endif
 
     return 0;
@@ -352,14 +355,15 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
             is_ok = true;
     } else if (AuthInfoPtr) {
 #ifndef MOD_DISABLE_AUTH
-        unsigned AuthInfoLen = getDigestSize(DigestType);
-        char *rcvdAuthInfo = new char[AuthInfoLen];
-        char *goodAuthInfo = new char[AuthInfoLen];
 
         if (!AuthInfoKey) {
             Log(Debug) << "Auth: No AuthInfoKey was set. This could mean bad SPI or no AAA-SPI file." << LogEnd;
             return false;
         }
+
+        unsigned AuthInfoLen = getDigestSize(DigestType);
+        char *rcvdAuthInfo = new char[AuthInfoLen];
+        char *goodAuthInfo = new char[AuthInfoLen];
 
         memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
         memset(AuthInfoPtr, 0, AuthInfoLen);
@@ -482,4 +486,12 @@ bool TMsg::delOption(int code)
 	}
     }
     return false;
+}
+
+void* TMsg::getNotifyScriptParams() {
+    if (!NotifyScripts) {
+	NotifyScripts = new TNotifyScriptParams();
+    }
+
+    return NotifyScripts;
 }

@@ -6,13 +6,12 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelTransMgr.cpp,v 1.20 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #define MAX_PACKET_LEN 1452
 #define RELAY_FORW_MSG_LEN 36
 
+#include <cstdlib>
 #include <fstream>
 #include "RelTransMgr.h"
 #include "RelCfgMgr.h"
@@ -21,14 +20,7 @@
 #include "RelOptEcho.h"
 #include "RelOptGeneric.h"
 #include "Logger.h"
-
-#if defined(WIN32)
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
-
+#include "Portable.h"
 
 TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 
@@ -163,10 +155,10 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     }
 
     // store relay msg option
-    *(short*)(buf+offset) = htons(OPTION_RELAY_MSG);
-    offset+=2;
-    *(short*)(buf+offset) = htons(msg->getSize());
-    offset+=2;
+    writeUint16((buf+offset), OPTION_RELAY_MSG);
+    offset += sizeof(uint16_t);
+    writeUint16((buf+offset), msg->getSize());
+    offset += sizeof(uint16_t);
     bufLen = msg->storeSelf(buf+offset);
     offset += bufLen;
 
@@ -305,7 +297,7 @@ TRelTransMgr::~TRelTransMgr() {
     Log(Debug) << "RelTransMgr cleanup." << LogEnd;
 }
 
-void TRelTransMgr::instanceCreate( const std::string xmlFile )
+void TRelTransMgr::instanceCreate(const std::string& xmlFile)
 {
   if (Instance)
       Log(Crit) << "RelTransMgr instance already created. Application error!" << LogEnd;
@@ -315,16 +307,18 @@ void TRelTransMgr::instanceCreate( const std::string xmlFile )
 
 TRelTransMgr& TRelTransMgr::instance()
 {
-    if (!Instance)
-	Log(Crit) << "RelTransMgr istance not created yet. Application error. Crashing in 3... 2... 1..." << LogEnd;
+    if (!Instance) {
+	Log(Crit) << "RelTransMgr istance not created yet. Application error. Emergency shutdown." << LogEnd;
+        exit(EXIT_FAILURE);
+    }
     return *Instance;
 }
 
 
-ostream & operator<<(ostream &s, TRelTransMgr &x)
+std::ostream & operator<<(std::ostream &s, TRelTransMgr &x)
 {
-    s << "<TRelTransMgr>" << endl;
-    s << "<!-- RelTransMgr dumps are not implemented yet -->" << endl;
-    s << "</TRelTransMgr>" << endl;
+    s << "<TRelTransMgr>" << std::endl;
+    s << "<!-- RelTransMgr dumps are not implemented yet -->" << std::endl;
+    s << "</TRelTransMgr>" << std::endl;
     return s;
 }

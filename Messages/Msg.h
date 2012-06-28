@@ -21,6 +21,7 @@ class TMsg;
 #include "IPv6Addr.h"
 #include "Opt.h"
 #include "KeyList.h"
+#include "ScriptParams.h"
 
 // Hey! It's grampa of all messages
 class TMsg
@@ -41,19 +42,20 @@ class TMsg
 
     virtual int storeSelf(char * buffer);
 
-    virtual string getName() = 0;
+    virtual std::string getName() const = 0;
 
     // returns requested option (or NULL, there is no such option)
     SPtr<TOpt> getOption(int type);
     void firstOption();
     int countOption();
+    void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
 
     virtual SPtr<TOpt> getOption();
     
     long getType();
     long getTransID();
     TOptList & getOptLst();
-    SPtr<TIPv6Addr> getAddr();
+    SPtr<TIPv6Addr> getAddr(); /// @todo: rename to getPeerAddr()
     int getIface();
     virtual ~TMsg();
     bool isDone();
@@ -77,6 +79,9 @@ class TMsg
     unsigned getKeyGenNonceLen();
     enum DigestTypes DigestType;
     SPtr<KeyList> AuthKeys;
+
+    // notify scripts stuff
+    void* getNotifyScriptParams();
 
   protected:
     int MsgType;
@@ -103,6 +108,9 @@ class TMsg
     uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
     char *KeyGenNonce;
     unsigned KeyGenNonceLen;
+
+    // a pointer to NotifyScriptParams structure (if defined)
+    TNotifyScriptParams * NotifyScripts;
 };
 
 typedef std::list< SPtr<TMsg> > TMsgLst;

@@ -23,9 +23,6 @@
 #include "Logger.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntCfgIface.h"
-#include "ClntOptDNSServers.h"
-#include "ClntOptNTPServers.h"
-#include "ClntOptDomainName.h"
 #include "ClntOptTimeZone.h"
 #include <cmath>
 
@@ -182,7 +179,7 @@ bool TClntMsgInfRequest::check()
     return false;
 }
 
-string TClntMsgInfRequest::getName() {
+std::string TClntMsgInfRequest::getName() const {
     return "INF-REQUEST";
 }
 

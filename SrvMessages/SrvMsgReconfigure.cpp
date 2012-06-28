@@ -10,21 +10,12 @@
 
 #include "SrvMsgReconfigure.h"
 #include "Logger.h"
-#include "SrvOptOptionRequest.h"
-#include "SrvOptClientIdentifier.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptTA.h"
-#include "SrvOptServerUnicast.h"
-#include "SrvOptStatusCode.h"
-#include "SrvOptServerIdentifier.h"
+#include "OptStatusCode.h"
 #include "OptReconfigureMsg.h"
+#include "OptDUID.h"
 #include "Opt.h"
-#include "SrvOptPreference.h"
-#include "SrvOptDNSServers.h"
-#include "SrvOptNTPServers.h"
-#include "SrvOptTimeZone.h"
-#include "SrvOptDomainName.h"
-#include "SrvOptFQDN.h"
 #include "SrvOptIA_PD.h"
 #include "OptReconfigureMsg.h"
 #include "Logger.h"
@@ -47,8 +38,8 @@ TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
     //appendRequestedOptions(ClientDUID, clientAddr, iface, ORO);
 
     // include our DUID (Server ID)
-    SPtr<TSrvOptServerIdentifier> ptrSrvID;
-    ptrSrvID = new TSrvOptServerIdentifier(SrvCfgMgr().getDUID(),this);
+    SPtr<TOptDUID> ptrSrvID;
+    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(),this);
     Options.push_back((Ptr*)ptrSrvID);
 
     // include his DUID (Client ID)
@@ -82,6 +73,6 @@ void TSrvMsgReconfigure::doDuties() {
     IsDone = true;
 }
 
-string TSrvMsgReconfigure::getName() {
+std::string TSrvMsgReconfigure::getName() const {
     return "RECONFIGURE";
 }

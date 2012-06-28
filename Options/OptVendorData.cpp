@@ -19,6 +19,8 @@
 #include <arpa/inet.h>
 #endif
 
+using namespace std;
+
 TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
@@ -30,9 +32,9 @@ TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
 	return;
     }
 
-    this->Vendor = ntohl(*(int*)buf); // enterprise number
-    buf += 4;
-    n   -= 4;
+    this->Vendor = readUint32(buf); // enterprise number
+    buf += sizeof(uint32_t);
+    n   -= sizeof(uint32_t);
 
     if (!n) {
 	this->VendorData = 0;
@@ -49,9 +51,8 @@ TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
     this->VendorDataLen = n;
 }
 
-int TOptVendorData::getSize()
-{
-    return 8+VendorDataLen; /* 8 normal header(4) + enterprise (4) */
+size_t TOptVendorData::getSize() {
+    return 8 + VendorDataLen; /* 8 normal header(4) + enterprise (4) */
 }
 
 /** 
@@ -63,12 +64,9 @@ int TOptVendorData::getSize()
  */
 char * TOptVendorData::storeSelf( char* buf)
 {
-    *(uint16_t*)buf = htons(OptType);
-    buf+=2;
-    *(uint16_t*)buf = htons( getSize()-4 );
-    buf+=2;
-    *(uint32_t*)buf = htonl(this->Vendor);
-    buf+=4;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint32(buf, this->Vendor);
     memmove(buf, this->VendorData, this->VendorDataLen);
     buf+=this->VendorDataLen;
     return buf;    
@@ -89,9 +87,9 @@ char * TOptVendorData::getVendorData()
     return this->VendorData;
 }
 
-string TOptVendorData::getVendorDataPlain()
+std::string TOptVendorData::getVendorDataPlain()
 {
-    ostringstream tmp;
+    std::ostringstream tmp;
     tmp << "0x";
     for (int i=0; i<this->VendorDataLen; i++) {
 	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];

@@ -23,7 +23,7 @@ class TClntMsgRenew : public TClntMsg
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();
     bool check();
-    string getName();
+    std::string getName() const;
     ~TClntMsgRenew();
     void updateIA(SPtr <TClntOptIA_NA> ptrOptIA);
     void releaseIA(long IAID);

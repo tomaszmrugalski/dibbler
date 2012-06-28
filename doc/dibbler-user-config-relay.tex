@@ -1,0 +1,306 @@
+\newpage
+\section{Relay configuration}
+\label{relay-conf}
+Relay configuration is stored in \verb+relay.conf+ file in the
+\verb+/etc/dibbler/+ directory (Linux systems) or in current directory
+(Windows systems).
+
+\subsection{Global scope}
+
+Every option can be declared in global scope.
+Config file consists of global options and one or more inteface
+definitions. Note that reasonable minimum is 2 interfaces, as defining
+only one would mean to resend messages on the same interface.
+
+\subsection{Interface declaration}
+
+Interface can be declared this way:
+\begin{lstlisting}
+iface interface-name
+{
+  interface options
+}
+\end{lstlisting}
+
+or
+
+\begin{lstlisting}
+iface number
+{
+  interface options
+}
+\end{lstlisting}
+
+where name\_of\_the\_interface denotes name of the interface and
+number denotes it's number. It does not need to be enclosed in
+single or double quotes (except windows cases, when interface name
+contains spaces).
+
+\subsection{Options}
+
+Every option has a scope it can be used in, default value and
+sometimes allowed range.
+
+\begin{description}
+ \item[log-level] -- (scope: global, type: integer, default: 7) Defines
+            verbose level of the log messages. The valid range if
+            from 1 (Emergency) to 8 (Debug). The higher the logging
+            level is set, the more messages dibbler will print.
+ \item[log-name] -- (scope: global, type: string, default: Client). Defines
+            name, which should be used during logging.
+ \item[log-mode] -- (scope: global, type: short, full or precise,
+            default value: full) Defines logging mode. In the
+            default, full mode, name, date and time in the h:m:s format
+            will be printed. In short mode, only minutes and
+            seconds will be printed (this mode is useful on
+            terminals with limited width). Recently added precise
+            mode logs information with seconds and microsecond
+            precision. It is a useful for finding bottlenecks in
+            the DHCPv6 autoconfiguration process.
+\item[interface-id-order] -- (scope: global, type: before, after or omit,
+        default: before) Defines placement of the
+        interface-id option. Options can be placed in the \msg{RELAY-FORW}
+        message is arbitrary order. This option has been specified to control
+        that order. \opt{interface-id} option can be placed before or after
+        \opt{relay-message} option. There is also possibility to instruct
+        server to omit the \opt{interface-id} option altogether, but since
+        this violates \cite{rfc3315}, it should not be used. In general, this
+        configuration parameter is only useful when dealing with buggy relays,
+        which can't handle all option orders properly. Consider this parameter
+        a debugging feature. Note: similar parameter is available in the dibbler-server.
+
+\item[client multicast] -- (scope: interface, type: boolean, default: false)
+        This command instructs dibbler-relay to listen on this particular interface
+        for client messages sent to multicast (ff02::1:2) address.
+\item[client unicast] -- (scope: interface, type: address, default: not defined)
+        This command instructs dibbler-relay to listen to messages sent to a specific
+        unicast address. This feature is usually used to connect multiple relays
+        together.
+\item[server multicast] -- (scope: interface, type: boolean, default: false)
+        This command instructs dibbler-relay to send messages (received on any interface)
+        to the server multicast (ff05::1:3) address. Note that this is not the same
+        multicast address as the server usually listens to (ff02::1:2). Server must be
+        specifically configured to be able to receive relayed messages.
+\item[server unicast] -- (scope: interface, type: address, default: none)
+        This command instructs dibbler-relay to send message (received on any interface)
+        to speficied unicast address. Server must be properly configured to to be able to
+        receive unicast traffic. See \emph{unicast} command in the \ref{example-server-unicast}
+        section.
+\item[interface-id] -- (scope: interface, type: integer, default: none)
+        This specifies identifier of a particular interface. It is used to generate
+        \opt{interface-id} option, when relaying message to the server. This option
+        is then used by the server to detect, which interface the message originates from.
+        It is essential to have consistent interface-id defined on the relay side and
+        server side. It is worth mentioning that interface-id should be specified on the
+        interface, which is used to receive messages from the clients, not the
+        one used to forward packets to server.
+\item[guess-mode] -- (scope: global, type: boolean, default: no)
+        Switches relay into so called guess-mode. Under normal operation, client sends
+        messages, which are encapsulated and sent to the server. During this encapsulation
+        relay appends \opt{interface-id} option and expects that server will use the same
+        \opt{interface-id} option in its replies. Relay then uses those \opt{interface-id}
+        values to detect, which the original request came from and sends reply to the same
+        interface. Unfortunately, some servers does not sent \opt{interface-id} option.
+        Normally in such case, dibbler-relay drops such server messages as there is no
+        easy way to determine where such messages should be relayed to. However, when
+        guess-mode is enabled, dibbler-relay tries to guess the destination interface.
+        Luckily, it is often trivial to guess as there are usually 2 interfaces: one
+        connected to server and second connected to the clients.
+\end{description}
+
+\subsection{Relay configuration examples}
+\label{example-relay}
+
+Relay configuration file is fairly simple. Relay forwards DHCPv6
+messages between interfaces. Messages from client are encapsulated and
+forwarded as RELAY\_FORW messages. Replies from server are received as
+RELAY\_REPL message. After decapsulation, they are being sent back to
+clients.
+
+It is vital to inform server, where this relayed message was
+received. DHCPv6 does this using interface-id option. This identifier
+must be unique. Otherwise relays will get confused when they will
+receive reply from server. Note that this id does not need to be
+alligned with system interface id (ifindex). Think about it as
+"ethernet segment identifier" if you are using Ethernet network or as
+"bss identifier" if you are using 802.11 network.
+
+If you are interested in additional examples, download source version
+and look at \verb+*.conf+ files.
+
+\subsubsection{Example 1: Simple}
+\label{example-relay-1}
+Let's assume this case: relay has 2 interfaces: eth0 and
+eth1. Clients are located on the eth1 network. Relay should receive
+data on that interface using well-known ALL\_DHCP\_RELAYS\_AND\_SERVER
+multicast address (ff02::1:2). Note that all clients use multicast
+addresses by default. Packets received on the eth1 should be
+forwarded on the eth0 interface, using multicast address. See section
+\ref{example-server-relay1} for corresponding server configuration.
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+iface eth0 {
+  server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
+}
+\end{lstlisting}
+
+\subsubsection{Example 2: Unicast/multicast}
+It is possible to use unicast addresses instead/besides of default
+multicast addresses. Following example allows message reception from
+clients on the 2000::123 address. It is also possible to instruct
+relay to send encapulated messages to the server using unicast
+addresess. This feature is configured in the next section
+(\ref{example-relay-multiple}).
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+iface eth0 {
+  server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  client unicast 2000::123
+  interface-id 5020
+}
+\end{lstlisting}
+
+\subsubsection{Example 3: Multiple interfaces}
+\label{example-relay-multiple}
+Here is another example. This time messages should be forwarded from
+eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
+interface (using server's global address 2000::546). Also clients must
+use multicasts (the default approach):
+
+\begin{lstlisting}
+# relay.conf
+iface eth0 {
+  server multicast yes
+}
+iface eth2 {
+  server unicast 2000::456
+}
+iface eth1 {
+  client multicast yes
+  interface-id 1000
+}
+iface eth3 {
+  client multicast yes
+  interface-id 1001
+}
+\end{lstlisting}
+
+\subsubsection{Example 4: 2 relays}
+\label{example-relay-cascade}
+Those two configuration files correspond to the ,,2 relays'' example
+provided in section \ref{example-server-relay2}. See section
+\ref{feature-relays} for detailed exmplanations.
+
+\begin{lstlisting}
+# relay.conf - relay 1
+log-level 8
+log-mode full
+
+# messages will be forwarded on this interface using multicast
+iface eth2 {
+   server multicast yes    // relay messages on this interface to ff05::1:3
+ # server unicast 6000::10 // relay messages on this interface to this global address
+}
+
+iface eth1 {
+#  client multicast yes    // bind ff02::1:2
+  client unicast 6011::1   // bind this address
+  interface-id 6011
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+# relay.conf - relay 2
+iface eth0 {
+#   server multicast yes  // relay messages on this interface to ff05::1:3
+  server unicast 6011::1  // relay messages on this interface to this global address
+}
+
+# client can send messages to multicast
+# (or specific link-local addr) on this link
+iface eth1 {
+  client multicast yes    // bind ff02::1:2
+# client unicast 6021::1  // bind this address
+  interface-id 6021
+}
+\end{lstlisting}
+
+\subsubsection{Example 5: Guess-mode}
+In the 0.6.0 release, a new feature called guess-mode has been
+added. When client sends some data and relay forwards it to the
+server, it always adds interface-id option to specify, which link
+the data has been originally received on. Server, when responding to
+such request, should include the same interface-id option in the
+reply. However, in some poor implementations, server fails to do
+that. When relay receives such poorly formed response from the server,
+it can't decide which interface should be used to relay this
+message.
+
+Normally such packets are dropped. However, it is possible to switch
+relay into a guess-mode. It tries to find any suitable interface,
+which it can forward data on. It is not very reliable, but sometimes
+it is better than dropping the message altogether.
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+guess-mode
+
+iface eth0 {
+  server multicast yes
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
+}
+\end{lstlisting}
+
+\subsubsection{Example 6: Relaying to multicast}
+During normal operation, relay sends forwarded messages to a
+\emph{All\_DHCP\_Servers} (FF05::1:3) multicast address.
+
+Although author does not consider this an elegant solution, it is also
+possible to instruct relay to forward message to a \emph{All\_DHCP\_Relay\_Agents\_and\_Servers}
+(ff02::1:2) multicast address. That is quite convenient when there are several
+relays connected in a cascade way (server -- relay1 -- relay2 -- clients).
+
+For details regarding DHCPv6-related multicast addresses and relay operation, see \cite{rfc3315}.
+
+To achieve this behavior, \emph{server unicast} can be used. Note that
+name of such parameter is a bit misleading (``server unicast'' used to specify
+multicast address). That parameter should be rather called ``destination address'',
+but to maintain backward compatibility, it has its current name.
+
+\begin{lstlisting}
+# relay.conf
+log-level 8
+log-mode short
+
+iface eth0 {
+  server unicast ff02::1:2
+}
+iface eth1 {
+  client multicast yes
+  interface-id 5020
+}
+\end{lstlisting}
+
+\newpage
+\section{Requestor configuration}
+Requestor (entity used for leasequery) does not use configuration
+files. All parameters are specified by command-line switches. See
+section \ref{feature-leasequery} for details.

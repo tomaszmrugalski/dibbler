@@ -5,7 +5,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: ReqTransMgr.cpp,v 1.10 2008-01-01 20:21:14 thomson Exp $
  */
 
 #include <stdio.h>
@@ -18,22 +17,19 @@
 #include "OptGeneric.h"
 #include "Logger.h"
 #include "ReqOpt.h"
+#include "Portable.h"
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <netinet/in.h>
-#endif 
+using namespace std;
 
 ReqTransMgr::ReqTransMgr(TIfaceMgr * ifaceMgr)
+    :CfgMgr(NULL)
 {
-    this->IfaceMgr = ifaceMgr;
+    IfaceMgr = ifaceMgr;
 }
 
 void ReqTransMgr::SetParams(ReqCfgMgr * cfgMgr)
 {
-    this->CfgMgr = cfgMgr;
+    CfgMgr = cfgMgr;
 }
 
 bool ReqTransMgr::BindSockets()
@@ -47,7 +43,6 @@ bool ReqTransMgr::BindSockets()
     if (!Iface) {
         Log(Crit) << "Unable to bind sockets: Interface " << CfgMgr->iface << " not found." << LogEnd;
         return false;
-        this->Iface = Iface;
     }
 
 #ifndef WIN32
@@ -145,7 +140,7 @@ bool ReqTransMgr::SendMsg()
         TReqOptAddr * optAddr = new TReqOptAddr(OPTION_IAADDR, a, msg);
         optAddr->storeSelf(buf+bufLen);
         bufLen += optAddr->getSize();
-        free(optAddr);
+        delete optAddr;
         
     } else {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
@@ -160,7 +155,7 @@ bool ReqTransMgr::SendMsg()
         optDuid->storeSelf(buf+bufLen);
         bufLen += optDuid->getSize();
 
-        free(optDuid);
+        delete optDuid;
     }
 
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
@@ -239,10 +234,10 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 		       << " bytes left to parse. Bytes ignored." << LogEnd;
 	    return false;
 	}
-	unsigned short code = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
-	unsigned short length = ntohs( *((unsigned short*) (buf+pos)));
-	pos+=2;
+	unsigned short code = readUint16(buf+pos);
+	pos += sizeof(uint16_t);
+	unsigned short length = readUint16(buf+pos);
+	pos += sizeof(uint16_t);
 	if (pos+length>bufLen) {
 	    Log(Error) << linePrefix << "Truncated option (type=" << code << ", len=" << length 
 		       << " received in message << " << msgType << ". Option ignored." << LogEnd;
@@ -300,7 +295,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	case OPTION_CLT_TIME:
 	{
             name = "LQ Client Last Transmission Time";
-	    unsigned int t = ntohl( *((unsigned int*)(buf+pos)));
+	    unsigned int t = readUint32(buf+pos);
 	    ostringstream out;
 	    out << t << " second(s)";
 	    o = out.str();
@@ -315,8 +310,8 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	case OPTION_IAADDR:
 	{
 	    TIPv6Addr * addr = new TIPv6Addr(buf+pos, false);
-	    unsigned int pref  = ntohl(*((long*)(buf+pos+16)));
-	    unsigned int valid = ntohl(*((long*)(buf+pos+20)));
+	    unsigned int pref  = readUint32(buf+pos+16);
+	    unsigned int valid = readUint32(buf+pos+20);
 	    name = "IAADDR";
 	    ostringstream out;
 	    out << "addr=" << addr->getPlain() << ", pref=" << pref << ", valid=" << valid;
