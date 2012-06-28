@@ -34,6 +34,7 @@ TEST_F(ServerTest, SARR_single_class) {
     ia_->setT1(101);
     ia_->setT2(102);
 
+    cout << "Sending SOLICIT" << endl;
     SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
@@ -45,7 +46,14 @@ TEST_F(ServerTest, SARR_single_class) {
 
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
 
-    cout << "REQUEST" << endl;
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface_->getID());
+    ASSERT_TRUE(cfgIface);
+
+    cfgIface->firstAddrClass();
+    SPtr<TSrvCfgAddrClass> cfgAddrClass = cfgIface->getAddrClass();
+    ASSERT_TRUE(cfgAddrClass);
+
+    EXPECT_EQ(0u, cfgAddrClass->getAssignedCount());
 
     // now generate REQUEST
     SPtr<TSrvMsgRequest> req = createRequest();
@@ -60,6 +68,7 @@ TEST_F(ServerTest, SARR_single_class) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
+    cout << "Sending REQUEST" << endl;
     SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
     ASSERT_TRUE(reply);
 
@@ -69,6 +78,20 @@ TEST_F(ServerTest, SARR_single_class) {
     // server should return T1 = 101, becasue SERVER_DEFAULT_MIN_T1(5) < 101 < SERVER_DEFAULT_MAX_T1 (3600)
     // server should return T2 = 101, becasue SERVER_DEFAULT_MIN_T1(10) < 102 < SERVER_DEFAULT_MAX_T1 (5400)
     EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
+
+    EXPECT_EQ(1u, cfgAddrClass->getAssignedCount());
+
+    cout << "Sending RELEASE" << endl;
+
+    SPtr<TSrvMsgRelease> rel = createRelease();
+    rel->addOption((Ptr*)clntId_);
+    rel->addOption(req->getOption(OPTION_SERVERID));
+    rcvIA->delOption(OPTION_STATUS_CODE);
+    rel->addOption((Ptr*)rcvIA);
+
+    SPtr<TSrvMsgReply> releaseReply = (Ptr*)sendAndReceive((Ptr*)rel, 3);
+
+    EXPECT_EQ(0u, cfgAddrClass->getAssignedCount());
 }
 
 TEST_F(ServerTest, SARR_single_class_params) {

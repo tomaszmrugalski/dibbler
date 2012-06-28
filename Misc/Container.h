@@ -18,25 +18,55 @@
 template <class TYP>
 class TContainer{
 public:
-	TContainer();
-	~TContainer();
+        TContainer();
+        ~TContainer() {
+            lista.clear();
+        }
 
-	bool	append(const TYP &foo);
-	bool	prepend(const TYP& foo);    
-	int count() const;
-	void	first();
-	void	delFirst();
-	void    del();
-	void    clear();
-	TYP	get();
-	TYP	getPrev();
-	TYP	getLast();
-	TYP	getFirst();
-	void	delLast();
+        void append(const TYP &foo) {
+            lista.push_back(foo);
+        }
+
+        size_t count() const {
+            return lista.size();
+        }
+        void	first();
+        void	delFirst() {
+            lista.pop_front();
+            first();
+        }
+
+        void    del() {
+            it--;
+            lista.erase(it);
+            first();
+        }
+
+        void    clear();
+        TYP	get() {
+            if (it != lista.end()) {
+                return *it++;
+            } else {
+                return TYP();
+            }
+        }
+
+        TYP getLast() {
+            return lista.back();
+        }
+
+        TYP getFirst() {
+            return lista.front();
+        }
+
+        void delLast() {
+            lista.pop_back();
+            first();
+        }
 
 private:
         std::list<TYP> lista;
-	typename std::list<TYP>::iterator it;
+        typename std::list<TYP>::iterator it;
 };
 
 template <class TYP>
@@ -44,76 +74,16 @@ TContainer<TYP>::TContainer() {
 }
 
 template <class TYP>
-TContainer<TYP>::~TContainer() {
-	lista.clear();
-}
-
-template <class TYP>
 void TContainer<TYP>::clear() {
-	lista.clear();
+        lista.clear();
 }
 
-template <class TYP>
-int TContainer<TYP>::count() const {
-	return (int)lista.size();
-}
 
-template <class TYP>
-bool TContainer<TYP>::append(const TYP& foo) {
-	lista.push_back(foo);
-	return true;
-}
-template <class TYP>bool TContainer<TYP>::prepend(const TYP& foo) {
-	lista.push_front(foo);    
-	return true;
-}
 template <class TYP>
 void TContainer<TYP>::first() {
-	it=lista.begin();
-	return;
+        it=lista.begin();
+        return;
 }
 
-template <class TYP>
-TYP TContainer<TYP>::get() {
-	if (it!=lista.end()) {
-		return *it++;	
-	} else {	
-		return TYP();
-	}
-}
 
-template <class TYP>
-TYP TContainer<TYP>::getPrev() {
-	if (it!=lista.begin()) {
-		return *it--;	
-	} else {	
-		return TYP();
-	}
-}
-
-template <class TYP>
-void TContainer<TYP>::delFirst() {
-	lista.pop_front();
-	first();
-}
-
-template <class TYP>
-void TContainer<TYP>::del() {
-	it--;
-	lista.erase(it);
-	first();
-}
-
-template <class TYP>TYP TContainer<TYP>::getLast() {
-    return lista.back();
-}
-
-template <class TYP>void TContainer<TYP>::delLast() {
-    lista.pop_back();
-    first();
-}
-
-template <class TYP>TYP TContainer<TYP>::getFirst() {
-    return lista.front();
-}
 #endif

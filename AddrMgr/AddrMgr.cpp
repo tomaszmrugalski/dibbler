@@ -558,19 +558,21 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
             continue;
         }
         if (AddrMgrTag && strstr(buf,"<AddrClient")) {
-            clnt = parseAddrClient(xmlFile, f);
-            if (clnt->countIA() + clnt->countTA() + clnt->countPD() > 0) {
-                ClntsLst.append(clnt);
-                Log(Debug) << "Client " << clnt->getDUID()->getPlain()
-                           << " loaded from disk successfuly (" << clnt->countIA()
-                           << "/" << clnt->countPD() << "/" << clnt->countTA()
-                           << " ia/pd/ta)." << LogEnd;
-            } else {
-                Log(Info) << "All client's " << clnt->getDUID()->getPlain()
-                          << " leases are not valid." << LogEnd;
-            }
-            continue;
-        }
+	    clnt = parseAddrClient(xmlFile, f);
+	    if (clnt) {
+		if (clnt->countIA() + clnt->countTA() + clnt->countPD() > 0) {
+		    ClntsLst.append(clnt);
+		    Log(Debug) << "Client " << clnt->getDUID()->getPlain()
+			       << " loaded from disk successfuly (" << clnt->countIA()
+			       << "/" << clnt->countPD() << "/" << clnt->countTA()
+			       << " ia/pd/ta)." << LogEnd;
+		} else {
+		    Log(Info) << "All client's " << clnt->getDUID()->getPlain()
+			      << " leases are not valid." << LogEnd;
+		}
+		continue;
+	    }
+	}
 
         if (strstr(buf,"</AddrMgr>")) {
             AddrMgrTag = false;

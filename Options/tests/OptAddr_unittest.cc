@@ -24,7 +24,7 @@ TEST(OptAddrTest, storeSelf) {
 
     ASSERT_EQ(buf+20, ptr);
 
-    ASSERT_EQ(20, opt->getSize());
+    ASSERT_EQ(20u, opt->getSize());
 
     ASSERT_FALSE( memcmp(buf, expected, 20) );
 
@@ -61,10 +61,10 @@ TEST(OptAddrTest, subopts) {
     // next hop takes 20 bytes
     TOptAddr* nextHop = new TOptAddr(OPTION_NEXT_HOP, addr, NULL);
 
-    EXPECT_EQ(20, nextHop->getSize() );
+    EXPECT_EQ(20u, nextHop->getSize() );
     nextHop->addOption(generic);
 
-    EXPECT_EQ(28, nextHop->getSize() );
+    EXPECT_EQ(28u, nextHop->getSize() );
 
     char* ptr = nextHop->storeSelf(buf);
     ASSERT_EQ(buf+28, ptr);

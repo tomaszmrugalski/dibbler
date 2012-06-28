@@ -18,12 +18,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <cstdio>
 #include "masterfile.h"
 #include "exception.h"
 #include "rr.h"
 #include "lexfn.h"
 #include "sysstring.h"
-
 #include <sys/stat.h>
 
 #ifdef WIN32
@@ -133,7 +133,9 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
       if (comm_cb) {
         c = fgetc(f);
         if (c == ';') {
-            fgets(buff, 1024, f);
+            if (!fgets(buff, 1024, f)) {
+                break;
+            }
 	    ptr = buff + strlen(buff) - 1;
 	    while (ptr >= buff && (*ptr == '\n' || *ptr == '\r')) *ptr = '\0';
 	    comm_cb(userdat, buff);

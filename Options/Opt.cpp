@@ -33,7 +33,7 @@ int TOpt::getSubOptSize() {
     SubOptions.first();
     SPtr<TOpt> ptr;
     while (ptr = SubOptions.get())
-	size += ptr->getSize();
+        size += ptr->getSize();
     return size;
 }
 
@@ -47,8 +47,8 @@ char* TOpt::storeSubOpt( char* buf){
     SPtr<TOpt> ptr;
     SubOptions.first();
     while ( ptr = SubOptions.get() ) {
-	ptr->storeSelf(buf);
-	buf += ptr->getSize();
+        ptr->storeSelf(buf);
+        buf += ptr->getSize();
     }
     return buf;
 }
@@ -65,8 +65,8 @@ SPtr<TOpt> TOpt::getOption(int optType) {
     firstOption();
     SPtr<TOpt> opt = 0;
     while(opt=getOption()) {
-	if (opt->getOptType()==optType)
-	    return opt;
+        if (opt->getOptType()==optType)
+            return opt;
     }
     return 0;
 }
@@ -98,8 +98,24 @@ void TOpt::setDUID(SPtr<TDUID> duid) {
     this->DUID = duid;
 }
 
-void TOpt::delOption() {
-  SubOptions.del();
+
+/// @brief Deletes all specified options of that type
+///
+/// @param type
+///
+/// @return
+bool TOpt::delOption(uint16_t type) {
+    firstOption();
+    SPtr<TOpt> opt = 0;
+    bool del = false;
+    while(opt=getOption()) {
+        if (opt->getOptType()==type) {
+            SubOptions.del();
+            SubOptions.first();
+            del = true;
+        }
+    }
+    return del;
 }
 
 std::string TOpt::getPlain() {

@@ -43,7 +43,6 @@ bool ReqTransMgr::BindSockets()
     if (!Iface) {
         Log(Crit) << "Unable to bind sockets: Interface " << CfgMgr->iface << " not found." << LogEnd;
         return false;
-        this->Iface = Iface;
     }
 
 #ifndef WIN32

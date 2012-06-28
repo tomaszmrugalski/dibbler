@@ -375,6 +375,11 @@ void TClntMsg::send()
     this->storeSelf(this->pkt);
 
     SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(Iface);
+    if (!ptrIface) {
+        Log(Error) << "Unable to find interface with ifindex=" << Iface
+                   << ". Message not sent." << LogEnd;
+        return;
+    }
     if (PeerAddr) {
 	Log(Debug) << "Sending " << this->getName() << "(opts:";
 	SPtr<TOpt> opt;
