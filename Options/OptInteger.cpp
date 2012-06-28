@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptInteger.cpp,v 1.3 2007-05-01 12:03:13 thomson Exp $
- *
  */
 
 #include <stdlib.h>

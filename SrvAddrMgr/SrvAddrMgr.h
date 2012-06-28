@@ -96,7 +96,7 @@ class TSrvAddrMgr : public TAddrMgr
     void cacheDump();
     void checkCacheSize();
     List(TSrvCacheEntry) Cache; // list of cached addresses
-    int CacheMaxSize;           // maximum number of cached elements
+    size_t CacheMaxSize; // maximum number of cached elements
 };
 
 #endif

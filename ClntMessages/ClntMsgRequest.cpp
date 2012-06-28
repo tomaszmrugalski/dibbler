@@ -205,12 +205,7 @@ void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
 		continue;
 	    }
 	    SPtr<TClntOptIA_NA> IA_NA = (Ptr*)opt;
-	    IA_NA->firstOption();
-	    SPtr<TOpt> subOpt;
-	    while( subOpt = IA_NA->getOption()){
-		if(subOpt->getOptType() == OPTION_IAADDR)
-		    IA_NA->delOption();
-	    }
+            IA_NA->delOption(OPTION_IAADDR);
 	} 
 	return;   
     }

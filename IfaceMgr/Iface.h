@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: Iface.h,v 1.18 2008-08-29 00:07:30 thomson Exp $
- *
  */
 
 #ifndef IFACEIFACE_H

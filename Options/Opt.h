@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: Opt.h,v 1.12 2009-03-24 23:17:18 thomson Exp $
- *
  */
 
 #ifndef OPT_H
@@ -72,13 +70,13 @@ class TOpt
 
     int getOptType();
 
-    SPtr<TOpt> getOption(int optType);
+    SPtr<TOpt> getOption(int type);
 
     // suboptions management
     void firstOption();
     SPtr<TOpt> getOption();
     void addOption(SPtr<TOpt> opt);
-    void delOption();
+    bool delOption(uint16_t type);
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);

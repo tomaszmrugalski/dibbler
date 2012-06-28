@@ -29,7 +29,7 @@ using namespace std;
  * Create IA_TA option based on receive buffer
  */
 TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
-    :TOptTA(buf,bufsize, parent) {
+    :TOptTA(buf,bufsize, parent), OrgMessage(parent->getType()) {
 
     Iface  = parent->getIface();
     int pos=0;
@@ -92,7 +92,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
 }
 
 TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
-    :TOptTA(iaid, parent) {
+    :TOptTA(iaid, parent), OrgMessage(parent->getType()) {
     Iface  = parent->getIface();
     SubOptions.append(new TOptStatusCode(statusCode, txt, parent));
 }

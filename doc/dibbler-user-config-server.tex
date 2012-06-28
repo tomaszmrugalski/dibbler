@@ -1064,14 +1064,14 @@ in this way.
 
 Addresses reserved for special clients may be inside or outside of
 specified pools. If leases are outside of specified pools, timers (t1,
-t2, prefered and valid lifetimes are set to infinity). It is currently
-not possible to specify separate timers (t1, t2, preferred or valid
-lifetimes) on a per-client basis. Please define leases that belong to
-supported address and prefix pools. Timers from corresponding pools
-will be used.
+t2, prefered and valid lifetimes are set to the default values). It is
+currently not possible to specify separate timers (t1, t2, preferred
+or valid lifetimes) on a per-client basis. If reservations are out of
+pool, timers applicated to the interface will be used. See second
+example in this section.
 
 Note that per client reservation was significantly refactored after
-0.8.1, so its stability is not yet confirmed.
+0.8.2, so its stability is not yet confirmed.
 
 \begin{lstlisting}
 # server.conf
@@ -1132,6 +1132,27 @@ iface "eth0" {
 
 }
 
+\end{lstlisting}
+
+The following example shows out of pool reservation. Regular clients
+will get addresses from the 2001:db8:123::/64 pool. However, the
+client with DUID 00:01:00:0a:0b:0c:0d:0e:0f will get an 2002::babe
+address that does not belong to any configured pool. That particular
+client with get parameters from the interface on which this 
+exception was defined. In this discussed example, what will be
+t1=1000, t2=2000, preferred-lifetime=3000 and valid-lifetime=4000.
+
+\begin{lstlisting}
+iface eth0 {
+    t1 1000
+    t2 2000
+    preferred-lifetime 3000
+    valid-lifetime 4000
+    class { pool 2001:db8:123::/64 }
+    client duid 00:01:00:0a:0b:0c:0d:0e:0f {
+        address 2002::babe
+    }
+}
 \end{lstlisting}
 
 \subsubsection{Example 13: Prefix delegation}
