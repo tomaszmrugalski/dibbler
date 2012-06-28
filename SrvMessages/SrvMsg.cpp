@@ -50,7 +50,7 @@ using namespace std;
  * @param transID
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-    :TMsg(iface, addr, msgType, transID)
+    :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0)
 {
 }
 
@@ -394,7 +394,7 @@ void TSrvMsg::send()
     Log(Cont) << ", " << RelayInfo_.size() << " relay(s)." << LogEnd;
 
     port = DHCPCLIENT_PORT;
-    if (RelayInfo_.size() > 0) {
+    if (!RelayInfo_.empty()) {
         port = DHCPSERVER_PORT;
         if (RelayInfo_.size() > HOP_COUNT_LIMIT) {
             Log(Error) << "Unable to send message. Got " << RelayInfo_.size()
@@ -660,7 +660,7 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
 
 SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
 {
-    if (RelayInfo_.size() > 0) {
+    if (!RelayInfo_.empty()) {
        return RelayInfo_[0].PeerAddr_; //first hop ?
    }
    return PeerAddr;

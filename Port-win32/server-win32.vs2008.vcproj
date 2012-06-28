@@ -529,18 +529,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptClientIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptEcho.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptElapsed.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptFQDN.cpp"
 					>
 				</File>
@@ -569,43 +557,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptLifetime.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptLQ.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptOptionRequest.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptPreference.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerIdentifier.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerUnicast.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptStatusCode.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptTA.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptTimeZone.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptUserClass.cpp"
 					>
 				</File>
 			</Filter>
@@ -677,11 +633,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\CfgMgr\StationID.cpp"
+					RelativePath="..\CfgMgr\HostID.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\CfgMgr\StationRange.cpp"
+					RelativePath="..\CfgMgr\HostRange.cpp"
 					>
 				</File>
 			</Filter>
@@ -1038,19 +994,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptClientIdentifier.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptDNSServers.h"
 					>
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptDomainName.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptElapsed.h"
 					>
 				</File>
 				<File
@@ -1078,10 +1026,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptLifetime.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptNISDomain.h"
 					>
 				</File>
@@ -1102,19 +1046,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptOptionRequest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptPreference.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptRapidCommit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptServerIdentifier.h"
 					>
 				</File>
 				<File
@@ -1130,19 +1062,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvOptions\SrvOptStatusCode.h"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptTA.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptTimeZone.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptUserClass.h"
 					>
 				</File>
 				<File

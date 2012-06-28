@@ -81,11 +81,14 @@ virtual ~SrvParser();
 
 // constructor
 %define CONSTRUCTOR_PARAM yyFlexLexer * lex
-%define CONSTRUCTOR_CODE                                                          \
-    ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;                                                              \
-    CfgMgr = 0;                                                                   \
-    nextHop = 0;
+%define CONSTRUCTOR_CODE                                                \
+                     ParserOptStack.append(new TSrvParsGlobalOpt());    \
+                     this->lex = lex;                                   \
+                     CfgMgr = 0;                                        \
+                     nextHop = 0;                                       \
+                     yynerrs = 0;                                       \
+                     yychar = 0;                                        \
+                     PDPrefix = 0;
 
 %union
 {

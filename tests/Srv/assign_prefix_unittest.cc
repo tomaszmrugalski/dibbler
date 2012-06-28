@@ -46,6 +46,15 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
 
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface_->getID());
+    ASSERT_TRUE(cfgIface);
+
+    cfgIface->firstPD();
+    SPtr<TSrvCfgPD> cfgPD = cfgIface->getPD();
+    ASSERT_TRUE(cfgPD);
+
+    EXPECT_EQ(0u, cfgPD->getAssignedCount());
+
     // now generate REQUEST
     SPtr<TSrvMsgRequest> req = createRequest();
     req->addOption((Ptr*)clntId_);
@@ -59,6 +68,7 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
+    cout << "Pretending to send REQUEST" << endl;
     SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
     ASSERT_TRUE(reply);
 
@@ -68,6 +78,20 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     // server should return T1 = 101, becasue SERVER_DEFAULT_MIN_T1(5) < 101 < SERVER_DEFAULT_MAX_T1 (3600)
     // server should return T2 = 101, becasue SERVER_DEFAULT_MIN_T1(10) < 102 < SERVER_DEFAULT_MAX_T1 (5400)
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
+
+    EXPECT_EQ(1u, cfgPD->getAssignedCount());
+
+    // let's release it
+    SPtr<TSrvMsgRelease> rel = createRelease();
+    rel->addOption((Ptr*)clntId_);
+    rel->addOption(req->getOption(OPTION_SERVERID));
+    rcvPD->delOption(OPTION_STATUS_CODE);
+    rel->addOption((Ptr*)rcvPD);
+
+    cout << "Pretending to send RELEASE" << endl;
+    SPtr<TSrvMsgReply> releaseReply = (Ptr*)sendAndReceive((Ptr*)rel, 3);
+
+    EXPECT_EQ(0u, cfgPD->getAssignedCount());
 }
 
 TEST_F(ServerTest, SARR_prefix_single_class_params) {

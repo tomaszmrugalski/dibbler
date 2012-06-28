@@ -85,13 +85,16 @@ TSrvCfgMgr * CfgMgr;                                                            
 SPtr<TOpt> nextHop;                                                                  \
 virtual ~SrvParser();
 #define YY_SrvParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
-#define YY_SrvParser_CONSTRUCTOR_CODE                                                           \
-    ParserOptStack.append(new TSrvParsGlobalOpt());                               \
-    this->lex = lex;                                                              \
-    CfgMgr = 0;                                                                   \
-    nextHop = 0;
+#define YY_SrvParser_CONSTRUCTOR_CODE                                                 \
+                     ParserOptStack.append(new TSrvParsGlobalOpt());    \
+                     this->lex = lex;                                   \
+                     CfgMgr = 0;                                        \
+                     nextHop = 0;                                       \
+                     yynerrs = 0;                                       \
+                     yychar = 0;                                        \
+                     PDPrefix = 0;
 
-#line 90 "SrvParser.y"
+#line 93 "SrvParser.y"
 typedef union
 {
     unsigned int ival;

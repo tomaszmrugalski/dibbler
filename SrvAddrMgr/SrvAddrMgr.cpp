@@ -816,7 +816,7 @@ void TSrvAddrMgr::cacheRead() {
     bool ended = false;
     bool parsed = false;
     int lineno = 0;
-    int entries = 0;
+    size_t entries = 0;
     std::ifstream f;
     string s;
     TAddrIA::TIAType type;

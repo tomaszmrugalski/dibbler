@@ -219,6 +219,13 @@ SPtr<TIPv6Addr> TSrvCfgAddrClass::getRandomAddr()
     return Pool_->getRandomAddr();
 }
 
+SPtr<TIPv6Addr> TSrvCfgAddrClass::getFirstAddr() {
+	return Pool_->getAddrL();
+}
+SPtr<TIPv6Addr> TSrvCfgAddrClass::getLastAddr() {
+	return Pool_->getAddrR();
+}
+
 unsigned long TSrvCfgAddrClass::getClassMaxLease() {
     return ClassMaxLease_;
 }
