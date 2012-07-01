@@ -126,6 +126,15 @@ DnsUpdateResult DNSUpdate::run(int timeout){
 	break;
     }
     
+    if (Keyname_.length()>0) {
+        Log(Debug) << "#### adding TSIG record: keyname=" << Keyname_
+                   << ", fudge=" << Fudge_ << ", Algorithm=" << Algorithm_ << LogEnd;
+        // Add TSIG
+        message->tsig_rr = tsig_record(domainname(Keyname_.c_str()), Fudge_,
+                                       domainname(Algorithm_.c_str()));
+        message->sign_key = Key_;
+    }
+
     try {
 	sendMsg(timeout);
     } 
@@ -197,11 +206,19 @@ void DNSUpdate::addDHCID(const char* duid, int duidlen) {
 
 }
 
-void DNSUpdate::addTSIG(const char* key, int keylen) {
-    DnsRR rr;
-    // TODO
-
-    // message->additional.push_back(rr);
+/// @brief sets keys used for Transaction Signature (TSIG)
+///
+/// One can use dnssec-keygen from bind9 to generate such a key
+///
+/// @param keyname name of the key (e.g. "ddns-key")
+/// @param base64encoded the actual key (e.g. 9SYMLnjK2ohb1N/56GZ5Jg==)
+/// @param algo Algorithm name
+/// @param fudge max difference between us signing and they are receiving
+void DNSUpdate::setTSIG(const std::string& keyname, const std::string& base64encoded,
+                        const std::string& algo, uint32_t fudge) {
+    Keyname_ = keyname;
+    Key_ = base64encoded;
+    Algorithm_ = algo;
 }
 
 /** 

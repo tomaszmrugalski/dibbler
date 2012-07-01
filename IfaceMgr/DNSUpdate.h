@@ -58,6 +58,12 @@ private:
     char* ttl;
     DnsUpdateMode updateMode;
     DnsUpdateProtocol _proto;
+
+    // TSIG stuff
+    std::string Keyname_; // plan text name
+    std::string Key_; // specify as encoded64 string
+    std::string Algorithm_; // specify algorithm typed
+    uint32_t Fudge_; // max difference between us signing and they are receiving
    
     void splitHostDomain(std::string fqdnName);
 
@@ -78,7 +84,8 @@ private:
 	      std::string hostip, DnsUpdateMode updateMode, 
 	      DnsUpdateProtocol proto /*= DNSUPDATE_TCP*/ );
     void addDHCID(const char* duid, int duidlen);
-    void addTSIG(const char* key, int keylen);
+    void setTSIG(const std::string& keyname, const std::string& base64encoded,
+                 const std::string& algro, uint32_t fudge = 600);
     ~DNSUpdate();
     DnsUpdateResult run(int timeout);
     void showResult(int result);
