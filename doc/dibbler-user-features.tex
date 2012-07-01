@@ -561,6 +561,14 @@ $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 split.
 %% $
 
+\subsubsection{Secure DDNS}
+
+After 0.8.2 was released, support for TSIG was added.
+
+\begin{lstlisting}
+dnssec-keygen -a hmac-md5 -b 128 -n HOST my-ddns-secret-key
+\end{lstlisting}
+
 \subsubsection{Dynamic DNS Testing and tips}
 Proper configuration of the DNS Update mechanism is not an easy
 task. Therefore this section provides description of several methods of

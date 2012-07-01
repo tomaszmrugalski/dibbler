@@ -60,10 +60,10 @@ private:
     DnsUpdateProtocol _proto;
 
     // TSIG stuff
-    std::string Keyname_; // plan text name
-    std::string Key_; // specify as encoded64 string
-    std::string Algorithm_; // specify algorithm typed
-    uint32_t Fudge_; // max difference between us signing and they are receiving
+    std::string Keyname_; /// plain text name of the key
+    std::string Key_; /// the actual key, specified as encoded64 string
+    std::string Algorithm_; /// specify algorithm used for the key
+    uint32_t Fudge_; /// max difference between us signing and they are receiving
    
     void splitHostDomain(std::string fqdnName);
 
