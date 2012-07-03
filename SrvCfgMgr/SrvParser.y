@@ -276,8 +276,9 @@ Key
     /// check that both secret and algorithm keywords were defined.
     /// implement a method addKey() in SrvCfgMgr and then call
     CfgMgr->addKey( CurrentKey );
-    Log(Debug) << "Added key '" << CurrentKey->Name_ << "', datalen=" 
-	       << CurrentKey->Data_.length() << LogEnd;
+    Log(Debug) << "Added key '" << CurrentKey->Name_ << "', base64len="
+	       << CurrentKey->getBase64Data().length() << ", rawlen=" 
+	       << CurrentKey->getPackedData().length() << LogEnd;
 } ';'
 ;
 
@@ -298,7 +299,7 @@ KeySecret
     Log(Debug) << "#### Setting secret to " << ($2) << LogEnd;
 
     // store the key in base64 encoded form
-    CurrentKey->Data_ = string($2);
+    CurrentKey->setData(string($2));
 };
 
 KeyAlgorithm

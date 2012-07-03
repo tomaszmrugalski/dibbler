@@ -6,7 +6,10 @@
  * released under GNU GPL v2 licence
  */
 
+#include <string.h>
 #include "Key.h"
+#include "base64.h"
+#include "Logger.h"
 
 TSIGKey::TSIGKey(const std::string& name)
     : Digest_(DIGEST_NONE), Name_(name), Fudge_(300) {
@@ -23,3 +26,36 @@ std::string TSIGKey::getAlgorithmText() {
     }
 }
 
+void TSIGKey::setData(const std::string& base64encoded) {
+    Base64Data_ = base64encoded;
+
+    char raw[100];
+    unsigned raw_len = 100;
+    memset(raw, 0, 100);
+
+    base64_decode_context ctx = {0};
+    base64_decode_ctx_init(&ctx);
+    
+    if (base64_decode(&ctx, Base64Data_.c_str(),
+		      Base64Data_.length(),
+		      raw, &raw_len)) {
+	Log(Debug) << "#### decode success, raw_length=" << raw_len << LogEnd;
+    } else {
+	Log(Debug) << "#### decode failure, raw_length=" << raw_len << LogEnd;
+    }
+
+    Data_.resize(raw_len);
+    for (unsigned i=0; i<raw_len; i++) {
+	Data_[i] = raw[i];
+    }
+    Log(Debug) << "#### Base64Decoded: base64 len=" << Base64Data_.length()
+	       << ", raw len=" << raw_len << LogEnd;
+}
+
+std::string TSIGKey::getPackedData() {
+    return Data_;
+}
+
+std::string TSIGKey::getBase64Data() {
+    return Base64Data_;
+}

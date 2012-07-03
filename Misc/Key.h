@@ -15,23 +15,19 @@
 
 class TSIGKey {
 public:
-TSIGKey(const std::string& name)
-    : Digest_(DIGEST_NONE), Name_(name), Fudge_(300) {}
-    std::string getAlgorithmText() {
-	switch (Digest_) {
-	case DIGEST_HMAC_MD5:
-	    return std::string("HMAC-MD5.SIG-ALG.REG.INT");
-	case DIGEST_HMAC_SHA256:
-	    return std::string("HMAC-SHA256.SIG-ALG.REG.INT");
-	default:
-	    return std::string("Unsupported algorithm");
-	}
-    }
+    TSIGKey(const std::string& name);
+    std::string getAlgorithmText();
+
+    void setData(const std::string& base64encoded);
+    std::string getPackedData();
+    std::string getBase64Data();
 
     DigestTypes Digest_;
     std::string Name_;
-    std::string Data_;
     uint16_t Fudge_;
+protected:
+    std::string Data_;
+    std::string Base64Data_;
 };
 
 typedef std::vector< SPtr<TSIGKey> > TSIGKeyList;

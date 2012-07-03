@@ -567,7 +567,7 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                                        DNSUPDATE_PTR, proto2);
 	
 	if (key) {
-	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
 			 key->Fudge_);
 	}
 
@@ -585,7 +585,7 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                                        DNSUPDATE_AAAA, proto2);
 
 	if (key) {
-	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
 			 key->Fudge_);
 	}
 
@@ -642,7 +642,7 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                                        DNSUPDATE_PTR_CLEANUP, proto2);
 
 	if (key) {
-	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
 			 key->Fudge_);
 	}
 
@@ -662,7 +662,7 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                                        DNSUPDATE_AAAA_CLEANUP, proto2);
 
 	if (key) {
-	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
 			 key->Fudge_);
 	}
 
