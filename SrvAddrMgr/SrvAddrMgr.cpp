@@ -826,8 +826,8 @@ void TSrvAddrMgr::cacheRead() {
         return;
     }
 
+    parsed = false;
     while (!f.eof()) {
-        parsed = false;
         getline(f,s);
         string::size_type pos=0;
         if ( ((pos = s.find("<cache")) != string::npos) ) {
