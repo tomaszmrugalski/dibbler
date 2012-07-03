@@ -35,9 +35,9 @@
 #include "OptStatusCode.h"
 #include "NodeClientSpecific.h"
 
-#ifndef MOD_SRV_DISABLE_DNSUPDATE
-#include "DNSUpdate.h"
-#endif
+//#ifndef MOD_SRV_DISABLE_DNSUPDATE
+//#include "DNSUpdate.h"
+//#endif
 
 using namespace std;
 

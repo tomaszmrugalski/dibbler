@@ -546,6 +546,8 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
 
     DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
 
+    SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+
     TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
     DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
     if (proto == TCfgMgr::DNSUPDATE_UDP)
@@ -563,6 +565,12 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
         DnsUpdateResult result = DNSUPDATE_SKIP;
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
                                        DNSUPDATE_PTR, proto2);
+	
+	if (key) {
+	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+			 key->Fudge_);
+	}
+
         result = act->run(timeout);
         act->showResult(result);
         delete act;
@@ -570,11 +578,17 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
         success = (result == DNSUPDATE_SUCCESS);
     }
 
-    if (FQDNMode == 2) {
+    if (FQDNMode == DNSUPDATE_MODE_BOTH) {
         DnsUpdateResult result = DNSUPDATE_SKIP;
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name,
                                        addr->getPlain(),
                                        DNSUPDATE_AAAA, proto2);
+
+	if (key) {
+	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+			 key->Fudge_);
+	}
+
         result = act->run(timeout);
         act->showResult(result);
         delete act;
@@ -601,6 +615,9 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
     }
 
     DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+
+    SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+
     char zoneroot[128];
     doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
 
@@ -623,6 +640,12 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                     << " and FQDN=" << name << LogEnd;
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
                                        DNSUPDATE_PTR_CLEANUP, proto2);
+
+	if (key) {
+	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+			 key->Fudge_);
+	}
+
         int result = act->run(timeout);
         act->showResult(result);
         delete act;
@@ -637,6 +660,12 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
 
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
                                        DNSUPDATE_AAAA_CLEANUP, proto2);
+
+	if (key) {
+	    act->setTSIG(key->Name_, key->Data_, key->getAlgorithmText(),
+			 key->Fudge_);
+	}
+
         int result = act->run(timeout);
         act->showResult(result);
         delete act;

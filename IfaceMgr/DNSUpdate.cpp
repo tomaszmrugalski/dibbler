@@ -22,7 +22,7 @@ using namespace std;
 DNSUpdate::DNSUpdate(const std::string& dns_address, const std::string& zonename,
 		     const std::string& hostname, std::string hostip,
 		     DnsUpdateMode updateMode, DnsUpdateProtocol proto /* = DNSUPDATE_TCP */)
-    :message(NULL) {
+    :message(NULL), Fudge_(0) {
     memset(&server, 0, sizeof(server));
 
 #ifndef WIN32
@@ -209,6 +209,7 @@ void DNSUpdate::setTSIG(const std::string& keyname, const std::string& base64enc
     Keyname_ = keyname;
     Key_ = base64encoded;
     Algorithm_ = algo;
+    Fudge_ = fudge;
 }
 
 /**

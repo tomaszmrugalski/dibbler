@@ -59,7 +59,7 @@ List(std::string) PresentStringLst;             /* string list */               
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-SPtr<TKey> key;                                                                      \
+SPtr<TSIGKey> CurrentKey;                                                            \
 List(THostRange) PresentRangeLst;                                                    \
 List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
@@ -268,16 +268,16 @@ Key
 : KEY_ STRING_ '{'
 {
     /// this is key object initialization part
-    /// @todo: define TKey structure and then uncomment
-    key = new TKey(string($2));
+    CurrentKey = new TSIGKey(string($2));
 } KeyOptions
 '}'
 {
     /// todo: after key definition
     /// check that both secret and algorithm keywords were defined.
     /// implement a method addKey() in SrvCfgMgr and then call
-    /// CfgMgr->addKey( currentKey );
-    Log(Debug) << "Added key '" << key->name << "', datalen=" << key->len << LogEnd;
+    CfgMgr->addKey( CurrentKey );
+    Log(Debug) << "Added key '" << CurrentKey->Name_ << "', datalen=" 
+	       << CurrentKey->Data_.length() << LogEnd;
 } ';'
 ;
 
@@ -295,17 +295,15 @@ KeySecret
 : SECRET_ STRING_ ';'
 {
     /// @todo: remove this. It is for debugging only. Leaving our secret in logs is dumb.
-    Log(Debug) << "Setting secret to " << ($2) << LogEnd;
+    Log(Debug) << "#### Setting secret to " << ($2) << LogEnd;
 
-    /// @todo: call base64_decode($2) and store it in key->data
-    /// key
-    // key->data = new unsigned char[17]; // check actual length of key
-    // key->len = 17;
+    // store the key in base64 encoded form
+    CurrentKey->Data_ = string($2);
 };
 
 KeyAlgorithm
-: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; key->digest = DIGEST_HMAC_SHA256; }
-| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { key->digest = DIGEST_HMAC_MD5;  }
+: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; CurrentKey->Digest_ = DIGEST_HMAC_SHA256; }
+| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; CurrentKey->Digest_ = DIGEST_HMAC_MD5;  }
 ;
 /// add other key types here
 
