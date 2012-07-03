@@ -58,7 +58,7 @@ libMisc_a_LIBADD =
 am_libMisc_a_OBJECTS = addrpack.$(OBJEXT) base64.$(OBJEXT) \
 	DHCPConst.$(OBJEXT) DUID.$(OBJEXT) FQDN.$(OBJEXT) \
 	hmac-sha-md5.$(OBJEXT) IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) \
-	Logger.$(OBJEXT) long128.$(OBJEXT) md5.$(OBJEXT) \
+	Key.$(OBJEXT) Logger.$(OBJEXT) long128.$(OBJEXT) md5.$(OBJEXT) \
 	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT) \
 	ScriptParams.$(OBJEXT) lowlevel-posix.$(OBJEXT)
 libMisc_a_OBJECTS = $(am_libMisc_a_OBJECTS)
@@ -244,9 +244,9 @@ noinst_LIBRARIES = libMisc.a
 libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h \
 	DHCPConst.cpp DHCPConst.h DHCPDefaults.h DUID.cpp DUID.h \
 	FQDN.cpp FQDN.h hmac.h hmac-sha-md5.c IPv6Addr.cpp IPv6Addr.h \
-	KeyList.cpp KeyList.h Logger.cpp Logger.h long128.cpp \
-	long128.h md5.c md5.h Portable.h sha1.c sha1.h sha256.c \
-	sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h \
+	KeyList.cpp KeyList.h Key.cpp Key.h Logger.cpp Logger.h \
+	long128.cpp long128.h md5.c md5.h Portable.h sha1.c sha1.h \
+	sha256.c sha256.h sha512.c sha512.h SmartPtr.h SrvCommon.h \
 	ScriptParams.cpp ScriptParams.h lowlevel-posix.c
 all: all-am
 
@@ -302,6 +302,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DUID.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FQDN.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IPv6Addr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Key.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Logger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptParams.Po@am__quote@
