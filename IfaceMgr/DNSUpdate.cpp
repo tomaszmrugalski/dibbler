@@ -19,47 +19,41 @@
 
 using namespace std;
 
+_addr ToPoslibAddr(const std::string& text_addr) {
+    _addr dst;
+    memset(&dst, 0, sizeof(dst));
+
+#ifndef WIN32
+    // LINUX, BSD
+    dst.ss_family = AF_INET6;
+#else
+    // WINDOWS
+    dst.sa_family = AF_INET6;
+#endif
+    txt_to_addr(&dst, text_addr.c_str());
+    return dst;
+}
+
 DNSUpdate::DNSUpdate(const std::string& dns_address, const std::string& zonename,
 		     const std::string& hostname, std::string hostip,
 		     DnsUpdateMode updateMode, DnsUpdateProtocol proto /* = DNSUPDATE_TCP */)
-    :message(NULL), Fudge_(0) {
-    memset(&server, 0, sizeof(server));
+    :Message_(NULL), DnsAddr_(dns_address), Hostip_(hostip), UpdateMode_(updateMode), 
+     Proto_(proto), Fudge_(0) {
 
-#ifndef WIN32
-	// LINUX, BSD
-	server.ss_family = AF_INET6;
-#else
-	// WINDOWS
-	server.sa_family = AF_INET6;
-#endif
-
-    if (updateMode==DNSUPDATE_AAAA || updateMode==DNSUPDATE_AAAA_CLEANUP) {
+    if (UpdateMode_ == DNSUPDATE_AAAA || UpdateMode_ == DNSUPDATE_AAAA_CLEANUP) {
 	splitHostDomain(hostname);
     } else {
 	Hostname_ = hostname;
-	zoneroot = new domainname(zonename.c_str());
+	Zoneroot_ = domainname(zonename.c_str());
     }
 
-    txt_to_addr(&server,dns_address.c_str());
-    int len = hostip.length()+1;
-    this->hostip = new char[len];
-    strncpy(this->hostip,hostip.c_str(), len-1);
-    hostip[len-1] = 0;
 
-    len = strlen(DNSUPDATE_DEFAULT_TTL)+1;
-    this->ttl=new char[len];
-    strncpy(this->ttl,DNSUPDATE_DEFAULT_TTL, len-1);
-    ttl[len-1]=0;
-    this->updateMode = updateMode;
-    _proto = proto;
+    TTL_ = string(DNSUPDATE_DEFAULT_TTL);
 }
 
 DNSUpdate::~DNSUpdate() {
-    if (message)
-	delete message;
-    delete zoneroot;
-    delete [] hostip;
-    delete [] ttl;
+    if (Message_)
+	delete Message_;
 }
 
 /**
@@ -80,36 +74,39 @@ void DNSUpdate::splitHostDomain(std::string fqdnName) {
     else {
 	Hostname_ = fqdnName.substr(0, dotpos);
 	string domain = fqdnName.substr(dotpos + 1, fqdnName.length() - dotpos - 1);
-	this->zoneroot = new domainname(domain.c_str());
+	Zoneroot_ = domainname(domain.c_str());
     }
 }
 
 DnsUpdateResult DNSUpdate::run(int timeout){
+
+    Log(Debug) << "DDNS: Performing DNS Update over " << protoToString() << ", DNS address="
+	       << DnsAddr_;
     try {
-	switch (this->updateMode) {
+	switch (UpdateMode_) {
 	case DNSUPDATE_PTR:
-	    Log(Debug) << "DDNS: Performing DNS Update: Only PTR record." << LogEnd;
-	    this->createSOAMsg();
-	    this->addinMsg_delOldRR();
-	    this->addinMsg_newPTR();
+	    Log(Cont) << ": Add PTR record." << LogEnd;
+	    createSOAMsg();
+	    addinMsg_delOldRR();
+	    addinMsg_newPTR();
 	    break;
 	case DNSUPDATE_PTR_CLEANUP:
-	    Log(Debug) << "DDNS: Performing DNS Cleanup: Only PTR record." << LogEnd;
-	    this->createSOAMsg();
-	    this->addinMsg_delOldRR();
-	    this->deletePTRRecordFromRRSet();
+	    Log(Cont) << ": Cleanup PTR record." << LogEnd;
+	    createSOAMsg();
+	    addinMsg_delOldRR();
+	    deletePTRRecordFromRRSet();
 	    break;
 	case DNSUPDATE_AAAA:
-	    Log(Debug) << "DDNS: Performing DNS Update: Only AAAA record." << LogEnd;
-	    this->createSOAMsg();
-	    this->addinMsg_delOldRR();
-	    this->addinMsg_newAAAA();
+	    Log(Cont) << ": Add AAAA record." << LogEnd;
+	    createSOAMsg();
+	    addinMsg_delOldRR();
+	    addinMsg_newAAAA();
 	    break;
 	case DNSUPDATE_AAAA_CLEANUP:
-	    Log(Debug) << "DDNS: Performing DNS Cleanup: Only AAAA record." << LogEnd;
-	    this->createSOAMsg();
-	    this->addinMsg_delOldRR();
-	    this->deleteAAAARecordFromRRSet();
+	    Log(Cont) << ": Cleanup AAAA record." << LogEnd;
+	    createSOAMsg();
+	    addinMsg_delOldRR();
+	    deleteAAAARecordFromRRSet();
 	    break;
 	}
     }
@@ -118,12 +115,10 @@ DnsUpdateResult DNSUpdate::run(int timeout){
     }
 
     if (Keyname_.length()>0) {
-	Log(Debug) << "#### adding TSIG record: keyname=" << Keyname_
-		   << ", fudge=" << Fudge_ << ", Algorithm=" << Algorithm_ << LogEnd;
 	// Add TSIG
-	message->tsig_rr = tsig_record(domainname(Keyname_.c_str()), Fudge_,
+	Message_->tsig_rr = tsig_record(domainname(Keyname_.c_str()), Fudge_,
 				       domainname(Algorithm_.c_str()));
-	message->sign_key = Key_;
+	Message_->sign_key = Key_;
     }
 
     try {
@@ -139,7 +134,7 @@ DnsUpdateResult DNSUpdate::run(int timeout){
 	    result = DNSUPDATE_SRVNOTAUTH;
 	}
 
-	Log(Error) << "DDNS error: " << p.message << "." << LogEnd;
+	Log(Error) << "DDNS: Update failed. Error: " << p.message << "." << LogEnd;
 	return result;
      }// exeption catch
 
@@ -151,9 +146,9 @@ DnsUpdateResult DNSUpdate::run(int timeout){
  *
  */
 void DNSUpdate::createSOAMsg(){
-    message = new DnsMessage();
-    message->OPCODE = OPCODE_UPDATE;
-    message->questions.push_back(DnsQuestion(*zoneroot, DNS_TYPE_SOA, CLASS_IN));
+    Message_ = new DnsMessage();
+    Message_->OPCODE = OPCODE_UPDATE;
+    Message_->questions.push_back(DnsQuestion(Zoneroot_, DNS_TYPE_SOA, CLASS_IN));
 }
 
 /**
@@ -162,22 +157,24 @@ void DNSUpdate::createSOAMsg(){
  */
 void DNSUpdate::addinMsg_newAAAA(){
     DnsRR rr;
-    rr.NAME = domainname(Hostname_.c_str(), *zoneroot);
+    rr.NAME = domainname(Hostname_.c_str(), Zoneroot_);
     rr.TYPE = qtype_getcode("AAAA", false);
-    rr.TTL = txt_to_int(ttl);
-    string data = rr_fromstring(rr.TYPE, hostip, *zoneroot);
+    rr.TTL = txt_to_int(TTL_.c_str());
+    string data = rr_fromstring(rr.TYPE, Hostip_.c_str(), Zoneroot_);
     rr.RDLENGTH = data.size();
     rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
 
-    message->authority.push_back(rr);
-    Log(Debug) << "DDNS: AAAA record created:" << rr.NAME.tostring() << " -> " << hostip << LogEnd;
+    Message_->authority.push_back(rr);
+    Log(Debug) << "DDNS: AAAA update("
+	       << protoToString()
+	       <<"):" << rr.NAME.tostring() << " -> " << Hostip_ << LogEnd;
 }
 
 void DNSUpdate::addDHCID(const char* duid, int duidlen) {
     DnsRR rr;
-    rr.NAME = domainname(Hostname_.c_str(), *zoneroot);
+    rr.NAME = domainname(Hostname_.c_str(), Zoneroot_);
     rr.TYPE = qtype_getcode("DHCID", false);
-    rr.TTL = txt_to_int(ttl);
+    rr.TTL = txt_to_int(TTL_.c_str());
 
     char input_buf[512];
     char output_buf[35]; // identifier-type code (2) + digest type code (1) + digest (SHA-256 = 32 bytes)
@@ -192,7 +189,7 @@ void DNSUpdate::addDHCID(const char* duid, int duidlen) {
     output_buf[1] = 2; // identifier-type code: 0x0002 - DUID used as client identifier
     output_buf[2] = 1; // digest type = 1 (SHA-256)
 
-    message->authority.push_back(rr);
+    Message_->authority.push_back(rr);
 
 }
 
@@ -219,16 +216,16 @@ void DNSUpdate::setTSIG(const std::string& keyname, const std::string& base64enc
  */
 void DNSUpdate::deleteAAAARecordFromRRSet(){
   DnsRR rr;
-  rr.NAME = domainname(Hostname_.c_str(), *zoneroot);
+  rr.NAME = domainname(Hostname_.c_str(), Zoneroot_);
   rr.TYPE = qtype_getcode("AAAA", false);
   rr.CLASS = QCLASS_NONE; /* 254 */
   rr.TTL = 0;
-  string data = rr_fromstring(rr.TYPE, hostip, *zoneroot);
+  string data = rr_fromstring(rr.TYPE, Hostip_.c_str(), Zoneroot_);
   rr.RDLENGTH = data.size();
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
-  message->authority.push_back(rr);
+  Message_->authority.push_back(rr);
 
-  Log(Debug) << "DDNS: AAAA record created:" << rr.NAME.tostring() << " -> " << hostip << LogEnd;
+  Log(Debug) << "DDNS: AAAA record created:" << rr.NAME.tostring() << " -> " << Hostip_ << LogEnd;
 }
 
 void DNSUpdate::deletePTRRecordFromRRSet(){
@@ -238,7 +235,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   char destination[16];
   char result[bufSize];
   memset(result, 0, bufSize);
-  inet_pton6(hostip, destination);
+  inet_pton6(Hostip_.c_str(), destination);
   doRevDnsAddress(destination,result);
   rr.NAME = result;
   rr.TYPE = qtype_getcode("PTR", false);
@@ -248,7 +245,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   string data = rr_fromstring(rr.TYPE, tmp.c_str());
   rr.RDLENGTH = data.size();
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
-  message->authority.push_back(rr);
+  Message_->authority.push_back(rr);
 
   Log(Debug) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
@@ -263,16 +260,16 @@ void DNSUpdate::addinMsg_newPTR(){
   char destination[16];
   char result[bufSize];
   memset(result, 0, bufSize);
-  inet_pton6(hostip, destination);
+  inet_pton6(Hostip_.c_str(), destination);
   doRevDnsAddress(destination,result);
   rr.NAME = result;
   rr.TYPE = qtype_getcode("PTR", false);
-  rr.TTL = txt_to_int(ttl);
+  rr.TTL = txt_to_int(TTL_.c_str());
   string tmp  = string(Hostname_);
   string data = rr_fromstring(rr.TYPE, tmp.c_str());
   rr.RDLENGTH = data.size();
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
-  message->authority.push_back(rr);
+  Message_->authority.push_back(rr);
 
   Log(Debug) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
@@ -287,7 +284,7 @@ void DNSUpdate::addinMsg_delOldRR(){
     if (oldDnsRR){
 	//delete message
 	oldDnsRR->CLASS = QCLASS_NONE; oldDnsRR->TTL = 0;
-	message->authority.push_back(*oldDnsRR);
+	Message_->authority.push_back(*oldDnsRR);
 	delete oldDnsRR;
     }
 }
@@ -344,10 +341,11 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
     int sockid = -1;
 
     try {
-	q = create_query(*zoneroot, QTYPE_AXFR);
+	q = create_query(Zoneroot_, QTYPE_AXFR);
 
 	pos_cliresolver res;
-	sockid = res.tcpconnect(&server);
+	_addr dnsAddr = ToPoslibAddr(DnsAddr_);
+	sockid = res.tcpconnect(&dnsAddr);
 	res.tcpsendmessage(q, sockid);
 
 	res.tcpwaitanswer(a, sockid);
@@ -402,13 +400,11 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 }
 
 void DNSUpdate::sendMsg(unsigned int timeout) {
-    switch (_proto) {
+    switch (Proto_) {
     case DNSUPDATE_TCP:
-	Log(Debug) << "DDNS: Updating over TCP." << LogEnd;
 	sendMsgTCP(timeout);
 	return;
     case DNSUPDATE_UDP:
-	Log(Debug) << "DDNS: Updating over UDP." << LogEnd;
 	sendMsgUDP(timeout);
 	return;
     default:
@@ -426,8 +422,9 @@ void DNSUpdate::sendMsgTCP(unsigned int timeout){
     try {
 	pos_cliresolver res;
 	res.tcp_timeout = timeout;
-	sockid = res.tcpconnect(&server);
-	res.tcpsendmessage(message, sockid);
+	_addr dnsAddr = ToPoslibAddr(DnsAddr_);
+	sockid = res.tcpconnect(&dnsAddr);
+	res.tcpsendmessage(Message_, sockid);
 	res.tcpwaitanswer(a, sockid);
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
@@ -455,7 +452,8 @@ void DNSUpdate::sendMsgUDP(unsigned int timeout) {
 	pos_cliresolver res;
 	res.udp_tries[0] = timeout;
 	res.n_udp_tries = 1; // just one timeout
-	res.query(message, a, &server, Q_NOTCP);
+	_addr dnsAddr = ToPoslibAddr(DnsAddr_);
+	res.query(Message_, a, &dnsAddr, Q_NOTCP);
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
@@ -479,7 +477,7 @@ void DNSUpdate::showResult(int result)
 {
     switch (result) {
     case DNSUPDATE_SUCCESS:
-	if (this->updateMode == DNSUPDATE_AAAA || this->updateMode == DNSUPDATE_PTR)
+	if (UpdateMode_ == DNSUPDATE_AAAA || UpdateMode_ == DNSUPDATE_PTR)
 	    Log(Notice) << "DDNS: DNS Update (add) successful." << LogEnd;
 	else
 	    Log(Notice) << "DDNS: DNS Update (delete) successful." << LogEnd;
@@ -496,5 +494,18 @@ void DNSUpdate::showResult(int result)
     case DNSUPDATE_SKIP:
 	Log(Notice) << "DDNS: DNS Update was skipped." << LogEnd;
 	break;
+    }
+}
+
+std::string DNSUpdate::protoToString()
+{
+    switch(Proto_) {
+    case DNSUPDATE_TCP:
+	return "TCP";
+    case DNSUPDATE_UDP:
+	return "UDP";
+    default:
+    case DNSUPDATE_ANY:
+	return "ANY";
     }
 }

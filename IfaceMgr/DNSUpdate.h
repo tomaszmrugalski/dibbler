@@ -13,8 +13,9 @@
 #include <winsock2.h>
 #endif
 
+#include <string>
+#include <stdint.h>
 #include "poslib.h"
-
 
 /* used in config. file */
 enum DnsUpdateModeCfg {
@@ -50,14 +51,14 @@ class DNSUpdate {
     };
 
 private:
-    DnsMessage *message;
-    _addr server;
+    DnsMessage *Message_;
+    std::string DnsAddr_;
     std::string Hostname_;
-    char* hostip;
-    domainname* zoneroot;
-    char* ttl;
-    DnsUpdateMode updateMode;
-    DnsUpdateProtocol _proto;
+    std::string Hostip_;
+    domainname Zoneroot_;
+    std::string TTL_;
+    DnsUpdateMode UpdateMode_;
+    DnsUpdateProtocol Proto_;
 
     // TSIG stuff
     std::string Keyname_; /// plain text name of the key
@@ -78,6 +79,8 @@ private:
     void sendMsg(unsigned int timeout);
     void sendMsgTCP(unsigned int timeout);
     void sendMsgUDP(unsigned int timeout);
+
+    std::string protoToString();
      
  public:
     DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname, 
