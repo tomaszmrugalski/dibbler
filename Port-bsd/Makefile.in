@@ -240,6 +240,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libLowLevel.a
+libLowLevel_a_CFLAGS = -std=c99
 libLowLevel_a_CPPFLAGS = -I$(top_srcdir)/Misc
 libLowLevel_a_SOURCES = daemon.cpp daemon.h lowlevel-bsd.c lowlevel-options-bsd.c malloc.h dibbler-client.cpp dibbler-server.cpp dibbler-relay.cpp
 all: all-am
@@ -322,36 +323,36 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 libLowLevel_a-lowlevel-bsd.o: lowlevel-bsd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-bsd.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo -c -o libLowLevel_a-lowlevel-bsd.o `test -f 'lowlevel-bsd.c' || echo '$(srcdir)/'`lowlevel-bsd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-bsd.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo -c -o libLowLevel_a-lowlevel-bsd.o `test -f 'lowlevel-bsd.c' || echo '$(srcdir)/'`lowlevel-bsd.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-bsd.c' object='libLowLevel_a-lowlevel-bsd.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-bsd.o `test -f 'lowlevel-bsd.c' || echo '$(srcdir)/'`lowlevel-bsd.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-bsd.o `test -f 'lowlevel-bsd.c' || echo '$(srcdir)/'`lowlevel-bsd.c
 
 libLowLevel_a-lowlevel-bsd.obj: lowlevel-bsd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-bsd.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo -c -o libLowLevel_a-lowlevel-bsd.obj `if test -f 'lowlevel-bsd.c'; then $(CYGPATH_W) 'lowlevel-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-bsd.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-bsd.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo -c -o libLowLevel_a-lowlevel-bsd.obj `if test -f 'lowlevel-bsd.c'; then $(CYGPATH_W) 'lowlevel-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-bsd.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-bsd.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-bsd.c' object='libLowLevel_a-lowlevel-bsd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-bsd.obj `if test -f 'lowlevel-bsd.c'; then $(CYGPATH_W) 'lowlevel-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-bsd.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-bsd.obj `if test -f 'lowlevel-bsd.c'; then $(CYGPATH_W) 'lowlevel-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-bsd.c'; fi`
 
 libLowLevel_a-lowlevel-options-bsd.o: lowlevel-options-bsd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-bsd.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo -c -o libLowLevel_a-lowlevel-options-bsd.o `test -f 'lowlevel-options-bsd.c' || echo '$(srcdir)/'`lowlevel-options-bsd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-bsd.o -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo -c -o libLowLevel_a-lowlevel-options-bsd.o `test -f 'lowlevel-options-bsd.c' || echo '$(srcdir)/'`lowlevel-options-bsd.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-options-bsd.c' object='libLowLevel_a-lowlevel-options-bsd.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-bsd.o `test -f 'lowlevel-options-bsd.c' || echo '$(srcdir)/'`lowlevel-options-bsd.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-bsd.o `test -f 'lowlevel-options-bsd.c' || echo '$(srcdir)/'`lowlevel-options-bsd.c
 
 libLowLevel_a-lowlevel-options-bsd.obj: lowlevel-options-bsd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-bsd.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo -c -o libLowLevel_a-lowlevel-options-bsd.obj `if test -f 'lowlevel-options-bsd.c'; then $(CYGPATH_W) 'lowlevel-options-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-bsd.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -MT libLowLevel_a-lowlevel-options-bsd.obj -MD -MP -MF $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo -c -o libLowLevel_a-lowlevel-options-bsd.obj `if test -f 'lowlevel-options-bsd.c'; then $(CYGPATH_W) 'lowlevel-options-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-bsd.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Tpo $(DEPDIR)/libLowLevel_a-lowlevel-options-bsd.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-options-bsd.c' object='libLowLevel_a-lowlevel-options-bsd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-bsd.obj `if test -f 'lowlevel-options-bsd.c'; then $(CYGPATH_W) 'lowlevel-options-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-bsd.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libLowLevel_a_CPPFLAGS) $(CPPFLAGS) $(libLowLevel_a_CFLAGS) $(CFLAGS) -c -o libLowLevel_a-lowlevel-options-bsd.obj `if test -f 'lowlevel-options-bsd.c'; then $(CYGPATH_W) 'lowlevel-options-bsd.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-options-bsd.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
