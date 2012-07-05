@@ -571,8 +571,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
                << FQDNMode << LogEnd;
 
     if ( FQDNMode==1 || FQDNMode==2 ) {
-        Log(Debug) << "FQDN: Server configuration allows DNS updates for " << clntDuid->getPlain()
-                   << LogEnd;
+        //Log(Debug) << "FQDN: Server configuration allows DNS updates for " << clntDuid->getPlain()
+        //           << LogEnd;
 
         if (FQDNMode == 1)
             optFQDN->setSFlag(false);
@@ -605,15 +605,14 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
 	    Log(Warning) << "Client does not have any address(es) assigned." << LogEnd;
 	    return 0;
 	}
-        SPtr<TIPv6Addr> IPv6Addr = addr->get();
 
         // regardless of the result, store the info
         ptrAddrIA->setFQDN(fqdn);
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
 	if (doRealUpdate) {
-	    Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << DNSAddr->getPlain() << ", IP="
-			<< IPv6Addr->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+	    Log(Notice) << "FQDN: About to perform DNS Update: IP="
+			<< addr->get()->getPlain() << " and FQDN=" << fqdnName << LogEnd;
 	    SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
 	} else {
 	    Log(Debug) << "FQDN: Skipping DNS Update." << LogEnd;
