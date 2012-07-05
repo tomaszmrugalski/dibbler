@@ -653,7 +653,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
             if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, iface)) {
                 if (!ia)
                     continue;
-                clnt->addIA(ia);
+		if (clnt)
+		    clnt->addIA(ia);
                 Log(Debug) << "Parsed IA, iaid=" << iaid;
                 if (unicast) {
                     ia->setUnicast(unicast);
@@ -819,34 +820,80 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
             Log(Error) << "Failed to parse AddrIA entry. File " << xmlFile << " truncated." << LogEnd;
             return 0;
         }
-        if (strstr(buf,"duid")) {
-                  //char * x;
-                  x = strstr(buf,">")+1;
-                  x = strstr(x,"</duid>");
-                  if (x)
-                      *x = 0; // remove trailing xml tag
-                  duid = new TDUID(strstr(buf,">")+1);
-                  // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+        if (strstr(buf,"<duid")) {
+	    //char * x;
+	    x = strstr(buf,">")+1;
+	    x = strstr(x,"</duid>");
+	    if (x)
+		*x = 0; // remove trailing xml tag
+	    duid = new TDUID(strstr(buf,">")+1);
+	    // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+	    
+	    Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
+		       << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+	    
+	    ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
+	    continue;
+	}
+	if (strstr(buf,"<fqdnDnsServer>")) {
+	    char * beg = strstr(buf, ">")+1;
+	    if (!beg)
+		continue; // malformed line, ignore it
+	    char * end = strstr(beg, "</fqdnDnsServer>");
+	    if (!end)
+		continue; // malformed line, ignore it
+	    *end = 0;
+	    SPtr<TIPv6Addr> dns = new TIPv6Addr(beg, true);
+	    // Log(Debug) << "#### Parsed DNS addr=" << *dns << LogEnd;
+	    if (ia)
+		ia->setFQDNDnsServer(dns);
+	    continue;
+	}
+	if (strstr(buf, "<fqdn ")) {
+	    // TODO: parse DUID
+	    char * beg = strstr(buf, "duid=\"") + 6;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    char * end = strstr(beg, "\"");
+	    string duidTxt(beg, end);
 
-                  Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
-                             << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+	    SPtr<TDUID> duid = new TDUID(duidTxt.c_str());
 
-                  ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
-                  continue;
-              }
-              if (strstr(buf,"<AddrAddr")) {
-                  addr = parseAddrAddr(xmlFile, buf,false);
-                  if (ia && addr) {
-                      if (verifyAddr(addr->get())) {
-                              ia->addAddr(addr);
-                              addr->setTentative(TENTATIVE_NO);
-                      } else {
-                          Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
-                      }
-                  }
-              }
-              if (strstr(buf,"</AddrIA>"))
-                  break;
+	    beg = strstr(buf, "used=\"") + 6;
+	    if (!beg) {
+		continue;
+	    }
+	    end = strstr(beg, "\"");
+	    string usedTxt(beg, end);
+	    bool used = false;
+	    if (usedTxt == "TRUE")
+		used = true;
+
+	    beg = strstr(buf, ">") + 1;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    end = strstr(beg, "<");
+	    if (!end)
+		continue;
+	    *end = 0;
+	    SPtr<TFQDN> fqdn = new TFQDN(duid, string(beg, end), used);
+	    if (ia)
+		ia->setFQDN(fqdn);
+	    continue;
+	}
+	if (strstr(buf,"<AddrAddr")) {
+	    addr = parseAddrAddr(xmlFile, buf,false);
+	    if (ia && addr) {
+		if (verifyAddr(addr->get())) {
+		    ia->addAddr(addr);
+		    addr->setTentative(TENTATIVE_NO);
+		} else {
+		    Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
+		}
+	    }
+	}
+	if (strstr(buf,"</AddrIA>"))
+	    break;
     }
     if (ia)
         ia->setTentative();
