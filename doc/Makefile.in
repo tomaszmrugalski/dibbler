@@ -514,7 +514,7 @@ all:
 
 all-am:
 
-user: dibbler-user.tex dibbler-user-config-client.tex \
+dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \
 	  dibbler-user-intro.tex dibbler-user-usage.tex \
           dibbler-user-bibliography.tex version.tex

@@ -621,10 +621,9 @@ for \href{http://www.isc.org/software/bind}{ISC BIND9}. There are at
 least three steps that has to be done to achieve forward (AAAA) and
 reverse (PTR) updates to function properly.
 
-\begin{enumerate}
-\item Add a key. Add the same key definition that was included in your
-Dibbler server.conf into BIND9 configuration. Its location varies
-between systems, but it often /etc/bind/named.conf. You should also
+First step is to add a key. Use the same key definition that was included in your
+Dibbler server.conf. Add it to BIND9 config file. Its location varies
+between systems, but it often /etc/bind/named.conf or similar. You should also
 modify your zone and reverse zone to accept updates from this new
 key. Make sure that you do not define \emph{fudge} parameter, as it is
 not supported by BIND9. Part of the named.conf that contains related
