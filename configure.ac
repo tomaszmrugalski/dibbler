@@ -525,8 +525,8 @@ Port-sun/Makefile
 Port-win32/Makefile
 Port-winnt2k/Makefile
 doc/Makefile
-Misc/Portable
-h doc/doxygen.cfg
+Misc/Portable.h
+doc/doxygen.cfg
 CfgMgr/tests/Makefile
 tests/Makefile
 tests/Srv/Makefile)

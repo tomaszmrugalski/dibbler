@@ -55,12 +55,14 @@ am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
 libMisc_a_AR = $(AR) $(ARFLAGS)
 libMisc_a_LIBADD =
-am_libMisc_a_OBJECTS = addrpack.$(OBJEXT) base64.$(OBJEXT) \
-	DHCPConst.$(OBJEXT) DUID.$(OBJEXT) FQDN.$(OBJEXT) \
-	hmac-sha-md5.$(OBJEXT) IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) \
-	Key.$(OBJEXT) Logger.$(OBJEXT) long128.$(OBJEXT) md5.$(OBJEXT) \
-	sha1.$(OBJEXT) sha256.$(OBJEXT) sha512.$(OBJEXT) \
-	ScriptParams.$(OBJEXT) lowlevel-posix.$(OBJEXT)
+am_libMisc_a_OBJECTS = libMisc_a-addrpack.$(OBJEXT) \
+	libMisc_a-base64.$(OBJEXT) DHCPConst.$(OBJEXT) DUID.$(OBJEXT) \
+	FQDN.$(OBJEXT) libMisc_a-hmac-sha-md5.$(OBJEXT) \
+	IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) Key.$(OBJEXT) \
+	Logger.$(OBJEXT) long128.$(OBJEXT) libMisc_a-md5.$(OBJEXT) \
+	libMisc_a-sha1.$(OBJEXT) libMisc_a-sha256.$(OBJEXT) \
+	libMisc_a-sha512.$(OBJEXT) ScriptParams.$(OBJEXT) \
+	libMisc_a-lowlevel-posix.$(OBJEXT)
 libMisc_a_OBJECTS = $(am_libMisc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
