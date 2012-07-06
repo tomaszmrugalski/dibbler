@@ -22,19 +22,10 @@
 #include "poslib.h"
 #include "dnssec-sign.h"
 
-#if 1
 extern "C" {
 #include "hmac.h"
 #include "base64.h"
 }
-#endif
-
-//void print_buff(int len, const unsigned char *buff) {
-//  printf("buff: len=%3d|", len);
-//  for (int t = 0; t < len; t++)
-//    printf(" %02x", buff[t]);
-//  printf("\n");
-//}
 
 void verify_signature (DnsRR *check_tsig, DnsRR *message_tsig,
                        stl_string key, message_buff message) {
