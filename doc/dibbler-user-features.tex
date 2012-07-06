@@ -21,8 +21,8 @@ Prefix delegation is a mechanism that allows two routers to delegate
   the subscriber's internal network and the service provider's core
   network.}
 
-To configure server to provide prefixes, a pool must be defined and
-also client prefixes' length. For example section below assigns
+To configure server to provide prefixes, a PD pool and a client 
+prefixes' length must be defined. An example section below assigns
 2001:db8::/32 pool to be managed by this server. From this pool,
 server will assign /48 prefixes to the clients. For example, client
 can receive prefix 2001:db8:7c34::/48.
@@ -357,11 +357,12 @@ feature. Use with caution!
 During normal operation, DHCPv6 client receives one or more IPv6
 address(es) from DHCPv6 server. If configured to do so, it can also
 receive information about DNS server addresses. As an additional
-service, DNS Update can be performed. This feature, sometimes known as
-Dynamic DNS, keeps DNS entries up to date. When client boots, it gets
-its fully qualified domain name and this name can be used to reach
-this particular client by other nodes. Details of this mechanism is
-described in \cite{rfc4704}.
+service, DNS Update (RFC2136, \cite{rfc2136}) can be performed. This
+feature known as Dynamic DNS, or DNS Update, keeps the DNS entries
+synced up with DHCP. When client boots, it gets its fully qualified
+domain name and this name can be used to reach this particular client
+by other nodes. Details of this mechanism is described
+in \cite{rfc2136} and \cite{rfc4704}.
 
 \Note In this section, we will assume that hostnames will be used from
 the example.com domain and that addresses will be provided from the
@@ -563,11 +564,102 @@ split.
 
 \subsubsection{Secure DDNS}
 
-After 0.8.2 was released, support for TSIG was added.
+Earlier Dibbler versions do not provide security for DNS Updates. This
+capability has been added in 0.8.3. It is possible to protect your
+updates using TSIG (Transaction Signatures), defined in RFC2845
+(\cite{rfc2845}). For this feature to work, your DNS server and
+Dibbler server must be both configured with the same key. The first
+step to use this feature is to generate a key. Currently only HMAC-MD5
+keys are supported. Please ask on dibbler-devel mailing list if you
+are interested in other key types. See section \ref{mailing-list} for
+details. To generate HMAC-MD5 key, a \emph{dnssec-keygen} tool from
+\href{http://www.isc.org/software/bind}{ISC BIND9} can be used:
 
 \begin{lstlisting}
 dnssec-keygen -a hmac-md5 -b 128 -n HOST my-ddns-secret-key
 \end{lstlisting}
+
+For ease of configuration, dibbler uses the same key syntax in its
+config file as \href{http://www.isc.org/software/bind}{ISC BIND9}
+does. In particular, all statements are finished with a semicolon. For
+example, the minimal set of commands to configure a key look like the
+following:
+
+\begin{lstlisting}
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+};
+\end{lstlisting}
+
+Please keep in mind that TSIG signatures are time sensitive and they
+are valid only for specified amount of time. Therefore it is essential
+that your Dibbler server and your DNS server have well synchronized
+clocks. It is recommented to use NTP for that purpose. By default, the
+signature is valid for 300 seconds. This parameter is called a
+fudge. It can be modified to a different value, if needed. Shorter
+value is better from the security perspective as it shortens the
+window of potential replay attack. Longer values are better from the
+convenience perspective, as they are more ``forgiving'' to clock
+skew. The maximum allowed value here is 65535 seconds. Please note
+that such a large value is not reasonable.
+
+An example with the fudge value set to 250 is presented below:
+
+\begin{lstlisting}
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+    fudge 250;
+};
+\end{lstlisting}
+
+Any DNS server that supports DNS Updates (\cite{rfc2136}) and TSIG
+(\cite{rfc2845}) must support HMAC-MD5 signatures. Following paragraph
+explains how to configure HMAC-MD5 key
+for \href{http://www.isc.org/software/bind}{ISC BIND9}. There are at
+least three steps that has to be done to achieve forward (AAAA) and
+reverse (PTR) updates to function properly.
+
+\begin{enumerate}
+\item Add a key. Add the same key definition that was included in your
+Dibbler server.conf into BIND9 configuration. Its location varies
+between systems, but it often /etc/bind/named.conf. You should also
+modify your zone and reverse zone to accept updates from this new
+key. Make sure that you do not define \emph{fudge} parameter, as it is
+not supported by BIND9. Part of the named.conf that contains related
+changes looks as follows:
+
+\begin{lstlisting}
+
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+};
+
+... (other configuration options here)
+
+zone "example.org" {
+     type master;
+     file "/path/to/your/zonefile";
+     allow-update { key DDNS\_UPDATER; };
+     allow-query  { any; };
+};
+
+zone "0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "/path/to/your/zonefile";
+     allow-update { key DDNS\_UPDATER; };
+     allow-query  { any; };
+}
+
+... (other zones and configuration options here)
+\end{lstlisting}
+
+In case of any problems, please refer to \emph{BIND 9 Administrator
+Reference Manual}, available
+on \href{http://www.isc.org/software/bind}{Internet Systems
+Consortium} website.
 
 \subsubsection{Dynamic DNS Testing and tips}
 Proper configuration of the DNS Update mechanism is not an easy

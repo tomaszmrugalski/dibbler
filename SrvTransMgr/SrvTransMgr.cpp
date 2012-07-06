@@ -35,10 +35,6 @@
 #include "OptStatusCode.h"
 #include "NodeClientSpecific.h"
 
-//#ifndef MOD_SRV_DISABLE_DNSUPDATE
-//#include "DNSUpdate.h"
-//#endif
-
 using namespace std;
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
@@ -363,8 +359,8 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrM
     case TAddrIA::TYPE_PD:
     {
         params.addPrefix(exp.addr, exp.prefixLen, 0, 0);
+	break;
     }
-    break;
     }
 
     tmp.str("");
@@ -381,6 +377,7 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrM
 void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                                  std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst) {
+
     for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = addrLst.begin();
          addr != addrLst.end(); ++addr) {
         // delete this address
@@ -388,6 +385,15 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                     << addr->ia->getIAID() << ") in client (DUID=\""
                     << addr->client->getDUID()->getPlain()
                     << "\") has expired." << LogEnd;
+
+	// FQDN - remove
+	SPtr<TIPv6Addr> dnsAddr = addr->ia->getFQDNDnsServer();
+	SPtr<TFQDN> fqdn = addr->ia->getFQDN();
+        if (dnsAddr && fqdn) {
+	    SrvIfaceMgr().delFQDN(addr->ia->getIface(), dnsAddr,
+				  addr->addr, fqdn->getName());
+	    /// @todo: remove this FQDN from the list of used names
+        }
 
         SrvAddrMgr().delClntAddr(addr->client->getDUID(),
                                  addr->ia->getIAID(),
