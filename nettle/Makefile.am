@@ -10,7 +10,6 @@ libNettle_a_SOURCES = \
   hmac.c \
   hmac.h \
   macros.h \
-  main.c \
   md5-meta.c \
   md5.c \
   md5.h \

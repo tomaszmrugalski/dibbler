@@ -32,7 +32,7 @@ void TSIGKey::setData(const std::string& base64encoded) {
     Base64Data_ = base64encoded;
 
     char raw[100];
-    unsigned raw_len = 100;
+    size_t raw_len = 100;
     memset(raw, 0, 100);
 
     base64_decode_context ctx = {0};
