@@ -56,8 +56,8 @@ libNettle_a_AR = $(AR) $(ARFLAGS)
 libNettle_a_LIBADD =
 am_libNettle_a_OBJECTS = base64-decode.$(OBJEXT) \
 	base64-encode.$(OBJEXT) base64-meta.$(OBJEXT) \
-	hmac-md5.$(OBJEXT) hmac.$(OBJEXT) main.$(OBJEXT) \
-	md5-meta.$(OBJEXT) md5.$(OBJEXT) memxor.$(OBJEXT)
+	hmac-md5.$(OBJEXT) hmac.$(OBJEXT) md5-meta.$(OBJEXT) \
+	md5.$(OBJEXT) memxor.$(OBJEXT)
 libNettle_a_OBJECTS = $(am_libNettle_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -232,7 +232,6 @@ libNettle_a_SOURCES = \
   hmac.c \
   hmac.h \
   macros.h \
-  main.c \
   md5-meta.c \
   md5.c \
   md5.h \
@@ -296,7 +295,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base64-meta.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac-md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5-meta.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memxor.Po@am__quote@
