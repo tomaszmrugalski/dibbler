@@ -80,7 +80,7 @@ void DNSUpdate::splitHostDomain(std::string fqdnName) {
 
 DnsUpdateResult DNSUpdate::run(int timeout){
 
-    Log(Debug) << "DDNS: Performing DNS Update over " << protoToString() << ", DNS address="
+    Log(Info) << "DDNS: Performing DNS Update over " << protoToString() << ", DNS address="
 	       << DnsAddr_;
     try {
 	switch (UpdateMode_) {
@@ -165,9 +165,7 @@ void DNSUpdate::addinMsg_newAAAA(){
     rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
 
     Message_->authority.push_back(rr);
-    Log(Debug) << "DDNS: AAAA update("
-	       << protoToString()
-	       <<"):" << rr.NAME.tostring() << " -> " << Hostip_ << LogEnd;
+    Log(Info) << "DDNS: AAAA update:" << rr.NAME.tostring() << " -> " << Hostip_ << LogEnd;
 }
 
 void DNSUpdate::addDHCID(const char* duid, int duidlen) {
@@ -247,7 +245,7 @@ void DNSUpdate::deletePTRRecordFromRRSet(){
   rr.RDATA = (unsigned char*)memdup(data.c_str(), rr.RDLENGTH);
   Message_->authority.push_back(rr);
 
-  Log(Debug) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
+  Log(Info) << "DDNS: PTR record created: " << result << " -> " << tmp << LogEnd;
 }
 
 /**
@@ -478,9 +476,9 @@ void DNSUpdate::showResult(int result)
     switch (result) {
     case DNSUPDATE_SUCCESS:
 	if (UpdateMode_ == DNSUPDATE_AAAA || UpdateMode_ == DNSUPDATE_PTR)
-	    Log(Notice) << "DDNS: DNS Update (add) successful." << LogEnd;
+	    Log(Debug) << "DDNS: DNS Update (add) successful." << LogEnd;
 	else
-	    Log(Notice) << "DDNS: DNS Update (delete) successful." << LogEnd;
+	    Log(Debug) << "DDNS: DNS Update (delete) successful." << LogEnd;
 	break;
     case DNSUPDATE_ERROR:
 	Log(Warning) << "DDNS: DNS Update failed." << LogEnd;
@@ -492,7 +490,7 @@ void DNSUpdate::showResult(int result)
 	Log(Warning) << "DDNS: DNS Update failed: server returned NOTAUTH." << LogEnd;
 	break;
     case DNSUPDATE_SKIP:
-	Log(Notice) << "DDNS: DNS Update was skipped." << LogEnd;
+	Log(Debug) << "DDNS: DNS Update was skipped." << LogEnd;
 	break;
     }
 }

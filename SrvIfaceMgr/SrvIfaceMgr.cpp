@@ -635,9 +635,9 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
     // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
     if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
         /* PTR cleanup */
-        Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server "
-                    << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
-                    << " and FQDN=" << name << LogEnd;
+        // Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server "
+        //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+        //            << " and FQDN=" << name << LogEnd;
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
                                        DNSUPDATE_PTR_CLEANUP, proto2);
 
@@ -654,9 +654,9 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
 
     if (FQDNMode == DNSUPDATE_MODE_BOTH) {
         /* AAAA Cleanup */
-        Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server "
-                    << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
-                    << " and FQDN=" << name << LogEnd;
+        //Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server "
+        //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+        //            << " and FQDN=" << name << LogEnd;
 
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
                                        DNSUPDATE_AAAA_CLEANUP, proto2);
