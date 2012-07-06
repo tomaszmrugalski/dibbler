@@ -651,12 +651,15 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 unicast = new TIPv6Addr(uni.c_str(), true);
             }
             if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, iface)) {
-                if (!ia)
+                if (!ia || !clnt)
                     continue;
-		if (clnt)
+		if (ia->countAddr()) { // we don't want empty IAs here
 		    clnt->addIA(ia);
-                Log(Debug) << "Parsed IA, iaid=" << iaid;
-                if (unicast) {
+		} else {
+		    Log(Debug) << "IA with iaid=" << iaid << " has no valid addresses." << LogEnd;
+		    continue;
+		}
+		if (unicast) {
                     ia->setUnicast(unicast);
                     Log(Cont) << ", unicast=" << unicast->getPlain();
                     unicast = 0;
@@ -687,12 +690,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 // Log(Debug) << "Parsed AddrPD::iface=" << iface << LogEnd;
             }
             if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, iface)) {
-                if (!ptrpd)
+                if (!ptrpd || !clnt)
                     continue;
                 if (ptrpd->countPrefix()) {
                     clnt->addPD(ptrpd);
-                    Log(Debug) << "Parsed PD, pdid=" << pdid << ", t1=" << t1
-                               << ", t2=" << t2 << LogEnd;
                 } else {
                     Log(Debug) << "PD with iaid=" << pdid << " has no valid prefixes." << LogEnd;
                 }

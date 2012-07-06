@@ -595,7 +595,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
             strum << "      <!--<fqdnDnsServer>-->" << endl;
         }
         if (x.fqdn) {
-            strum << "      " << *x.fqdn << endl;
+            strum << "      " << *x.fqdn;
         } else {
             strum << "      <!-- <fqdn>-->" << endl;
         }
