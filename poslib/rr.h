@@ -242,7 +242,7 @@ stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENGTH)
  * \param RDLENGTH Lenth of rest of RR
  * \param zone     Zone to make domains relative to
  */
-stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int& RDLENGTH, domainname& zone);
+stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDLENGTH, domainname& zone);
 
 /*!
  * \brief convert a binary RR to string
@@ -349,6 +349,13 @@ u_int16 rr_getshort(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 u_int32 rr_getlong(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 
 /*!
+ * \brief read a 48-bit value from RR data
+ *
+ * For details, see rr_getdomain().
+ */
+u_int48 rr_getuint48(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+
+/*!
  * \brief read an IP address from RR data
  *
  * For details, see rr_getdomain().  Data is dynamically allocated.
@@ -361,6 +368,13 @@ unsigned char *rr_getip4(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0)
  * For details, see rr_getdomain(). Data is dynamically allocated.
  */
 unsigned char *rr_getip6(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+
+/*!
+ * \brief return pointer to start of data in RR
+ *
+ * For details, see rr_getdomain().
+ */
+unsigned char *rr_getdata(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 
 /*!
  * \brief read next item in a space-delimited string

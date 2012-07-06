@@ -324,3 +324,15 @@ SPtr<TDUID> TCfgMgr::getDUID()
 {
     return DUID;
 }
+
+void TCfgMgr::addKey(SPtr<TSIGKey> key) {
+    Keys_.push_back(key);
+}
+
+SPtr<TSIGKey> TCfgMgr::getKey() {
+    if (Keys_.empty())
+	return 0;
+    /// @todo: add some parameter that will pick the right key
+
+    return Keys_.front(); // just return first key for now
+}

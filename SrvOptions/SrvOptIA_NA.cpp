@@ -118,8 +118,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     ClntAddr = queryMsg->getAddr();
     ClntDuid  = queryMsg->getClientDUID();
 
-    /// @todo: SOLICIT with RAPID COMMIT should set this to true
-    bool quiet = false;
+    // true for advertise, false for everything else
+    bool quiet = (parent->getType()==ADVERTISE_MSG);
 
     // --- LEASE ASSIGN STEP 3: check if client already has binding
     if (renew(queryOpt, false)) {

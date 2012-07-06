@@ -47,6 +47,7 @@
 #if !defined(HAVE_INTTYPES_H) && !defined(HAVE_STDINT_H) && !defined(uint16_t) 
 #  define uint16_t unsigned short
 #  define uint32_t unsigned int
+#  define uint48_t unsigned long long
 #endif
 
 /*! \file poslib/types.h
@@ -57,6 +58,7 @@
 
 typedef uint16_t u_int16;       /**< Represents a 16-bit unsigned number. */
 typedef uint32_t u_int32;       /**< Represents a 32-bit unsigned number. */
+typedef uint64_t u_int48;       /**< Represents a 48-bit unsigned number. */
 
 typedef char u_int4;            /**< Represents an unsigned number containing at least 4 bits. */
 typedef char u_int3;            /**< Represents an unsigned number containing at least 3 bits. */

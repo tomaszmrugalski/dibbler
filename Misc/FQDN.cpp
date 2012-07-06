@@ -7,48 +7,34 @@
  *                                                                           
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <string>
 #include "FQDN.h"
-#include "Portable.h"
-
-/// @todo: TFQDN should be implemented using SPtr()
+#include "SmartPtr.h"
 
 using namespace std;
 
 TFQDN::TFQDN() {
-    this->Duid_ = 0;
-    this->Addr_ = 0;
     this->Name_ = "";
     this->Used_ = false;
 }
 
-TFQDN::TFQDN(TDUID *duid, const std::string& name, bool used) {
-    this->Addr_ = 0;
-    this->Duid_ = duid;
-    this->Name_ = name;
-    this->Used_ = used;
+TFQDN::TFQDN(SPtr<TDUID> duid, const std::string& name, bool used)
+    :Duid_(duid), Name_(name), Used_(used) {
 }
 
-TFQDN::TFQDN(TIPv6Addr *addr, const std::string& name, bool used) {
-    this->Duid_ = 0;
-    this->Addr_ = addr;
-    this->Name_ = name;
-    this->Used_ = used;
+TFQDN::TFQDN(SPtr<TIPv6Addr> addr, const std::string& name, bool used)
+    :Addr_(addr), Name_(name), Used_(used) {
 }
 
-TFQDN::TFQDN(const std::string& name, bool used) {
-    this->Duid_ = 0;
-    this->Addr_ = 0;
-    this->Name_ = name;
-    this->Used_ = used;
+TFQDN::TFQDN(const std::string& name, bool used)
+    :Name_(name), Used_(used) {
 }
 
-TDUID* TFQDN::getDuid() {
+SPtr<TDUID> TFQDN::getDuid() {
     return Duid_;
 }
 
-TIPv6Addr* TFQDN::getAddr() {
+SPtr<TIPv6Addr> TFQDN::getAddr() {
     return Addr_;
 }
 
