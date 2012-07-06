@@ -150,6 +150,7 @@ hmac-sha512         { return SrvParser::DIGEST_HMAC_SHA512_; }
 key                 { return SrvParser::KEY_; }
 secret              { return SrvParser::SECRET_; }
 algorithm           { return SrvParser::ALGORITHM_; }
+fudge               { return SrvParser::FUDGE_; }
 client-class        { return SrvParser::CLIENT_CLASS_; }
 match-if            { return SrvParser::MATCH_IF_; }
 ==                  { return SrvParser::EQ_; }

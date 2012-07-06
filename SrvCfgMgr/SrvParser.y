@@ -123,7 +123,7 @@ virtual ~SrvParser();
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
-%token KEY_, SECRET_, ALGORITHM_
+%token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
@@ -272,13 +272,23 @@ Key
 } KeyOptions
 '}'
 {
-    /// todo: after key definition
     /// check that both secret and algorithm keywords were defined.
-    /// implement a method addKey() in SrvCfgMgr and then call
+    Log(Debug) << "Loaded key '" << CurrentKey->Name_ << "', base64len is "
+	       << CurrentKey->getBase64Data().length() << ", rawlen is "
+	       << CurrentKey->getPackedData().length() << "." << LogEnd;
+    if (CurrentKey->getPackedData().length() == 0) {
+	Log(Crit) << "Key " << CurrentKey->Name_ << " does not have secret specified." << LogEnd;
+	YYABORT;
+    }
+
+    if ( (CurrentKey->Digest_ != DIGEST_HMAC_MD5) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA1) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA256) ) {
+	Log(Crit) << "Invalid key type specified: only hmac-md5, hmac-sha1 and hmac-sha256 are supported." << LogEnd;
+	YYABORT;
+    }
+
     CfgMgr->addKey( CurrentKey );
-    Log(Debug) << "Added key '" << CurrentKey->Name_ << "', base64len="
-	       << CurrentKey->getBase64Data().length() << ", rawlen=" 
-	       << CurrentKey->getPackedData().length() << LogEnd;
 } ';'
 ;
 
@@ -290,21 +300,26 @@ KeyOptions
 KeyOption
 :KeyAlgorithm
 |KeySecret
+|KeyFudge
 ;
 
 KeySecret
 : SECRET_ STRING_ ';'
 {
-    /// @todo: remove this. It is for debugging only. Leaving our secret in logs is dumb.
-    Log(Debug) << "#### Setting secret to " << ($2) << LogEnd;
-
     // store the key in base64 encoded form
     CurrentKey->setData(string($2));
 };
 
+KeyFudge
+: FUDGE_ Number ';'
+{
+    CurrentKey->Fudge_ = $2;
+}
+
 KeyAlgorithm
-: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; CurrentKey->Digest_ = DIGEST_HMAC_SHA256; }
-| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { Log(Debug) << "Setting key type to HMAC-SHA256" << LogEnd; CurrentKey->Digest_ = DIGEST_HMAC_MD5;  }
+: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA256; }
+| ALGORITHM_ DIGEST_HMAC_SHA1_   ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA1;  }
+| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { CurrentKey->Digest_ = DIGEST_HMAC_MD5;  }
 ;
 /// add other key types here
 
@@ -1348,8 +1363,23 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug)  << "FQDNMode found, setting value"<< $3 <<LogEnd;
-    Log(Warning)<< "revDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
+    Log(Debug)  << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+    Log(Warning)<< "FQDN: RevDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
@@ -1360,8 +1390,28 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug) << "FQDNMode found, setting value " << $3 <<LogEnd;
-    Log(Debug) << "revDNS zoneroot lenght found, setting value " << $4 <<LogEnd;
+    Log(Debug) << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+
+    Log(Debug) << "FQDN: RevDNS zoneroot lenght set to " << $4 <<LogEnd;
+    if ( ($4 < 0) || ($4 > 128) ) {
+	Log(Crit) << "FQDN: Invalid zoneroot length specified:" << $4 << ". Value 0-128 expected." << LogEnd;
+	YYABORT;
+    }
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength($4);
 } FQDNList
