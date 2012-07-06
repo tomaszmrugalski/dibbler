@@ -13,8 +13,9 @@
 #include <winsock2.h>
 #endif
 
+#include <string>
+#include <stdint.h>
 #include "poslib.h"
-
 
 /* used in config. file */
 enum DnsUpdateModeCfg {
@@ -50,14 +51,20 @@ class DNSUpdate {
     };
 
 private:
-    DnsMessage *message;
-    _addr server;
-    char* _hostname;
-    char* hostip;
-    domainname* zoneroot;
-    char* ttl;
-    DnsUpdateMode updateMode;
-    DnsUpdateProtocol _proto;
+    DnsMessage *Message_;
+    std::string DnsAddr_;
+    std::string Hostname_;
+    std::string Hostip_;
+    domainname Zoneroot_;
+    std::string TTL_;
+    DnsUpdateMode UpdateMode_;
+    DnsUpdateProtocol Proto_;
+
+    // TSIG stuff
+    std::string Keyname_; /// plain text name of the key
+    std::string Key_; /// the actual key, specified as encoded64 string
+    std::string Algorithm_; /// specify algorithm used for the key
+    uint32_t Fudge_; /// max difference between us signing and they are receiving
    
     void splitHostDomain(std::string fqdnName);
 
@@ -72,13 +79,16 @@ private:
     void sendMsg(unsigned int timeout);
     void sendMsgTCP(unsigned int timeout);
     void sendMsgUDP(unsigned int timeout);
+
+    std::string protoToString();
      
  public:
     DNSUpdate(const std::string& dns_address, const std::string& zonename, const std::string& hostname, 
 	      std::string hostip, DnsUpdateMode updateMode, 
 	      DnsUpdateProtocol proto /*= DNSUPDATE_TCP*/ );
     void addDHCID(const char* duid, int duidlen);
-    void addTSIG(const char* key, int keylen);
+    void setTSIG(const std::string& keyname, const std::string& base64encoded,
+                 const std::string& algro, uint32_t fudge = 600);
     ~DNSUpdate();
     DnsUpdateResult run(int timeout);
     void showResult(int result);

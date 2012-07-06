@@ -567,17 +567,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
     strum << "\" T1=\"" << x.T1 << "\""
 	  << " T2=\"" << x.T2 << "\"";
 
-    switch (x.Type)
-    {
-    case TAddrIA::TYPE_IA:
-    case TAddrIA::TYPE_TA:
-	strum << " IAID=\"";
-	break;
-    case TAddrIA::TYPE_PD:
-	strum << " PDID=\"";
-	break;
-    }
-    strum << x.IAID << "\""
+    strum << " IAID=\"" << x.IAID << "\""
 	  << " state=\"" << StateToString(x.State) 
 	  << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
@@ -605,7 +595,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
             strum << "      <!--<fqdnDnsServer>-->" << endl;
         }
         if (x.fqdn) {
-            strum << "      " << *x.fqdn << endl;
+            strum << "      " << *x.fqdn;
         } else {
             strum << "      <!-- <fqdn>-->" << endl;
         }

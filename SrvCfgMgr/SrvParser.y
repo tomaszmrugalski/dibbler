@@ -24,6 +24,7 @@
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
+#include "Key.h"
 #include "OptVendorSpecInfo.h"
 #include "OptRtPrefix.h"
 #include "SrvOptAddrParams.h"
@@ -58,8 +59,9 @@ List(std::string) PresentStringLst;             /* string list */               
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-List(THostRange) PresentRangeLst;                                                 \
-List(THostRange) PDLst;                                                           \
+SPtr<TSIGKey> CurrentKey;                                                            \
+List(THostRange) PresentRangeLst;                                                    \
+List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -121,6 +123,7 @@ virtual ~SrvParser();
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
 %token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
@@ -183,10 +186,9 @@ GlobalOption
 | DdnsTimeout
 | GuessMode
 | ClientClass
+| Key
 | ScriptName
 ;
-
-
 
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
@@ -261,6 +263,65 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList NextHopDeclaration
 | InterfaceDeclarationsList Route
 ;
+
+Key
+: KEY_ STRING_ '{'
+{
+    /// this is key object initialization part
+    CurrentKey = new TSIGKey(string($2));
+} KeyOptions
+'}'
+{
+    /// check that both secret and algorithm keywords were defined.
+    Log(Debug) << "Loaded key '" << CurrentKey->Name_ << "', base64len is "
+	       << CurrentKey->getBase64Data().length() << ", rawlen is "
+	       << CurrentKey->getPackedData().length() << "." << LogEnd;
+    if (CurrentKey->getPackedData().length() == 0) {
+	Log(Crit) << "Key " << CurrentKey->Name_ << " does not have secret specified." << LogEnd;
+	YYABORT;
+    }
+
+    if ( (CurrentKey->Digest_ != DIGEST_HMAC_MD5) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA1) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA256) ) {
+	Log(Crit) << "Invalid key type specified: only hmac-md5, hmac-sha1 and hmac-sha256 are supported." << LogEnd;
+	YYABORT;
+    }
+
+    CfgMgr->addKey( CurrentKey );
+} ';'
+;
+
+KeyOptions
+:KeyOption
+|KeyOptions KeyOption
+;
+
+KeyOption
+:KeyAlgorithm
+|KeySecret
+|KeyFudge
+;
+
+KeySecret
+: SECRET_ STRING_ ';'
+{
+    // store the key in base64 encoded form
+    CurrentKey->setData(string($2));
+};
+
+KeyFudge
+: FUDGE_ Number ';'
+{
+    CurrentKey->Fudge_ = $2;
+}
+
+KeyAlgorithm
+: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA256; }
+| ALGORITHM_ DIGEST_HMAC_SHA1_   ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA1;  }
+| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { CurrentKey->Digest_ = DIGEST_HMAC_MD5;  }
+;
+/// add other key types here
 
 Client
 : CLIENT_ DUID_KEYWORD_ DUID_ '{'
@@ -378,6 +439,7 @@ TAClassDeclaration
 TAClassOptionsList
 : TAClassOption
 | TAClassOptionsList TAClassOption
+;
 
 TAClassOption
 : PreferredTimeOption
@@ -1301,8 +1363,23 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug)  << "FQDNMode found, setting value"<< $3 <<LogEnd;
-    Log(Warning)<< "revDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
+    Log(Debug)  << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+    Log(Warning)<< "FQDN: RevDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
@@ -1313,8 +1390,28 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug) << "FQDNMode found, setting value " << $3 <<LogEnd;
-    Log(Debug) << "revDNS zoneroot lenght found, setting value " << $4 <<LogEnd;
+    Log(Debug) << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+
+    Log(Debug) << "FQDN: RevDNS zoneroot lenght set to " << $4 <<LogEnd;
+    if ( ($4 < 0) || ($4 > 128) ) {
+	Log(Crit) << "FQDN: Invalid zoneroot length specified:" << $4 << ". Value 0-128 expected." << LogEnd;
+	YYABORT;
+    }
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength($4);
 } FQDNList

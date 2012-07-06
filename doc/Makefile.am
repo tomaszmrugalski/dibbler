@@ -36,11 +36,10 @@ all:
 
 all-am:
 
-user: dibbler-user.tex dibbler-user-config-client.tex \
+dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \
 	  dibbler-user-intro.tex dibbler-user-usage.tex \
           dibbler-user-bibliography.tex version.tex
-
 	@echo "[LATEX  ] $(SUBDIR)/$@"
 	$(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-1st_pass.log
 	if [ "$(PASS3)" = "YES" ]; then                                        \

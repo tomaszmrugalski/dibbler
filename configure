@@ -17282,7 +17282,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg CfgMgr/tests/Makefile tests/Makefile tests/Srv/Makefile"
+ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile nettle/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg CfgMgr/tests/Makefile tests/Makefile tests/Srv/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18433,6 +18433,7 @@ do
     "SrvOptions/Makefile") CONFIG_FILES="$CONFIG_FILES SrvOptions/Makefile" ;;
     "SrvTransMgr/Makefile") CONFIG_FILES="$CONFIG_FILES SrvTransMgr/Makefile" ;;
     "poslib/Makefile") CONFIG_FILES="$CONFIG_FILES poslib/Makefile" ;;
+    "nettle/Makefile") CONFIG_FILES="$CONFIG_FILES nettle/Makefile" ;;
     "$PORT_SUBDIR/Makefile") CONFIG_FILES="$CONFIG_FILES $PORT_SUBDIR/Makefile" ;;
     "AddrMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES AddrMgr/tests/Makefile" ;;
     "Options/tests/Makefile") CONFIG_FILES="$CONFIG_FILES Options/tests/Makefile" ;;

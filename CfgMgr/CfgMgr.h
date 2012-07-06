@@ -14,6 +14,7 @@
 #include "SmartPtr.h"
 #include "DUID.h"
 #include "IfaceMgr.h"
+#include "Key.h"
 
 /* shared by server and relay */
 #define RELAY_MIN_IFINDEX 1024
@@ -51,6 +52,9 @@ class TCfgMgr
     void setDDNSTimeout(unsigned int timeout) { DDNSTimeout_ = timeout; }
     unsigned int getDDNSTimeout() { return DDNSTimeout_; }
 
+    void addKey(SPtr<TSIGKey> key);
+    SPtr<TSIGKey> getKey();
+
  protected:
     SPtr<TDUID> DUID;
     bool setDUID(const std::string& duidFile, TIfaceMgr &ifaceMgr);
@@ -65,6 +69,9 @@ class TCfgMgr
     SPtr<TDUID> DUIDEnterpriseID;
     DNSUpdateProtocol DdnsProto;
     unsigned int DDNSTimeout_;
+
+    // for TSIG in DDNS
+    TSIGKeyList Keys_;
  private:
     
 };

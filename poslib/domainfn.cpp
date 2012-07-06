@@ -346,6 +346,21 @@ stl_string domainname::torelstring(const domainname &root) const {
   } else return tostring();
 }
 
+stl_string domainname::canonical () const {
+  unsigned char val[DOM_LEN];
+  int len = domlen (domain);
+  memcpy (val, domain, len);
+  unsigned char *lenlabel = val;
+  for (int t = 0; t < len; t++) {
+    if (val + t == lenlabel)
+      lenlabel += *lenlabel + 1;
+    else
+      val[t] = tolower (val[t]);
+  }
+  return std::string ((char*)val, len);
+}
+
+
 int domainname::ncommon(const domainname &dom) const {
   return domncommon(domain, dom.domain);
 }

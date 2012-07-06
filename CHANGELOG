@@ -18,6 +18,11 @@
   - Rel: Recent regression (complain about server and client on the same link) fixed
   - Srv: relays parameters (link, peer address) are now passed to the notify script
   - Cli: client no longer crashes, when client-AddrMgr.xml is empty (bug #245)
+  - Srv: Secure DNS Update (using TSIG) is now supported
+  - Srv: Expired leases are now removed from the DNS (using DNS Update)
+  - Srv: Many smaller FQDN related fixes
+  - Srv: Support for FQDN-related data in server-AddrMgr.xml improved
+  - Srv: Server no longer loads empty IAs or empty clients from server-AddrMgr.xml
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

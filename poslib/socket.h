@@ -133,7 +133,7 @@ unsigned char* get_ipv6_ptr(_addr *a);
 #endif
 
 /** Converts the _addr structure to a human-readable string. */
-stl_string addr_to_string(_addr *addr, bool include_port = true);
+stl_string addr_to_string(const _addr *addr, bool include_port = true);
 
 /* small watchset functions */
 
