@@ -19,6 +19,8 @@ std::string TSIGKey::getAlgorithmText() {
     switch (Digest_) {
     case DIGEST_HMAC_MD5:
 	return std::string("HMAC-MD5.SIG-ALG.REG.INT");
+    case DIGEST_HMAC_SHA1:
+	return std::string("HMAC-SHA1.SIG-ALG.REG.INT");
     case DIGEST_HMAC_SHA256:
 	return std::string("HMAC-SHA256.SIG-ALG.REG.INT");
     default:
@@ -39,17 +41,13 @@ void TSIGKey::setData(const std::string& base64encoded) {
     if (base64_decode(&ctx, Base64Data_.c_str(),
 		      Base64Data_.length(),
 		      raw, &raw_len)) {
-	Log(Debug) << "#### decode success, raw_length=" << raw_len << LogEnd;
     } else {
-	Log(Debug) << "#### decode failure, raw_length=" << raw_len << LogEnd;
     }
 
     Data_.resize(raw_len);
     for (unsigned i=0; i<raw_len; i++) {
 	Data_[i] = raw[i];
     }
-    Log(Debug) << "#### Base64Decoded: base64 len=" << Base64Data_.length()
-	       << ", raw len=" << raw_len << LogEnd;
 }
 
 std::string TSIGKey::getPackedData() {
