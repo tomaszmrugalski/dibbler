@@ -68,7 +68,8 @@ am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvOptions/libSrvOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libposlib.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libPoslib.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -266,7 +267,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvOptions/libSrvOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libposlib.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libPoslib.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 all: all-am
 
