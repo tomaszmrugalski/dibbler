@@ -508,11 +508,11 @@ uninstall-man: uninstall-man8
 	uninstall-man uninstall-man8 uninstall-nobase_dist_docDATA
 
 
-user: dibbler-user.pdf
-
 all:
 
 all-am:
+
+user: dibbler-user.pdf
 
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \

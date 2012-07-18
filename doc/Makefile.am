@@ -1,4 +1,9 @@
 
+all:
+
+all-am:
+
+
 PASS3=NO
 
 man8_MANS = man/dibbler-server.8 man/dibbler-client.8 man/dibbler-relay.8
@@ -31,10 +36,6 @@ DOXYGEN += dibbler-devel-07-debug.dox
 DOXYGEN += dibbler-devel-08-contrib.dox
 DOXYGEN += dibbler-devel-09-misc.dox
 DOXYGEN += dibbler-devel-bibl.dox
-
-all:
-
-all-am:
 
 dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
 	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \
