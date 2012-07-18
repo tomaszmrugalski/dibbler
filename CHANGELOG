@@ -24,6 +24,10 @@
   - Srv: Support for FQDN-related data in server-AddrMgr.xml improved
   - Srv: Server no longer loads empty IAs or empty clients from server-AddrMgr.xml
   - Experimental port to Solaris 11
+  - Srv: Cached entries for reserved address/prefix will no longer cause server to assign
+    reserved address/prefix to another client
+  - Srv: Fixed problem when reserved address/prefix was assigned to different client when
+    nearing addresses/prefixes depletion
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

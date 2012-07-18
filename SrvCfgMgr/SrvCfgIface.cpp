@@ -32,7 +32,7 @@ bool TSrvCfgIface::leaseQuerySupport() const
     return LeaseQuery_;
 }
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, 
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
                                                       TMsg * parent, bool quiet) {
 
     SPtr<TOptVendorData> remoteID;
@@ -91,6 +91,22 @@ bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
     return false;
 }
 
+/// @brief removes reserved addresses/prefixes from cache
+///
+/// @return number of removed entries
+unsigned int TSrvCfgIface::removeReservedFromCache() {
+    unsigned int cnt = 0;
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst_.first();
+    while (x=ExceptionsLst_.get()) {
+        if (x->getAddr())
+            cnt += SrvAddrMgr().delCachedEntry(x->getAddr(), TAddrIA::TYPE_IA);
+        if (x->getPrefix())
+            cnt += SrvAddrMgr().delCachedEntry(x->getPrefix(), TAddrIA::TYPE_PD);
+    }
+    return cnt;
+}
+
 /// @brief Checks if prefix is reserved.
 ///
 /// Iterates over exceptions list and checks if specified prefix is reserved.
@@ -103,7 +119,7 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (x->getAddr() == prefix)
+        if (*x->getPrefix() == *prefix)
             return true;
     }
     return false;
@@ -633,8 +649,8 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
 
         if (foo->isUsed()) {
             // client sent a hint, but it is used currently
-            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) && 
-		 (foo->getAddr()) && (*foo->getAddr() == *addr)) {
+            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) &&
+                 (foo->getAddr()) && (*foo->getAddr() == *addr)) {
                 Log(Debug) << "FQDN: This client (DUID=" << duid->getPlain()
                            << ") has already assigned name " << foo->getName()
                            <<" to its address " << foo->getAddr()->getPlain() << "." << LogEnd;
@@ -643,7 +659,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
 
             if ( (foo->getName() == hint) && (*foo->getDuid() == *duid) ) {
                 Log(Debug) << "FQDN: Client requested " << hint << ", it is already assinged to this client. Reusing." << LogEnd;
-		return foo;
+                return foo;
             }
             continue;
         }

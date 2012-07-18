@@ -212,14 +212,15 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
         SPtr<TSrvCfgAddrClass> pool = SrvCfgMgr().getClassByAddr(Iface, candidate);
         if (pool) {
 	    Log(Info) << "Cache: Cached address " << *candidate << " found. Welcome back." << LogEnd;
-	    if (SrvAddrMgr().addrIsFree(candidate)) {
+
+	    if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate)) {
                 if (assignAddr(candidate, pool->getPref(), pool->getValid(), quiet))
                     return true;
                 // WTF? Address is free, buy we can't assign it?
-                Log(Error) << "Failed to assign cached address that is empty. Strange." << LogEnd;
+                Log(Error) << "Failed to assign cached address that seems unused. Strange." << LogEnd;
 		return false;
             }
-	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used." << LogEnd;
+	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used or reserved." << LogEnd;
 	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
             return false;
 	} else {
@@ -231,7 +232,6 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
 
     return false;
 }
-
 
 /// @brief Tries to assign fixed (reserved) lease.
 ///

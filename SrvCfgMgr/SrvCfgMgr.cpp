@@ -85,7 +85,7 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
-    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still 
+    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still
                           // in constructor, so instance() singleton method can't be called
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
@@ -657,7 +657,7 @@ bool TSrvCfgMgr::prefixReserved(SPtr<TIPv6Addr> prefix) {
     SPtr<TSrvCfgIface> iface;
     SrvCfgIfaceLst.first();
     while (iface = SrvCfgIfaceLst.get()) {
-        if (prefixReserved(prefix))
+        if (iface->prefixReserved(prefix))
             return true;
     }
     return false;
@@ -708,9 +708,9 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
     }
 
     if (ptrIface->supportFQDN() && !ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
-	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
-		  << " Please disable FQDN support or add DNS servers." << LogEnd;
-	return false;
+        Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
+                  << " Please disable FQDN support or add DNS servers." << LogEnd;
+        return false;
     }
 
     SPtr<TSrvCfgAddrClass> ptrClass;
@@ -1006,6 +1006,18 @@ bool TSrvCfgMgr::reconfigureSupport()
     return reconfigure;
 }
 
+/// @brief removes reserved entries from the cache
+void TSrvCfgMgr::removeReservedFromCache() {
+    SPtr<TSrvCfgIface> iface;
+    SrvCfgIfaceLst.first();
+    unsigned int cnt = 0;
+    while (iface = SrvCfgIfaceLst.get()) {
+        cnt += iface->removeReservedFromCache();
+    }
+    if (cnt) {
+        Log(Info) << "Removed " << cnt << " leases from cache that are reserved." << LogEnd;
+    }
+}
 
 /**
  * sets pool usage counters (used during bringup, after AddrDB is loaded from file)

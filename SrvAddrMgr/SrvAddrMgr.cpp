@@ -716,8 +716,19 @@ bool TSrvAddrMgr::delCachedEntry(SPtr<TDUID> clntDuid, TAddrIA::TIAType type) {
  * @param type type of entry looked for (TYPE_IA for address or TYPE_PD for prefix)
  */
 void TSrvAddrMgr::addCachedEntry(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedAddr, TAddrIA::TIAType type) {
+
+    // if cache is disabled (size set to 0)
     if (!this->CacheMaxSize)
         return;
+
+    // if this address is reserved, don't add it to cache)
+    if ( (type == TAddrIA::TYPE_IA) && (SrvCfgMgr().addrReserved(cachedAddr)))
+        return;
+
+    // if this prefix is reserved, don't add it to cache)
+    if ( (type == TAddrIA::TYPE_PD) && (SrvCfgMgr().prefixReserved(cachedAddr)))
+        return;
+
     SPtr<TSrvCacheEntry> entry;
 
     // is there an entry for this client, delete it. New entry will be added at the end

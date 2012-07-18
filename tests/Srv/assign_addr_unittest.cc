@@ -311,7 +311,8 @@ TEST_F(ServerTest, SARR_inpool_reservation_negative2) {
 
     SPtr<TSrvOptIAAddress> rcvOptAddr = (Ptr*)rcvIA->getOption(OPTION_IAADDR);
     if (rcvOptAddr) {
-        FAIL() << "Client eceived " << rcvOptAddr->getAddr()->getPlain() << " addr, but expected NoAddrsAvail status." << endl;
+        FAIL() << "Client received " << rcvOptAddr->getAddr()->getPlain()
+               << " addr, but expected NoAddrsAvail status." << endl;
     }
 
     SPtr<TOptStatusCode> rcvStatusCode = (Ptr*)rcvIA->getOption(OPTION_STATUS_CODE);
