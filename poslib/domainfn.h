@@ -229,7 +229,7 @@ class domainname {
    * \brief length of binary representation
    *
 
-   * Returns the length, in bytes, also counting the terminating \r \0
+   * Returns the length, in bytes, also counting the terminating \\r \\0
    * character, of the binary representation of the domain name.
    * \return Length of binary representation
    */
@@ -468,7 +468,7 @@ bool domcmp(_cdomain dom1, _cdomain dom2);
  * \brief domain name concatenation
  *
  * Appends \p src to \p target. Since it does not re-allocate memory, Make sure
- * that \p target can hold at least #DOM_MAX bytes.
+ * that \p target can hold at least DOM_MAX bytes.
  * \param target Target
  * \param src Source
  */
@@ -478,7 +478,7 @@ void domcat(_domain target, _cdomain src);
  * \brief static copy of binary domain name
  *
  * Makes a static copy of a domain name. Make sure that \p res can hold at least
- * #DOM_MAX bytes.
+ * DOM_MAX bytes.
  * \param res Target
  * \param src Source
  * \sa domdup()
@@ -490,7 +490,7 @@ void domcpy(_domain res, _cdomain src);
  *
  * Creates a domain name containing just one label: the string argument given.
  * If a length is given, only the first few characters of the string are used.
- * Make sure that \p dom can hold at least #DOM_MAX bytes.
+ * Make sure that \p dom can hold at least DOM_MAX bytes.
  * \param dom Result
  * \param label String label
  * \param len If given, length of string label (default: strlen(label)).
@@ -522,7 +522,7 @@ int dom_nlabels(_cdomain dom);
  *
  * Returns a label of the domain name in human-readable form.
  * \param dom The domain name
- * \param label Label index (0 <= label < #dom_nlabels(dom))
+ * \param label Label index (0 <= label < dom_nlabels(dom))
  * \return The label
  * \sa dom_nlabels()
  */
@@ -533,7 +533,7 @@ stl_string dom_label(_cdomain dom, int label);
  *
  * Returns a label of the domain name as a pointer to the position in the domain.
  * \param dom The domain name
- * \param label Label index (0 < label < #dom_nlabels(dom))
+ * \param label Label index (0 < label < dom_nlabels(dom))
  * \return The label
  * \sa dom_nlabels()
  */
@@ -545,7 +545,8 @@ _domain dom_plabel(_cdomain dom, int label);
  * Returns the number of labels the two domain names have in common at their
  * ends; for example this returns 2 for \c www.acdam.net and
  * \c www.foo.acdam.net .
- * \param dom The domain name to check with
+ * \param dom1 The domain name to check with
+ * \param dom2 The domain name to check against
  * \return Number of common labels
  * \sa nlabels()
  */

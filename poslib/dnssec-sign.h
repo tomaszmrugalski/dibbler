@@ -87,7 +87,7 @@ void tsig_from_string (DnsRR*& tsig_rr, stl_string& sign_key, const char* keystr
  * will be used.
  *
  * \param message The message to set TSIG parameters of
- * \param string  The key string
+ * \param keystring The key string
  */
 void tsig_from_string (DnsMessage *message, const char *keystring);
 

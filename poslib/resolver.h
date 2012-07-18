@@ -165,7 +165,12 @@ class pos_resolver {
    * truncated answer will be tried using TCP. This function will start
    * querying at a random place in the servers list; after that, it will run
    * through all servers listed in the order in which you specify them.
+   *
+   * \param q 
+   * \param a likely an answer
    * \param servers List of servers to query
+   * \param flags
+   *
    * \return The address of the server that returned this answer
    * \sa query()
    */
@@ -290,7 +295,9 @@ class pos_cliresolver : public pos_resolver {
   virtual ~pos_cliresolver();
   
   void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL);
+
   _addr query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL);
+
   /*!
    * \brief low-level resolver function for sending a message
    *

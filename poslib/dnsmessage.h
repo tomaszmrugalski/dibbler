@@ -533,7 +533,7 @@ class DnsMessage {
   /*!
    * \brief create answer message
    * TODO: rename?
-   * Creates a DNS message that has the same sign key, so that #read_data
+   * Creates a DNS message that has the same sign key, so that read_data
    * can check whether it is an answer to the DNS message.
    * TODO: note: not for clients
    * \return the answer message
@@ -549,21 +549,22 @@ unsigned char *uint16_buff(uint16_t val);
 unsigned char *uint32_buff(uint32_t val);
 unsigned char *uint48_buff(u_int48 val);
 
-/*!
- * \brief create a query message
- *
- * Creates a Dns question message which can be used to query a DNS server.
- * This message is dynamically allocated, so you'll have to delete it yourself.
- * \param QNAME Domain name to query. See DnsQuestion::QNAME.
- * \param QTYPE Type of RR to query. See DnsQuestion::QTYPE for more information.
- *              Defaults to \p DNS_TYPE_A .
- * \param RD whether we want the server to do recursion. See DnsMessage::RD.
- *           Defaults to \p true .
- * \param QCLASS The class to query in. See DnsQuestion::QCLASS. Defaults to
- *               \p CLASS_IN .
- * \return DNS message containing the query.
- */
-DnsMessage *create_query(domainname QNAME, uint16_t QTYPE = DNS_TYPE_A, bool RD = true, uint16_t QCLASS = CLASS_IN);
+
+/// @brief create a query message
+///
+/// Creates a Dns question message which can be used to query a DNS server.
+/// This message is dynamically allocated, so you'll have to delete it yourself.
+///
+/// @param qname Domain name to query. See DnsQuestion::QNAME.
+/// @param QTYPE Type of RR to query. See DnsQuestion::QTYPE for more information.
+///             Defaults to \p DNS_TYPE_A .
+/// @param RD whether we want the server to do recursion. See DnsMessage::RD.
+///          Defaults to \p true .
+/// @param QCLASS The class to query in. See DnsQuestion::QCLASS. Defaults to
+///              \p CLASS_IN .
+/// @return DNS message containing the query.
+DnsMessage *create_query(domainname qname, uint16_t QTYPE = DNS_TYPE_A, bool RD = true, 
+                         uint16_t QCLASS = CLASS_IN);
 
 
 /*!
@@ -647,7 +648,13 @@ enum  _answer_type {
 //! Returns the answer type of an answer message for a given query
 _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtype);
 
-//! Returns true if the given RRset is present in the DNS message section
+/// @brief Returns true if the given RRset is present in the DNS message section
+///
+/// @param rrlist a list of Resource Records
+/// @param QNAME the name that is looked for
+/// @param QTYPE type of query
+///
+/// @return true, if requested domainname exists, false otherwise
 bool has_rrset(stl_list(DnsRR) &rrlist, domainname &QNAME, uint16_t QTYPE = QTYPE_ANY);
 
 #endif /* __POSLIB_DNSMESSAGE_H */
