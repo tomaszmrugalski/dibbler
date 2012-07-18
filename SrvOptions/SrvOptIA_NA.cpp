@@ -679,12 +679,23 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     if (pool->clntSupported(ClntDuid, ClntAddr, queryMsg) &&
         pool->getAssignedCount() < pool->getClassMaxLease() ) {
 
-        do {
-            candidate = pool->getRandomAddr();
-        } while (!SrvAddrMgr().addrIsFree(candidate));
-        return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
-    }
+        int safety = 0;
 
+        while (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            candidate = pool->getRandomAddr();
+
+            if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate))
+                break;
+
+            safety++;
+        }
+        if (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
+        } else {
+            Log(Error) << "Unable to randomly choose address after " << SERVER_MAX_IA_RANDOM_TRIES << " tries." << LogEnd;
+            return false;
+        }
+    }
     return false;
 }
 

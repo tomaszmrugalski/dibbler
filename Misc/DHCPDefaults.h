@@ -48,6 +48,10 @@
 #define SERVER_DEFAULT_TA_VALID_LIFETIME 7200
 #define SERVER_DEFAULT_CACHE_SIZE 1048576   /* cache size, specified in bytes */
 
+#define SERVER_MAX_IA_RANDOM_TRIES 100
+#define SERVER_MAX_TA_RANDOM_TRIES 100
+
+
 // see DHCPConst.h for available enums
 #define SERVER_DEFAULT_UNKNOWN_FQDN UNKNOWN_FQDN_REJECT
 
