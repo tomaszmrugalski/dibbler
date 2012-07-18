@@ -21,7 +21,7 @@ Prefix delegation is a mechanism that allows two routers to delegate
   the subscriber's internal network and the service provider's core
   network.}
 
-To configure server to provide prefixes, a PD pool and a client 
+To configure server to provide prefixes, a PD pool and a client
 prefixes' length must be defined. An example section below assigns
 2001:db8::/32 pool to be managed by this server. From this pool,
 server will assign /48 prefixes to the clients. For example, client
@@ -117,7 +117,7 @@ deal with encapsulated (i.e. relayed) traffic.
 
 To avoid confusion during reference to a specific link (i.e. eth0 on
 the relay may be different link than eth0 on the server), each link
-must be referred to using its unique interface-id. It is essential to 
+must be referred to using its unique interface-id. It is essential to
 use the same indentifier in the relay
 configuration as well as in the server, so both will refer to the same
 link using the same number. See section \ref{example-server-relay1} for
@@ -175,6 +175,12 @@ prefixes. It is not supported for temporary addresses.
 
 \subsection{Routing configuration}
 \label{feature-routing}
+
+\textbf{Warning:} Due to objections in IETF by a small, but vocal group
+of opponents, further standardization process
+of \cite{draft-route-option} draft in IETF was abandoned. It will not
+be published as RFC document. Consider this feature a private extension.
+
 Until recently, DHCPv6 protocol did not define a way to provision
 routing configuration information to clients. The only way to deliver
 this information to hosts was to use Router Advertisment mechanism in
@@ -207,7 +213,7 @@ default route, any reasonable number of specific routes and routes
 available on link. This feature was introduced in Dibbler
 0.8.1RC1. Both server and client support it. Dibbler sources come with
 examples config files. See \verb+doc/example/server-route.conf+
-and \verb+doc/example/client-route.conf+ for details. 
+and \verb+doc/example/client-route.conf+ for details.
 
 \Note This specification is not approved yet. It will change in the
 future. In particular, IANA have not assigned specific option values
@@ -1336,10 +1342,10 @@ configuration parameters. For example computers from the accouting
 department in a corporate network may be configured to be in a
 different subdomain. Is is possible to specify that for particular
 client different configuration options should be provided. Each client
-is identified by its DUID. This mechanism is called \emph{per client
-  configuration}, but it is sometimes referred to as
-\emph{exceptions}. Support for per client prefix configuration has
-been added in 0.8.2RC1.
+is identified by its DUID, by Remote-ID or by link-local address. This
+mechanism is called \emph{per client configuration}, but it is
+sometimes referred to as \emph{exceptions}. Support for per client
+prefix configuration has been added in 0.8.2RC1.
 
 See section \ref{example-server-exceptions} for server configuration
 examples.

@@ -131,8 +131,8 @@ next-hop address-of-a-router
 \label{server-scope-client}
 Server allows defining custom parameters on a per-host basis. See
 Sections \ref{feature-exceptions} and \ref{example-server-exceptions}
-for details. There are two types of reservations: DUID-based and
-remote-id based. Following syntax can be used:
+for details. There are three types of reservations: DUID-based,
+remote-id based and link-local based. Following syntax can be used:
 
 \begin{lstlisting}
 client duid 00:00:00:00:00
@@ -147,6 +147,17 @@ client duid 00:00:00:00:00
 
 \begin{lstlisting}
 client remote-id 5-0x01020304
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+client link-local fe80::1234:56ff:fe78:9abc
 {
     [address 2001:db8:1::]
     [prefix 2001:db8:1::/64]
@@ -1115,6 +1126,22 @@ example in this section.
 Note that per client reservation was significantly refactored after
 0.8.2, so its stability is not yet confirmed.
 
+\textbf{Warning:} Reservation by link-local address is not always
+reliable and DUID reservations should be used instead, if
+possible. Typically for directly connected clients (i.e. without using
+relays) server can obtain client's link local address. For relayed
+traffic, that information is recorded by the first (closest to the
+client) relay and stored in \msg{RELAY-FORW}, so in most cases this
+should work. However, there are two cases when link-local address
+reservation will fail. The first one is when client is using IPv6
+privacy extensions (\cite{rfc4941}). With privacy extensions enabled,
+client may use its temporary random addresses that are changing over
+time. Another case when such reservation could fail is when server
+allows unicast traffic. Once clients get their addresses, they can
+send \msg{RENEW} messages over unicast, using their global address as
+a source address. In such case link-local address will not ever be
+used in the transmission, so the server can get confused.
+
 \begin{lstlisting}
 # server.conf
 # Example server configuration file: per-client configuaration
@@ -1156,22 +1183,24 @@ iface "eth0" {
 
   # this client should receive default domain and dns-server,
   # but different vendor-spec info
+  # Both DUID forms are accepted (0x1234... and 12:34...)
   client duid 0x0001000044e8ef3400085404a324
   {
         option vendor-spec 1111-57-0x01020304
   }
 
+  # Parameters can be reserved based on remote-id option
   client remote-id 5-0x01020304
   {
         address 2001:db8:1::0102:0304
         option domain our.special.remoteid.client.org
   }
 
-  #  client link-local fe80::1:2:3:4
-  #  {
-  #      option domain link.local.detected.interop.test.com
-  #  }
-
+  # Parameters can be reserved based on link-local address
+  client link-local fe80::1:2:3:4
+  {
+       option domain link.local.detected.interop.test.com
+  }
 }
 
 \end{lstlisting}
