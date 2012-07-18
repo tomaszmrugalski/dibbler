@@ -139,6 +139,10 @@ bool ServerTest::createMgrs(std::string config) {
     addrmgr_ = new NakedSrvAddrMgr("testdata/server-AddrMgr.xml", false); // don't load db
     transmgr_ = new NakedSrvTransMgr("testdata/server-TransMgr.xml");
 
+    if (cfgmgr_->isDone()) {
+        ADD_FAILURE() << "CfgMgr reported problems and is shutting down.";
+        return false;
+    }
 
     cfgmgr_->firstIface();
     while (cfgIface_ = cfgmgr_->getIface()) {
