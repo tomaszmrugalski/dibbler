@@ -249,22 +249,8 @@ void txt_to_email(_domain target, const char *src, _cdomain origin = NULL);
  */
 void txt_to_dname(_domain target, const char *src, _cdomain origin = NULL);
 
-/**
- * \brief convert text to address
- *
- * Converts the text pointed to by addr to an _addr address structure. If
- * the client parameter is set to true, the default IP is \p 127.0.0.1, else
- * it is \p 0.0.0.0 . Addresses can be given by only an address, only a port,
- * or a combination separated by a \p \# . Being based on the txt_to_ip and
- * txt_to_ipv6 functions, this function also supports the literval values
- * \c any , \c local, \c :any and \c :local .
- *
- * \param ret Memory to store result in
- * \param addr Text describing the address
- * \param default_port Default port if none is given
- * \param is_client Influences default address
- */
-void txt_to_addr(_addr *ret, const char *addr, int default_port = DNS_PORT, bool is_client = true);
+void txt_to_addr(_addr *ret, const char *addr, int default_port = DNS_PORT,
+                 bool is_client = true);
 
 /*!
  * \brief convert text to LOC RR
@@ -281,7 +267,7 @@ void txt_to_loc(unsigned char *res, char *&src);
  * \brief convert text to DNS class
  *
  * Converts text to one of the class constants supported by DNS (CLASS_IN,
- * CLASS_HS, CLASS_CH, CLASS_CS), or, if #allow_q is set, possibly to a
+ * CLASS_HS, CLASS_CH, CLASS_CS), or, if allow_q is set, possibly to a
  * supported QCLASS (CLASS_NONE or CLASS_ANY). Only symbolic constants are
  * allowed; numeric values result in an exception.
  * \param str String to convert
