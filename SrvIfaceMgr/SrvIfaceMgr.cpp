@@ -156,7 +156,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
-    int msgtype;
 
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
@@ -167,8 +166,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         }
 
         // check message type
-        msgtype = buf[0];
-        //SPtr<TMsg> ptr;
+        int msgtype = buf[0];
+
         SPtr<TSrvIfaceIface> ptrIface;
 
         // get interface
@@ -515,7 +514,7 @@ void TSrvIfaceMgr::redetectIfaces() {
     if_list_release(ifaceList); // allocated in pure C, and so release it there
 }
 
-void TSrvIfaceMgr::instanceCreate( const std::string xmlDumpFile )
+void TSrvIfaceMgr::instanceCreate(const std::string& xmlDumpFile)
 {
     if (Instance) {
       Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;

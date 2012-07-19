@@ -43,7 +43,7 @@ class TRelTransMgr
     int    getCtrlIface();
     
   private:
-    TRelTransMgr(const std::string xmlFile);
+    TRelTransMgr(const std::string& xmlFile);
     static TRelTransMgr * Instance;
     std::string XmlFile;
     bool IsDone;

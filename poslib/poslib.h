@@ -84,10 +84,10 @@
  * \include host.cpp
  *
  * This example uses the following Poslib functionality:
- *  - #txt_to_addr() to interpret the argument specifying the server address
- *  - #create_query() to create a query DnsMessage object
+ *  - txt_to_addr() to interpret the argument specifying the server address
+ *  - create_query() to create a query DnsMessage object
  *  - pos_cliresolver::query() to query the DNS server
- *  - #get_a_record() to extract the A record from the answer
+ *  - get_a_record() to extract the A record from the answer
  *
  * Also, note the use of the \p try...catch block with the PException object
  * we used here. Any error that might occur will be caught by this block and

@@ -50,7 +50,7 @@ bool txt_to_bool(const char *buff);
  * also handle negative amounts.
  * \param buff Buffer containing text
  * \return Numeric value of the buffer
- * \sa #txt_to_int
+ * \sa \ref txt_to_int
  */
 int txt_to_negint(const char *buff);
 
@@ -61,7 +61,7 @@ int txt_to_negint(const char *buff);
  * support negative numbers.
  * \param buff Buffer containing text
  * \return Numeric value of the buffer
- * \sa #txt_to_negint
+ * \sa \ref txt_to_negint
  */
 int txt_to_int(const char *buff);
 
@@ -89,7 +89,7 @@ int txt_to_ip(unsigned char ip[4], const char *buff, bool do_portion = false);
  * \brief Convert text to an IP range
  *
  * Converts the buffer to an IPv4 IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_iprange).
+ * \param iprange Result buffer (should be of size \ref sz_iprange).
  * \param val String value describing the range
  */
 void txt_to_iprange(unsigned char *iprange, const char *val);
@@ -101,7 +101,7 @@ void txt_to_iprange(unsigned char *iprange, const char *val);
  * \param iprange The IP range
  * \param ip The IPv4 number
  * \return \p true if the ip is within the range
- * \sa #txt_to_ip, #txt_to_iprange
+ * \sa \ref txt_to_ip, \ref txt_to_iprange
  */
 bool iprange_matches(const unsigned char *iprange, const unsigned char *ip);
 
@@ -131,7 +131,7 @@ int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion = fals
  * \brief Convert text to an IPv6 range
  *
  * Converts the buffer to an IPv6 IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_ip6range).
+ * \param iprange Result buffer (should be of size \ref sz_ip6range).
  * \param val String value describing the range
  */
 void txt_to_ip6range(const char *iprange, const char *val);
@@ -143,7 +143,7 @@ void txt_to_ip6range(const char *iprange, const char *val);
  * \param iprange The IPv6 range
  * \param ip The IPv6 number
  * \return \p true if the ip is within the range
- * \sa #txt_to_ipv6, #txt_to_ip6range
+ * \sa \ref txt_to_ipv6, \ref txt_to_ip6range
  */
 bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip);
 
@@ -158,7 +158,7 @@ bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip);
  * \brief Convert text to an address range
  *
  * Converts the buffer to an address IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_addrrange).
+ * \param iprange Result buffer (should be of size \ref sz_addrrange).
  * \param val String value describing the range
  */
 void txt_to_addrrange(unsigned char *iprange, const char *val);
@@ -170,7 +170,7 @@ void txt_to_addrrange(unsigned char *iprange, const char *val);
  * \param iprange The address range
  * \param a The address
  * \return \p true if the ip is within the range
- * \sa #txt_to_addrrange
+ * \sa \ref txt_to_addrrange
  */
 bool addrrange_matches(const unsigned char *iprange, _addr *a);
 

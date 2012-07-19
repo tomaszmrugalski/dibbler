@@ -142,7 +142,7 @@ char incr_mask[8] = { 0, 128, 192, 224, 240, 248, 252, 254 };
 void txt_to_iprange(unsigned char *iprange, const char *val) {
   char buff[128];
   char *ptr;
-  int x, z;
+  int x;
   if (strcmpi(val, "any") == 0) {
     memset(iprange, 0, 8);
     return;
@@ -160,6 +160,7 @@ void txt_to_iprange(unsigned char *iprange, const char *val) {
       memset(iprange, 0, 4);
       x = txt_to_int(ptr + 1);
       if (x > 128) throw PException("IPv6 mask value too long");
+      int z;
       for (z = 0; x >= 8; x -= 8) iprange[z++] = 255;
       iprange[z] = incr_mask[x];
     }
@@ -266,7 +267,7 @@ int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion) {
 void txt_to_ip6range(unsigned char *iprange, const char *val) {
   char buff[128];
   char *ptr;
-  int x, z;
+  int x;
   if (strcmpi(val, "any") == 0) {
     memset(iprange, 0, 32);
     return;
@@ -284,6 +285,7 @@ void txt_to_ip6range(unsigned char *iprange, const char *val) {
       memset(iprange, 0, 16);
       x = txt_to_int(ptr + 1);
       if (x > 128) throw PException("IPv6 mask value too long");
+      int z;
       for (z = 0; x >= 8; x -= 8) iprange[z++] = 255;
       iprange[z] = incr_mask[x];
     }
@@ -485,26 +487,25 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
  * \param is_client Influences default address
  */
 void txt_to_addr(_addr *ret, const char *addr, int default_port, bool is_client) {
-  char taddr[128];
-  char *ptr = strchr((char *)addr, '#');
-  int x;
-  if (ptr) {
-    if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
-    memcpy(taddr, addr, (unsigned)(ptr - addr));
-    taddr[ptr-addr] = '\0';
-    txt_to_addr(ret, taddr, default_port, is_client);
-    addr_setport(ret, txt_to_int(ptr + 1));
-  } else {
-    try {
-      x = txt_to_int(addr);
-      if (is_client)
-        getaddress(ret, "127.0.0.1", x);
-      else
-        getaddress(ret, "0.0.0.0", x);
-    } catch (PException p) {
-      getaddress(ret, addr, default_port);
+    char taddr[128];
+    char *ptr = strchr((char *)addr, '#');
+    if (ptr) {
+        if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
+        memcpy(taddr, addr, (unsigned)(ptr - addr));
+        taddr[ptr-addr] = '\0';
+        txt_to_addr(ret, taddr, default_port, is_client);
+        addr_setport(ret, txt_to_int(ptr + 1));
+    } else {
+        try {
+            int x = txt_to_int(addr);
+            if (is_client)
+                getaddress(ret, "127.0.0.1", x);
+            else
+                getaddress(ret, "0.0.0.0", x);
+        } catch (PException p) {
+            getaddress(ret, addr, default_port);
+        }
     }
-  }
 }
 
 u_int32 poslib_degstr(char *&src, char pre, char post) {

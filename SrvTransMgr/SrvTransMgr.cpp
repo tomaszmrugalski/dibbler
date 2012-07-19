@@ -471,7 +471,7 @@ TSrvTransMgr::~TSrvTransMgr() {
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
 
-void TSrvTransMgr::instanceCreate( const std::string config )
+void TSrvTransMgr::instanceCreate(const std::string& config)
 {
   if (!Instance)
     Instance = new TSrvTransMgr(config);
