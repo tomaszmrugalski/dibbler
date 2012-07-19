@@ -188,9 +188,9 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
                         client->setSPI(SPI);
                 }
             }
+            break;
 #endif
 
-        break;
         case OPTION_VENDOR_OPTS:
             ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
             break;

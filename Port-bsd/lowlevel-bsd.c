@@ -518,6 +518,7 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
             break;
         if (ret < 0) {
             free(retval);
+            close(fd);
             return NULL;
         }
         offset += ret;
