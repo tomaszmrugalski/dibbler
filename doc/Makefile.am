@@ -92,7 +92,7 @@ version.tex:
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
-	@rm -f *.aux *.idx *.log *.toc *.out *~ *.ps *.dvi *.tmp version.tex
+	@rm -f *.aux *.idx *.log *.toc *.out *~ *.ps *.dvi *.tmp
 
 clobber: clean
 	@rm -f *.pdf
