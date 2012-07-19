@@ -10,20 +10,13 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-
 #include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h"
 #include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Msg.h"
 #include "SrvCfgMgr.h"
 
