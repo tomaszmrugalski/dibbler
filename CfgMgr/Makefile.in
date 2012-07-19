@@ -56,8 +56,7 @@ am__v_at_0 = @
 libCfgMgr_a_AR = $(AR) $(ARFLAGS)
 libCfgMgr_a_LIBADD =
 am_libCfgMgr_a_OBJECTS = libCfgMgr_a-CfgMgr.$(OBJEXT) \
-	libCfgMgr_a-HostID.$(OBJEXT) libCfgMgr_a-HostRange.$(OBJEXT) \
-	libCfgMgr_a-TimeZone.$(OBJEXT)
+	libCfgMgr_a-HostID.$(OBJEXT) libCfgMgr_a-HostRange.$(OBJEXT)
 libCfgMgr_a_OBJECTS = $(am_libCfgMgr_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -279,7 +278,7 @@ SUBDIRS = . $(am__append_1)
 noinst_LIBRARIES = libCfgMgr.a
 libCfgMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/IfaceMgr
 libCfgMgr_a_SOURCES = CfgMgr.cpp CfgMgr.h FlexLexer.h HostID.cpp \
-	HostID.h HostRange.cpp HostRange.h TimeZone.cpp TimeZone.h
+	HostID.h HostRange.cpp HostRange.h
 all: all-recursive
 
 .SUFFIXES:
@@ -331,7 +330,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCfgMgr_a-CfgMgr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCfgMgr_a-HostID.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCfgMgr_a-HostRange.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCfgMgr_a-TimeZone.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -404,22 +402,6 @@ libCfgMgr_a-HostRange.obj: HostRange.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='HostRange.cpp' object='libCfgMgr_a-HostRange.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCfgMgr_a-HostRange.obj `if test -f 'HostRange.cpp'; then $(CYGPATH_W) 'HostRange.cpp'; else $(CYGPATH_W) '$(srcdir)/HostRange.cpp'; fi`
-
-libCfgMgr_a-TimeZone.o: TimeZone.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libCfgMgr_a-TimeZone.o -MD -MP -MF $(DEPDIR)/libCfgMgr_a-TimeZone.Tpo -c -o libCfgMgr_a-TimeZone.o `test -f 'TimeZone.cpp' || echo '$(srcdir)/'`TimeZone.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libCfgMgr_a-TimeZone.Tpo $(DEPDIR)/libCfgMgr_a-TimeZone.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TimeZone.cpp' object='libCfgMgr_a-TimeZone.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCfgMgr_a-TimeZone.o `test -f 'TimeZone.cpp' || echo '$(srcdir)/'`TimeZone.cpp
-
-libCfgMgr_a-TimeZone.obj: TimeZone.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libCfgMgr_a-TimeZone.obj -MD -MP -MF $(DEPDIR)/libCfgMgr_a-TimeZone.Tpo -c -o libCfgMgr_a-TimeZone.obj `if test -f 'TimeZone.cpp'; then $(CYGPATH_W) 'TimeZone.cpp'; else $(CYGPATH_W) '$(srcdir)/TimeZone.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libCfgMgr_a-TimeZone.Tpo $(DEPDIR)/libCfgMgr_a-TimeZone.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TimeZone.cpp' object='libCfgMgr_a-TimeZone.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCfgMgr_a-TimeZone.obj `if test -f 'TimeZone.cpp'; then $(CYGPATH_W) 'TimeZone.cpp'; else $(CYGPATH_W) '$(srcdir)/TimeZone.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
