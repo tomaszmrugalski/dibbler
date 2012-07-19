@@ -87,8 +87,8 @@ class pos_resolver {
   /*!
    * \brief default constructor
    *
-   * This constructor intializes the resolver, and sets the ::udp_tries,
-   * ::n_udp_tries and ::tcp_timeout values to their defaults.
+   * This constructor intializes the resolver, and sets the udp_tries,
+   * n_udp_tries and tcp_timeout values to their defaults.
    */
   pos_resolver();
 

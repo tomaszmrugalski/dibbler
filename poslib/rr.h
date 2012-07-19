@@ -162,7 +162,7 @@ char *rrtype_getname(u_int16 type);
  * This function tries to return the QTYPE code for a given string, that can
  * either be a RR, "any", "ixfr", "axfr", "maila" or "mailb", or a numeric
  * value.
- * \param type The query type
+ * \param name 
  * \param allow_qtype If set to false (default true), only allow common types
  * \return The 16-bit QTYPE value for the given string
  */
@@ -236,8 +236,8 @@ stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENGTH)
 /*!
  * \brief Convert RR property to strings
  * 
- * Converts a RR property as in #rr_type.property, to string.
- * \param type     Property type (see #rr_type.property)
+ * Converts a RR property as in rr_type.property, to string.
+ * \param type     Property type (see rr_type.property)
  * \param RDATA    RR data
  * \param RDLENGTH Lenth of rest of RR
  * \param zone     Zone to make domains relative to
@@ -267,7 +267,7 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENG
  * number of spaces and tabs. For example, MX data might be "10 mail.yo.net.".
  * You can specify an origin to which domain names are considered relative by
  * means of the origin parameter.
- * \param RRTYTPE Type of the RR
+ * \param rrtype Type of the RR
  * \param data The text describing the RR
  * \param origin If given, the domain name relative domain names are considered
                  relative to. This should be a binary domain name, like the
@@ -276,7 +276,7 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENG
  * \return Binary data describing the RR
  * \sa rr_tostring()
  */
-stl_string rr_fromstring(u_int16 RRTYPE, const char *data, _domain origin = (unsigned char*)"");
+stl_string rr_fromstring(u_int16 rrtype, const char *data, _domain origin = (unsigned char*)"");
 
 /*!
  * \brief convert a string to binary RR data
@@ -287,7 +287,7 @@ stl_string rr_fromstring(u_int16 RRTYPE, const char *data, _domain origin = (uns
  * number of spaces and tabs. For example, MX data might be "10 mail.yo.net.".
  * You can specify an origin to which domain names are considered relative by
  * means of the origin parameter.
- * \param RRTYTPE Type of the RR
+ * \param RRTYPE Type of the RR
  * \param data The text describing the RR
  * \param origin If given, the domain name relative domain names are considered
                  relative to. This should be a binary domain name, like the

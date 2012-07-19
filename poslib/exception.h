@@ -80,6 +80,7 @@ class PException {
    * \param p Exception whose message is appended to the error message
    */
   PException(const char *_message, PException &p);
+
   /*!
    * \brief constructor with format string
    *
@@ -95,7 +96,7 @@ class PException {
    * \param message The format string message
    * \param ... Arguments for the format string
    */
-  PException(bool formatted, const char *_message, ...);
+  PException(bool formatted, const char *message, ...);
   /*!
    * \brief destructor
    *

@@ -491,10 +491,10 @@ u_int48 uint48_value(const unsigned char *buff) {
   return uint32_value(buff) * 65536 + uint16_value(buff + 4);
 }
 
-DnsMessage *create_query(domainname QNAME, uint16_t QTYPE, bool RD, uint16_t QCLASS) {
+DnsMessage *create_query(domainname qname, uint16_t qtype, bool rd, uint16_t qclass) {
   DnsMessage *ret = new DnsMessage();
-  ret->RD = RD;
-  ret->questions.push_front(DnsQuestion(QNAME, QTYPE, QCLASS));
+  ret->RD = rd;
+  ret->questions.push_front(DnsQuestion(qname, qtype, qclass));
   return ret;
 }
 

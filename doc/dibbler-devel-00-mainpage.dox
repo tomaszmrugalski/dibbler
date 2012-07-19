@@ -53,8 +53,11 @@
  *   - @subpage tests
  * - @subpage faq
  * - @subpage tips
- * - @subpage acknowledgements
+ * - @subpage poslib
+ *   - @subpage poslibIntro
+ *   - @subpage poslibClient
  * - @subpage bibliography
+ * - @subpage acknowledgements
  *
  * Note: some of the links below may not work if corresponding logs are not available.<br/>
  *

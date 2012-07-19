@@ -24,7 +24,7 @@
 /*! \file poslib/dnsdefs.h
  * \brief DNS definitions
  *
- * This file contains #defines for the various RR types, QTYPEs, RCODEs,
+ * This file contains \#defines for the various RR types, QTYPEs, RCODEs,
  * OPCODEs and such, as mostly defined in RFC 1035.
  */
 

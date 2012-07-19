@@ -114,7 +114,7 @@ class domainname {
    * contructor takes a boolean value as well to prevent it from being
    * ambiguous. The value of the boolean is silently ignored.
    * \param is_binary Ignored
-   * \param  The binary domain name
+   * \param dom The binary domain name
    */
   domainname(bool is_binary, const unsigned char* dom);
 
@@ -270,7 +270,7 @@ class domainname {
    *
    * Returns a label in the domain name. This is just plain human-readable
    * text. It does not contain dots.
-   * \param Label index (0 <= ix < nlabels())
+   * \param ix Label index (0 <= ix < nlabels())
    * \return The label at the specified index
    * \sa nlabels()
    */
@@ -304,7 +304,7 @@ class domainname {
    * origin. If the domain is not a child of the given root, the complete,
    * absolte domain name is returned. If we are the domain name queried
    * itself, an "@" is returned.
-   * \param Domain name this domain is relative to
+   * \param root Domain name this domain is relative to
    * \return Relative string representation
    * \sa tostring()
    */
