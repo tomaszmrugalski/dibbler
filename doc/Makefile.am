@@ -97,4 +97,4 @@ clean:
 clobber: clean
 	@rm -f *.pdf
 
-.PHONY: version.tex devel cppcheck compile.log check.log distcheck.log
+.PHONY: devel cppcheck compile.log check.log distcheck.log

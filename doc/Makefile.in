@@ -574,7 +574,7 @@ clean:
 clobber: clean
 	@rm -f *.pdf
 
-.PHONY: version.tex devel cppcheck compile.log check.log distcheck.log
+.PHONY: devel cppcheck compile.log check.log distcheck.log
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
