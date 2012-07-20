@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  *          Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
@@ -19,7 +19,7 @@
 #include <limits.h>
 #include "AddrMgr.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;

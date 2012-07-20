@@ -10,7 +10,7 @@
 
 #include "ClntParsGlobalOpt.h"
 #include "Portable.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;

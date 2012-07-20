@@ -28,5 +28,4 @@
 
 #include "md5.h"
 
-const struct nettle_hash nettle_md5
-= _NETTLE_HASH(md5, MD5);
+const struct nettle_hash nettle_md5 = _NETTLE_HASH(md5, MD5);

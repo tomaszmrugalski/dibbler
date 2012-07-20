@@ -10,17 +10,14 @@
  */
 
 #include <limits.h>
+#include <string.h>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
-#include <string.h>
-
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 using namespace std;
 

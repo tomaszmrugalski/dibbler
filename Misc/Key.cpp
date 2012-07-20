@@ -8,8 +8,10 @@
 
 #include <string.h>
 #include "Key.h"
-#include "base64.h"
 #include "Logger.h"
+extern "C" {
+#include "base64.h"
+}
 
 TSIGKey::TSIGKey(const std::string& name)
     : Digest_(DIGEST_NONE), Name_(name), Fudge_(300) {

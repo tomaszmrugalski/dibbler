@@ -14,8 +14,10 @@
 #include <cstdlib>
 #include <vector>
 #include <stdio.h>
+#ifndef WIN32
 #include <sys/socket.h>
 #include <net/if.h>
+#endif
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "SrvIfaceMgr.h"

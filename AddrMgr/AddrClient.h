@@ -17,6 +17,7 @@ class TAddrClient;
 #include "Container.h"
 #include "AddrIA.h"
 #include "DUID.h"
+#include "Portable.h"
 
 class TAddrClient
 {

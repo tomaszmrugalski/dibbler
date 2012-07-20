@@ -13,7 +13,6 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")" */
 #define DIBBLER_VERSION "0.8.2-git"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
@@ -49,6 +48,11 @@
 #ifndef uint32_t
 #define uint32_t unsigned int
 #endif
+
+#ifndef uint64_t
+#define uint64_t unsigned long long int
+#endif
+
 
 //#ifndef uint64_t
 //#define uint64_t unsigned long long int
@@ -199,43 +203,29 @@ struct link_state_notify_t
 #define BULKLQ_MAX_CONNS 10
 #define BULKLQ_TIMEOUT 300
 
+// #define LOGLEVEL          0
+
 /* ********************************************************************** */
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */
 /* those flags are used to parse flags in the structure
-   returned by if_list_get(). They are highly system specific. */
-#define LOGLEVEL          0
-
+   returned by if_list_get(). They are highly system specific.
+   Posix systems use values imported from headers */
 
 #ifdef WIN32
-#define IFF_RUNNING        0x1
-#define IFF_UP             0x1
-#define IFF_MULTICAST      0x4
-#define IFF_LOOPBACK       0x8
+#define IFF_RUNNING        IFF_UP
+//#define IFF_UP             0x1
+//#define IFF_MULTICAST      0x4
+//#define IFF_LOOPBACK       0x8
 #endif
 
-#if 0
-#if defined(LINUX)
-#define IF_UP		      0x1
-#define IF_LOOPBACK	      0x8
-#define IF_RUNNING	      0x40
-#define IF_MULTICAST	      0x1000
-#endif
+/* from ws2ipdef.h 
+#define IFF_UP              0x00000001 // Interface is up.
+#define IFF_BROADCAST       0x00000002 // Broadcast is  supported.
+#define IFF_LOOPBACK        0x00000004 // This is loopback interface.
+#define IFF_POINTTOPOINT    0x00000008 // This is point-to-point interface.
+#define IFF_MULTICAST       0x00000010 // Multicast is supported. */
 
-#if defined(BSD)
-#define IF_UP        0x1
-#define IF_LOOPBACK  0x8
-#define IF_RUNNING   0x40
-#define IF_MULTICAST 0x8000
-#endif
-
-#if defined(SUNOS)
-#define IF_UP        IFF_UP
-#define IF_LOOPBACK  IFF_LOOPBACK
-#define IF_RUNNING   IFF_LOOPBACK
-#define IF_MULTICAST IFF_MULTICAST
-#endif
-#endif
 
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */

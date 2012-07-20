@@ -27,6 +27,7 @@
 # include "dibbler-config.h"
 #endif
 
+#include "md5.h"
 #include "hmac.h"
 
 void

@@ -13,8 +13,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef WIN32
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <net/if.h>
+#endif
 #include "Iface.h"
 #include "Portable.h"
 #include "Logger.h"
@@ -403,6 +407,8 @@ ostream & operator <<(ostream & strum, TIfaceIface &x) {
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
     strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
+	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
+          << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
     strum << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl;
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 

@@ -12,6 +12,7 @@
 #include <vector>
 #include "SmartPtr.h"
 #include "DHCPConst.h"
+#include "Portable.h"
 
 class TSIGKey {
 public:

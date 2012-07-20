@@ -8,7 +8,7 @@
  */
 
 #include "SrvParsGlobalOpt.h"
-#include "Portable.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;

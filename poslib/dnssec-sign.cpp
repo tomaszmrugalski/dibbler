@@ -25,6 +25,7 @@
 extern "C" {
 #include "hmac.h"
 #include "base64.h"
+#include "md5.h"
 }
 
 void verify_signature (DnsRR *check_tsig, DnsRR *message_tsig,

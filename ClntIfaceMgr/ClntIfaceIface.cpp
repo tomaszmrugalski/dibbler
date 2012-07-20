@@ -13,6 +13,7 @@
 #include "ClntIfaceIface.h"
 #include "Portable.h"
 #include "Logger.h"
+#include "DHCPDefaults.h"
 #ifdef MINGWBUILD
 #include <io.h>
 #endif
@@ -695,6 +696,9 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
     strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
+	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
+          << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
+
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
