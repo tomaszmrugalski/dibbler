@@ -102,8 +102,6 @@ int TMsg::storeSelf(char * buffer)
 {
     char *start = buffer;
     int tmp = this->TransID;
-
-    enum DigestTypes UsedDigestType;
     
     *(buffer++) = (char)MsgType;
     
@@ -120,7 +118,9 @@ int TMsg::storeSelf(char * buffer)
     }
 
 #ifndef MOD_DISABLE_AUTH
-    // for AAAAUTH use only HMAC-SHA1
+    DigestTypes UsedDigestType;
+
+	// for AAAAUTH use only HMAC-SHA1
     if (getOption(OPTION_AAAAUTH))
             UsedDigestType = DIGEST_HMAC_SHA1;
     else
