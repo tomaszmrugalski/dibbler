@@ -37,14 +37,14 @@ host_triplet = @host@
 subdir = doc
 DIST_COMMON = $(dist_noinst_DATA) $(nobase_dist_doc_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/doxygen.cfg.in
+	$(srcdir)/doxygen.cfg.in $(srcdir)/version.tex.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/dibbler-config.h
-CONFIG_CLEAN_FILES = doxygen.cfg
+CONFIG_CLEAN_FILES = doxygen.cfg version.tex
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
@@ -212,7 +212,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-PASS3 = NO
 man8_MANS = man/dibbler-server.8 man/dibbler-client.8 man/dibbler-relay.8
 nobase_dist_doc_DATA = dibbler-user.pdf \
 	examples/client-addrparams.conf examples/client-auth.conf \
@@ -235,17 +234,26 @@ nobase_dist_doc_DATA = dibbler-user.pdf \
 	examples/server-ta.conf examples/server-win32.conf \
 	examples/server-route.conf
 dist_noinst_DATA = RELEASE-METHOD TEST-METHOD doxygen.cfg $(DOXYGEN) $(TEX_SOURCES) $(man8_MANS)
-LATEX = pdflatex
-DVIPS = dvips
-PS2PDF = ps2pdf
-LATEXOPTS = -file-line-error -halt-on-error
-TEX_SOURCES = dibbler-aaa.png dibbler-cascade-relays.png dibbler-fqdn-cli-update.png dibbler-fqdn-srv-update.png dibbler-multiple-cli.png dibbler-multiple-srv.png dibbler-prefixes-host.png dibbler-prefixes-router.png dibbler-relay.png dibbler-srv-cli.png dibbler-user-bibliography.tex dibbler-user-config-client.tex dibbler-user-config-relay.tex dibbler-user-config-server.tex dibbler-user-epilogue.tex dibbler-user-faq.tex dibbler-user-features.tex dibbler-user-intro.tex dibbler-user.tex dibbler-user-usage.tex dibbler-worldmap.png logo-eti.png logo-eu.jpg logo-iip.png logo-kti.png logo-nss.png logo-pg.png
+TEX_SOURCES = dibbler-aaa.png dibbler-cascade-relays.png \
+	dibbler-fqdn-cli-update.png dibbler-fqdn-srv-update.png \
+	dibbler-multiple-cli.png dibbler-multiple-srv.png \
+	dibbler-prefixes-host.png dibbler-prefixes-router.png \
+	dibbler-relay.png dibbler-srv-cli.png \
+	dibbler-user-bibliography.tex dibbler-user-config-client.tex \
+	dibbler-user-config-relay.tex dibbler-user-config-server.tex \
+	dibbler-user-epilogue.tex dibbler-user-faq.tex \
+	dibbler-user-features.tex dibbler-user-intro.tex \
+	dibbler-user.tex dibbler-user-usage.tex dibbler-worldmap.png \
+	logo-eti.png logo-eu.jpg logo-iip.png logo-kti.png \
+	logo-nss.png logo-pg.png
 DOXYGEN = dibbler-devel-00-mainpage.dox dibbler-devel-01-intro.dox \
 	dibbler-devel-02-compile.dox dibbler-devel-03-port.dox \
 	dibbler-devel-04-common.dox dibbler-devel-05-sources.dox \
 	dibbler-devel-06-arch.dox dibbler-devel-07-debug.dox \
 	dibbler-devel-08-contrib.dox dibbler-devel-09-misc.dox \
 	dibbler-devel-bibl.dox
+LATEX = pdflatex
+LATEXOPTS = -file-line-error -halt-on-error
 all: all-am
 
 .SUFFIXES:
@@ -280,6 +288,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 doxygen.cfg: $(top_builddir)/config.status $(srcdir)/doxygen.cfg.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+version.tex: $(top_builddir)/config.status $(srcdir)/version.tex.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
@@ -507,28 +517,21 @@ uninstall-man: uninstall-man8
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
 	uninstall-man uninstall-man8 uninstall-nobase_dist_docDATA
 
-
 all:
 
 all-am:
 
-user: dibbler-user.pdf
+cppcheck:
+	mkdir -p html
+	cd .. && cppcheck --enable=all --inline-suppr \
+	  --suppressions-list=doc/cppcheck-skip.txt \
+	  -f -v -j 4 -i bison++/ -i tests/ -i dibbler-*/ -i poslib/examples \
+	  . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
 
-dibbler-user.pdf: dibbler-user.tex dibbler-user-config-client.tex \
-	  dibbler-user-config-server.tex dibbler-user-epilogue.tex \
-	  dibbler-user-intro.tex dibbler-user-usage.tex \
-          dibbler-user-bibliography.tex version.tex
-	@echo "[LATEX  ] $(SUBDIR)/$@"
-	$(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-1st_pass.log
-	if [ "$(PASS3)" = "YES" ]; then                                        \
-	  echo "[LATEX  ] $(SUBDIR)/$@";                                       \
-	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-2nd_pass.log;   \
-	  echo "[LATEX  ] $(SUBDIR)/$@";                                       \
-	  $(LATEX) $(LATEXOPTS) dibbler-user.tex >dibbler-user-3rd_pass.log;   \
-	  -grep "undefined" dibbler-user-3rd_pass.log;\
-	fi
-	if grep "undefined" dibbler-user-1st_pass.log; then \
-		echo "There are undefined references";\
+user: $(TEX_SOURCES)
+	$(LATEX) $(LATEXOPTS) dibbler-user.tex > dibbler-user.log
+	if grep "undefined" dibbler-user.log; then \
+	      echo "There are undefined references";\
 	fi
 
 devel: $(DOXYGEN)
@@ -536,13 +539,6 @@ devel: $(DOXYGEN)
 	doxygen doxygen.cfg > html/doxygen.log 2>html/doxygen-error.log
 	cp logo* html/
 	echo "Encountered `cat html/doxygen-error.log | wc -l` errors and warnings."
-
-cppcheck:
-	mkdir -p html
-	cd .. && cppcheck --enable=all --inline-suppr \
-          --suppressions-list=doc/cppcheck-skip.txt \
-          -f -v -j 4 -i bison++/ -i tests/ -i dibbler-*/ -i poslib/examples \
-          . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
 
 compile.log:
 	mkdir -p html
@@ -563,9 +559,6 @@ distcheck.log:
 summary.log:
 	mkdir -p html/
 	wc -l html/compile-warnings.log html/cppcheck-error.log html/doxygen-error.log > html/summary.txt
-
-version.tex:
-	../scripts/xtract_version > version.tex
 
 clean:
 	@echo "[CLEAN  ] $(SUBDIR)"
