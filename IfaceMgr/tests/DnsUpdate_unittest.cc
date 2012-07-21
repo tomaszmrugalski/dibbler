@@ -1,4 +1,4 @@
-#include "DnsUpdate.h"
+#include "DNSUpdate.h"
 
 #include <gtest/gtest.h>
 
@@ -9,7 +9,7 @@ namespace test {
 TEST(DnsUpdateTest, AAAA) {
 
         DnsUpdateResult result = DNSUPDATE_SKIP;
-        DNSUpdate *act = new DNSUpdate(/*dns*/"2001:db8:1::1", "", "foo.example.org",
+        DNSUpdate *act = new DNSUpdate(/*dns*/"::1", "", "foo.example.org",
                                        "2001::1",
                                        DNSUPDATE_AAAA, DNSUpdate::DNSUPDATE_UDP);
 

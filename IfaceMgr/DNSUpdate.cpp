@@ -342,6 +342,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	q = create_query(Zoneroot_, QTYPE_AXFR);
 
 	pos_cliresolver res;
+        /// @todo: Make this over UDP or TCP, not always TCP (TCP blocks on connect())
 	_addr dnsAddr = ToPoslibAddr(DnsAddr_);
 	sockid = res.tcpconnect(&dnsAddr);
 	res.tcpsendmessage(q, sockid);

@@ -6,6 +6,8 @@
 *.la
 *~
 TAGS
+dibbler-?.?.?
+dibbler-?.?.?-git
 dibbler-client
 dibbler-server
 dibbler-relay
