@@ -56,13 +56,15 @@ am__v_at_0 = @
 libMisc_a_AR = $(AR) $(ARFLAGS)
 libMisc_a_LIBADD =
 am_libMisc_a_OBJECTS = libMisc_a-addrpack.$(OBJEXT) \
-	libMisc_a-base64.$(OBJEXT) DHCPConst.$(OBJEXT) DUID.$(OBJEXT) \
-	FQDN.$(OBJEXT) libMisc_a-hmac-sha-md5.$(OBJEXT) \
-	IPv6Addr.$(OBJEXT) KeyList.$(OBJEXT) Key.$(OBJEXT) \
-	Logger.$(OBJEXT) long128.$(OBJEXT) \
+	libMisc_a-base64.$(OBJEXT) libMisc_a-DHCPConst.$(OBJEXT) \
+	libMisc_a-DUID.$(OBJEXT) libMisc_a-FQDN.$(OBJEXT) \
+	libMisc_a-hmac-sha-md5.$(OBJEXT) libMisc_a-IPv6Addr.$(OBJEXT) \
+	libMisc_a-KeyList.$(OBJEXT) libMisc_a-Key.$(OBJEXT) \
+	libMisc_a-Logger.$(OBJEXT) libMisc_a-long128.$(OBJEXT) \
 	libMisc_a-md5-coreutils.$(OBJEXT) libMisc_a-sha1.$(OBJEXT) \
 	libMisc_a-sha256.$(OBJEXT) libMisc_a-sha512.$(OBJEXT) \
-	ScriptParams.$(OBJEXT) libMisc_a-lowlevel-posix.$(OBJEXT)
+	libMisc_a-ScriptParams.$(OBJEXT) \
+	libMisc_a-lowlevel-posix.$(OBJEXT)
 libMisc_a_OBJECTS = $(am_libMisc_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -244,6 +246,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libMisc.a
 libMisc_a_CFLAGS = -std=c99
+libMisc_a_CPPFLAGS = -I$(top_srcdir)
 libMisc_a_SOURCES = addrpack.c base64.c base64.h Container.h \
 	DHCPConst.cpp DHCPConst.h DHCPDefaults.h DUID.cpp DUID.h \
 	FQDN.cpp FQDN.h hmac-sha-md5.h hmac-sha-md5.c IPv6Addr.cpp \
@@ -302,23 +305,23 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DHCPConst.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DUID.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FQDN.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IPv6Addr.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Key.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyList.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Logger.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptParams.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-DHCPConst.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-DUID.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-FQDN.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-IPv6Addr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-Key.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-KeyList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-Logger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-ScriptParams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-addrpack.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-base64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-hmac-sha-md5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-long128.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-lowlevel-posix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-md5-coreutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-sha256.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMisc_a-sha512.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/long128.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -345,132 +348,132 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 libMisc_a-addrpack.o: addrpack.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-addrpack.o -MD -MP -MF $(DEPDIR)/libMisc_a-addrpack.Tpo -c -o libMisc_a-addrpack.o `test -f 'addrpack.c' || echo '$(srcdir)/'`addrpack.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-addrpack.o -MD -MP -MF $(DEPDIR)/libMisc_a-addrpack.Tpo -c -o libMisc_a-addrpack.o `test -f 'addrpack.c' || echo '$(srcdir)/'`addrpack.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-addrpack.Tpo $(DEPDIR)/libMisc_a-addrpack.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='addrpack.c' object='libMisc_a-addrpack.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-addrpack.o `test -f 'addrpack.c' || echo '$(srcdir)/'`addrpack.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-addrpack.o `test -f 'addrpack.c' || echo '$(srcdir)/'`addrpack.c
 
 libMisc_a-addrpack.obj: addrpack.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-addrpack.obj -MD -MP -MF $(DEPDIR)/libMisc_a-addrpack.Tpo -c -o libMisc_a-addrpack.obj `if test -f 'addrpack.c'; then $(CYGPATH_W) 'addrpack.c'; else $(CYGPATH_W) '$(srcdir)/addrpack.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-addrpack.obj -MD -MP -MF $(DEPDIR)/libMisc_a-addrpack.Tpo -c -o libMisc_a-addrpack.obj `if test -f 'addrpack.c'; then $(CYGPATH_W) 'addrpack.c'; else $(CYGPATH_W) '$(srcdir)/addrpack.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-addrpack.Tpo $(DEPDIR)/libMisc_a-addrpack.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='addrpack.c' object='libMisc_a-addrpack.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-addrpack.obj `if test -f 'addrpack.c'; then $(CYGPATH_W) 'addrpack.c'; else $(CYGPATH_W) '$(srcdir)/addrpack.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-addrpack.obj `if test -f 'addrpack.c'; then $(CYGPATH_W) 'addrpack.c'; else $(CYGPATH_W) '$(srcdir)/addrpack.c'; fi`
 
 libMisc_a-base64.o: base64.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-base64.o -MD -MP -MF $(DEPDIR)/libMisc_a-base64.Tpo -c -o libMisc_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-base64.o -MD -MP -MF $(DEPDIR)/libMisc_a-base64.Tpo -c -o libMisc_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-base64.Tpo $(DEPDIR)/libMisc_a-base64.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='base64.c' object='libMisc_a-base64.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
 
 libMisc_a-base64.obj: base64.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-base64.obj -MD -MP -MF $(DEPDIR)/libMisc_a-base64.Tpo -c -o libMisc_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-base64.obj -MD -MP -MF $(DEPDIR)/libMisc_a-base64.Tpo -c -o libMisc_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-base64.Tpo $(DEPDIR)/libMisc_a-base64.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='base64.c' object='libMisc_a-base64.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-base64.obj `if test -f 'base64.c'; then $(CYGPATH_W) 'base64.c'; else $(CYGPATH_W) '$(srcdir)/base64.c'; fi`
 
 libMisc_a-hmac-sha-md5.o: hmac-sha-md5.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-hmac-sha-md5.o -MD -MP -MF $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo -c -o libMisc_a-hmac-sha-md5.o `test -f 'hmac-sha-md5.c' || echo '$(srcdir)/'`hmac-sha-md5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-hmac-sha-md5.o -MD -MP -MF $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo -c -o libMisc_a-hmac-sha-md5.o `test -f 'hmac-sha-md5.c' || echo '$(srcdir)/'`hmac-sha-md5.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo $(DEPDIR)/libMisc_a-hmac-sha-md5.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hmac-sha-md5.c' object='libMisc_a-hmac-sha-md5.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-hmac-sha-md5.o `test -f 'hmac-sha-md5.c' || echo '$(srcdir)/'`hmac-sha-md5.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-hmac-sha-md5.o `test -f 'hmac-sha-md5.c' || echo '$(srcdir)/'`hmac-sha-md5.c
 
 libMisc_a-hmac-sha-md5.obj: hmac-sha-md5.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-hmac-sha-md5.obj -MD -MP -MF $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo -c -o libMisc_a-hmac-sha-md5.obj `if test -f 'hmac-sha-md5.c'; then $(CYGPATH_W) 'hmac-sha-md5.c'; else $(CYGPATH_W) '$(srcdir)/hmac-sha-md5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-hmac-sha-md5.obj -MD -MP -MF $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo -c -o libMisc_a-hmac-sha-md5.obj `if test -f 'hmac-sha-md5.c'; then $(CYGPATH_W) 'hmac-sha-md5.c'; else $(CYGPATH_W) '$(srcdir)/hmac-sha-md5.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-hmac-sha-md5.Tpo $(DEPDIR)/libMisc_a-hmac-sha-md5.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hmac-sha-md5.c' object='libMisc_a-hmac-sha-md5.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-hmac-sha-md5.obj `if test -f 'hmac-sha-md5.c'; then $(CYGPATH_W) 'hmac-sha-md5.c'; else $(CYGPATH_W) '$(srcdir)/hmac-sha-md5.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-hmac-sha-md5.obj `if test -f 'hmac-sha-md5.c'; then $(CYGPATH_W) 'hmac-sha-md5.c'; else $(CYGPATH_W) '$(srcdir)/hmac-sha-md5.c'; fi`
 
 libMisc_a-md5-coreutils.o: md5-coreutils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-md5-coreutils.o -MD -MP -MF $(DEPDIR)/libMisc_a-md5-coreutils.Tpo -c -o libMisc_a-md5-coreutils.o `test -f 'md5-coreutils.c' || echo '$(srcdir)/'`md5-coreutils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-md5-coreutils.o -MD -MP -MF $(DEPDIR)/libMisc_a-md5-coreutils.Tpo -c -o libMisc_a-md5-coreutils.o `test -f 'md5-coreutils.c' || echo '$(srcdir)/'`md5-coreutils.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-md5-coreutils.Tpo $(DEPDIR)/libMisc_a-md5-coreutils.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='md5-coreutils.c' object='libMisc_a-md5-coreutils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-md5-coreutils.o `test -f 'md5-coreutils.c' || echo '$(srcdir)/'`md5-coreutils.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-md5-coreutils.o `test -f 'md5-coreutils.c' || echo '$(srcdir)/'`md5-coreutils.c
 
 libMisc_a-md5-coreutils.obj: md5-coreutils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-md5-coreutils.obj -MD -MP -MF $(DEPDIR)/libMisc_a-md5-coreutils.Tpo -c -o libMisc_a-md5-coreutils.obj `if test -f 'md5-coreutils.c'; then $(CYGPATH_W) 'md5-coreutils.c'; else $(CYGPATH_W) '$(srcdir)/md5-coreutils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-md5-coreutils.obj -MD -MP -MF $(DEPDIR)/libMisc_a-md5-coreutils.Tpo -c -o libMisc_a-md5-coreutils.obj `if test -f 'md5-coreutils.c'; then $(CYGPATH_W) 'md5-coreutils.c'; else $(CYGPATH_W) '$(srcdir)/md5-coreutils.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-md5-coreutils.Tpo $(DEPDIR)/libMisc_a-md5-coreutils.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='md5-coreutils.c' object='libMisc_a-md5-coreutils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-md5-coreutils.obj `if test -f 'md5-coreutils.c'; then $(CYGPATH_W) 'md5-coreutils.c'; else $(CYGPATH_W) '$(srcdir)/md5-coreutils.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-md5-coreutils.obj `if test -f 'md5-coreutils.c'; then $(CYGPATH_W) 'md5-coreutils.c'; else $(CYGPATH_W) '$(srcdir)/md5-coreutils.c'; fi`
 
 libMisc_a-sha1.o: sha1.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha1.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha1.Tpo -c -o libMisc_a-sha1.o `test -f 'sha1.c' || echo '$(srcdir)/'`sha1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha1.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha1.Tpo -c -o libMisc_a-sha1.o `test -f 'sha1.c' || echo '$(srcdir)/'`sha1.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha1.Tpo $(DEPDIR)/libMisc_a-sha1.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha1.c' object='libMisc_a-sha1.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha1.o `test -f 'sha1.c' || echo '$(srcdir)/'`sha1.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha1.o `test -f 'sha1.c' || echo '$(srcdir)/'`sha1.c
 
 libMisc_a-sha1.obj: sha1.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha1.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha1.Tpo -c -o libMisc_a-sha1.obj `if test -f 'sha1.c'; then $(CYGPATH_W) 'sha1.c'; else $(CYGPATH_W) '$(srcdir)/sha1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha1.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha1.Tpo -c -o libMisc_a-sha1.obj `if test -f 'sha1.c'; then $(CYGPATH_W) 'sha1.c'; else $(CYGPATH_W) '$(srcdir)/sha1.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha1.Tpo $(DEPDIR)/libMisc_a-sha1.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha1.c' object='libMisc_a-sha1.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha1.obj `if test -f 'sha1.c'; then $(CYGPATH_W) 'sha1.c'; else $(CYGPATH_W) '$(srcdir)/sha1.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha1.obj `if test -f 'sha1.c'; then $(CYGPATH_W) 'sha1.c'; else $(CYGPATH_W) '$(srcdir)/sha1.c'; fi`
 
 libMisc_a-sha256.o: sha256.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha256.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha256.Tpo -c -o libMisc_a-sha256.o `test -f 'sha256.c' || echo '$(srcdir)/'`sha256.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha256.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha256.Tpo -c -o libMisc_a-sha256.o `test -f 'sha256.c' || echo '$(srcdir)/'`sha256.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha256.Tpo $(DEPDIR)/libMisc_a-sha256.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha256.c' object='libMisc_a-sha256.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha256.o `test -f 'sha256.c' || echo '$(srcdir)/'`sha256.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha256.o `test -f 'sha256.c' || echo '$(srcdir)/'`sha256.c
 
 libMisc_a-sha256.obj: sha256.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha256.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha256.Tpo -c -o libMisc_a-sha256.obj `if test -f 'sha256.c'; then $(CYGPATH_W) 'sha256.c'; else $(CYGPATH_W) '$(srcdir)/sha256.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha256.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha256.Tpo -c -o libMisc_a-sha256.obj `if test -f 'sha256.c'; then $(CYGPATH_W) 'sha256.c'; else $(CYGPATH_W) '$(srcdir)/sha256.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha256.Tpo $(DEPDIR)/libMisc_a-sha256.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha256.c' object='libMisc_a-sha256.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha256.obj `if test -f 'sha256.c'; then $(CYGPATH_W) 'sha256.c'; else $(CYGPATH_W) '$(srcdir)/sha256.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha256.obj `if test -f 'sha256.c'; then $(CYGPATH_W) 'sha256.c'; else $(CYGPATH_W) '$(srcdir)/sha256.c'; fi`
 
 libMisc_a-sha512.o: sha512.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha512.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha512.Tpo -c -o libMisc_a-sha512.o `test -f 'sha512.c' || echo '$(srcdir)/'`sha512.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha512.o -MD -MP -MF $(DEPDIR)/libMisc_a-sha512.Tpo -c -o libMisc_a-sha512.o `test -f 'sha512.c' || echo '$(srcdir)/'`sha512.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha512.Tpo $(DEPDIR)/libMisc_a-sha512.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha512.c' object='libMisc_a-sha512.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha512.o `test -f 'sha512.c' || echo '$(srcdir)/'`sha512.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha512.o `test -f 'sha512.c' || echo '$(srcdir)/'`sha512.c
 
 libMisc_a-sha512.obj: sha512.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha512.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha512.Tpo -c -o libMisc_a-sha512.obj `if test -f 'sha512.c'; then $(CYGPATH_W) 'sha512.c'; else $(CYGPATH_W) '$(srcdir)/sha512.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-sha512.obj -MD -MP -MF $(DEPDIR)/libMisc_a-sha512.Tpo -c -o libMisc_a-sha512.obj `if test -f 'sha512.c'; then $(CYGPATH_W) 'sha512.c'; else $(CYGPATH_W) '$(srcdir)/sha512.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-sha512.Tpo $(DEPDIR)/libMisc_a-sha512.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sha512.c' object='libMisc_a-sha512.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha512.obj `if test -f 'sha512.c'; then $(CYGPATH_W) 'sha512.c'; else $(CYGPATH_W) '$(srcdir)/sha512.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-sha512.obj `if test -f 'sha512.c'; then $(CYGPATH_W) 'sha512.c'; else $(CYGPATH_W) '$(srcdir)/sha512.c'; fi`
 
 libMisc_a-lowlevel-posix.o: lowlevel-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-lowlevel-posix.o -MD -MP -MF $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo -c -o libMisc_a-lowlevel-posix.o `test -f 'lowlevel-posix.c' || echo '$(srcdir)/'`lowlevel-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-lowlevel-posix.o -MD -MP -MF $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo -c -o libMisc_a-lowlevel-posix.o `test -f 'lowlevel-posix.c' || echo '$(srcdir)/'`lowlevel-posix.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo $(DEPDIR)/libMisc_a-lowlevel-posix.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-posix.c' object='libMisc_a-lowlevel-posix.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-lowlevel-posix.o `test -f 'lowlevel-posix.c' || echo '$(srcdir)/'`lowlevel-posix.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-lowlevel-posix.o `test -f 'lowlevel-posix.c' || echo '$(srcdir)/'`lowlevel-posix.c
 
 libMisc_a-lowlevel-posix.obj: lowlevel-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-lowlevel-posix.obj -MD -MP -MF $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo -c -o libMisc_a-lowlevel-posix.obj `if test -f 'lowlevel-posix.c'; then $(CYGPATH_W) 'lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-posix.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -MT libMisc_a-lowlevel-posix.obj -MD -MP -MF $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo -c -o libMisc_a-lowlevel-posix.obj `if test -f 'lowlevel-posix.c'; then $(CYGPATH_W) 'lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-posix.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-lowlevel-posix.Tpo $(DEPDIR)/libMisc_a-lowlevel-posix.Po
 @am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lowlevel-posix.c' object='libMisc_a-lowlevel-posix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-lowlevel-posix.obj `if test -f 'lowlevel-posix.c'; then $(CYGPATH_W) 'lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-posix.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(libMisc_a_CFLAGS) $(CFLAGS) -c -o libMisc_a-lowlevel-posix.obj `if test -f 'lowlevel-posix.c'; then $(CYGPATH_W) 'lowlevel-posix.c'; else $(CYGPATH_W) '$(srcdir)/lowlevel-posix.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -495,6 +498,150 @@ libMisc_a-lowlevel-posix.obj: lowlevel-posix.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libMisc_a-DHCPConst.o: DHCPConst.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-DHCPConst.o -MD -MP -MF $(DEPDIR)/libMisc_a-DHCPConst.Tpo -c -o libMisc_a-DHCPConst.o `test -f 'DHCPConst.cpp' || echo '$(srcdir)/'`DHCPConst.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-DHCPConst.Tpo $(DEPDIR)/libMisc_a-DHCPConst.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DHCPConst.cpp' object='libMisc_a-DHCPConst.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-DHCPConst.o `test -f 'DHCPConst.cpp' || echo '$(srcdir)/'`DHCPConst.cpp
+
+libMisc_a-DHCPConst.obj: DHCPConst.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-DHCPConst.obj -MD -MP -MF $(DEPDIR)/libMisc_a-DHCPConst.Tpo -c -o libMisc_a-DHCPConst.obj `if test -f 'DHCPConst.cpp'; then $(CYGPATH_W) 'DHCPConst.cpp'; else $(CYGPATH_W) '$(srcdir)/DHCPConst.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-DHCPConst.Tpo $(DEPDIR)/libMisc_a-DHCPConst.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DHCPConst.cpp' object='libMisc_a-DHCPConst.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-DHCPConst.obj `if test -f 'DHCPConst.cpp'; then $(CYGPATH_W) 'DHCPConst.cpp'; else $(CYGPATH_W) '$(srcdir)/DHCPConst.cpp'; fi`
+
+libMisc_a-DUID.o: DUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-DUID.o -MD -MP -MF $(DEPDIR)/libMisc_a-DUID.Tpo -c -o libMisc_a-DUID.o `test -f 'DUID.cpp' || echo '$(srcdir)/'`DUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-DUID.Tpo $(DEPDIR)/libMisc_a-DUID.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DUID.cpp' object='libMisc_a-DUID.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-DUID.o `test -f 'DUID.cpp' || echo '$(srcdir)/'`DUID.cpp
+
+libMisc_a-DUID.obj: DUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-DUID.obj -MD -MP -MF $(DEPDIR)/libMisc_a-DUID.Tpo -c -o libMisc_a-DUID.obj `if test -f 'DUID.cpp'; then $(CYGPATH_W) 'DUID.cpp'; else $(CYGPATH_W) '$(srcdir)/DUID.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-DUID.Tpo $(DEPDIR)/libMisc_a-DUID.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='DUID.cpp' object='libMisc_a-DUID.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-DUID.obj `if test -f 'DUID.cpp'; then $(CYGPATH_W) 'DUID.cpp'; else $(CYGPATH_W) '$(srcdir)/DUID.cpp'; fi`
+
+libMisc_a-FQDN.o: FQDN.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-FQDN.o -MD -MP -MF $(DEPDIR)/libMisc_a-FQDN.Tpo -c -o libMisc_a-FQDN.o `test -f 'FQDN.cpp' || echo '$(srcdir)/'`FQDN.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-FQDN.Tpo $(DEPDIR)/libMisc_a-FQDN.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='FQDN.cpp' object='libMisc_a-FQDN.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-FQDN.o `test -f 'FQDN.cpp' || echo '$(srcdir)/'`FQDN.cpp
+
+libMisc_a-FQDN.obj: FQDN.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-FQDN.obj -MD -MP -MF $(DEPDIR)/libMisc_a-FQDN.Tpo -c -o libMisc_a-FQDN.obj `if test -f 'FQDN.cpp'; then $(CYGPATH_W) 'FQDN.cpp'; else $(CYGPATH_W) '$(srcdir)/FQDN.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-FQDN.Tpo $(DEPDIR)/libMisc_a-FQDN.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='FQDN.cpp' object='libMisc_a-FQDN.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-FQDN.obj `if test -f 'FQDN.cpp'; then $(CYGPATH_W) 'FQDN.cpp'; else $(CYGPATH_W) '$(srcdir)/FQDN.cpp'; fi`
+
+libMisc_a-IPv6Addr.o: IPv6Addr.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-IPv6Addr.o -MD -MP -MF $(DEPDIR)/libMisc_a-IPv6Addr.Tpo -c -o libMisc_a-IPv6Addr.o `test -f 'IPv6Addr.cpp' || echo '$(srcdir)/'`IPv6Addr.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-IPv6Addr.Tpo $(DEPDIR)/libMisc_a-IPv6Addr.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='IPv6Addr.cpp' object='libMisc_a-IPv6Addr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-IPv6Addr.o `test -f 'IPv6Addr.cpp' || echo '$(srcdir)/'`IPv6Addr.cpp
+
+libMisc_a-IPv6Addr.obj: IPv6Addr.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-IPv6Addr.obj -MD -MP -MF $(DEPDIR)/libMisc_a-IPv6Addr.Tpo -c -o libMisc_a-IPv6Addr.obj `if test -f 'IPv6Addr.cpp'; then $(CYGPATH_W) 'IPv6Addr.cpp'; else $(CYGPATH_W) '$(srcdir)/IPv6Addr.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-IPv6Addr.Tpo $(DEPDIR)/libMisc_a-IPv6Addr.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='IPv6Addr.cpp' object='libMisc_a-IPv6Addr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-IPv6Addr.obj `if test -f 'IPv6Addr.cpp'; then $(CYGPATH_W) 'IPv6Addr.cpp'; else $(CYGPATH_W) '$(srcdir)/IPv6Addr.cpp'; fi`
+
+libMisc_a-KeyList.o: KeyList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-KeyList.o -MD -MP -MF $(DEPDIR)/libMisc_a-KeyList.Tpo -c -o libMisc_a-KeyList.o `test -f 'KeyList.cpp' || echo '$(srcdir)/'`KeyList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-KeyList.Tpo $(DEPDIR)/libMisc_a-KeyList.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='KeyList.cpp' object='libMisc_a-KeyList.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-KeyList.o `test -f 'KeyList.cpp' || echo '$(srcdir)/'`KeyList.cpp
+
+libMisc_a-KeyList.obj: KeyList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-KeyList.obj -MD -MP -MF $(DEPDIR)/libMisc_a-KeyList.Tpo -c -o libMisc_a-KeyList.obj `if test -f 'KeyList.cpp'; then $(CYGPATH_W) 'KeyList.cpp'; else $(CYGPATH_W) '$(srcdir)/KeyList.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-KeyList.Tpo $(DEPDIR)/libMisc_a-KeyList.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='KeyList.cpp' object='libMisc_a-KeyList.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-KeyList.obj `if test -f 'KeyList.cpp'; then $(CYGPATH_W) 'KeyList.cpp'; else $(CYGPATH_W) '$(srcdir)/KeyList.cpp'; fi`
+
+libMisc_a-Key.o: Key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-Key.o -MD -MP -MF $(DEPDIR)/libMisc_a-Key.Tpo -c -o libMisc_a-Key.o `test -f 'Key.cpp' || echo '$(srcdir)/'`Key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-Key.Tpo $(DEPDIR)/libMisc_a-Key.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Key.cpp' object='libMisc_a-Key.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-Key.o `test -f 'Key.cpp' || echo '$(srcdir)/'`Key.cpp
+
+libMisc_a-Key.obj: Key.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-Key.obj -MD -MP -MF $(DEPDIR)/libMisc_a-Key.Tpo -c -o libMisc_a-Key.obj `if test -f 'Key.cpp'; then $(CYGPATH_W) 'Key.cpp'; else $(CYGPATH_W) '$(srcdir)/Key.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-Key.Tpo $(DEPDIR)/libMisc_a-Key.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Key.cpp' object='libMisc_a-Key.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-Key.obj `if test -f 'Key.cpp'; then $(CYGPATH_W) 'Key.cpp'; else $(CYGPATH_W) '$(srcdir)/Key.cpp'; fi`
+
+libMisc_a-Logger.o: Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-Logger.o -MD -MP -MF $(DEPDIR)/libMisc_a-Logger.Tpo -c -o libMisc_a-Logger.o `test -f 'Logger.cpp' || echo '$(srcdir)/'`Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-Logger.Tpo $(DEPDIR)/libMisc_a-Logger.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Logger.cpp' object='libMisc_a-Logger.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-Logger.o `test -f 'Logger.cpp' || echo '$(srcdir)/'`Logger.cpp
+
+libMisc_a-Logger.obj: Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-Logger.obj -MD -MP -MF $(DEPDIR)/libMisc_a-Logger.Tpo -c -o libMisc_a-Logger.obj `if test -f 'Logger.cpp'; then $(CYGPATH_W) 'Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/Logger.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-Logger.Tpo $(DEPDIR)/libMisc_a-Logger.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Logger.cpp' object='libMisc_a-Logger.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-Logger.obj `if test -f 'Logger.cpp'; then $(CYGPATH_W) 'Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/Logger.cpp'; fi`
+
+libMisc_a-long128.o: long128.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-long128.o -MD -MP -MF $(DEPDIR)/libMisc_a-long128.Tpo -c -o libMisc_a-long128.o `test -f 'long128.cpp' || echo '$(srcdir)/'`long128.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-long128.Tpo $(DEPDIR)/libMisc_a-long128.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='long128.cpp' object='libMisc_a-long128.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-long128.o `test -f 'long128.cpp' || echo '$(srcdir)/'`long128.cpp
+
+libMisc_a-long128.obj: long128.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-long128.obj -MD -MP -MF $(DEPDIR)/libMisc_a-long128.Tpo -c -o libMisc_a-long128.obj `if test -f 'long128.cpp'; then $(CYGPATH_W) 'long128.cpp'; else $(CYGPATH_W) '$(srcdir)/long128.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-long128.Tpo $(DEPDIR)/libMisc_a-long128.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='long128.cpp' object='libMisc_a-long128.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-long128.obj `if test -f 'long128.cpp'; then $(CYGPATH_W) 'long128.cpp'; else $(CYGPATH_W) '$(srcdir)/long128.cpp'; fi`
+
+libMisc_a-ScriptParams.o: ScriptParams.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-ScriptParams.o -MD -MP -MF $(DEPDIR)/libMisc_a-ScriptParams.Tpo -c -o libMisc_a-ScriptParams.o `test -f 'ScriptParams.cpp' || echo '$(srcdir)/'`ScriptParams.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-ScriptParams.Tpo $(DEPDIR)/libMisc_a-ScriptParams.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ScriptParams.cpp' object='libMisc_a-ScriptParams.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-ScriptParams.o `test -f 'ScriptParams.cpp' || echo '$(srcdir)/'`ScriptParams.cpp
+
+libMisc_a-ScriptParams.obj: ScriptParams.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libMisc_a-ScriptParams.obj -MD -MP -MF $(DEPDIR)/libMisc_a-ScriptParams.Tpo -c -o libMisc_a-ScriptParams.obj `if test -f 'ScriptParams.cpp'; then $(CYGPATH_W) 'ScriptParams.cpp'; else $(CYGPATH_W) '$(srcdir)/ScriptParams.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMisc_a-ScriptParams.Tpo $(DEPDIR)/libMisc_a-ScriptParams.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ScriptParams.cpp' object='libMisc_a-ScriptParams.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libMisc_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libMisc_a-ScriptParams.obj `if test -f 'ScriptParams.cpp'; then $(CYGPATH_W) 'ScriptParams.cpp'; else $(CYGPATH_W) '$(srcdir)/ScriptParams.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
