@@ -66,14 +66,14 @@
  *
  * minimal build: <a href="configure-minimal.log">[configure]</a>
  *                <a href="make-minimal.log">[make]</a>
- *                <a href="make-minimal-errors.log">[errors]</a><br/>
+ *                <a href="make-minimal-error.log">[errors]</a><br/>
  * regular build: <a href="configure.log">[configure]</a>
  *                <a href="make.log">[make]</a>
- *                <a href="make-errors.log">[errors]</a><br/>
+ *                <a href="make-error.log">[errors]</a><br/>
  * gtest build:   <a href="configure-gtest.log">[configure]</a>
  *                <a href="make-gtest.log">[make]</a>
- *                <a href="make-gtest-errors.log">[errors]</a>
+ *                <a href="make-gtest-error.log">[errors]</a>
  *                <a href="make-gtest-check.log">[check]</a><br/>
  * distcheck:     <a href="make-distcheck.log">[make]</a>
- *                <a href="make-distcheck-errors.log">[errors]</a>
+ *                <a href="make-distcheck-error.log">[errors]</a>
  */

@@ -13,8 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")" */
-#define DIBBLER_VERSION "@PACKAGE_VERSION@"
+#define DIBBLER_VERSION "0.8.2-git"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -50,9 +49,11 @@
 #define uint32_t unsigned int
 #endif
 
-//#ifndef uint64_t
-//#define uint64_t unsigned long long int
-//#endif
+#ifdef WIN32
+#ifndef uint64_t
+#define uint64_t unsigned long long int
+#endif
+#endif
 
 /* this should look like this: 
 uint16_t readUint16(uint8_t* buf);
@@ -203,38 +204,15 @@ struct link_state_notify_t
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */
 /* those flags are used to parse flags in the structure
-   returned by if_list_get(). They are highly system specific. */
-#define LOGLEVEL          0
-
+   returned by if_list_get(). They are highly system specific.
+   Posix systems use values imported from headers */
 
 #ifdef WIN32
-#define IFF_RUNNING        0x1
-#define IFF_UP             0x1
-#define IFF_MULTICAST      0x4
-#define IFF_LOOPBACK       0x8
-#endif
-
-#if 0
-#if defined(LINUX)
-#define IF_UP		      0x1
-#define IF_LOOPBACK	      0x8
-#define IF_RUNNING	      0x40
-#define IF_MULTICAST	      0x1000
-#endif
-
-#if defined(BSD)
-#define IF_UP        0x1
-#define IF_LOOPBACK  0x8
-#define IF_RUNNING   0x40
-#define IF_MULTICAST 0x8000
-#endif
-
-#if defined(SUNOS)
-#define IF_UP        IFF_UP
-#define IF_LOOPBACK  IFF_LOOPBACK
-#define IF_RUNNING   IFF_LOOPBACK
-#define IF_MULTICAST IFF_MULTICAST
-#endif
+#define IFF_RUNNING        IFF_UP
+// those defines are in ws2ipdef.h
+//#define IFF_UP             0x1
+//#define IFF_MULTICAST      0x4
+//#define IFF_LOOPBACK       0x8
 #endif
 
 /* ********************************************************************** */

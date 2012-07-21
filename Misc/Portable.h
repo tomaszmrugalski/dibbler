@@ -49,14 +49,11 @@
 #define uint32_t unsigned int
 #endif
 
+#ifdef WIN32
 #ifndef uint64_t
 #define uint64_t unsigned long long int
 #endif
-
-
-//#ifndef uint64_t
-//#define uint64_t unsigned long long int
-//#endif
+#endif
 
 /* this should look like this: 
 uint16_t readUint16(uint8_t* buf);
@@ -203,8 +200,6 @@ struct link_state_notify_t
 #define BULKLQ_MAX_CONNS 10
 #define BULKLQ_TIMEOUT 300
 
-// #define LOGLEVEL          0
-
 /* ********************************************************************** */
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */
@@ -214,18 +209,11 @@ struct link_state_notify_t
 
 #ifdef WIN32
 #define IFF_RUNNING        IFF_UP
+// those defines are in ws2ipdef.h
 //#define IFF_UP             0x1
 //#define IFF_MULTICAST      0x4
 //#define IFF_LOOPBACK       0x8
 #endif
-
-/* from ws2ipdef.h 
-#define IFF_UP              0x00000001 // Interface is up.
-#define IFF_BROADCAST       0x00000002 // Broadcast is  supported.
-#define IFF_LOOPBACK        0x00000004 // This is loopback interface.
-#define IFF_POINTTOPOINT    0x00000008 // This is point-to-point interface.
-#define IFF_MULTICAST       0x00000010 // Multicast is supported. */
-
 
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */
