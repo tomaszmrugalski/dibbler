@@ -516,9 +516,6 @@ SrvTransMgr/Makefile
 poslib/Makefile
 nettle/Makefile
 $PORT_SUBDIR/Makefile
-AddrMgr/tests/Makefile
-Options/tests/Makefile
-SrvCfgMgr/tests/Makefile
 Port-linux/Makefile
 Port-bsd/Makefile
 Port-sun/Makefile
@@ -528,7 +525,11 @@ doc/Makefile
 Misc/Portable.h
 doc/doxygen.cfg
 doc/version.tex
+AddrMgr/tests/Makefile
+Options/tests/Makefile
+SrvCfgMgr/tests/Makefile
 CfgMgr/tests/Makefile
+poslib/tests/Makefile
 tests/Makefile
 tests/Srv/Makefile)
 

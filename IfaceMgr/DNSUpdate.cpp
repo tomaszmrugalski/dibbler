@@ -452,6 +452,9 @@ void DNSUpdate::sendMsgUDP(unsigned int timeout) {
 	res.n_udp_tries = 1; // just one timeout
 	_addr dnsAddr = ToPoslibAddr(DnsAddr_);
 	res.query(Message_, a, &dnsAddr, Q_NOTCP);
+        if (!a) {
+            throw PException("DNS server asnwer not received");
+        }
 	if (a->RCODE != RCODE_NOERROR) {
 	    throw PException((char*)str_rcode(a->RCODE).c_str());
 	}
