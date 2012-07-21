@@ -526,6 +526,7 @@ Misc/Portable.h
 doc/doxygen.cfg
 doc/version.tex
 AddrMgr/tests/Makefile
+IfaceMgr/tests/Makefile
 Options/tests/Makefile
 SrvCfgMgr/tests/Makefile
 CfgMgr/tests/Makefile

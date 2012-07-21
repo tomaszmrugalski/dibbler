@@ -324,8 +324,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr \
-	Messages poslib nettle SrvOptions SrvIfaceMgr SrvAddrMgr \
+CODE_SUBDIRS = @PORT_SUBDIR@ nettle Misc poslib Options AddrMgr CfgMgr \
+	IfaceMgr Messages SrvOptions SrvIfaceMgr SrvAddrMgr \
 	SrvMessages SrvTransMgr SrvCfgMgr RelCfgMgr RelIfaceMgr \
 	RelMessages RelOptions RelTransMgr ClntOptions ClntTransMgr \
 	ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
