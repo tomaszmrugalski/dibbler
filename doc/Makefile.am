@@ -6,6 +6,7 @@ cppcheck:
 	mkdir -p html
 	cd .. && cppcheck --enable=all --inline-suppr \
 	  --suppressions-list=doc/cppcheck-skip.txt \
+          --template '{file}:{line}: {message} ({severity},{id})' \
 	  -f -v -j 4 -i bison++/ -i tests/ -i dibbler-*/ -i poslib/examples \
 	  . 1> doc/html/cppcheck.log 2> doc/html/cppcheck-error.log
 
