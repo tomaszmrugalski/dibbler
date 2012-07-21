@@ -207,7 +207,8 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
     do {
       try {
         /* register and assign a new query ID */
-        q->ID = posrandom();
+          if (!q->ID)
+              q->ID = posrandom();
 #ifdef HAVE_IPV6
         if (sock_is_ipv6(&*server)) {
           if (!ipv6sock) {
