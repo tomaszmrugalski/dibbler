@@ -25,6 +25,7 @@ class DnsRR;
 
 class message_buff;
 
+#include <time.h>
 #include "dnsdefs.h"
 #include "types.h"
 #include "sysstl.h"
@@ -522,6 +523,9 @@ class DnsMessage {
    * verify the DNS message.
    */
   DnsRR *tsig_rr;
+
+  /// optional tsig_rr signing time (if set to 0, time(NULL) will be used
+  time_t tsig_rr_signtime;
   
   /**
    * \brief TSIG key for message

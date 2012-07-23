@@ -201,6 +201,7 @@ DnsMessage::DnsMessage() {
   Z = 0;
   RCODE = 0;
   tsig_rr = NULL;  
+  tsig_rr_signtime = 0; // pick current time during message sending
 }
 
 DnsMessage::~DnsMessage() {
@@ -424,7 +425,11 @@ message_buff DnsMessage::compile(int maxlen) {
     
     /* set ID, time signed of TSIG RR */
     memcpy (rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 4), uint16_buff (ID), 2);
-    memcpy (rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 1), uint48_buff (time (NULL)), 6);
+
+    // thomson: Useful for testing it is possible to force specific signtime
+    if (!tsig_rr_signtime)
+        tsig_rr_signtime = time(NULL);
+    memcpy (rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 1), uint48_buff (tsig_rr_signtime), 6);
     
     message_buff extra;
     unsigned char *ptr = rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 3);
@@ -434,6 +439,10 @@ message_buff DnsMessage::compile(int maxlen) {
     stl_string key = calc_mac (*tsig_rr, message_buff ((unsigned char*) msg.c_str(), msg.size()), sign_key, &extra);
     
     /* store digest in tsig RR */
+    // thomson: to be able to sign the message multiple times, uncomment:
+    // unsigned char *old_RDATA = tsig_rr->RDATA;
+    // u_int16 old_RDLENGTH = tsig_rr->RDLENGTH;
+
     stl_string newdata;
     int digestpos = rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 3) - tsig_rr->RDATA,
         digestlen = uint16_value (tsig_rr->RDATA + digestpos);
@@ -441,12 +450,18 @@ message_buff DnsMessage::compile(int maxlen) {
     newdata.append ((char*)uint16_buff (key.size ()), 2);
     newdata.append (key);
     newdata.append ((char*)tsig_rr->RDATA + digestpos + 2 + digestlen, tsig_rr->RDLENGTH - (digestpos + digestlen + 2));
+    // thomson: to be able to sign the message multiple times, comment this free() out
     free (tsig_rr->RDATA);
     tsig_rr->RDATA = (unsigned char *) memdup (newdata.c_str(), newdata.size());
     tsig_rr->RDLENGTH = newdata.size ();
 
     /* TODO: if things don't fit, remove the rest of the message and set the TC bit */    
     write_rr (*tsig_rr, msg, &comprinfo, 0);
+
+    // thomson: to be able to sign the message multiple times, uncomment:
+    // free(tsig_rr->RDATA);
+    // tsig_rr->RDATA = old_RDATA;
+    // tsig_rr->RDLENGTH = old_RDLENGTH;
   }
 
   int len = msg.size();

@@ -28,6 +28,15 @@ extern "C" {
 #include "md5.h"
 }
 
+/// @brief verifies TSIG of received response
+///
+/// Make sure that message_buff is trimmed down to not include TSIG
+/// record, as it must be passed in message_tsig.
+///
+/// @param check_tsig TSIG RR from the original message
+/// @param message_tsig TSIR RR from the response message that we are validating
+/// @param key the key used for signing
+/// @param message received message (without TSIG record)
 void verify_signature (DnsRR *check_tsig, DnsRR *message_tsig,
                        stl_string key, message_buff message) {
   if (!message_tsig)
@@ -114,7 +123,7 @@ stl_string calc_mac (DnsRR &tsig_rr, message_buff msg, stl_string sign_key, mess
 //  printf ("Begin MAC calculation\n");
   
   /* original MAC */
-  if (extra) hmac_md5_update(&md5, extra->len, extra->msg);
+  if (extra && extra->len) hmac_md5_update(&md5, extra->len, extra->msg);
   
   /* message */
   hmac_md5_update(&md5, 10, msg.msg);
