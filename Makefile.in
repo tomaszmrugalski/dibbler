@@ -35,7 +35,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_GTEST_TRUE@am__append_1 = tests
+@HAVE_GTEST_TRUE@am__append_1 = tests/utils 
+@HAVE_GTEST_TRUE@am__append_2 = tests
 sbin_PROGRAMS = dibbler-client$(EXEEXT) dibbler-server$(EXEEXT) \
 	dibbler-relay$(EXEEXT) dibbler-requestor$(EXEEXT)
 subdir = .
@@ -324,12 +325,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-CODE_SUBDIRS = @PORT_SUBDIR@ nettle Misc poslib Options AddrMgr CfgMgr \
-	IfaceMgr Messages SrvOptions SrvIfaceMgr SrvAddrMgr \
-	SrvMessages SrvTransMgr SrvCfgMgr RelCfgMgr RelIfaceMgr \
-	RelMessages RelOptions RelTransMgr ClntOptions ClntTransMgr \
-	ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages Requestor doc
-SUBDIRS = $(CODE_SUBDIRS) $(am__append_1)
+CODE_SUBDIRS = @PORT_SUBDIR@ nettle $(am__append_1) Misc poslib \
+	Options AddrMgr CfgMgr IfaceMgr Messages SrvOptions \
+	SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr \
+	RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr \
+	ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr \
+	ClntMessages Requestor doc
+SUBDIRS = $(CODE_SUBDIRS) $(am__append_2)
 DIST_SUBDIRS = $(CODE_SUBDIRS) Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 dibbler_client_SOURCES =  \
 	$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp \
