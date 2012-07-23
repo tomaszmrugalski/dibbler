@@ -1,4 +1,5 @@
-AM_CPPFLAGS  = -I$(top_srcdir)/Misc
+AM_CPPFLAGS  = -I$(top_srcdir)
+AM_CPPFLAGS += -I$(top_srcdir)/Misc
 AM_CPPFLAGS += -I$(top_srcdir)/poslib
 AM_CPPFLAGS += -I$(top_srcdir)/nettle
 
@@ -18,6 +19,7 @@ tsig_tests_LDADD = $(GTEST_LDADD)
 tsig_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 tsig_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
 tsig_tests_LDADD += $(top_builddir)/nettle/libNettle.a
+tsig_tests_LDADD += $(top_builddir)/tests/utils/libTestUtils.a
 endif
 
 noinst_PROGRAMS = $(TESTS)

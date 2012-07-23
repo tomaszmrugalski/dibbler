@@ -532,7 +532,8 @@ SrvCfgMgr/tests/Makefile
 CfgMgr/tests/Makefile
 poslib/tests/Makefile
 tests/Makefile
-tests/Srv/Makefile)
+tests/Srv/Makefile
+tests/utils/Makefile)
 
 dnl ----------------------------------------
 dnl Print out configured parameters

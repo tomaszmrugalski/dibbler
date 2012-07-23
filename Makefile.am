@@ -1,6 +1,10 @@
 AUTOMAKE_OPTIONS = foreign
 
-CODE_SUBDIRS = @PORT_SUBDIR@ nettle Misc poslib Options AddrMgr CfgMgr IfaceMgr Messages
+CODE_SUBDIRS = @PORT_SUBDIR@ nettle 
+if HAVE_GTEST
+  CODE_SUBDIRS += tests/utils 
+endif
+CODE_SUBDIRS += Misc poslib Options AddrMgr CfgMgr IfaceMgr Messages
 CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
 CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages

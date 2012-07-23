@@ -1,9 +1,10 @@
 
 #include <gtest/gtest.h>
 #include "poslib.h"
-
+#include "tests/utils/poslib_utils.h"
 
 using namespace std;
+using namespace test;
 
 class TSIGTest : public ::testing::Test {
 public:
@@ -37,6 +38,7 @@ public:
         Buffer_ = msg->compile(UDP_MSG_SIZE);
     }
 
+#if 0
     void hexToBin(const std::string& hex, message_buff &dst) {
         size_t len = hex.length()/2;
         unsigned char * bin = new unsigned char[len];
@@ -61,6 +63,7 @@ public:
 
         return (!memcmp(a.msg, b.msg, a.len));
     }
+#endif
 
     void msgSend(const std::string& srvAddr,
                  DnsMessage * msg) {

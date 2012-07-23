@@ -1,4 +1,5 @@
-AM_CPPFLAGS  = -I$(top_srcdir)/IfaceMgr
+AM_CPPFLAGS  = -I$(top_srcdir)
+AM_CPPFLAGS += -I$(top_srcdir)/IfaceMgr
 AM_CPPFLAGS += -I$(top_srcdir)/Misc
 AM_CPPFLAGS += -I$(top_srcdir)/poslib
 AM_CPPFLAGS += -I$(top_srcdir)/nettle
@@ -20,6 +21,7 @@ DnsUpdate_tests_LDADD += $(top_builddir)/IfaceMgr/libIfaceMgr.a
 DnsUpdate_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 DnsUpdate_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
 DnsUpdate_tests_LDADD += $(top_builddir)/nettle/libNettle.a
+DnsUpdate_tests_LDADD += $(top_builddir)/tests/utils/libTestUtils.a
 endif
 
 noinst_PROGRAMS = $(TESTS)
