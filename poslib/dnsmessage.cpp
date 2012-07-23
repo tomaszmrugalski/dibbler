@@ -55,8 +55,8 @@ message_buff::message_buff(const message_buff& buff) {
 }
 
 message_buff::~message_buff() {
-  if (!is_static) free(msg);
-
+    if (!is_static)
+        free(msg);
 }
 
 message_buff& message_buff::operator=(const message_buff& buff) {
@@ -114,6 +114,8 @@ DnsRR::DnsRR() {
   TTL = 0;
   RDATA = NULL;
   RDLENGTH = 0;
+  presign_RDATA = NULL;
+  presign_RDLENGTH = 0;
 }
 
 DnsRR::DnsRR(domainname _NAME, u_int16 _TYPE, u_int16 _CLASS, u_int32 _TTL) {
@@ -123,6 +125,8 @@ DnsRR::DnsRR(domainname _NAME, u_int16 _TYPE, u_int16 _CLASS, u_int32 _TTL) {
   TTL = _TTL;
   RDATA = NULL;
   RDLENGTH = 0;
+  presign_RDATA = NULL;
+  presign_RDLENGTH = 0;
 }
 
 DnsRR::DnsRR(domainname _NAME, u_int16 _TYPE, u_int16 _CLASS, u_int32 _TTL, uint16_t _RDLENGTH, const unsigned char *_RDATA) {
@@ -131,7 +135,9 @@ DnsRR::DnsRR(domainname _NAME, u_int16 _TYPE, u_int16 _CLASS, u_int32 _TTL, uint
   CLASS = _CLASS;
   TTL = _TTL;
   RDLENGTH = _RDLENGTH;
-  RDATA = (unsigned char *)memdup(_RDATA, _RDLENGTH);;
+  RDATA = (unsigned char *)memdup(_RDATA, _RDLENGTH);
+  presign_RDATA = NULL;
+  presign_RDLENGTH = 0;
 }
 
 DnsRR::DnsRR(const DnsRR& rr) {
@@ -141,10 +147,19 @@ DnsRR::DnsRR(const DnsRR& rr) {
   TTL = rr.TTL;
   RDATA = (unsigned char *)memdup(rr.RDATA, rr.RDLENGTH);
   RDLENGTH = rr.RDLENGTH;
+  presign_RDATA = NULL;
+  presign_RDLENGTH = 0;
+  if (rr.presign_RDATA) {
+      presign_RDATA = (unsigned char*)memdup(rr.presign_RDATA, rr.presign_RDLENGTH);
+      presign_RDLENGTH = rr.presign_RDLENGTH;
+  }
 }
 
 DnsRR::~DnsRR() {
-  if (RDATA) free(RDATA);
+  if (RDATA)
+      free(RDATA);
+  if (presign_RDATA)
+      free(presign_RDATA);
 }
 
 DnsRR& DnsRR::operator=(const DnsRR& rr) {
@@ -156,6 +171,8 @@ DnsRR& DnsRR::operator=(const DnsRR& rr) {
     TTL = rr.TTL;
     RDATA = (unsigned char *)memdup(rr.RDATA, rr.RDLENGTH);
     RDLENGTH = rr.RDLENGTH;
+    presign_RDATA = (unsigned char*)memdup(rr.presign_RDATA, rr.presign_RDLENGTH);
+    presign_RDLENGTH = rr.presign_RDLENGTH;
   }
   return *this;
 }
@@ -440,8 +457,10 @@ message_buff DnsMessage::compile(int maxlen) {
     
     /* store digest in tsig RR */
     // thomson: to be able to sign the message multiple times, uncomment:
-    // unsigned char *old_RDATA = tsig_rr->RDATA;
-    // u_int16 old_RDLENGTH = tsig_rr->RDLENGTH;
+    if (tsig_rr->presign_RDLENGTH == 0) {
+        tsig_rr->presign_RDLENGTH = tsig_rr->RDLENGTH;
+        tsig_rr->presign_RDATA = (unsigned char*)memdup(tsig_rr->RDATA, tsig_rr->RDLENGTH);
+    }
 
     stl_string newdata;
     int digestpos = rr_getdata (tsig_rr->RDATA, DNS_TYPE_TSIG, 3) - tsig_rr->RDATA,
@@ -450,7 +469,6 @@ message_buff DnsMessage::compile(int maxlen) {
     newdata.append ((char*)uint16_buff (key.size ()), 2);
     newdata.append (key);
     newdata.append ((char*)tsig_rr->RDATA + digestpos + 2 + digestlen, tsig_rr->RDLENGTH - (digestpos + digestlen + 2));
-    // thomson: to be able to sign the message multiple times, comment this free() out
     free (tsig_rr->RDATA);
     tsig_rr->RDATA = (unsigned char *) memdup (newdata.c_str(), newdata.size());
     tsig_rr->RDLENGTH = newdata.size ();

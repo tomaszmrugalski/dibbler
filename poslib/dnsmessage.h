@@ -326,6 +326,13 @@ class DnsRR {
    * \sa rr_tostring(), rr_getdomain(), rr_getmail(), ...
    */
   unsigned char *RDATA;
+
+
+  // RDLENGTH copy of data before TSIG_RR is signed
+  uint16_t presign_RDLENGTH;
+
+  // RDATA copy of data before TSIG_RR is signed
+  unsigned char *presign_RDATA;
 };
 
 /*!
