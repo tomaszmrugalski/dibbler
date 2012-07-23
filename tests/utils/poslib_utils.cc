@@ -12,7 +12,8 @@ namespace test {
     /// @param dst
     void hexToBin(const std::string& hex, message_buff &dst) {
         size_t len = hex.length()/2;
-        unsigned char * bin = new unsigned char[len];
+        // keep this C-style, as message_buff desctructor does free()
+        unsigned char * bin = (unsigned char*)malloc(len);
 
         for (unsigned int i = 0; i < 2*len; i+=2) {
             if (!isxdigit(hex[i]) || !isxdigit(hex[i+1])) {
