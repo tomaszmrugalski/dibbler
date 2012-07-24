@@ -93,7 +93,7 @@ protected: // used to be private, but is now protected for testing
     void addDHCID(const char* duid, int duidlen);
     void setTSIG(const std::string& keyname, const std::string& base64encoded,
                  const std::string& algro, uint32_t fudge = 600);
-    ~DNSUpdate();
+    virtual ~DNSUpdate();
     DnsUpdateResult run(int timeout);
     void showResult(int result);
 };
