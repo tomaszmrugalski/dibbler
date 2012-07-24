@@ -58,7 +58,8 @@ am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@tsig_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libPoslib.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/tests/utils/libTestUtils.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
@@ -231,15 +232,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # This is to workaround long long in gtest.h
-AM_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/poslib \
-	-I$(top_srcdir)/nettle $(GTEST_INCLUDES) -Wno-long-long \
-	-Wno-variadic-macros
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/Misc \
+	-I$(top_srcdir)/poslib -I$(top_srcdir)/nettle \
+	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@tsig_tests_SOURCES = run_tests.cc tsig_unittest.cc
 @HAVE_GTEST_TRUE@tsig_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@tsig_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/poslib/libPoslib.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a
+@HAVE_GTEST_TRUE@	$(top_builddir)/nettle/libNettle.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/tests/utils/libTestUtils.a
 all: all-am
 
 .SUFFIXES:
