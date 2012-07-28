@@ -1,0 +1,145 @@
+DHCPv6 and DHCPv6 options - per [RFC3315]
+
+(last updated 2007-04-26)
+
+- Message types
+- Option codes
+- Status codes
+- DUID
+
+For the Civic Address Types Registry [RFC4776], please see:
+http://www.iana.org/assignments/civic-address-types-registry
+
+DHCP Message types
+
+Value     Description                    Reference
+-----     ----------------------         ---------
+    1     SOLICIT                        [RFC3315]
+    2     ADVERTISE                      [RFC3315]
+    3     REQUEST                        [RFC3315]
+    4     CONFIRM                        [RFC3315]
+    5     RENEW                          [RFC3315]
+    6     REBIND                         [RFC3315]
+    7     REPLY                          [RFC3315]
+    8     RELEASE                        [RFC3315] 
+    9     DECLINE                        [RFC3315]
+   10     RECONFIGURE                    [RFC3315]
+   11     INFORMATION-REQUEST            [RFC3315]
+   12     RELAY-FORW                     [RFC3315]
+   13     RELAY-REPL                     [RFC3315]
+
+DHCP Option Codes
+
+Value     Description                      Reference
+-----     ----------------------           ---------
+    1     OPTION_CLIENTID                  [RFC3315]
+    2     OPTION_SERVERID                  [RFC3315]
+    3     OPTION_IA_NA                     [RFC3315]
+    4     OPTION_IA_TA                     [RFC3315]
+    5     OPTION_IAADDR                    [RFC3315]
+    6     OPTION_ORO                       [RFC3315]
+    7     OPTION_PREFERENCE                [RFC3315]
+    8     OPTION_ELAPSED_TIME              [RFC3315]
+    9     OPTION_RELAY_MSG                 [RFC3315]
+   10     Unassigned  
+   11     OPTION_AUTH                      [RFC3315]
+   12     OPTION_UNICAST                   [RFC3315]
+   13     OPTION_STATUS_CODE               [RFC3315]
+   14     OPTION_RAPID_COMMIT              [RFC3315]
+   15     OPTION_USER_CLASS                [RFC3315]
+   16     OPTION_VENDOR_CLASS              [RFC3315]
+   17     OPTION_VENDOR_OPTS               [RFC3315]
+   18     OPTION_INTERFACE_ID              [RFC3315]
+   19     OPTION_RECONF_MSG                [RFC3315]
+   20     OPTION_RECONF_ACCEPT             [RFC3315]
+   21     SIP Servers Domain Name List     [RFC3319]
+   22     SIP Servers IPv6 Address List    [RFC3319]
+   23     DNS Recursive Name Server Option [RFC3646]
+   24     Domain Search List option        [RFC3646]
+   25     OPTION_IA_PD                     [RFC3633]
+   26     OPTION_IAPREFIX                  [RFC3633]
+   27     OPTION_NIS_SERVERS               [RFC3898]
+   28     OPTION_NISP_SERVERS              [RFC3898]
+   29     OPTION_NIS_DOMAIN_NAME           [RFC3898]
+   30     OPTION_NISP_DOMAIN_NAME          [RFC3898]
+   31     OPTION_SNTP_SERVERS              [RFC4075]
+   32     OPTION_INFORMATION_REFRESH_TIME  [RFC4242]
+   33     OPTION_BCMCS_SERVER_D            [RFC4280]         
+   34     OPTION_BCMCS_SERVER_A            [RFC4280]
+   36     OPTION_GEOCONF_CIVIC             [RFC4776]
+   37     OPTION_REMOTE_ID                 [RFC4649]
+   38     OPTION_SUBSCRIBER_ID             [RFC4580]
+   39     OPTION_CLIENT_FQDN               [RFC4704]
+   40     OPTION_PANA_AGENT                [RFC-ietf-dhc-paa-option-05.txt]   
+   41     OPTION_NEW_POSIX_TIMEZONE        [RFC4833]
+   42     OPTION_NEW_TZDB_TIMEZONE         [RFC4833]       
+   
+Status Codes
+
+Code  Name                Reference
+----  ------------        ---------
+   0  Success             [RFC3315]
+   1  UnspecFail          [RFC3315]
+   2  NoAddrsAvail        [RFC3315]
+   3  NoBinding           [RFC3315]
+   4  NotOnLink           [RFC3315]
+   5  UseMulticast        [RFC3315] 
+   6  NoPrefixAvail       [RFC3633]                
+
+DUIDs
+
+Type   Description             Reference
+----   -----------------       ---------
+   1   DUID-LLT                [RFC3315] 
+   2   DUID-EN                 [RFC3315]
+   3   DUID-LL                 [RFC3315]
+
+References
+----------
+[RFC3315]  R. Droms (ed.), J. Bound, B. Volz, T. Lemon, C. Perkins, 
+           and M. Carney, "Dynamic Host Configuration Protocol for 
+           IPv6 (DHCPv6)", RFC 3315, July 2003.
+
+[RFC3319]  H. Schulzrinne and B. Volz, "DHCPv6 Options for SIP Servers"
+           RFC 3319, July 2003.
+
+[RFC3646]  R. Droms, Ed., "DNS Configuration options for DHCPv6", RFC 3646,
+           December 2003.
+
+[RFC3633]  O. Troan and R. Droms, "IPv6 Prefix Options for DHCPv6", RFC 3633,
+           December 2003.
+
+[RFC3898]  V. Kalusivalingam, "NIS Configuration Options for DHCPv6", RFC 3898,
+           October 2004.
+
+[RFC4075]  V. Kalusivalingam, "Simple Network Time Protocol Configuration Option 
+           for DHCPv6", RFC 4075, May 2005.
+
+[RFC4280]  K. Chowdhury, P. Yegani and L. Madour, "DHCP Options for Broadcast 
+           and Multicast Control Servers", RFC 4280, November 2005.
+
+[RFC4242]  S. Venaas, T. Chown, and B. Volz, "Information Refresh Time Option for 
+           DHCPv6", RFC 4242, November 2005.
+
+[RFC4776]  H. Schulzrinne, "Dynamic Host Configuration Protocol (DHCPv4 and DHCPv6) 
+           Option for Civic Addresses Configuration Information", RFC 4776, November 2006.
+
+[RFC4649]  B. Volz, "DHCPv6 Relay Agent Remote ID Option", RFC 4649, August 2006.
+
+[RFC4580]  B. Volz, "DHCPv6 Relay Agent Subscriber-ID Option", RFC 4580, June 2006.
+ 
+[RFC4704]  B. Volz, "The DHCPv6 Client FQDN Option", RFC 4704, October 2006.
+
+[RFC-ietf-dhc-paa-option-05.txt]
+           L. Morand, A. Yegin, S. Kumar, S. Madanapalli, "DHCP options for PANA 
+           Authentication Agents", RFC XXXX, Month, Year.
+
+[RFC4833]  E. Lear, P. Eggert, "A Timezone Option for DHCP", RFC 4833,
+		    April 2007.
+
+
+(registry created 03 November 2003)
+
+[]
+
+

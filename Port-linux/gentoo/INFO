@@ -1,0 +1,15 @@
+To install Dibbler in the Gentoo system, add following line to 
+the /etc/make.conf file:
+
+PORTDIR_OVERLAY="/path/to/this/directory"
+
+Then issue following command:
+
+emerge dibbler
+
+Dibbler will be compiled in a Gentoo way.
+
+Interesting fact: This ebuild was uploaded to the bugs.gentoo.org
+(see bug #76084, http://bugs.gentoo.org/show_bug.cgi?id=76084).
+There's a distinct possibility that it will be incorporated to the
+main Gentoo portage in a near future.

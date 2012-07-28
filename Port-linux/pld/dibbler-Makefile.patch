@@ -1,0 +1,176 @@
+--- Makefile.inc~	2005-01-01 21:43:08.234824232 +0100
++++ Makefile.inc	2005-01-01 21:43:10.446488008 +0100
+@@ -6,7 +6,7 @@
+ 
+ # === compiler options ===
+ COPTS        = -D$(ARCH) -funsigned-char $(XMLCFLAGS) -I $(INCDIR) $(DEBUGINFO) -Wall
+-OPTS         = -ftemplate-depth-40 $(COPTS)
++OPTS         = -ftemplate-depth-40 $(COPTS) $(CFLAGS) $(CXXFLAGS)
+ CLNT_LDFLAGS = $(LDFLAGS)
+ SRV_LDFLAGS  = $(LDFLAGS)
+ 
+--- Makefile~	2005-01-01 23:15:21.344663680 +0100
++++ Makefile	2005-01-01 23:15:37.120265424 +0100
+@@ -2,16 +2,16 @@
+ PREFIX = .
+ export TOPDIR=$(CURDIR)
+ 
+-all: includes bison libs server client tags
++all: includes bison/bison++ libs server client tags
+ 
+ includes:
+ 	cd $(INCDIR); $(MAKE) links
+ 
+-bison:
++bison/bison++:
+ 	@echo "[CONFIG ] /bison++/"
+-	cd $(PREFIX)/bison++; ./configure &>configure.log
++	cd $(PREFIX)/bison++; ./configure >configure.log
+ 	@echo "[MAKE   ] /bison++/bison++"
+-	cd $(PREFIX)/bison++; $(MAKE)
++	$(MAKE) -C $(PREFIX)/bison++
+ 
+ client: $(CLIENTBIN)
+ 
+@@ -200,7 +200,7 @@
+ 	@echo "[RM     ] dibbler-$(VERSION)-src.tar.gz"
+ 	rm -f dibbler-$(VERSION)-src.tar.gz
+ 	cd doc; $(MAKE) clean
+-	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; cd bison++; $(MAKE) clean; fi
++	if [ -e bison++/Makefile ]; then echo "[CLEAN  ] /bison++"; $(MAKE) -C bison++ clean; fi
+ 	@echo "[TAR/GZ ] ../dibbler-tmp.tar.gz"
+ 	cd ..; tar czvf dibbler-tmp.tar.gz --exclude CVS --exclude '*.exe' --exclude '*.o' \
+         --exclude '*.a' --exclude '*.deb' --exclude '*.tar.gz' dibbler > filelist-src
+@@ -277,7 +277,7 @@
+ 	$(CP) $$file ../../../.. ; \
+ 	done
+ 
+-install: server client doc
++install: server client
+ 	$(MKDIR) $(INST_WORKDIR)
+ 	@echo "[INSTALL] $(SERVERBIN)"
+ 	$(INSTALL) -m 755 $(SERVERBIN) $(INST_WORKDIR)/
+--- Makefile.inc.bak	2005-01-01 23:16:46.939651264 +0100
++++ Makefile.inc	2005-01-01 23:44:20.321299048 +0100
+@@ -1,5 +1,5 @@
+ # === used tools ===
+-CPP          = g++
++CXX          = g++
+ CC           = gcc
+ FLEX         = flex
+ BISONPP      = $(PREFIX)/bison++/bison++ -S $(PREFIX)/bison++/bison.cc -H $(PREFIX)/bison++/bison.h
+@@ -73,8 +73,8 @@
+ # === UNIVERSAL TARGETS ===
+ 
+ %.o: %.cpp %.h
+-	@echo "[CPP    ] $(SUBDIR)/$@"
+-	$(CPP) $(OPTS) -c -o $@ $<
++	@echo "[CXX    ] $(SUBDIR)/$@"
++	$(CXX) $(OPTS) -c -o $@ $<
+ 
+ %.a: objs
+ 	@echo "[LIB    ] $(SUBDIR)/$@"	
+--- Makefile.bak	2005-01-01 23:16:46.939651264 +0100
++++ Makefile	2005-01-01 23:44:20.318299504 +0100
+@@ -17,7 +17,7 @@
+ 
+ $(CLIENTBIN): includes commonlibs clntlibs DHCPClient.o $(CLIENT)
+ 	@echo "[LINK   ] $(SUBDIR)/$@"
+-	$(CPP) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
++	$(CXX) $(OPTS) $(CLNTLINKOPTS) -o $@ DHCPClient.o $(CLIENT) \
+ 	-L$(MISC)	  -lMisc \
+ 	-L$(ADDRMGR)      -lAddrMgr \
+ 	-L$(CLNTADDRMGR)  -lClntAddrMgr \
+@@ -40,7 +40,7 @@
+ 
+ $(SERVERBIN): includes commonlibs srvlibs DHCPServer.o $(SERVER)
+ 	@echo "[LINK   ] $(SUBDIR)/$@"
+-	$(CPP) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
++	$(CXX) $(OPTS) -I $(INCDIR) $(SRVLINKOPTS) -o $@ DHCPServer.o $(SERVER)  \
+ 	-L$(SRVADDRMGR)   -lSrvAddrMgr \
+ 	-L$(ADDRMGR)      -lAddrMgr \
+ 	-L$(LOWLEVEL)    \
+@@ -115,7 +115,7 @@
+ 
+ 	echo " C++ compiler used " >> VERSION
+ 	echo "-------------------" >> VERSION
+-	$(CPP) --version >> VERSION
++	$(CXX) --version >> VERSION
+ 	echo >> VERSION
+ 
+ 	echo " C compiler used " >> VERSION
+--- ./ClntAddrMgr/Makefile.bak	2004-06-04 15:10:07.000000000 +0200
++++ ./ClntAddrMgr/Makefile	2005-01-02 00:20:13.366986352 +0100
+@@ -11,5 +11,5 @@
+ test: test1
+ 
+ test1: test1.cpp libs
+-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test1.cpp  \
++	$(CXX) $(OPTS) -I $(INCDIR) -o $@ test1.cpp  \
+ 	-L. -lClntAddrMgr
+--- ./ClntCfgMgr/Makefile.bak	2004-11-29 22:21:56.000000000 +0100
++++ ./ClntCfgMgr/Makefile	2005-01-02 00:20:13.391982552 +0100
+@@ -9,8 +9,8 @@
+ libs: libClntCfgMgr.a
+ 
+ ClntLexer.o: ClntLexer.cpp
+-	@echo "[CPP    ] $(SUBDIR)/$@"
+-	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
++	@echo "[CXX    ] $(SUBDIR)/$@"
++	$(CXX) $(OPTS) -c -ftemplate-depth-30 ClntLexer.cpp
+ 
+ parser: ClntParser.y ClntLexer.l
+ 	echo "[BISON++] ClntParser.y"
+@@ -19,6 +19,6 @@
+ 	echo "[FLEX   ] ClntLexer.l"
+ 	$(FLEX) -+ -i -L -oClntLexer.cpp ClntLexer.l
+ 	$(FLEX) -+ -i -oClntLexer.cpp ClntLexer.l
+-#	echo "[CPP    ] $(SUBDIR)/ClntParser.cpp"
+-#	$(CPP) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
++#	echo "[CXX    ] $(SUBDIR)/ClntParser.cpp"
++#	$(CXX) $(OPTS) -c -ftemplate-depth-30 ClntParser.cpp 
+ 
+--- ./SrvCfgMgr/Makefile.bak	2004-10-25 22:45:53.000000000 +0200
++++ ./SrvCfgMgr/Makefile	2005-01-02 00:20:13.402980880 +0100
+@@ -8,8 +8,8 @@
+ libs: libSrvCfgMgr.a
+ 
+ SrvLexer.o: SrvLexer.cpp
+-	@echo "[CPP    ] $(SUBDIR)/$@"
+-	$(CPP) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
++	@echo "[CXX    ] $(SUBDIR)/$@"
++	$(CXX) -c $(OPTS) -ftemplate-depth-30 SrvLexer.cpp 
+ 
+ parser: SrvParser.y SrvLexer.l 
+ 	echo "[BISON++] SrvParser.y"
+--- ./port-linux/Makefile.bak	2004-11-02 00:31:25.000000000 +0100
++++ ./port-linux/Makefile	2005-01-02 00:20:13.413979208 +0100
+@@ -45,14 +45,14 @@
+ test: test1 test2
+ 
+ test1: test1.cpp dns.c
+-	$(CPP) $(OPTS) test1.cpp dns.c -o test1
++	$(CXX) $(OPTS) test1.cpp dns.c -o test1
+ 
+ test2: test2.cpp libLowLevel.a
+ 	cd $(SRVCFGMGR); $(MAKE) libs
+-	$(CPP) $(OPTS)  test2.cpp -L. -lLowLevel -o test2
++	$(CXX) $(OPTS)  test2.cpp -L. -lLowLevel -o test2
+ 
+ test3: test1.cpp SrvParser.cpp SrvLexer.o
+ 	cd $(SRVCFGMGR); $(MAKE) libs
+-	$(CPP) $(OPTS) -I $(INCDIR) -o $@ test3.cpp SrvParser.cpp SrvLexer.o \
++	$(CXX) $(OPTS) -I $(INCDIR) -o $@ test3.cpp SrvParser.cpp SrvLexer.o \
+ 	-L. -lSrvParser -L$(SRVCFGMGR) -lSrvCfgMgr ../IPv6Addr.cpp ../DUID.cpp \
+ 	$(LOWLEVEL)/addrpack.o ../Logger.o
+--- ./test/Makefile.bak	2004-12-02 01:51:30.000000000 +0100
++++ ./test/Makefile	2005-01-02 00:20:13.424977536 +0100
+@@ -8,7 +8,7 @@
+ 
+ test14: test14.cpp ../misc/Logger.cpp
+ 	cd ../misc; $(MAKE) Logger.o
+-	$(CPP) $(OPTS) -o $@ $< ../misc/Logger.o
++	$(CXX) $(OPTS) -o $@ $< ../misc/Logger.o
+ 
+ objs: $(OBJECTS)
+ 

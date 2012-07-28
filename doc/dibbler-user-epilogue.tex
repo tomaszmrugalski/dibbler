@@ -1,0 +1,190 @@
+%%
+%% $Id: dibbler-user-epilogue.tex,v 1.12 2007-05-04 17:13:39 thomson Exp $
+%%
+%% $Log: not supported by cvs2svn $
+%% Revision 1.11  2007-04-01 19:22:26  thomson
+%% 0.6.0RC4 descriptions.
+%%
+
+\newpage
+\section{Miscellaneous topics}
+
+\subsection{History}
+Dibbler project was started as master thesis by Tomasz Mrugalski and
+Marek Senderski on Computer Science faculty on Gdansk University of
+Technology. Both authors graduated in september 2003 and soon after
+started their jobs.
+
+During master thesis writing, it came to my attention that there are
+other DHCPv6 implementations available, but none of them has been
+named properly. Refering to them was a bit
+silly: ,,DHCPv6 published on sourceforge.net has better support than
+DHCPv6 developed in KAME project, but our DHCPv6
+implementation...''. So I have decided that this implementation should
+have a name. Soon it was named Dibbler after famous CMOT
+Dibbler from Discworld series by Terry Pratchett.
+
+Sadly, Marek does not have enough free time to develop Dibbler, so his
+involvement is non-existent at this time. However, that does not mean,
+that this project is abandoned. It is being actively developed by
+me (Tomek). Keep in mind that I work at full time and do
+Ph.D. studies, so my free time is also greatly limited.
+
+\hypertarget{contact}{}
+\subsection{Contact and reporting bugs}
+\label{contact}
+There is an website located at \url{http://klub.com.pl/dhcpv6}. If
+you belive you have found a bug, please put it in Bugzilla -- it is a
+bug tracking system located at \url{http://klub.com.pl/bugzilla}. If
+you are not familiar with that kind of system, don't worry. After
+simple registration, you will be asked for system and Dibbler version
+you are using and so on. Without feedback from users, author will not
+be aware of many bugs and so will not be able to fix them. That's why
+users feedback is very important. You can also send bug report
+directly using e-mail. Be sure to be as detailed as possible. Please
+include both server and client log files, both config and xml
+files. If you are familiar with tcpdump or ethereal, traffic dumps
+from this programs are also great help.
+
+If you are not sure if your issue is a bug or a configuration problem,
+you may also want to browse archives and ask on a mailing list. See
+following subsection for details.
+
+If you have used Dibbler and it worked ok, this documentation answered
+all you question and everything is in order (hmmm, wake up, it must be
+a dream, it isn't reality:), also send a short note to author. He can
+be contated at thomson(at)klub(dot)com(dot)pl (replace (at) with @ and
+dot with .). Be sure to include information which country do you live
+in. It's just author's curiosity to know where Dibbler is being used
+or tested.
+
+\subsection{Mailing lists}
+\label{mailing-list}
+There are two mailing lists related to the Dibbler project:
+\begin{description}
+\item[dibbler] -- Maling list for Dibbler users. It is used to ask for help,
+report bugs, hay hello and things like that. If you are not sure, what to
+do, people on this list will try to help you. Web-inteface link:
+\href{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler}{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler}
+\item[dibbler-devel] -- That list is intended as a way of communication
+between people, who are technically involved in the dibbler development.
+If you are going to improve dibbler in any way, make sure that you announce
+it here. You may get help. Also if you are trying to fix a bug on your own
+(hey, that's great!), this list is a good place to talk about it.
+Web-interface link: \href{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler-devel}{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler-devel}
+\end{description}
+
+Both lists have archives available on-line. You can join or leave one or both lists
+at any time using convenient web-interface or using traditional mail-based approach.
+
+\subsection{Thanks and greetings}
+
+I would like to send my thanks and greetings to various persons.
+Without them, Dibbler would not be where it is today. For a full list
+of contributors, see AUTHORS file.
+
+\begin{description}
+\item[Marek Senderski] -- He's author of almost half of the Dibbler
+  code. Without his efforts, Dibbler would be simple, long forgotten
+  by now master thesis.
+\item[Jozef Wozniak] -- My master thesis' supervisor. He allowed me to
+  see DHCP in a larger scope as part of network provisioning process.
+\item[Jacek Swiatowiak] -- He's my master thesis consultant. He guided
+  Marek and me to take first steps with DHCPv6 implementation.
+\item[Ania Szulc] -- Discworld fan and a great girl, too. She's the one
+  who helped me to decide how to name this yet-untitled DHCPv6 implementation.
+\item[Christian Strauf] -- Without his queries and questions, Dibbler
+  would be abandoned in late 2003.
+\item[Bartek Gajda] -- His interest convinced me that Dibbler is worth
+  the effort to develop it further.
+\item[Artur Binczewski and Maciej Patelczyk] -- They both ensured that
+  Dibbler is (and always will be) GNU GPL software. Open source
+  community is grateful.
+\item[Josep Sole] -- His mails (directly and indirectly) resulted in
+  various fixes and speeded up of 0.2.0 release.
+\item[Sob] -- He has ported 0.4.0 back to Win2000 and NT. As a direct
+  result, 0.4.1 was released for those platforms, too.
+\item[Guy ''GMSoft'' Martin] -- He has provided me with access to HPPA
+  machine, so I was able to squish some little/big endian bugs. He
+  also uploaded ebuild to the Gentoo portage.
+\item[Bartosz ''fEnio'' Fenski] -- He taught me how much work needs to
+  be done, before deb packages are considered ok. It took me some time
+  to understand that more pain for the package developer means less
+  problems for the end user.  Thanks to him, Dibbler is now part of
+  the Debian GNU/Linux distribution.
+\item[Adrien Clerc and his team] -- Their contribution of the DNS
+  Updates code is most welcome.
+\item[Krzysztof Wnuk] -- He has fixed, improved and extended DNS
+  Updates support as well as provided initial support for prefix
+  delegation.
+\item[Alain Durand] -- Thanks for the invitation to interop test
+  session and for allowing me to see DHCPv6 issues in a much broader
+  scope.
+\item[Petr Pisar] -- He has reported lots of bugs, and also often
+  provides fixes.  Thanks.
+\item[Paul Schauer] -- Thanks to his effors, Dibbler now works on Mac
+  OS X. He did majority of the porting work and then did numerous
+  rounds of testing and debugging.
+\end{description}
+
+\newpage
+\section{Acknowledgements}
+Author would like to acknowledge following projects and programmes
+that supported or continue to support research and development of
+the Dibbler software and related activities.
+
+\vspace{1cm}
+
+\noindent
+This work has been partially supported by the Polish Ministry of
+Science and Higher Education under the European Regional Development
+Fund, Grant No. POIG.01.01.02-00-045/09-00 
+\href{https://www.iip.net.pl/en/project}{Future Internet Engineering.}
+
+\begin{figure}[ht]
+\begin{minipage}[b]{0.27\textwidth}
+\centering
+\vspace*{\fill}
+\includegraphics[scale=0.45]{logo-nss}
+\vspace*{\fill}
+\end{minipage}
+\begin{minipage}[b]{0.28\textwidth}
+\centering
+\includegraphics[scale=0.7]{logo-iip}
+\end{minipage}
+\begin{minipage}[b]{0.16\textwidth}
+\centering
+\includegraphics[scale=0.6]{logo-pg}
+\end{minipage}
+\begin{minipage}[b]{0.26\textwidth}
+\centering
+\includegraphics[scale=0.75]{logo-eu}
+\end{minipage}
+\end{figure}
+
+\vspace{1cm}
+
+\noindent
+The Dibbler project was created as master thesis at 
+\href{http://www.eti.pg.gda.pl/lang?locale=en/}{Department
+of Computer Communications}, at \href{http://www.eti.pg.gda.pl/lang?locale=en}{Faculty of Electronics,
+Telecommunications and Informations}, at \href{http://www.pg.gda.pl/en/}{Gdansk University of Technology}.
+
+\begin{figure}[ht]
+\begin{minipage}[b]{0.33\linewidth}
+\centering
+\includegraphics[scale=1.0]{logo-eti}
+\vspace{-0.8cm}
+\end{minipage}
+\begin{minipage}[b]{0.33\linewidth}
+\centering
+\includegraphics[scale=1.1]{logo-pg}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.33\linewidth}
+\centering
+\includegraphics[scale=0.6]{logo-kti}
+\end{minipage}
+\end{figure}
+
+\newpage

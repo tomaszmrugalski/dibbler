@@ -1,0 +1,96 @@
+# Project: dibbler-requestor
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = dibbler-relay_private.res
+OBJ  = lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../Options/Opt.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Requestor/Requestor.o ../Requestor/ReqCfgMgr.o ../Requestor/ReqMsg.o ../Requestor/ReqOpt.o ../Requestor/ReqOpts.o ../Requestor/ReqTransMgr.o ../Options/OptDUID.o ../Options/OptIAAddress.o ../Misc/KeyList.o $(RES)
+LINKOBJ  = lowlevel-winnt2k.o ../Misc/Logger.o ../Misc/DHCPConst.o ../Misc/DUID.o ../Misc/IPv6Addr.o ../Messages/Msg.o ../IfaceMgr/SocketIPv6.o ../IfaceMgr/Iface.o ../IfaceMgr/IfaceMgr.o ../CfgMgr/CfgMgr.o ../Options/Opt.o ../Options/OptGeneric.o ../Misc/addrpack.o ../Requestor/Requestor.o ../Requestor/ReqCfgMgr.o ../Requestor/ReqMsg.o ../Requestor/ReqOpt.o ../Requestor/ReqOpts.o ../Requestor/ReqTransMgr.o ../Options/OptDUID.o ../Options/OptIAAddress.o ../Misc/KeyList.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -lws2_32  
+INCS =  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"../AddrMgr"  -I"../CfgMgr"  -I"../IfaceMgr"  -I"../Messages"  -I"../Misc"  -I"../Options"  -I"../Port-winnt2k"  -I"../RelCfgMgr"  -I"../RelIfaceMgr"  -I"../RelMessages"  -I"../RelOptions"  -I"../RelTransMgr"  -I"../TransMgr" 
+BIN  = dibbler-requestor.exe
+CXXFLAGS = $(CXXINCS) -D_GLIBCXX_USE_C99_DYNAMIC -DMINGWBUILD -funsigned-char  
+CFLAGS = $(INCS) -DMINGWBUILD -funsigned-char  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before dibbler-requestor.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "dibbler-requestor.exe" $(LIBS)
+
+lowlevel-winnt2k.o: lowlevel-winnt2k.c
+	$(CC) -c lowlevel-winnt2k.c -o lowlevel-winnt2k.o $(CFLAGS)
+
+../Misc/Logger.o: ../Misc/Logger.cpp
+	$(CPP) -c ../Misc/Logger.cpp -o ../Misc/Logger.o $(CXXFLAGS)
+
+../Misc/DHCPConst.o: ../Misc/DHCPConst.cpp
+	$(CPP) -c ../Misc/DHCPConst.cpp -o ../Misc/DHCPConst.o $(CXXFLAGS)
+
+../Misc/DUID.o: ../Misc/DUID.cpp
+	$(CPP) -c ../Misc/DUID.cpp -o ../Misc/DUID.o $(CXXFLAGS)
+
+../Misc/IPv6Addr.o: ../Misc/IPv6Addr.cpp
+	$(CPP) -c ../Misc/IPv6Addr.cpp -o ../Misc/IPv6Addr.o $(CXXFLAGS)
+
+../Messages/Msg.o: ../Messages/Msg.cpp
+	$(CPP) -c ../Messages/Msg.cpp -o ../Messages/Msg.o $(CXXFLAGS)
+
+../IfaceMgr/SocketIPv6.o: ../IfaceMgr/SocketIPv6.cpp
+	$(CPP) -c ../IfaceMgr/SocketIPv6.cpp -o ../IfaceMgr/SocketIPv6.o $(CXXFLAGS)
+
+../IfaceMgr/Iface.o: ../IfaceMgr/Iface.cpp
+	$(CPP) -c ../IfaceMgr/Iface.cpp -o ../IfaceMgr/Iface.o $(CXXFLAGS)
+
+../IfaceMgr/IfaceMgr.o: ../IfaceMgr/IfaceMgr.cpp
+	$(CPP) -c ../IfaceMgr/IfaceMgr.cpp -o ../IfaceMgr/IfaceMgr.o $(CXXFLAGS)
+
+../CfgMgr/CfgMgr.o: ../CfgMgr/CfgMgr.cpp
+	$(CPP) -c ../CfgMgr/CfgMgr.cpp -o ../CfgMgr/CfgMgr.o $(CXXFLAGS)
+
+../Options/Opt.o: ../Options/Opt.cpp
+	$(CPP) -c ../Options/Opt.cpp -o ../Options/Opt.o $(CXXFLAGS)
+
+../Options/OptGeneric.o: ../Options/OptGeneric.cpp
+	$(CPP) -c ../Options/OptGeneric.cpp -o ../Options/OptGeneric.o $(CXXFLAGS)
+
+../Misc/addrpack.o: ../Misc/addrpack.c
+	$(CC) -c ../Misc/addrpack.c -o ../Misc/addrpack.o $(CFLAGS)
+
+../Requestor/Requestor.o: ../Requestor/Requestor.cpp
+	$(CPP) -c ../Requestor/Requestor.cpp -o ../Requestor/Requestor.o $(CXXFLAGS)
+
+../Requestor/ReqCfgMgr.o: ../Requestor/ReqCfgMgr.cpp
+	$(CPP) -c ../Requestor/ReqCfgMgr.cpp -o ../Requestor/ReqCfgMgr.o $(CXXFLAGS)
+
+../Requestor/ReqMsg.o: ../Requestor/ReqMsg.cpp
+	$(CPP) -c ../Requestor/ReqMsg.cpp -o ../Requestor/ReqMsg.o $(CXXFLAGS)
+
+../Requestor/ReqOpt.o: ../Requestor/ReqOpt.cpp
+	$(CPP) -c ../Requestor/ReqOpt.cpp -o ../Requestor/ReqOpt.o $(CXXFLAGS)
+
+../Requestor/ReqOpts.o: ../Requestor/ReqOpts.cpp
+	$(CPP) -c ../Requestor/ReqOpts.cpp -o ../Requestor/ReqOpts.o $(CXXFLAGS)
+
+../Requestor/ReqTransMgr.o: ../Requestor/ReqTransMgr.cpp
+	$(CPP) -c ../Requestor/ReqTransMgr.cpp -o ../Requestor/ReqTransMgr.o $(CXXFLAGS)
+
+../Options/OptDUID.o: ../Options/OptDUID.cpp
+	$(CPP) -c ../Options/OptDUID.cpp -o ../Options/OptDUID.o $(CXXFLAGS)
+
+../Options/OptIAAddress.o: ../Options/OptIAAddress.cpp
+	$(CPP) -c ../Options/OptIAAddress.cpp -o ../Options/OptIAAddress.o $(CXXFLAGS)
+
+../Misc/KeyList.o: ../Misc/KeyList.cpp
+	$(CPP) -c ../Misc/KeyList.cpp -o ../Misc/KeyList.o $(CXXFLAGS)
+
+dibbler-relay_private.res: dibbler-relay_private.rc 
+	$(WINDRES) -i dibbler-relay_private.rc --input-format=rc -o dibbler-relay_private.res -O coff 

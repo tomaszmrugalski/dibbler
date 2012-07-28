@@ -1,0 +1,9 @@
+ Requestor TODO
+----------------
+- bind socket on loopback (server and requestor on the same machine)
+- make dst address configurable
+
+
+ Requestor Questions
+---------------------
+- which address send this data to?

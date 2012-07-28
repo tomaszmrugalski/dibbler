@@ -1,0 +1,132 @@
+%%
+%% $Id: dibbler-user-faq.tex,v 1.11 2007-09-06 23:10:40 thomson Exp $
+%%
+
+\newpage
+\section{Frequently Asked Questions}
+
+Soon after initial Dibbler version was released, feedback from user
+regarding various things started to appear. Some of the questions were
+common enough to get into this section.
+
+\subsection{Common Questions}
+
+%% Q1 
+\Q Why client does not configure routing after assigning addresses, so
+I cannot e.g. ping other hosts?
+
+\A It's a common misunderstanding. DHCPv4 provides many configuration
+parameters to host, with default router address being one of
+them. Things are done differently in IPv6. Routing configuration is
+supposed to be conveyed using Router Advertisements (RA) messages,
+announced periodically by routers. Hosts are supposed to listen to
+those messages and configure their routing appropriately. Note that
+this mechanism is completely separate from DHCPv6. It may sound a bit
+strange, but that's the way it was meant to work. 
+
+Properly implemented clients are supposed to configure leased address
+with /128 prefix and learn the actual prefix from RA. As this is
+incovenient, many clients (with dibbler included) bend the rules and
+configure received addresses with /64 prefix. Please note that this
+value is arbitrary chosen and may be improper in many scenarios. 
+
+\Note This behaviour has changed in the 0.5.0 release. Previous
+releases configured received address with /128 prefix. To restore old,
+more RFC conformant behavior, see \emph{strict-rfc-no-routing}
+directive in the \ref{client-cfg-file} section.
+
+\vspace{0.5cm}
+%% Q2
+\Q Dibbler server receives SOLICIT message, prints information about
+ADVERTISE/REPLY transmission, but nothing is actually transmitted. Is
+this a bug?
+
+\A Are you sure that your client is behaving properly and responds to
+Neighbor Discovery (ND) requests? Before any IPv6 packet (that
+includes DHCPv6 message) is transmitted, recipient reachabity is
+checked (using Neighbor Discovery protocol \cite{rfc4861}). Server
+sends Neighbor Solicititation message and waits for client's Neighbor
+Advertisement. If that is not transmitted, even after 3 retries,
+server gives up and doesn't transmit IPv6 packet (DHCPv6 reply, that
+is) at all. Being not able to respond to the Neighbor Discovery
+packets may indicate invalid client behavior.
+
+%% Q3
+\Q Dibbler sends some options which have values not recognized by the
+Ethereal/Wireshark or by other implementations. What's wrong?
+
+\A DHCPv6 is a relatively new protocol and additional options are in a
+specification phase. It means that until standarisation process is
+over, they do not have any officially assigned numbers. Once
+standarization process is over (and RFC document is released), this
+option gets an official number. 
+
+There's pretty good chance that different implementors may choose
+diffrent values for those not-yet officialy accepted options. To
+change those values in Dibbler, you have to modify file
+misc/DHCPConst.h and recompile server or client. See Developer's
+Guide, section \emph{Option Values} for details.
+
+%% Q4
+\Q I can't get (insert your trouble causing feature here) to
+work. What's wrong? 
+
+\A Go to the project \url{http://klub.com.pl/dhcpv6/}{homepage} and
+browse \href{http://klub.com.pl/lists/dibbler/}{list archives}. If
+your problem was not reported before, please don't hesitate to write
+to the
+\href{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler}{mailing
+  list} or \href{mailto:thomson(at)klub.com.pl}{contact author}
+directly. 
+
+\subsection{Linux specific questions}
+
+%% Q1
+\Q I can't run client and server on the same host. What's wrong?
+
+\A First of all, running client and server on the same host is just
+plain meaningless, except testing purposes only. There is a problem
+with sockets binding. To work around this problem, consult Developer's
+Guide, Tip section how to compile Dibbler with certain options.
+
+%% Q2
+\Q After enabling unicast communication, my client fails to send
+REQUEST messages. What's wrong?
+
+\A This is a problem with certain kernels. My limited test capabilites
+allowed me to conclude that there's problem with 2.4.20
+kernel. Everything works fine with 2.6.0 with USAGI patches. Patched 
+kernels with enhanced IPv6 support can be downloaded from
+\url{http://www.linux-ipv6.org/}. Please let me know if your kernel
+works or not.
+
+\subsection{Windows specific questions}
+
+%% Q1
+\Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
+  ServicePack2} my DHCPv6 (or other IPv6 application) stopped
+working. Is Dibbler compatible with Windows XP SP2?
+
+\A Both products (Advanced Networking Pack as well as Service Pack 2
+for Windows XP) provide IPv6 firewall. It is configured by default to
+reject all incoming IPv6 traffic. You have to disable this
+firewall. To disable firewall on the ,,Local Area Connection''
+interface, issue following command in a console:
+
+\begin{lstlisting}
+netsh firewall set adapter "Local Area Connection" filter=disable
+\end{lstlisting}
+
+%% Q2
+\Q Server or client refuses to create DUID. What's wrong?
+
+\A Make sure that you have at least one up and running interface with
+at least 6 bytes long MAC address. Simple ethernet or WIFI card
+matches those requirements. Note that network cable must be plugged
+(or in case of wifi card -- associated with access point), otherwise
+interface is marked as down.
+
+%% Q3
+\Q Is Microsoft Windows 8 supported?
+
+\A Unfortunately, Windows 8 is not supported yet.

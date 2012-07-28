@@ -1,0 +1,16 @@
+config BR2_PACKAGE_DIBBLER
+	bool "busybox - The Swiss Army Knife of embedded Linux"
+	default y
+	help
+	  The Swiss Army Knife of embedded Linux.  It slices, it dices, it
+	  makes Julian Fries.
+	  
+	  
+	  Most people will answer Y
+
+menu "Dibbler Configuration"
+	depends BR2_PACKAGE_DIBBLER
+
+source package/busybox/config/Config.in
+
+endmenu

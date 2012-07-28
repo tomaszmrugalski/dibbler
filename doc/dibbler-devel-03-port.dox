@@ -1,0 +1,133 @@
+/**
+ * @page portability 3. Portability Guide
+ * 
+ * This section contains guidelines and tips for people intending to port
+ * Dibbler to a new achitecture or system. Before attempting to do so,
+ * please contact Dibbler author
+ * (a href="mailto:thomson(at)klub.com.pl">thomson(at)klub.com.pl</a>)
+ * for help. Substantial support will be provided.
+ * 
+ * @section portabilityLowLevel 3.1 Low-level System API
+ * 
+ * To port dibbler to a new system, several of the low level functions have to
+ * be implemented. List of those functions is available in Misc/Portable.h
+ * file, in section labeled as:
+ * 
+ * @verbatim
+/* ****************************************************************** */
+/* *** interface/socket low level functions ************************* */
+/* ****************************************************************** */
+@endverbatim
+ * 
+ * Here is a description of the function prototypes:
+ * 
+ * - @code struct iface * if_list_get() @endcode Returns pointer to a list of iface
+ * structures. Each structure represents a network interface. This structure is
+ * defined in the Misc/Portable.h file. This function should allocate memory
+ * for this list.
+ * 
+ * - @code void if_list_release(struct iface * list) @endcode Releases list previously
+ * allocated in the if_list_get() function.
+ * 
+ * - @code int ipaddr_add(const char* ifacename, int ifindex, const char* addr, uint pref, uint valid) @endcode
+ * This function adds address specified (in plain text) in addr parameter to
+ * the interface named ifacename with interface index ifindex with preferred
+ * and valid lifetimes set to pref and valid. Note that some systems might
+ * ignore interface name and use ifindex only, or vice versa.
+ * 
+ * - @code int ipaddr_del(const char* ifacename, int ifindex, const char* addr)@endcode 
+ *  Removes address addr (specified in plain text) from the interface ifacename.
+ * 
+ * - @code int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse) @endcode 
+ * Creates socket used to read and write data to
+ * the ifacename/ifaceid interface, bound to address addr (specified in plain
+ * text) and to the port. thisifaceonly parameter specifies if the socket
+ * should be bound to the specific interface (1) or not (0). Some systems (e.g.
+ * Linux) allow to bind socket in a way that the address/port combination can
+ * be bound multiple times. This kind of socket binding allow some advanced
+ * tricks like running both server and client on the same host. This parameter
+ * is specified by @c MOD_CLNT_BIND_REUSE, defined (or not) Makefile.inc. This
+ * function return file descriptor used to reference to a created socket.
+ * 
+ * - @code int sock_del(int fd) @endcode -- delete previously created socket. fd is a
+ * file descriptor returned by the sock_add() function.
+ * 
+ * - @code int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface) @endcode 
+ * Sends data to addr (defined in packed name)/port, using socket
+ * fs. Send buflen byte starting at buf. Send the data using interface iface.
+ * 
+ * - @code int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen) @endcode 
+ * Receive data from the fd socket. Store destination (my)
+ * address in a memory located at myPlainAddr, store sender's address in a
+ * memory located at peerPlainAddr. The data itself should be stored in a
+ * memory located at buf. buflen is a size of a buffer (to avoid buffer
+ * overflow). This function returns number of bytes received.
+ * 
+ * - @code int is_addr_tentative(char* ifacename, int iface, char* plainAddr) @endcode
+ * Returns information if the address plainAddr added to the ifacename/iface
+ * interface is tentative (1) or not (0). It is possible that the Duplicate
+ * Address Detection is not yet complete, so other possible return value is
+ * inconclusive (2).
+ * 
+ * Following functions are used to set corresponding parameters, received
+ * from the DHCPv6, in the system:
+ * 
+ * @verbatim
+int dns_add(const char* ifname, int ifindex, const char* addrPlain);
+int dns_del(const char* ifname, int ifindex, const char* addrPlain);
+int domain_add(const char* ifname, int ifindex, const char* domain);
+int domain_del(const char* ifname, int ifindex, const char* domain);
+int ntp_add(const char* ifname, int ifindex, const char* addrPlain);
+int ntp_del(const char* ifname, int ifindex, const char* addrPlain);
+int timezone_set(const char* ifname, int ifindex, const char*timezone);
+int timezone_del(const char* ifname, int ifindex, const char*timezone);
+int sipserver_add(const char* ifname, int ifindex, const char*addrPlain);
+int sipserver_del(const char* ifname, int ifindex, const char*addrPlain);
+int sipdomain_add(const char* ifname, int ifindex, const char*domain);
+int sipdomain_del(const char* ifname, int ifindex, const char*domain);
+int nisserver_add(const char* ifname, int ifindex, const char*addrPlain);
+int nisserver_del(const char* ifname, int ifindex, const char*addrPlain);
+int nisdomain_set(const char* ifname, int ifindex, const char*domain);
+int nisdomain_del(const char* ifname, int ifindex, const char*domain);
+int nisplusserver_add(const char* ifname, int ifindex, const char*addrPlain);
+int nisplusserver_del(const char* ifname, int ifindex, const char*addrPlain);
+int nisplusdomain_set(const char* ifname, int ifindex, const char*domain);
+int nisplusdomain_del(const char* ifname, int ifindex, const char*domain);
+@endverbatim
+
+ * 
+ * There are also inet_pton4() (IPv4 address Plain-To-Network), inet_pton6
+ * (IPv6 address Plain-To-Network), inet_ntop4 (IPv4 address Network-To-Plain)
+ * and inet_ntop6 (IPv6 address Network-To-Plain) functions, which should be
+ * present in the system. If they are not, port-specific part of the dibbler
+ * should provide them. See misc/addrpack.c for implementation used in Windows.
+ * 
+ * Also function microsleep(int x) should make current process dormant for x
+ * microseconds.
+ * 
+ * An example implementation of those functions, can be found in
+ * Port-linux/lowlevel-linux.c and Port-linux/lowlevel-options-linux.c file. Those
+ * files are specific for a Linux system.
+ * 
+ * To fully port Dibbler, also a main() function must be implemented. It should
+ * contain system-specific interface (e.g. registration as a service in Windows
+ * environment or detaching to background in Linux "daemon" mode).
+ * It is also necessary to include following code in the client implementation:
+ * 
+ * @verbatim
+TDHCPClient client(CLNTCONF_FILE);
+client.run();
+@endverbatim
+ * 
+ * Where CLNTCONF_FILE is a filename of a client configuration file. Similar
+ * code should be executed in the server implementation:
+ * 
+ * @verbatim
+TDHCPServer srv(SRVCONF_FILE);
+srv.run();
+@endverbatim
+ * 
+ * See Port-linux/dibbler-client.cpp and Port-linux/dibbler-server.cpp for
+ * example implementation, specific to a Linux systems. Other implementations 
+ * (ports to different systems) are available in their Port-* directories.
+ */

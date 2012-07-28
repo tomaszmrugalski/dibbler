@@ -1,0 +1,4 @@
+Server   : 0.1.1, WindowsXP
+Client   : 0.1.1, WindowsXP
+Report by: Josep Sole, France Telecom R&D
+Details  : Server is unable to read full (without ::) IPv6 address.

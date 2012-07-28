@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+#
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec_prefix_set=no
+
+usage()
+{
+	cat <<EOF
+Usage: poslib-config [OPTIONS] [LIBRARIES]
+Options:
+  [--version]      Print version info
+  [--libs]         Print linker flags
+  [--cflags]       Print compiler flags
+  [--server]       Use the Poslib server library
+EOF
+	exit $1
+}
+
+if test $# -eq 0; then
+	usage 1 1>&2
+fi
+
+while test $# -gt 0; do
+  case "$1" in
+  -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+  *) optarg= ;;
+  esac
+
+  case $1 in
+    --version)
+      echo @VERSION@
+      ;;
+    --cflags)
+      echo_cflags=yes
+      ;;
+    --libs)
+      echo_libs=yes
+      ;;
+    *)
+      usage 1 1>&2
+      ;;
+  esac
+  shift
+done
+
+CMD=
+
+if test "$echo_cflags" = "yes"; then
+      CMD="$CMD -I@includedir@/poslib-@VERSION@ -I@libdir@/poslib-@VERSION@/include/ -funsigned-char @THREAD_CFLAGS@"
+fi
+
+if test "$echo_libs" = "yes"; then
+      CMD="$CMD -L@libdir@ -lposlib @THREAD_LIBS@"
+fi
+
+if test "x$CMD" != "x" ; then
+  echo $CMD
+fi

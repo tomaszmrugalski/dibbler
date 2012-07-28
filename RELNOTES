@@ -1,0 +1,20 @@
+
+  Dibbler 0.8.2 release notes [2011-02-29]
+ ---------------------------------------------------------
+
+ This is the 0.8.2 release of the Dibbler software.
+
+ This is a maintenance release and includes number of bug fixes, without any
+ significant new functionalities. If you are happy with 0.8.1 operation, you do
+ not need to upgrade.
+
+ See CHANGELOG for a complete list of changes.
+
+ If you find bugs, please report them on http://klub.com.pl/bugzilla/ or
+ send bug report to the directly to the author. Appropriate links are
+ on project website: http://klub.com.pl/dhcpv6/. If you need help or
+ want to share your thoughts, take a look at one of the
+ Dibbler-related mailing lists: dibbler or dibbler-devel.
+
+                               Tomasz Mrugalski,
+                               author

@@ -1,0 +1,7 @@
+Server   : 0.1.1, Linux
+Client   : 0.1.1, Linux
+Report by: Thomson, during laboratories with students.
+Details  : segfault in TAddrMgr::dbStore (this=0x80cfe70) at AddrMgr.cpp:81
+           During trying to send ADVERTISE
+Status   : Fix pending: SrvOptIA_NA.cpp: 182 classNr is sometimes negative
+	   

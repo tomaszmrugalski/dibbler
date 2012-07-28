@@ -1,0 +1,146 @@
+%%
+%% Dibbler - a portable DHCPv6
+%%
+%% authors: Tomasz Mrugalski <thomson@klub.com.pl>
+%%          Marek Senderski <msend@o2.pl>
+%%
+%% released under GNU GPL v2 only licence
+%%
+%% $Id: dibbler-user.tex,v 1.20 2008-08-29 00:07:38 thomson Exp $
+%%
+
+\documentclass[11pt]{article}
+\usepackage[latin2]{inputenc}
+\usepackage[dvips]{graphicx}
+\usepackage{float}
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{url}
+\usepackage[usenames]{color}
+\usepackage[colorlinks=true,citecolor=darkblue,linkcolor=darkblue,urlcolor=darkred]{hyperref}
+
+%\setlength{\topmargin}{-1.0cm}
+\usepackage[twoside=true,
+	    left={2cm},
+	    right={2cm},
+	    top={2cm},
+	    bottom={2cm},
+	    footskip={1cm},
+	    headheight={1cm},
+%%            twosideshift={0.5cm},
+	    headsep={0.5cm}]{geometry}
+
+%%%%%% \dzis macro by Lupan %%%%%%
+\newcommand{\dzis}{
+\the\year-%
+\ifnum\month<10{}0\fi
+\the\month-%
+\ifnum\day<10{}0\fi
+\the\day
+}
+
+\author{Tomasz Mrugalski\\ \small{\href{mailto:thomson(at)klub.com.pl}{thomson(at)klub.com.pl}}}
+\date{\dzis}
+\title{Dibbler -- a portable DHCPv6\\User's guide}
+
+\definecolor{myBgColor}{rgb}{1.0,1.0,1.0}
+\definecolor{darkred}{rgb}{0.7,0.2, 0.4} %% URL (external links)
+\definecolor{darkblue}{rgb}{0.0,0.0,0.7} %% internal links, toc
+\definecolor{myBgTableColor}{rgb}{0.9, 0.9, 0.9}
+\pagecolor{myBgColor}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\bfseries Dibbler -- a portable DHCPv6}
+\fancyhead[C]{\small\bfseries User's Guide}
+\fancyhead[R]{\small\bfseries\thepage}
+%%\fancyhead[C]{\small\bfseries\leftmark}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\addtolength{\headheight}{0.5pt}
+\fancypagestyle{plain}{%
+\fancyhead{} %
+\renewcommand{\headrulewidth}{0pt} %
+}
+
+%%\newenvironment{Cfg}{ \Verbatim }{ \endVerbatim }
+
+\makeindex
+
+\newcommand{\Q}{ \vspace{0.5cm} \textbf{Q:} }
+\newcommand{\A}{ \vspace{0.25cm} \textbf{A:} }
+\newcommand{\Note}{ \textbf{Note:} }
+
+\newcommand{\msg}[1]{\emph{#1}}
+\newcommand{\opt}[1]{\emph{#1}}
+\newcommand{\IA}{ \textbf{\emph{IA}} }
+\newcommand{\duid} { DUID }
+\newcommand{\code}[1]{\textbf{#1}}
+\newcommand{\subsubsubsection}[1]{\subsubsection{#1}}
+\newcommand{\CfgBegin}{\begin{lstlisting}}
+\newcommand{\CfgEnd}{\end{lstlisting}}
+
+%% this does not work... yet
+\newenvironment{Cfg}{\begin{lstlisting}}{\end{lstlisting}}
+
+%% for Verbatim environment
+%%\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single,framesep=3mm}
+
+%%\renewcommand{\FancyVerbFormatLine}[1]{\colorbox{red}{#1}}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{myBgTableColor},frame=lines}
+%or columns=fullflexible
+
+%% include auto-generated version number
+\input{version.tex}
+
+%% message names should be printed this way: \msg{SOLICIT}
+%% options should be printed this way:       \opt{Option Request}
+
+\begin{document}
+
+\vspace{-4cm}
+\maketitle
+\vspace{-1cm}
+
+\begin{center}
+\version
+\end{center}
+
+\newpage
+\tableofcontents
+
+\newpage
+
+%% INTRO, OVERVIEW
+\input{dibbler-user-intro.tex}
+
+%% INSTALLATION and USAGE
+\input{dibbler-user-usage.tex}
+
+%% FEATURES
+\input{dibbler-user-features.tex}
+
+%% CONFIG FILES
+\input{dibbler-user-config-server.tex}
+
+%% CONFIG FILES
+\input{dibbler-user-config-client.tex}
+
+%% CONFIG FILES
+\input{dibbler-user-config-relay.tex}
+
+%% FAQ
+\input{dibbler-user-faq.tex}
+
+%% HISTORY, CONTACT
+\input{dibbler-user-epilogue.tex}
+
+%% BIBLIOGRAPHY
+\input{dibbler-user-bibliography.tex}
+
+
+\end{document}

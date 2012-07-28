@@ -1,0 +1,33 @@
+noinst_LIBRARIES = libClntOptions.a
+
+libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options -I$(top_srcdir)/ClntMessages
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/ClntIfaceMgr -I$(top_srcdir)/IfaceMgr
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntCfgMgr -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/ClntAddrMgr
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
+
+libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp ClntOptAAAAuthentication.h 
+libClntOptions_a_SOURCES += ClntOptAddrParams.cpp ClntOptAddrParams.h 
+libClntOptions_a_SOURCES += ClntOptAuthentication.cpp ClntOptAuthentication.h
+#libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
+#libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 
+libClntOptions_a_SOURCES += ClntOptElapsed.cpp ClntOptElapsed.h
+libClntOptions_a_SOURCES += ClntOptFQDN.cpp ClntOptFQDN.h
+libClntOptions_a_SOURCES += ClntOptIAAddress.cpp ClntOptIAAddress.h
+libClntOptions_a_SOURCES += ClntOptIA_NA.cpp ClntOptIA_NA.h 
+libClntOptions_a_SOURCES += ClntOptIA_PD.cpp ClntOptIA_PD.h
+libClntOptions_a_SOURCES += ClntOptIAPrefix.cpp ClntOptIAPrefix.h
+libClntOptions_a_SOURCES += ClntOptKeyGeneration.cpp ClntOptKeyGeneration.h
+libClntOptions_a_SOURCES += ClntOptLifetime.cpp ClntOptLifetime.h
+#libClntOptions_a_SOURCES += ClntOptNISDomain.cpp ClntOptNISDomain.h
+#libClntOptions_a_SOURCES += ClntOptNISPDomain.cpp ClntOptNISPDomain.h 
+#libClntOptions_a_SOURCES += ClntOptNTPServers.cpp ClntOptNTPServers.h
+libClntOptions_a_SOURCES += ClntOptOptionRequest.cpp ClntOptOptionRequest.h
+libClntOptions_a_SOURCES += ClntOptPreference.cpp ClntOptPreference.h
+#libClntOptions_a_SOURCES += ClntOptSIPDomain.cpp ClntOptSIPDomain.h
+#libClntOptions_a_SOURCES += ClntOptSIPServer.cpp ClntOptSIPServer.h
+libClntOptions_a_SOURCES += ClntOptStatusCode.cpp ClntOptStatusCode.h
+libClntOptions_a_SOURCES += ClntOptTA.cpp ClntOptTA.h
+libClntOptions_a_SOURCES += ClntOptTimeZone.cpp ClntOptTimeZone.h
+libClntOptions_a_SOURCES += ClntOptUserClass.cpp ClntOptUserClass.h
+libClntOptions_a_SOURCES += ClntOptVendorClass.cpp ClntOptVendorClass.h
+libClntOptions_a_SOURCES += ClntOptVendorSpec.cpp ClntOptVendorSpec.h

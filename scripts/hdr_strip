@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+
+$name = $ARGV[0];
+
+print "FILE: $name\n";
+
+$file = open(FILE, $name) or die "Unable to open $name file.";
+@tmptable = <FILE>;
+$data = join "", @tmptable;
+close(FILE);
+
+# GOOD $logPattern = '/\*[^*]*\*+([^/*][^*]*\*+)*/';
+#$logPattern = '(/\*[^*]*\*+([^/*][^*]*\*+)*/)';
+$logPattern = '(/\*[^*]*\*+([^/*][^*])*Log([^/*][^*]*\*+)*/)';
+
+$hdrPattern = '(/\*[^*]*\*+([^/*])*GNU([^/*][^*]*\*+)*/)';
+
+#if ($data =~ s%$logPattern%LOG%smg) {
+#$cmt = $1;
+#}
+
+if ($data =~ s%$hdrPattern%HDR%smg) {
+$hdr = $1;
+}
+
+#$data =~ s#/\*[^*]*\*+([^/*][^*]*\*+)*/|//[^\n]*|("(\\.|[^"\\])*"|'(\\.|[^'\\])*'|.[^/"'\\]*)#defined $2 ? $2 : ""#gse;
+
+print "====\n$data===$cmt===\n$hdr===\n";

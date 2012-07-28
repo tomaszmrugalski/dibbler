@@ -1,0 +1,129 @@
+.TH dibbler-relay 8 2004-12-11 GNU Dibbler server
+
+.SH NAME
+dibbler-relay \- a portable DHCPv6 relay
+
+.SH DESCRIPTION
+.B dibbler-relay
+is a portable implementation of the DHCPv6 relay. DHCPv6 relays are
+proxies, which allow one server to support links, which server is not
+directly connected to. There are ports available for Linux 2.4/2.6 systems
+as well as MS Windows XP and 2003. They are freely available under 
+.B GNU GPL 
+version 2 (or later) license.
+
+.SH SYNOPSIS
+.B dibbler-relay
+[ run | start | stop | status ]
+
+.SH OPTIONS
+
+.I run
+- starts relay in the console. Relay can be closed using ctrl-c.
+
+.I start 
+- starts relay in daemon mode.
+
+.I stop
+- stops running relay.
+
+.I status
+- shows status of the relay.
+
+.SH EXAMPLES
+
+Relay forwards DHCPv6 messages between interfaces. Messages from
+client are encapsulated and forwarded as RELAY_FORW messages. Replies
+from server are received as RELAY_REPL message. After decapsulation,
+they are being sent back to clients. 
+
+It is vital to inform server, where this relayed message was
+received. DHCPv6 does this using interface-id option. This identifier
+must be unique. Otherwise relays will get confused when they will
+receive reply from server. Note that this id does not need to be
+alligned with system interface id (ifindex). Think about it as
+"ethernet segment identifier" if you are using Ethernet network or as
+"bss identifier" if you are using 802.11 network.
+
+Let's assume this case: relay has 2 interfaces: eth0 and
+eth1. Clients are located on the eth1 network. Relay should receive
+data on that interface using well-known ALL_DHCP_RELAYS_AND_SERVER
+multicast address (ff02::1:2). Relay also listens on its global
+address 2000::123. Packets received on the eth1 should be forwarded on
+the eth0 interface, also using multicast address:
+
+.nf
+log-level 8
+log-mode short
+
+iface eth0 {
+  server multicast yes
+}
+
+iface eth1 {
+  client multicast yes
+  client unicast 2000::123
+  interface-id 1000
+}
+.fi
+
+Here is another exmaple. This time messages should be forwarded from
+eth1 and eth3 to the eth0 interface (using multicast) and to the eth2
+interface (using server's global address 2000::546). Also clients must
+use multicasts (the default approach):
+
+.nf
+iface eth0 {
+  server multicast yes
+}
+
+iface eth2 {
+  server unicast 2000::456
+}
+
+iface eth1 {
+  client multicast yes                    
+  interface-id 1000
+}
+
+iface eth3 {
+  client multicast yes                    
+  interface-id 1001
+}
+.fi
+
+.SH FILES
+All files are created in the /var/lib/dibbler directory. During operation,
+Dibbler saves various file in that directory. Dibbler relay reads
+/etc/dibbler/relay.conf file. Log file is named client.log.
+
+.SH STANDARDS
+This implementation aims at conformance to the following standards:
+
+.I RFC 3315 
+DHCP for IPv6
+
+.I RFC 3736
+Stateless DHCPv6
+
+.SH BUGS
+Bugs are tracked with bugzilla, available at
+\fIhttp://klub.com.pl/bugzilla/\fP. If you belive you have found a
+bug, don't hesitate to report it.
+
+.SH AUTHOR
+Dibbler was developed as master thesis on the Technical University of
+Gdansk by Tomasz Mrugalski and Marek Senderski. Currently Marek has
+not enough free time, so this project is being developed by Tomasz
+Mrugalski. Author can be reached at thomson@klub.com.pl.
+
+.SH SEE ALSO
+There are dibbler-server(8) and dibbler-client(8) manual pages available. You are
+also advised to take a look at project website located at
+\fIhttp://klub.com.pl/dhcpv6/\fP.
+As far as authors know, this is the only Windows DHCPv6 stateful
+implementation available and the only one with relay support. It is
+also one of two freely available under Linux. The other Linux
+implementation is available at
+\fIhttp://dhcpv6.sourceforge.net\fP,
+but it is rather outdated and seems not being actively developed.

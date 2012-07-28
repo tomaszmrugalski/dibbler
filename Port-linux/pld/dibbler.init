@@ -1,0 +1,73 @@
+#!/bin/sh
+# 
+# dibbler	DHCPv6 Server
+#
+# chkconfig:	345 93 11
+#
+# description:	dibbler is a portable DHCPv6 implementation. It supports stateful \
+#		(i.e. IPv6 address granting) as well as stateless (i.e. option \
+#		granting) autoconfiguration for IPv6.
+# pidfile:	/var/run/dibbler.pid
+# config:	/var/lib/dibbler/server.conf
+
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+#[ -f /etc/sysconfig/dibbler ] && . /etc/sysconfig/dibbler
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		# nls "ERROR: Networking is down. %s can't be run." <service>
+		msg_network_down dibbler
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/dibbler ]; then
+		msg_starting dibbler
+		daemon /usr/sbin/dibbler-server start
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && 
+		touch /var/lock/subsys/dibbler
+	else
+		msg_already_running dibbler
+	fi
+	;;
+  stop)
+	# Stop daemon.
+	if [ -f /var/lock/subsys/dibbler ]; then
+		msg_stopping dibbler
+		killproc dibbler-server
+		RET=$?
+		if [ $RET -eq 0 ]; then
+			rm -f /var/lock/subsys/dibbler /var/run/dibbler.pid >/dev/null 2>&1
+		fi
+	else
+		msg_not_running dibbler
+	fi
+	;;
+  status)
+	dibbler-server status
+	;;
+  reload|restart|force-restart)
+  	$0 stop
+	$0 start
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|reload}"
+	exit 3
+	;;
+esac
+
+exit $RETVAL

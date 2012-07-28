@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w
+
+if (1) {
+@list = `find .. -name \*.cpp -or -name \*.h`;
+} else {
+open(FILE, $ARGV[0]) or die "Unable to open $ARGV[0] file.";
+@list = <FILE>;
+close(FILE);
+};
+
+foreach $file (@list) {
+    if (`grep "GPL" $file`) {
+#	print "GPL $file";
+    } else {
+	print "$file";
+    }
+}
+

@@ -1,0 +1,254 @@
+
+INTERNET DRAFT                                        Tomasz Mrugalski
+<draft-mrugalski-addropts-XX.txt>                                  GUT
+Expires [publish-date+6 months]                    [not-published-yet]
+
+
+                  Address Parameters Option for DHCPv6
+                   <draft-mrugalski-addropts-XX.txt>
+
+Status of this Memo
+
+   By submitting this Internet-Draft, each author represents that any
+   applicable patent or other IPR claims of which he or she is aware
+   have been or will be disclosed, and any of which he or she becomes
+   aware will be disclosed, in accordance with Section 6 of BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+      http://www.ietf.org/ietf/1id-abstracts.txt
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+      http://www.ietf.org/shadow.html.
+      
+   This Internet-Draft will expire on May 6, 2007.
+
+Copyright Notice
+
+   Copyright (C) The Internet Society (2006). 
+
+Abstract
+
+   DHCPv6 protocol offers the capability of automatic allocation of
+   reusable IPv6 addresses to all interested clients. Unfortunately,
+   there is no way to specify additional parameters related to such
+   addresses, like prefix length they belong to. Without such data,
+   clients located on the same link can't communicate.
+
+   This document defines methods for providing additional address
+   parameters to the clients, so appropriate routing to link-local
+   prefix can be configured. Mechanism for requesting and providing
+   anycast and multicast addresses is also proposed.
+
+Table of Contents
+
+ ...
+
+1. Introduction
+
+   During normal DHCPv6 [RFC3315] operation, server assigns addresses
+   to all interested clients. Unfortunately, clients located on the
+   same link and receiving addresses from the same server are able to
+   configure IPv6 addresses only. The information about prefix length
+   is not available, so clients are not able to configure routing to
+   local prefixes. Without such routing configured, clients are not
+   able to exchange IPv6 datagrams.
+
+   By using Address Parameters option, server is able to specify
+   prefix length of the granted address, so besides of configuring the
+   address itself, client is able to configure corresponding route as 
+   well.
+   
+   It is also possible for server to assign addresses with types other
+   than normal unicast. Server can grant multicast or anycast
+   addresses.
+
+2. Requirements
+
+   To take advantage of Address Parameters mechanism, implementation
+   of the DHCPv6 protocol, which supports Address Parameters Option is
+   required.
+
+3. Operation overview
+
+   If client supports Address Parameters Option it SHOULD send 
+   OPTION_ADDRPARAMS in the Option Request Option in SOLICIT, REQUEST,
+   RENEW and REBIND messages.
+
+   Server, upon receiving such message SHOULD attach that option as a
+   suboption to every granted address, if configured to support
+   Address Parameters Option. Due to backward compatibility, server 
+   MUST NOT attach Address Parametere Option, unless client asked for
+   it explicely in ORO.
+
+   All DHCPv6 mechanisms work as defined in RFC3315. When Address
+   Parameters Option is used, every IAADDR option contains exactly
+   one Address Parameters suboption.
+
+3.1 Client operation
+
+   If client is configured to use Address Parameters option, it MUST
+   attach OPTION_ADDRPARAMS to Option Request Option list. Client CAN
+   ask for ADDRPARAMS option in the SOLICIT, REQUEST, RENEW and REBIND
+   messages only. Client MUST NOT use ADDRPARAMS option in the ORO in
+   any other messages.
+
+3.2 Server operation
+
+   Server appends Address Parameters option to all IAADDR options sent
+   to a client, which requested IA configuration and asked for Address
+   Parameters option. Server, by default, MUST NOT attach this option,
+   unless specificaly asked by the client.
+
+4. Address parameters option
+
+   The Address Parameters option is sent by a server to a client to
+   provide additional informations about granted addresses. Address 
+   Parameters Option can only be sent as a suboption of the IAADDR
+   option. It can be sent by the server to define addtional address
+   parameters. It can also be sent by the client in SOLICIT or REQUEST
+   messages as a hint for the server.
+
+   The format of the Preference option is:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       OPTION_ADDRPARAMS       |          option-len           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  prefix-len   |   flags       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      option-code   OPTION_ADDRPARAMS (TBD).
+
+      option-len    2.
+
+      prefix-len    Prefix length. Allowed values are: 0-128
+
+      flags         Defines type of the address and additional
+                    information. See following subsection for details.
+
+4.1.  The Flags Field
+
+   The format of the Flags field is:
+
+        0 1 2 3 4 5 6 7
+       +-+-+-+-+-+-+-+-+
+       |  MBZ    |M|A|P|
+       +-+-+-+-+-+-+-+-+
+
+       MBZ - reserved field (must be zero)
+       M   - is this multicast address? (1 = yes, 0 = no)
+       A   - is this anycast address? (1 = yes, 0 = no)
+       P   - should prefix information be ignored? (1 = ignore, 0 =
+             prefix field contains valid information)
+
+   [Values are choosen in that way, so during most use scenarios,
+   flags field will remain set to 0.]
+
+5. Compatibility issues
+  
+  Clients not supporting this option may be unable to parse IADDR
+  option, which contains ADDRPARAMS option. Therefore server MUST
+  NOT send ADDRPARAMS, unless explicitely asked to do so by the 
+  client (by mentioning ADDRPARAMS in the Option Request Option).
+
+6. Open issues
+
+6.1 Address scope
+
+ Would it be useful to add 4-bit field, which describes scope of the
+ address (link, site or global)? Host scope MUST NOT be allowed.
+ organisation scope is depreciated, so it SHOULD NOT be used.
+
+6.2 Client hints
+
+ It may be useful to allow client to send ADDRPARAMS in SOLICIT and
+ REQUEST messages as a hint. Client could use this feature to ask for
+ a specific type of the address. Server could honor or ignore this
+ hint. Client should include ADDRPARAMS option in the IA_NA option.
+
+6.3 Multicast addresses
+ 
+ Multicast flag is only meaningful in client request. When server
+ assigns an address, it is trivial to detect if granted address is
+ multicast or not (multicast addresses begin with 0xff byte).
+
+7. Security Considerations
+
+
+8. IANA Considerations
+
+
+9. References
+
+9.1 Normative References
+
+   [RFC3315]  Bound, J., Carney, M., Perkins, C., Lemon, T., Volz, B. 
+              and R. Droms (ed.), "Dynamic Host Configuration Protocol
+              for IPv6 (DHCPv6)", RFC 3315, May 2003.
+
+10. Acknowledgements
+
+  Thanks for the initial idea and encouragement to prepare this draft
+  to Alain Durand.
+
+11. Authors' Addresses
+
+   Tomasz Mrugalski
+   Gdansk University of Technology
+   ul. Cieszynskiego 16/56
+   80-809 Gdansk
+   Poland
+
+   Phone: +48 698 088 272
+   EMail: tomasz.mrugalski@klub.com.pl
+
+Full Copyright Statement
+
+   Copyright (C) The IETF Trust (2007).
+
+   This document is subject to the rights, licenses and restrictions
+   contained in BCP 78, and except as set forth therein, the authors
+   retain all their rights."
+
+   "This document and the information contained herein are provided on
+   an "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+   REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY, THE
+   IETF TRUST AND THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL
+   WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY
+   WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY
+   RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+   PARTICULAR PURPOSE."
+
+Intellectual Property
+
+   By submitting this Internet-Draft, each author represents that any
+   applicable patent or other IPR claims of which he or she is aware
+   have been or will be disclosed, and any of which he or she becomes
+   aware will be disclosed, in accordance with Section 6 of BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as Internet-
+   Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/1id-abstracts.html
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html

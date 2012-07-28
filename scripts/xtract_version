@@ -1,0 +1,2 @@
+#!/bin/bash
+grep PACKAGE_VERSION ../include/dibbler-config.h | awk '{ gsub("\"","",$3); print "\\newcommand{\\version}{" $3 "}"; };'

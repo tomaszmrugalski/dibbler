@@ -1,0 +1,242 @@
+ChangeLog for Poslib <www.posadis.org/poslib>
+
+Stable CVS
+ * Initial cache file mode for master files no longer gives the "non-initial
+   SOA ignored" message
+ * Made ServerSocket virtual as it should have been
+ * Made the server list a list of ServerSocket*'s rather than ServerSockets
+   (thanks to the misdesign of the STL)
+ * Added NONE/ANY values for classes/types required for DNS update
+   (i.e. constant definitions and lexical function support)
+ * Added support for empty records in case of DNS update messages
+ * Fixed Borland C++ makefiles to fix requirement of a complete rebuild after
+   changes
+ * Fixed one-off (too conservative) error in DNS message reading
+ * Made lower level DNS message functions (read/write RR) publicly available
+ * Added rr_torelstring
+ * Added txt_to_class
+ * Removed extra trailing space in rr_to(rel)string
+ * When SOA record is converted to string, TTL short notation (i.e. 2h) is used.
+ * Reading master file without autoprobing: origin is set to zone root by
+   default.
+ * Added support for "none" IPv4 address, added addr_is_any and addr_is_none
+   functions
+ * Switched to pkg-config (removing the poslib-config script)
+ * Default prefix /usr removed (i.e., will now be /usr/local)
+ * Replaced yet more char*s by const char* 
+ * Added support for .123. and .123 type domain names
+ * Fixed bug in handling of unknown RRs
+ * Renamed poslib-config.h to poslib.h (hope this doesn't break things)
+ * Fixed bug in pthread detection, causing problems with OpenBSD.
+ * Added rr_property_to_string, for more advanced RR-to-string functions
+ * Mass-conversion char->unsigned char
+ * Fixed bug where rr_getip6 would return only four bytes
+ * Fixed bug in converting character strings and WKS records to string
+ * Fixed bug in domain name compression (seems to have got lost along the way)
+
+Version 1.0.5
+ * Master file reader now allows you to skip certain checks to make it more
+   useful for initial cache files.
+ * Also accept ".dns" extension for master files
+ * Win32 poll implementation: if we're not waiting for sockets, do timeout
+   rather than direct return.
+
+Version 1.0.4
+ * Show zero TTL's as '0', not ''
+ * Fixed error message for invalid TTLs
+ * LOC (location) RR support
+ * Fixed bug in master file reading when parsing comments in multi-line RRs
+ * Fixed bug in master file where strange things would happen with commented
+   parentheses
+
+Version 1.0.3
+ * Fixed bug where queries with the RD bit would be answered, possibly causing
+   a flood in combination with IP spoofing. [Thanks to roy at dnss.ec]
+ * Fixed bug where, if Posadis is at its max number of threads and it receives
+   a message with size smaller than the buffer size, the ID with which an answer
+   is sent back is wrong. [Thanks to dou0228 at msn.com]
+ * Fixed bug where posthreads would neither be joined nor detached, causing
+   a memory leak. [Thanks to dou0228 at msn.com]
+ * Fix check for -lpthread on Linux
+ * Fixed bug where "no threads left" error answer code would assert the
+   question list being nonempty.
+ * Made the fix for non-detached posthreads more Borland C++/pthreadVC.dll-proof
+   (detaching a joined thread apparently results in undefined behavior; for
+   Borland C++ this means a crash).
+ * Removed erroneous in_addr6 references in Windows IPv6 code
+ * Added poslib_config_init() function to reset config values
+ * Made poslib/server/server.h include configuration.h
+ * Added configuration.h to poslib/server/server.h
+ * Fixed bug for <addr>/length-type IP ranges
+
+Version 1.0.2
+ * Changed occurences of "RR" in domain function error messages to
+   "domain".
+ * Fixed bug while attempting to refer to domain names with offset
+   >= 16384 in DNS message (doesn't fit in compression pointer)
+ * Now automagically set the ID of an answer message to the ID of the query
+ * If truncation happens in answer or authority, also set item count of
+   remaining sections to zero.
+ * If we get an answer which is not truncated at a RR border with right
+   AN,NS,AD-counts, we still accept the answer as truncated and retry the query
+ * Made IPv6 work again with Borland C++
+ * Fixed bug where masterfile.cpp would not be compiled along with Borland C++
+ * Added more logically named addr_is_* alternatives to sock_is_*
+ * Fixed bug causing pos_srvresolver to block if sending the query failed
+   (this will probably only occur if the server sockets haven't been opened
+   properly)
+ * Fixed bug where the .dead:beeef extension to domain names would be postfixed
+   by ipv6.int rather than ip6.int
+ * For performance reasons, the configuration settings are now no longer
+   protected by mutexes; if you want to set 'em, do it before starting the
+   server thread.
+ * Fixed bug where, if IPv6 support was enabled but no sockaddr_storage was
+   available (Win32 systems, mainly), Posadis would use the smaller sockaddr
+   structure, resulting in crashes if it was actually used.
+ * Fixed problem where a completely empty master file gave an "Unexpected EOF"
+   error.
+ * The log implementation now flushes the log file after writing a message.
+ * Fixed bug where exceptions in the cliresolver would not be correctly
+   handled.
+ * Now automagically try another server if a SRVFAIL, REFUSED or NOTIMP is
+   found as an answer in pos_cliresolver.
+ * Very simple, more efficient, possimplerandom() implementation
+ * Grep s/authoritive/authoritative/
+ * Enhanced pseudo-domain support: support ns1..dead::beef
+ * Fixed problem with poslib-config with non-bash shells
+ * Fixed typo: 'quites'->'quotes'
+ * Added support for "y", "j" and "n" booleans
+ * Added check_answer_type, has_rrset functions
+
+Version 1.0.1
+ * Put off optimisations by default (caused problems on FreeBSD)
+ * Build fixes for FreeBSD
+ * Fixed _really_ stupid bug where txt_to_bool would always return true
+   (thanks to Aleksandr Chechulin)
+ * Fixed bug causing TCP queries not to work in some cases
+ * Made waiting for TCP data use end time rather than twice the half timeout.
+ * Made txt_to_int only return nonnegative numbers, and make it not accept
+   only postfixes anymore. Added txt_to_negint which also supports negative
+   numbers.
+ * Fixed problem in master file reader causing inexplicit domain names not
+   to work.
+
+Version 1.0
+ * Added dnstimeago to Unix tarballs
+ * Added stl_list variant of addrrange function
+ * Fixed memory leak (thanks John MacDonald) in zero-byte allocations
+ * Added posclient_quitflag to make socket functions end more quickly
+ * Made UDP sockets SO_REUSEADDR as well
+
+Version 0.9.7 (31 May 2003)
+ * Fixed issue where addr_in_list(slist, ...) would not be available
+   because pos6-config.h was not included.
+ * Added option to include the function pointer logging functionality,
+   but not use it yet by setting function pointer to NULL.
+ * Fixed function pointer logging bug
+ * Fixed w32poll: struct timeval uses microsec rather than millisec
+   (causes 100% CPU usage under Windows)
+ * Made standard logging variables available if POS_DEFAULTLOG is not
+   defined (so that other source files can use then), and documented them.
+ * Added decent vsnprintf() check for Unix (caused problems in logging)
+
+Version 0.9.6 (23 May 2003)
+ * Added address range class
+ * Added str_ttl function
+ * Poslib now sets the QR bit for you
+ * Added in_addr_list function
+ * Added postime_t::operator+=
+ * Now make clients explicitly open srvresolver
+ * Added option to disable stderr logging on runtime
+
+Version 0.9.5 (4 March 2003)
+ * API addition: read_line's line counter would point to next line
+   rather than current.
+ * Support for literal "any" and "local" strings as IPv4/6 addresses.
+ * Made pos_cliresolver::query() start at a random position in the
+   query list.
+ * Added support for IP ranges with netmasks
+ * Threads amount limit
+ * TCP connections limit/support for priority clients
+ * Made UDP server sockets nonblocking
+ * Added master file reading functionality
+ * Fixed really stupid txt_to_email bug
+ * Fixed POS_DEFAULTLOG_FILE (didn't work at all!)
+ * added possimplerandom()
+
+Version 0.9.4 (25 February 2003)
+ * Now return an error for character strings that are too long.
+ * Added various small dom_ functions, including domncommon();
+ * read_entry no longer unescapes chars other than space or tab
+ * Added domainname::to and ::torelstring()
+ * rr_fromstring now uses const char *
+ * Added support for WKS
+ * Added qtype_getcode() function
+
+Version 0.9.3 (8 February 2003)
+ * Added txt_to_bool() function.
+ * Removed 'f' RR property type (should be 'n')
+ * Added support for reading TXT, HINFO rrs from master files
+ * Fixed read_entry to support spaces and tabs within quotes
+ * Replaced some instances of 'string' by 'stl_string' in fileclient and
+   fileserver.
+ * Malloc_alloc allocation now works on my newly installed debian box.
+   Expect some leak test results soon!
+ * Fixed memory leak in DnsMessage::compile(), and other small leaks.
+ * PACKAGE and VERSION are no longer in poslib-config.h
+ * Now default flags=Q_DFL for 2nd pos_resolver::query() function in
+   implementations.
+ * Added read_line function from Pos6, which can really help master file
+   reading routines.
+ * Fixed txt_to_int to return correct "incorrect numeric value %s" message.
+ * Fixed crash when copying an PException(). Additionally, PException("")
+   now sets message to "" instead of NULL.
+ * Now using autoconf-2.52, thus no acconfig.h anymore
+
+Version 0.9.2 (20 January 2003)
+ * Changed default prefix to '/usr/'
+ * Now also default flags=Q_DFL for query with server list
+ * Added user cleanup function to Poslib
+ * Compilation fixes (Debian on RISC, *BSD)
+ * Fixed problem where a mutex could be used before its initialization,
+   depending on your compilers class construction order.
+ * Enhanced pthreads check in configure.in
+ * Enhanced ipv6 check in configure.in
+ * Now works on Debian Alpha
+ * Fixed important segfaults in txt_to_email, txt_to_ip (causing const
+   data to be written to).
+ * Bugfix for txt_to_ipv6 (set s_family to AF_INET instead of AF_INET6)
+ * Fixed address_lookup for ipv6
+ * Added Posadis extension to support .192.168.*-type domain names
+ * Fixed typo ("zondata" instead of "zonedata")
+ * Poslib-config output for --libs --server now on one line
+   (fixes some configure problems)
+ * Fixed poslib-config to avoid problems when echo doesn't support
+   "-n" (for example on Solaris).
+
+Version 0.9.1 (22 december 2002)
+ * Some documentation fixes
+ * Added support for Borland C++
+ * Added async stop for pos_cliresolver
+ * Fixed bug causing server to crash when calling requestid_checkexpired
+ * Fixed bug for wicked compilers trying to initialize their own stuff
+   before the poslib static constructor for pos_resolver was called.
+ * Added CNAME, QTYPE=ANY following to get_records()
+ * Fixed tocstr()
+ * Added support for Kylix OE 3.0
+ * Maded pos_cliresolver interruptable
+ * Better and more portable random-numbers (more specifically, it should
+   also work on OSX).
+ * Changed addr_to_string order
+ * Important txt_to_email fix (in fact this didn't quite work until now.
+ * Minor txt_to_ip bug fix (192.168.1. would be interpreted as 192.168.1.0)
+ * Implemented domainname::operator!=
+ * Now works on OSX
+ * Bugfix for domainname::operator+
+ * Implemented operator>> (NOTE: the meaning of the operator has changed since
+   the CVS release of 18-12-2002! Check the docs for details)
+ * Domainname::from fix
+ * Removed "additional section processing" option from DNS_TYPE_CNAME
+
+Version 0.9.0 (30 novermber 2002)
+ * Initial public release

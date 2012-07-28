@@ -1,0 +1,119 @@
+================================================================================
+ Dibbler 0.4.0 for Windows 2000/NT4 by <sob@hisoftware.cz>, rev. 2005-07-22-001
+================================================================================
+
+Introduction:
+-------------
+I needed  DHCPv6 client  for  Windows 2000.  Dibbler  looked great  at the first
+sight,  but soon  I realized that author  dropped w2k support some time ago. And
+because I was unable to find some other DHCPv6 client for w2k, I decided to look
+what can  be done  with Dibbler.  And since  I don't  know  C much,  I was a bit
+surprised when I was successfull. :)
+With  rev. 2005-07-22-001  it works for Windows NT 4.0 too.  It means that every
+version of Windows with IPv6 stack can use Dibbler. Well, client only, but thats
+probably enough.
+
+Status:
+-------
+client: compiles and works ok (I use it and it does what it is supposed to)
+server: fails with "Unable to join multicast group"
+relay: compiles and executes,  but further untested;  will probably fail in same
+       way as server
+
+Requirements:
+-------------
+- MinGW 4.1.0
+- MSYS 1.0
+- tpipv6.h and wspiapi.h from Win2000 IPv6 install
+
+May work with some other compiler, but it is not tested.
+
+How to compile:
+---------------
+- download and install MinGW and MSYS
+- copy tpipv6.h and wspiapi.h to {MINGWPATH}\include
+- download and unpack Dibbler 0.4.0
+- apply this patch
+- cd into dibbler's directory and run "make"
+- pray ;)
+
+More information about changes:
+-------------------------------
+I'm not a C coder,  so all the changes  I made are not guaranteed to be the best
+ones or  even the correct ones.  Don't be fooled by the fact  that the resulting
+executable works for me.
+
+More detailed description of changes follows:
+--------------------------------------------------------------------------------
+ All changes outside  /Port-winnt2k  are because of MinGW compiler (conditional
+ defines are used,  so it  should  not break  anything  -  it doesn't  apply to 
+ Makefiles).  Only  content  of  Port  directory  have  something  to  do  with
+ Windows 2000/NT.
+--------------------------------------------------------------------------------
+
+- Makefile
+- Makefile.inc
+
+Few changes to make things work with just one "make". Basically redirection from
+Port-linux to Port-winnt2k.
+
+- ClntIfaceMgr\ClntIfaceIface.cpp 
+
+Missing "unlink" fixed by including io.h.
+
+- Misc\DHCPServer.cpp
+
+MinGW doesn't have crtdbg.h and it seems it isn't needed anyway, so removed.
+
+- Misc\long128.cpp 
+
+I don't know how to make MinGW use inline assembler -> C version for Linux seems
+to work.
+
+- Options\OptElapsed.cpp 
+
+MinGW didn't like the typecast, removed. I'm not really sure if this is correct,
+but it seems to work.
+
+- Port-win2k\Makefile
+
+Created.
+
+- Port-win2k\addrpack.c
+- Port-win2k\ClntService.h
+- Port-win2k\RelService.h
+- Port-win2k\SrvService.h
+- Port-win2k\WinService.h 
+
+Copied from /Port-win32.
+
+- Port-win2k\WinService.cpp
+
+Copied from /Port-win32 and disabled part with ChangeServiceConfig2 (NT4 doesn't
+have this function).
+
+- Port-win2k\client-win2k.cpp
+- Port-win2k\relay-win2k.cpp
+- Port-win2k\server-win2k.cpp
+
+Almost the same as xp files.  Only renamed "ptr" because linker did not like the
+same variable in multiple files and I don't know better way to solve this.
+
+- Port-win2k\ClntService.cpp
+- Port-win2k\RelService.cpp
+- Port-win2k\SrvService.cpp
+
+Almost the same as in Port-win32.  Removed crtdbg.h, renamed  "ptr"  and service
+dependencies in ClntService are different-the same as were in Dibbler 0.2.0-RC2.
+Maybe it is supposed to be like this or maybe it is an error,  I don't know. But
+again, it seems to work. ;)
+
+- Port-win2k\lowlevel-win2k.c
+
+Basically a fusion of port-win2k\ipv6-wrapper.c and port-win2k\windowsfun.c from
+Dibbler 0.2.0-RC2 with some changes.
+Update for rev. 2005-07-22-001:  Ported as much from Port-win32\lowlevel-win32.c
+as possible.
+
+================================================================================
+@EOF

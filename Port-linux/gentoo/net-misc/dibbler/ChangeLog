@@ -1,0 +1,9 @@
+# ChangeLog for net-misc/dibbler
+# Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
+# $Header: /var/cvs/dibbler/Port-linux/gentoo/net-misc/dibbler/ChangeLog,v 1.2 2005-08-25 00:03:26 thomson Exp $
+ 
+  25 Aug 2005; Tomasz Mrugalski <thomson@klub.com.pl> dibbler-0.4.1.ebuild:
+  Updated to the 0.4.1 version.
+
+  29 Dec 2004; Tomasz Mrugalski <thomson@klub.com.pl> dibbler-0.3.1.ebuild:
+  Initial ebuild version.
