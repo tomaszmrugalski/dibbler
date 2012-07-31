@@ -406,6 +406,7 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         break;
     case RENEW_MSG:
     case REBIND_MSG:
+    case INFORMATION_REQUEST_MSG:
         action = "update";
         break;
     default:

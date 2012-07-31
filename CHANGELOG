@@ -28,6 +28,8 @@
     reserved address/prefix to another client
   - Srv: Fixed problem when reserved address/prefix was assigned to different client when
     nearing addresses/prefixes depletion
+  - Cli: Script can now be called in stateless mode (inf-request)
+  - Cli: Script for MacOS dns and domain setting added
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
