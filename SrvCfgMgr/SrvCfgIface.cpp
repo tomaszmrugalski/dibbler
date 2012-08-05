@@ -85,7 +85,7 @@ bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (*x->getAddr() == *addr)
+        if ( (x->getAddr()) && (*x->getAddr() == *addr) )
             return true;
     }
     return false;
@@ -119,7 +119,7 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (*x->getPrefix() == *prefix)
+        if (x->getPrefix() && (*x->getPrefix() == *prefix) )
             return true;
     }
     return false;
