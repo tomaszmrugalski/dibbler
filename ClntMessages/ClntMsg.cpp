@@ -344,6 +344,9 @@ void TClntMsg::setDefaults()
 #endif
     KeyGenNonce = NULL;
     KeyGenNonceLen = 0;
+
+    /// @todo: This should be moved to TMsg
+    PeerAddr = 0;
 }
 
 unsigned long TClntMsg::getTimeout()

@@ -429,7 +429,14 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
     params.addParam("IFINDEX", tmp.str().c_str());
     tmp.str("");
 
-    params.addParam("REMOTE_ADDR", reply->getAddr()->getPlain());
+    string remote;
+    if (reply->getAddr()) {
+      remote = reply->getAddr()->getPlain();
+    } else {
+      remote = string(ALL_DHCP_RELAY_AGENTS_AND_SERVERS);
+    }
+
+    params.addParam("REMOTE_ADDR", remote);
 
     params.addParam("CLNT_MESSAGE", question->getName());
 
