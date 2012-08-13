@@ -681,7 +681,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 t2=atoi(x+4);
                 // Log(Debug) << "Parsed AddrPD::T2=" << t2 << LogEnd;
             }
-            if ((x=strstr(buf,"PDID"))) {
+            if ((x=strstr(buf,"IAID"))) {
                 pdid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrPD::PDID=" << pdid << LogEnd;
             }
