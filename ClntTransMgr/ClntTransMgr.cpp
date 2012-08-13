@@ -220,17 +220,38 @@ void TClntTransMgr::removeExpired() {
                 continue;
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
             Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
-                         << ptrIface->getName() << "/" << ptrIface->getID() 
+                         << ptrIface->getFullName()
                          << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
             ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrIA->delAddr(ptrAddr->get());
+	    Log(Info) << "Expired address " << ptrAddr->get()->getPlain()
+		      << " from IA " << ptrIA->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
         }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrIA->countAddr()) {
+	    Log(Debug) << "The IA_NA (with IAID=" << ptrIA->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIface());
+	    if (cfgIface) {
+		SPtr<TClntCfgIA> cfgIA = cfgIface->getIA(ptrIA->getIAID());
+		if (cfgIA) {
+		    cfgIA->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
     }
 }
 
 /** 
- * checks if loaded Address database is sanite (i.e. does not reffer to non-existing interface)
+ * checks if loaded Address database is sane (i.e. does not reffer to non-existing interface)
  * 
  */
 void TClntTransMgr::checkDB()
@@ -591,6 +612,10 @@ unsigned long TClntTransMgr::getTimeout()
     tmp     = ClntAddrMgr().getTentativeTimeout();
     if (timeout > tmp)
         timeout = tmp;
+
+    if (timeout == 0) {
+	ClntAddrMgr().getTimeout();
+    }
 
     // IfaceMgr (Lifetime option) timeout
     tmp = ClntIfaceMgr().getTimeout();

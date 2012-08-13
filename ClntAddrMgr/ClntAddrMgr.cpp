@@ -49,9 +49,9 @@ TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, const std::s
     // client may have been already loaded from client-AddrMgr.xml file
     firstClient();
     if (!getClient()) {
-        // add this client (with proper duid)
-        SPtr<TAddrClient> client = new TAddrClient(clientDUID);
-        addClient(client);
+	// add this client (with proper duid)
+	SPtr<TAddrClient> client = new TAddrClient(clientDUID);
+	addClient(client);
     }
 
     // set Client field
@@ -60,19 +60,19 @@ TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, const std::s
     Client = getClient();
 
     if (useConfirm)
-        processLoadedDB();
+	processLoadedDB();
 }
 
 void TClntAddrMgr::processLoadedDB() {
     SPtr<TAddrIA> ia;
     Client->firstIA();
     while (ia=Client->getIA()) {
-        ia->setState(STATE_CONFIRMME);
+	ia->setState(STATE_CONFIRMME);
     }
 
     Client->firstPD();
     while (ia=Client->getPD()) {
-        ia->setState(STATE_CONFIRMME);
+	ia->setState(STATE_CONFIRMME);
     }
 }
 
@@ -92,14 +92,18 @@ unsigned long TClntAddrMgr::getValidTimeout() {
 
 unsigned long TClntAddrMgr::getTimeout()
 {
-    unsigned long val,val2;
+    unsigned long val, val2;
     val = this->getT1Timeout();
     if ( (val2 = this->getT2Timeout()) < val)
-        val = val2;
-    if ( (val2 = this->getPrefTimeout()) < val)
-        val = val2;
+	val = val2;
+
+    // no special action is required after preferred timeout reached
+    // (except perhaps logging that we are screwed, as no new connections could
+    // be created)
+    //if ( (val2 = this->getPrefTimeout()) < val)
+    //  val = val2;
     if ( (val2 = this->getValidTimeout()) < val)
-        val = val2;
+	val = val2;
     return val;
 }
 
@@ -114,7 +118,7 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
     {
 	      tmp = ptrIA->getTentativeTimeout();
 	      if (min > tmp)
-	          min = tmp;
+		  min = tmp;
     }
 
     return min;
@@ -131,24 +135,25 @@ void TClntAddrMgr::doDuties()
 {
     SPtr<TAddrIA> ptrIA;
     SPtr<TAddrAddr> ptrAddr;
+    
+    firstIA();
+    while ( ptrIA = this->getIA() ) {
 
-    this->firstIA();
-    while ( ptrIA = this->getIA() ) 
-    {
-	      ptrIA->firstAddr();
-	      while( ptrAddr=ptrIA->getAddr())
-	      {
-	          //Removing outdated addresses
-	          if(!ptrAddr->getValidTimeout())
-	          {
-		            ptrIA->delAddr(ptrAddr->get());
-		            Log(Notice) << "Address " << ptrAddr->get()->getPlain() 
-			                 << " from IA " << ptrIA->getIAID() 
-			                 << " has been removed from addrDB." << LogEnd;
-		            ptrIA->setState(STATE_NOTCONFIGURED);
-	          }
-	      }
-    }	    
+	ptrIA->firstAddr();
+	while( ptrAddr=ptrIA->getAddr()) {
+	    //Removing outdated addresses
+	    if(!ptrAddr->getValidTimeout()) {
+		ptrIA->delAddr(ptrAddr->get());
+		Log(Info) << "Expired address " << ptrAddr->get()->getPlain()
+			  << " from IA " << ptrIA->getIAID()
+			  << " has been removed from addrDB." << LogEnd;
+	    }
+	}
+
+	if (!ptrIA->countAddr()) {
+	    ptrIA->setState(STATE_NOTCONFIGURED);
+	}
+    }
 }
 
 void TClntAddrMgr::firstIA() {
@@ -187,11 +192,11 @@ SPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
     return 0;
 }
 
-/** 
+/**
  * sets specified interface to CONFIRMME state
- * when network switch off signal received, the funtion will be invoked to 
+ * when network switch off signal received, the funtion will be invoked to
  * set valid IA to CONFIRMME state.
- * 
+ *
  * @param changedLinks structure containing interface indexes to be confirmed
  */
 void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
@@ -208,19 +213,19 @@ void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
 	    if (changedLinks->ifindex[i]==ifindex)
 		found = true;
 
-        if (!found)
-            continue;
+	if (!found)
+	    continue;
 
-        if( (ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS) )
+	if( (ptrIA->getState() == STATE_CONFIGURED || ptrIA->getState() == STATE_INPROCESS) )
 	{
 	    ptrIA->setState(STATE_CONFIRMME);
 	    Log(Notice) << "Network switch off event detected. do Confirmming." << LogEnd;
 	}
-    } 
+    }
 
 }
 
-// pd functions 
+// pd functions
 
 void TClntAddrMgr::firstPD() {
     Client->firstPD();
@@ -256,7 +261,7 @@ SPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
 
 
 
-void TClntAddrMgr::firstTA() 
+void TClntAddrMgr::firstTA()
 {
     Client->firstTA();
 }
@@ -293,14 +298,14 @@ int TClntAddrMgr::countTA()
 }
 
 void TClntAddrMgr::print(std::ostream &) {
-    
+
 }
 
 /**
- * @brief Adds a prefix. 
+ * @brief Adds a prefix.
  *
- * @param srvDuid Server DUID 
- * @param srvAddr Server address. 
+ * @param srvDuid Server DUID
+ * @param srvAddr Server address.
  * @param iface   interface index
  * @param IAID    IAID
  * @param T1      T1 timer
@@ -314,9 +319,9 @@ void TClntAddrMgr::print(std::ostream &) {
  * @return true if successful, false otherwise
  */
 bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
-			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2, 
+			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 			     SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-			     int length, bool quiet) 
+			     int length, bool quiet)
 {
     if (!prefix) {
 	Log(Error) << "Attempt to add null prefix failed." << LogEnd;
@@ -328,7 +333,7 @@ bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
     this->firstClient();
     ptrClient = getClient();
 
-    return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
+    return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix,
 			       pref, valid, length, quiet);
 }
 
@@ -347,14 +352,14 @@ bool TClntAddrMgr::updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
     this->firstClient();
     ptrClient = getClient();
 
-    return TAddrMgr::updatePrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix, 
+    return TAddrMgr::updatePrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix,
 				  pref, valid, length, quiet);
 }
 
 SPtr<TIPv6Addr> TClntAddrMgr::getPreferredAddr() {
     SPtr<TAddrIA> ia;
     SPtr<TAddrAddr> addr;
-    
+
     firstIA();
     while ( ia = getIA() ) {
 	if (ia->getTentative() != TENTATIVE_NO)
