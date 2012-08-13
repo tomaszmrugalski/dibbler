@@ -189,7 +189,7 @@ bool TAddrMgr::delClient(SPtr<TDUID> duid)
 
 unsigned long TAddrMgr::getT1Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -201,7 +201,7 @@ unsigned long TAddrMgr::getT1Timeout()
 
 unsigned long TAddrMgr::getT2Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -213,7 +213,7 @@ unsigned long TAddrMgr::getT2Timeout()
 
 unsigned long TAddrMgr::getPrefTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -225,7 +225,7 @@ unsigned long TAddrMgr::getPrefTimeout()
 
 unsigned long TAddrMgr::getValidTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {

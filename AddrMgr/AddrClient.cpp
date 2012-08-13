@@ -197,7 +197,7 @@ bool TAddrClient::delTA(unsigned long iaid) {
 
 unsigned long TAddrClient::getT1Timeout() {
     SPtr<TAddrIA> ptr;
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     IAsLst.first();
     while ( ptr = IAsLst.get() ) {
@@ -221,7 +221,7 @@ unsigned long TAddrClient::getT1Timeout() {
 
 unsigned long TAddrClient::getT2Timeout() {
     SPtr<TAddrIA> ptr;
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     IAsLst.first();
 
     while ( ptr = IAsLst.get() ) {
@@ -244,7 +244,7 @@ unsigned long TAddrClient::getT2Timeout() {
 
 unsigned long TAddrClient::getPrefTimeout() {
     SPtr<TAddrIA> ptr;
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     IAsLst.first();
     while ( ptr = IAsLst.get() ) {
@@ -267,7 +267,7 @@ unsigned long TAddrClient::getPrefTimeout() {
 
 unsigned long TAddrClient::getValidTimeout() {
     SPtr<TAddrIA> ptr;
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     IAsLst.first();
     while ( ptr = IAsLst.get() ) {
