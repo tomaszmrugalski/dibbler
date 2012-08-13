@@ -30,6 +30,8 @@
     nearing addresses/prefixes depletion
   - Cli: Script can now be called in stateless mode (inf-request)
   - Cli: Script for MacOS dns and domain setting added
+  - Cli: Silent address expiration (T1>valid lifetime) is now supported properly
+  - Cli/Srv: FQDN, Vendor options are now passed to script correctly
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
