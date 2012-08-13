@@ -47,15 +47,15 @@ void TClntCfgAddr::setOptions(SPtr<TClntParsGlobalOpt> opt) {
 }
 
 TClntCfgAddr::TClntCfgAddr() {
-    this->Valid=ULONG_MAX;
-    this->Pref=ULONG_MAX;
+    this->Valid=UINT_MAX;
+    this->Pref=UINT_MAX;
     Addr= new TIPv6Addr();
 }
 
 TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr) {
     Addr=addr;
-    Valid = ULONG_MAX;
-    Pref = ULONG_MAX;
+    Valid = UINT_MAX;
+    Pref = UINT_MAX;
 }
 
 std::ostream& operator<<(std::ostream& out, TClntCfgAddr& addr) {

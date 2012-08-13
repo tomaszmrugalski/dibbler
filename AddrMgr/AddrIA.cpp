@@ -302,7 +302,7 @@ unsigned long TAddrIA::getT2Timeout() {
 }
 
 unsigned long TAddrIA::getPrefTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -335,7 +335,7 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 }
 
 unsigned long TAddrIA::getValidTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
