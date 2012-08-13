@@ -209,6 +209,7 @@ void TClntTransMgr::removeExpired() {
     SPtr<TAddrAddr> ptrAddr;
     SPtr<TIfaceIface> ptrIface;
 
+    // are there any expired IA_NAs?
     ClntAddrMgr().firstIA();
     while (ptrIA = ClntAddrMgr().getIA()) {
         if (ptrIA->getValidTimeout())
@@ -248,6 +249,50 @@ void TClntTransMgr::removeExpired() {
 	    }
 	}
     }
+
+    // are there any expired IA_PDs?
+    SPtr<TAddrIA> ptrPD;
+    SPtr<TAddrPrefix> ptrPrefix;
+    ClntAddrMgr().firstPD();
+    while (ptrPD = ClntAddrMgr().getPD()) {
+        if (ptrPD->getValidTimeout())
+            continue;
+
+        ptrPD->firstPrefix();
+        while (ptrPrefix = ptrPD->getPrefix()) {
+            if (ptrPrefix->getValidTimeout())
+                continue;
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIface());
+            Log(Warning) << "Prefix " << ptrPrefix->get()->getPlain() << " obtained on the "
+                         << ptrIface->getFullName()
+                         << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
+
+            // remove that address from the physical interace
+	    ClntIfaceMgr().delPrefix(ptrPD->getIface(), ptrPrefix->get(), ptrPrefix->getLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrPD->delPrefix(ptrPrefix);
+	    Log(Info) << "Expired prefix " << ptrPrefix->get()->getPlain() << "/" << ptrPrefix->getLength()
+		      << " from IA_PD " << ptrPD->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
+        }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrPD->countPrefix()) {
+	    Log(Debug) << "The IA_PD (with IAID=" << ptrPD->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrPD->getIface());
+	    if (cfgIface) {
+		SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(ptrPD->getIAID());
+		if (cfgPD) {
+		    cfgPD->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
+    }
+
 }
 
 /** 
@@ -612,6 +657,8 @@ unsigned long TClntTransMgr::getTimeout()
     tmp     = ClntAddrMgr().getTentativeTimeout();
     if (timeout > tmp)
         timeout = tmp;
+    // Uncomment for timeout debugging
+    // Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
 
     if (timeout == 0) {
 	ClntAddrMgr().getTimeout();
@@ -621,6 +668,8 @@ unsigned long TClntTransMgr::getTimeout()
     tmp = ClntIfaceMgr().getTimeout();
     if (timeout > tmp)
         timeout = tmp;
+    // Uncomment for timeout debugging
+    // Log(Debug) << "Timeout after IfaceMgr=" << timeout << LogEnd;
 
     // Messages timeout
     SPtr<TClntMsg> ptrMsg;
