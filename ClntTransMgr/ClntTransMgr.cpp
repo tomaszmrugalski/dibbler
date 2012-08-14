@@ -842,6 +842,10 @@ void TClntTransMgr::checkSolicit() {
             Log(Cont) << " on " << iface->getFullName() <<" interface." << LogEnd;
             Transactions.append(new TClntMsgSolicit(iface->getID(), 0, iaLst, ta, pdLst, 
                                                     iface->getRapidCommit()));
+	    
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
 
     }//for every iface
@@ -878,6 +882,10 @@ void TClntTransMgr::checkConfirm()
             Log(Info) << "Creating CONFIRM: " << IALst.count() << " IA(s) on " << iface->getFullName() << LogEnd;
             Transactions.append(
                 new TClntMsgConfirm(iface->getID(), IALst));
+
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
     }
 }
@@ -1012,6 +1020,10 @@ void TClntTransMgr::checkRenew()
     Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
     SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(iaLst, pdLst);
     Transactions.append(ptrRenew);
+
+    // state of certain IAs has changed. Let's log it.
+    ClntAddrMgr().dump();
+    ClntCfgMgr().dump();
 }
 
 void TClntTransMgr::checkDecline()
@@ -1082,6 +1094,9 @@ void TClntTransMgr::checkDecline()
             request = new TClntMsgRequest(declineIALst, duid, firstIA->getIface() );
             Transactions.append( (Ptr*) request);
 
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
     } while(firstIA);
 }
