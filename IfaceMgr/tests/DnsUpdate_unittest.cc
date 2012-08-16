@@ -121,7 +121,7 @@ TEST(DnsUpdateTest, TSIG_AAAA) {
     // call it second time to verify that we can build the same message
     // multiple times (test environment sanity check)
     act.extractPacket();
-    EXPECT_TRUE(cmpBuffers(expected, act.buffer_) || cmpBuffers(expected2, act.buffer_));
+    EXPECT_TRUE(cmpBuffers(expected1, act.buffer_) || cmpBuffers(expected2, act.buffer_));
 
     act.showResult(result);
 }
