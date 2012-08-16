@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
-0.8.3 [not-released-yet]
+0.8.3RC1 [2012-08-17]
   - Srv: address and prefix assignment rewritten
   - Srv: implemented per-client prefix configuration
   - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
