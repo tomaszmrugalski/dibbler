@@ -178,6 +178,24 @@ works or not.
 
 \subsection{Windows specific questions}
 
+\Q Dibbler doesn't receive anything on Windows 7 or Windows 8. Is it
+broken?
+
+\A Make sure your firewall allows the traffic through. Dibbler server
+must be able to receive traffic on UDP port 547. Dibbler client must
+be able to receive traffic on UDP port 546. If DNS Update mechanism is
+used, Dibbler must be able to send traffic to TCP and/or UDP port 53
+(DNS). There are many ways in which Windows firewall can be configured
+to allow such traffic. For example, in Windows 8, one can use the
+following commands (assuming DNS server is located at 2001:db8:1::1"):
+\begin{lstlisting}
+netsh -c advfirewall
+> firewall
+> add rule name="dhcpv6in" dir=in action=allow localport=547 protocol=udp
+> add rule name="dhcpv6out" dir=out action=allow localport=547 protocol=udp
+> add rule name="ddnsout" dir=out action=allow remoteip="2001:db8:1::1"
+\end{lstlisting}
+
 %% Q1
 \Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
   ServicePack2} my DHCPv6 (or other IPv6 application) stopped
@@ -186,7 +204,7 @@ working. Is Dibbler compatible with Windows XP SP2?
 \A Both products (Advanced Networking Pack as well as Service Pack 2
 for Windows XP) provide IPv6 firewall. It is configured by default to
 reject all incoming IPv6 traffic. You have to disable this
-firewall. To disable firewall on the ,,Local Area Connection''
+firewall. To disable firewall on the ``Local Area Connection''
 interface, issue following command in a console:
 
 \begin{lstlisting}
