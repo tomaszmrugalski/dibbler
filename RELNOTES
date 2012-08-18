@@ -4,7 +4,7 @@
 
  This is a first Release Candidate for 0.8.3 release of the Dibbler software.
 
- This is a relases with several new features and many bug fixes.
+ This is a release with several new features and many bug fixes.
 
  The biggest feature is a rewritten address and prefix allocation engine. It
  follows the same algorithm now. It is possible to reserve specific address
