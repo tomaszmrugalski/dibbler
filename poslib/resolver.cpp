@@ -188,9 +188,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
   stl_slist(WaitAnswerData) waitdata;
   stl_slist(WaitAnswerData)::iterator it;
   int ipv4sock = 0;
-#ifdef HAVE_IPV6
   int ipv6sock = 0;
-#endif
   unsigned char addr[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   _addr tmp;
 
@@ -209,7 +207,6 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
         /* register and assign a new query ID */
           if (!q->ID)
               q->ID = posrandom();
-#ifdef HAVE_IPV6
         if (sock_is_ipv6(&*server)) {
           if (!ipv6sock) {
             getaddress_ip6(&tmp, addr, 0);
@@ -217,7 +214,6 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
           }
           sockid = ipv6sock;
         } else
-#endif
           if (sock_is_ipv4(&*server)) {
           if (!ipv4sock) {
             getaddress_ip4(&tmp, addr, 0);
@@ -250,17 +246,13 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
             tmpit++; if (tmpit == servers.end()) tmpit = servers.begin();
             if (tmpit != sbegin) throw PException("Answer has error RCODE");
           }
-#ifdef HAVE_IPV6
           if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-#endif
           if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
           return it->from;
         } else if (quit_flag) throw PException("Interrupted");
       } catch(PException p) {
         if (a) delete a; a = NULL;
-#ifdef HAVE_IPV6
         if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-#endif
         if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
         stl_slist(_addr)::iterator s2 = server; s2++;
         if (s2 == servers.end()) s2 = servers.begin();
@@ -270,9 +262,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
       if (server == servers.end()) server = servers.begin();
     } while (server != sbegin);
   }
-#ifdef HAVE_IPV6
   if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-#endif
   if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
   throw PException("No server could be reached!");
 }

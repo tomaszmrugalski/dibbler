@@ -305,9 +305,7 @@ bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip) {
 }
 
 #define R_IP4 0
-#ifdef HAVE_IPV6
 #define R_IP6 1
-#endif
 #define R_NONE 2
 #define R_ANY 3
 
@@ -365,11 +363,9 @@ void txt_to_addrrange(unsigned char *iprange, const char *val) {
   if (!strchr(val, ':')) {
     iprange[0] = R_IP4;
     txt_to_iprange(iprange + 1, val);
-#ifdef HAVE_IPV6
   } else {
     iprange[0] = R_IP6;
     txt_to_ip6range(iprange + 1, val);
-#endif
   }
 }
 
@@ -378,9 +374,7 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
     case R_NONE: return false;
     case R_ANY: return true;
     case R_IP4: return iprange_matches(iprange + 1, get_ipv4_ptr(a));
-#ifdef HAVE_IPV6
     case R_IP6: return ip6range_matches(iprange + 1, get_ipv6_ptr(a));
-#endif
   }
   return false;
 }

@@ -1234,6 +1234,10 @@
 				Name="port-win32"
 				>
 				<File
+					RelativePath=".\dibbler-config.h"
+					>
+				</File>
+				<File
 					RelativePath="SrvService.h"
 					>
 				</File>
