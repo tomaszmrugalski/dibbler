@@ -504,12 +504,11 @@ void TClntIfaceIface::addString(const char * filename, const char * str) {
 void TClntIfaceIface::delString(const char * filename, const char * str) {
     FILE *f, *fout;
     char buf[512];
-    char fileout[512];
-    snprintf(buf,511,"%s-old", filename);
     unsigned int len = (unsigned int)strlen(str);
     bool found = false;
+    string fileout(filename);
 
-    strncpy(fileout,filename,511);
+    fileout += "-old";
 
     if ( !(f=fopen(filename,"r"))) {
         Log(Debug) << "Unable to open file " << filename <<" while trying to delete " << str
@@ -517,7 +516,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
         return;
     }
 
-    if ( !(fout=fopen(fileout,"w"))) {
+    if ( !(fout=fopen(fileout.c_str(),"w"))) {
         Log(Debug) << "Unable to create/overwrite file " << fileout << " while trying to delete "
                    << str << " line." << LogEnd;
         fclose(f);
@@ -540,7 +539,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
     fclose(fout); // file with specified string cut out
 
     unlink(filename); // delete old version
-    rename(fileout,filename);
+    rename(fileout.c_str(), filename);
     return;
 }
 
