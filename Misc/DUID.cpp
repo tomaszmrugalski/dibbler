@@ -18,10 +18,8 @@
 using namespace std;
 
 TDUID::TDUID()
+    :DUID(NULL), Plain(""), len(0)
 {
-    DUID=0;
-    len=0;
-    Plain="";
 }
 
 // packed

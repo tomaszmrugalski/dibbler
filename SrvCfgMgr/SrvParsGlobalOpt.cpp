@@ -14,16 +14,14 @@
 
 using namespace std;
 
-TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) {
-    WorkDir_          = WORKDIR;
-    Stateless_        = false;
-    CacheSize_        = SERVER_DEFAULT_CACHE_SIZE;
-    Experimental_     = false;
-    InterfaceIDOrder_ = SRV_IFACE_ID_ORDER_BEFORE;
-    InactiveMode_     = false;
-    GuessMode_        = false;
-    AuthLifetime_     = DHCPV6_INFINITY;
-    AuthKeyLen_       = 16;
+TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) 
+    :Experimental_(false), WorkDir_(WORKDIR), Stateless_(false),
+     InactiveMode_(false), GuessMode_(false), CacheSize_(SERVER_DEFAULT_CACHE_SIZE),
+     AuthLifetime_(DHCPV6_INFINITY), AuthKeyLen_(16),
+     InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE)
+{
+
+
     DigestLst_.clear();
 }
 

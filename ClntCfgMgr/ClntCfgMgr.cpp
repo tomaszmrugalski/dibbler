@@ -48,9 +48,8 @@ void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
 
 
 TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
-  :TCfgMgr()
+    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT)
 {
-    ScriptName = DEFAULT_SCRIPT;
 
 #ifdef MOD_REMOTE_AUTOCONF
     RemoteAutoconf = false;
