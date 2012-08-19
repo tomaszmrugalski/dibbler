@@ -519,7 +519,7 @@ void TClntTransMgr::shutdown()
                 if (cfgPD)
                     cfgPD->setState(STATE_DISABLED);
             }
-            sendRelease(releasedIAs,ta, releasedPDs);
+            sendRelease(releasedIAs, ta, releasedPDs);
     }
 
     // now check if there are any TA left
