@@ -629,21 +629,24 @@ stl_list(rrdat) i_get_records(DnsMessage *a, bool fail_if_none, bool follow_cnam
 }
 
 stl_list(rrdat) get_records(DnsMessage *a, bool fail_if_none, bool follow_cname, stl_list(domainname) *fcn) {
-  if (a->RCODE != RCODE_NOERROR) throw PException(true, "Query returned error: %s\n", str_rcode(a->RCODE).c_str());
-  if (a->questions.begin() == a->questions.end()) throw PException("No question item in message");
-  return i_get_records(a, fail_if_none, follow_cname, 10, \
-                       a->questions.begin()->QNAME, \
-                       a->questions.begin()->QTYPE, fcn);
+    if (a->RCODE != RCODE_NOERROR)
+        throw PException(true, "Query returned error: %s\n", str_rcode(a->RCODE).c_str());
+    if (a->questions.begin() == a->questions.end())
+        throw PException("No question item in message");
+    return i_get_records(a, fail_if_none, follow_cname, 10,
+                         a->questions.begin()->QNAME,
+                         a->questions.begin()->QTYPE, fcn);
 }
 
-bool has_rrset(stl_list(DnsRR) &rrlist, domainname &QNAME, uint16_t QTYPE) {
-  stl_list(DnsRR)::iterator it = rrlist.begin();
+bool has_rrset(stl_list(DnsRR) &rrlist, domainname &name, uint16_t type) {
+    std::list<DnsRR>::iterator it = rrlist.begin();
 
-  while (it != rrlist.end()) {
-    if (it->NAME == QNAME && answers_qtype(it->TYPE, QTYPE)) return true;
-    it++;
-  }
-  return false;
+    while (it != rrlist.end()) {
+        if (it->NAME == name && answers_qtype(it->TYPE, type))
+            return true;
+        it++;
+    }
+    return false;
 }
 
 
@@ -657,11 +660,16 @@ bool has_parental_rrset(stl_list(DnsRR)& section, domainname &qname, uint16_t ty
 }
 
 _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtype) {
-  if (msg->RCODE != RCODE_NOERROR && msg->RCODE != RCODE_NXDOMAIN) return A_ERROR;
-  if (qtype != DNS_TYPE_CNAME && has_rrset(msg->answers, qname, DNS_TYPE_CNAME)) return A_CNAME;
-  if (msg->RCODE == RCODE_NXDOMAIN) return A_NXDOMAIN;
-  if (has_rrset(msg->answers, qname, qtype)) return A_ANSWER;
-  if (has_parental_rrset(msg->authority, qname, DNS_TYPE_NS) &&
-      !has_parental_rrset(msg->authority, qname, DNS_TYPE_SOA)) return A_REFERRAL;
-  return A_NODATA;
+    if (msg->RCODE != RCODE_NOERROR && msg->RCODE != RCODE_NXDOMAIN)
+        return A_ERROR;
+    if (qtype != DNS_TYPE_CNAME && has_rrset(msg->answers, qname, DNS_TYPE_CNAME))
+        return A_CNAME;
+    if (msg->RCODE == RCODE_NXDOMAIN)
+        return A_NXDOMAIN;
+    if (has_rrset(msg->answers, qname, qtype))
+        return A_ANSWER;
+    if (has_parental_rrset(msg->authority, qname, DNS_TYPE_NS) &&
+        !has_parental_rrset(msg->authority, qname, DNS_TYPE_SOA))
+        return A_REFERRAL;
+    return A_NODATA;
 }
