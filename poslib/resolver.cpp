@@ -198,7 +198,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
   
   int z = posrandom() % servers.size();
   sbegin = servers.begin();
-  while (z) { z--; sbegin++; }
+  while (z) { z--; ++sbegin; }
 
   while (++x < n_udp_tries) {
     server = sbegin;
@@ -243,7 +243,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
                      a->RCODE == RCODE_REFUSED ||
                      a->RCODE == RCODE_NOTIMP) {
             stl_slist(_addr)::iterator tmpit = server;
-            tmpit++; if (tmpit == servers.end()) tmpit = servers.begin();
+            ++tmpit; if (tmpit == servers.end()) tmpit = servers.begin();
             if (tmpit != sbegin) throw PException("Answer has error RCODE");
           }
           if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
@@ -254,7 +254,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
         if (a) delete a; a = NULL;
         if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
         if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
-        stl_slist(_addr)::iterator s2 = server; s2++;
+        stl_slist(_addr)::iterator s2 = server; ++s2;
         if (s2 == servers.end()) s2 = servers.begin();
         if (s2 == sbegin) throw PException("Resolving failed: ", p);
       }
