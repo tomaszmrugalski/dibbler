@@ -112,25 +112,11 @@ void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
     inet_ntop6(Addr,Plain);
 }
 
-void TIPv6Addr::shiftL(int bits)
-{
-
-}
-
-void TIPv6Addr::shiftR(int bits)
-{
-
-}
-
 std::ostream& operator<<(std::ostream& out,TIPv6Addr& addr)
 {
-	char buf[48];
-	if (addr.Addr) {
-		inet_ntop6(addr.Addr, buf);
-		out << buf;
-	} else {
-		out << "::";
-	}
+    char buf[48];
+    inet_ntop6(addr.Addr, buf);
+    out << buf;
     return out;
 }
 

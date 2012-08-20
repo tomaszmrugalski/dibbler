@@ -918,9 +918,9 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
     int prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrAddr> addraddr;
-    char * x = 0;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = 0;
         uint32_t timestamp = 0;
         uint32_t pref = 0;
         uint32_t valid = 0;
@@ -968,9 +968,9 @@ SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bo
     // address parameters
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrPrefix> addraddr;
-    char * x;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = NULL;
         unsigned long timestamp = 0, pref = 0, valid = 0, length = 0;
         addr = 0;
         if ((x=strstr(buf,"timestamp"))) {

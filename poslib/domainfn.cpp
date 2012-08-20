@@ -127,7 +127,7 @@ void dom_write(stl_string &ret, _cdomain dom, stl_slist(dom_compr_info) *comprin
         if (nlabels == best->nl) break; /* perfect match */
       }
     }
-    it++;
+    ++it;
   }
 
   /* let's go! */
@@ -212,7 +212,7 @@ domainname::domainname() {
   domain = (unsigned char *)strdup("");
 }
 
-domainname::domainname(const char *string, const domainname origin) {
+domainname::domainname(const char *string, const domainname& origin) {
   unsigned char tmp[DOM_LEN];
 
   txt_to_email(tmp, string, origin.domain);

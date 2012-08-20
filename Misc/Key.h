@@ -19,7 +19,7 @@ public:
     TSIGKey(const std::string& name);
     std::string getAlgorithmText();
 
-    void setData(const std::string& base64encoded);
+    bool setData(const std::string& base64encoded);
     std::string getPackedData();
     std::string getBase64Data();
 

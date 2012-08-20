@@ -20,17 +20,17 @@ TSIGKey::TSIGKey(const std::string& name)
 std::string TSIGKey::getAlgorithmText() {
     switch (Digest_) {
     case DIGEST_HMAC_MD5:
-	return std::string("HMAC-MD5.SIG-ALG.REG.INT");
+        return std::string("HMAC-MD5.SIG-ALG.REG.INT");
     case DIGEST_HMAC_SHA1:
-	return std::string("HMAC-SHA1.SIG-ALG.REG.INT");
+        return std::string("HMAC-SHA1.SIG-ALG.REG.INT");
     case DIGEST_HMAC_SHA256:
-	return std::string("HMAC-SHA256.SIG-ALG.REG.INT");
+        return std::string("HMAC-SHA256.SIG-ALG.REG.INT");
     default:
-	return std::string("Unsupported algorithm");
+        return std::string("Unsupported algorithm");
     }
 }
 
-void TSIGKey::setData(const std::string& base64encoded) {
+bool TSIGKey::setData(const std::string& base64encoded) {
     Base64Data_ = base64encoded;
 
     char raw[100];
@@ -39,17 +39,21 @@ void TSIGKey::setData(const std::string& base64encoded) {
 
     base64_decode_context ctx = {0};
     base64_decode_ctx_init(&ctx);
-    
-    if (base64_decode(&ctx, Base64Data_.c_str(),
-		      Base64Data_.length(),
-		      raw, &raw_len)) {
-    } else {
+
+    bool status = base64_decode(&ctx, Base64Data_.c_str(),
+                                Base64Data_.length(),
+                                raw, &raw_len);
+    if (!status) {
+        Log(Warning) << "Failed to base64-decode key. There are trailing unparsed characters."
+                     << LogEnd;
     }
 
     Data_.resize(raw_len);
     for (unsigned i=0; i<raw_len; i++) {
-	Data_[i] = raw[i];
+        Data_[i] = raw[i];
     }
+
+    return status;
 }
 
 std::string TSIGKey::getPackedData() {

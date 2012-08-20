@@ -699,7 +699,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         Log(Info) << "FQDN: Client sent valid hint (" << hint << ") that is not "
                   << "mentioned in server configuration. Server is configured to "
                   << "drop such hints. To accept them, please "
-                  << "'add accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
+                  << "add 'accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
         return 0;
     }
     case UNKKOWN_FQDN_ACCEPT_POOL:

@@ -79,7 +79,7 @@ class domainname {
    * \param text Human-readable domain name
    * \param origin Origin to which relative domain names are relative
    */
-  domainname(const char *text, const domainname origin);
+  domainname(const char *text, const domainname& origin);
 
   /*!
    * \brief constructor from human-readable text

@@ -258,7 +258,7 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
         if (s2 == servers.end()) s2 = servers.begin();
         if (s2 == sbegin) throw PException("Resolving failed: ", p);
       }
-      server++;
+      ++server;
       if (server == servers.end()) server = servers.begin();
     } while (server != sbegin);
   }
