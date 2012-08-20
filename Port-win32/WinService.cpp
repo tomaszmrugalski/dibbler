@@ -18,10 +18,10 @@ TWinService* TWinService::ServicePtr= NULL;
 TWinService::TWinService(const char* serviceName, const char* dispName,
                          DWORD serviceType, char* dependencies, char * descr)
 {
-    ServicePtr= this;
+    ServicePtr = this;
     strncpy(ServiceName, serviceName, sizeof(ServiceName)-1);
-    ServiceType=serviceType;
-    Dependencies=dependencies;
+    ServiceType = serviceType;
+    Dependencies = dependencies;
     MajorVersion = 1;
     MinorVersion = 0;
     EventSource = NULL;
@@ -77,7 +77,7 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 void TWinService::Handler(DWORD dwOpcode) {
 
-	// Get a pointer to the object
+        // Get a pointer to the object
     TWinService* pService = ServicePtr;
 
     switch (dwOpcode) {
@@ -464,34 +464,31 @@ bool TWinService::verifyPort() {
     verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
     GetVersionEx(&verinfo);
     bool ok=false;
-        if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
-          Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-          ok = true;
+    if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
+        Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==2)) {
-         Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==0)) {
-         Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-         Log(Warning) << "Support for Vista is considered experimental." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==1)) {
-         Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-         Log(Warning) << "Support for Win7 is considered experimental." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
 
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==2)) {
-         Log(Notice) << "Windows 8 detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-         Log(Warning) << "Support for Win8 is considered experimental." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows 8 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
 
     if (!ok) {

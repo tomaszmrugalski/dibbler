@@ -668,6 +668,7 @@ enum  _answer_type {
 /// @brief Returns the answer type of an answer message for a given query
 ///
 /// @param msg
+/// @param qname
 /// @param qtype
 ///
 /// @return answer type
@@ -676,10 +677,10 @@ _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtyp
 /// @brief Returns true if the given RRset is present in the DNS message section
 ///
 /// @param rrlist a list of Resource Records
-/// @param qname the name that is looked for
-/// @param qtype type of query
+/// @param name the name that is looked for
+/// @param type type of query
 ///
 /// @return true, if requested domainname exists, false otherwise
-bool has_rrset(stl_list(DnsRR) &rrlist, domainname &qname, uint16_t qtype = QTYPE_ANY);
+bool has_rrset(stl_list(DnsRR) &rrlist, domainname &name, uint16_t type = QTYPE_ANY);
 
 #endif /* __POSLIB_DNSMESSAGE_H */

@@ -79,7 +79,7 @@ class PException {
    * \param _message Error message
    * \param p Exception whose message is appended to the error message
    */
-  PException(const char *_message, PException &p);
+  PException(const char *_message, const PException &p);
 
   /*!
    * \brief constructor with format string

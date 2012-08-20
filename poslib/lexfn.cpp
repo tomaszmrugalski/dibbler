@@ -310,63 +310,69 @@ bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip) {
 #define R_ANY 3
 
 bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a) {
-  stl_list(addrrange)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (addrrange_matches(it->range, a)) return true;
-    it++;
-  }
-  return false;
+    stl_list(addrrange)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (addrrange_matches(it->range, a)) return true;
+        ++it;
+    }
+    return false;
 }
 
 #ifdef HAVE_SLIST
 bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a) {
-  stl_slist(addrrange)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (addrrange_matches(it->range, a)) return true;
-    it++;
-  }
-  return false;
+    stl_slist(addrrange)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (addrrange_matches(it->range, a)) return true;
+        ++it;
+    }
+    return false;
 }
 #endif
 
 #ifdef HAVE_SLIST
 bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port) {
-  stl_slist(_addr)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (match_port) {
-      if (addrport_matches(&*it, a)) return true;
-    } else {
-      if (address_matches(&*it, a)) return true;
+    stl_slist(_addr)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (match_port) {
+            if (addrport_matches(&*it, a)) return true;
+        } else {
+            if (address_matches(&*it, a)) return true;
+        }
+        ++it;
     }
-    it++;
-  }
-  return false;
+    return false;
 }
 #endif
 
 bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port) {
-  stl_list(_addr)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (match_port) {
-      if (addrport_matches(&*it, a)) return true;
-    } else {
-      if (address_matches(&*it, a)) return true;
+    stl_list(_addr)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (match_port) {
+            if (addrport_matches(&*it, a)) return true;
+        } else {
+            if (address_matches(&*it, a)) return true;
+        }
+        ++it;
     }
-    it++;
-  }
-  return false;
+    return false;
 }
 
 void txt_to_addrrange(unsigned char *iprange, const char *val) {
-  if (strcmpi(val, "any") == 0) { iprange[0] = R_ANY; return; }
-  if (strcmpi(val, "none") == 0) { iprange[0] = R_NONE; return; }
-  if (!strchr(val, ':')) {
-    iprange[0] = R_IP4;
-    txt_to_iprange(iprange + 1, val);
-  } else {
-    iprange[0] = R_IP6;
-    txt_to_ip6range(iprange + 1, val);
-  }
+    if (strcmpi(val, "any") == 0) {
+        iprange[0] = R_ANY;
+        return;
+    }
+    if (strcmpi(val, "none") == 0) {
+        iprange[0] = R_NONE;
+        return;
+    }
+    if (!strchr(val, ':')) {
+        iprange[0] = R_IP4;
+        txt_to_iprange(iprange + 1, val);
+    } else {
+        iprange[0] = R_IP6;
+        txt_to_ip6range(iprange + 1, val);
+    }
 }
 
 bool addrrange_matches(const unsigned char *iprange, _addr *a) {
@@ -383,19 +389,19 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
    (may be a <domain-name> or a true email address) */
 
 void txt_to_email(_domain target, const char *src, _cdomain origin) {
-  unsigned char dom[DOM_LEN];
-  char *cptr;
-
-  if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
-    /* contains a '@', so assume it's an email address */
-    if (src[0] == '@') throw PException("Incorrect email adress/domain name: begins with @");
-    domfromlabel(target, src, cptr - src);
-    txt_to_dname(dom, cptr + 1);
-    domcat(target, dom);
-  } else {
-    /* common domain name */
-    txt_to_dname(target, src, origin);
-  }
+    unsigned char dom[DOM_LEN];
+    char *cptr;
+    
+    if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
+        /* contains a '@', so assume it's an email address */
+        if (src[0] == '@') throw PException("Incorrect email adress/domain name: begins with @");
+        domfromlabel(target, src, cptr - src);
+        txt_to_dname(dom, cptr + 1);
+        domcat(target, dom);
+    } else {
+        /* common domain name */
+        txt_to_dname(target, src, origin);
+    }
 }
 
 /* converts a textual representation for a domain name to an rfc <domain-name> */
@@ -408,7 +414,7 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
   unsigned char tmp[16];
   char hex;
   int ttmp, ret;
-  
+
   if (src[0] == '@' && src[1] == '\0') {
     /* nothing but the origin */
     if (!origin)
@@ -446,9 +452,9 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
         }
         domcat(target, (_domain) "\7in-addr\4arpa");
         return;
-      }    
+      }
     }
-    
+
     ptr = (char *)strchr(src, '.');
     if (ptr) {
       if (ptr == src) throw PException("Zero length label");
@@ -535,7 +541,7 @@ unsigned char poslib_loc_precision(const char *str) {
   int x, y = 0;
   int n = 0;
   if (sscanf(str, "%4d.%6dm", &x, &y) < 1) throw PException(true, "Invalid precision: %s", str);
-  x = x*100+y;  
+  x = x*100+y;
   while (x >= 10) {
     x/=10; n++;
   }
@@ -630,9 +636,9 @@ uint16_t txt_to_qclass(const char *str, bool allow_q) {
   if (allow_q) {
     if (strcmpi(str, "ANY") == 0) return QCLASS_ANY;
     if (strcmpi(str, "NONE") == 0) return QCLASS_NONE;
-  }  
+  }
   throw PException(true, "Unknown class type %s", str);
-}  
+}
 
 stl_string intstring(u_int16 x) {
   char tmp[16];
