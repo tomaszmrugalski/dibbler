@@ -136,6 +136,18 @@ struct iface * if_list_get() {
     /* First pass through entire addrs_lst: collect unique interface names and flags */
     addr_ptr = addrs_lst;
     while (addr_ptr != NULL) {
+
+#ifdef LOWLEVEL_DEBUG
+        if (addr_ptr->ifa_addr->sa_family == AF_INET6) {
+            char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
+
+            printf("Link-local addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x"
+                   ":%02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+                   ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
+                   ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15]);
+        }
+#endif
+
         // check if this interface name is already on target list
         iface_ptr = iface_lst;
         while (iface_ptr!=NULL) {
@@ -179,6 +191,20 @@ struct iface * if_list_get() {
                 case AF_INET6:
                     {
                         char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
+
+#ifdef OPENBSD
+			// this is ugly. OpenBSD returns interface index on the 4th byte. Link-local
+			// addresses are supposed to be in format fe80:[6 zeros here]:EUI-64
+			memset(ptr+2, 0, 6);
+#endif
+
+#ifdef LOWLEVEL_DEBUG
+			printf("Link-local addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x:"
+                               "%02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+			       ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
+			       ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15]);
+#endif
+
                         if (ptr[0] == 0xfe && ptr[1] == 0x80) { // link-local IPv6 address
                             char * addrs = malloc( (iface_ptr->linkaddrcount+1)*16);
                             memcpy(addrs, iface_ptr->linkaddr, 16*iface_ptr->linkaddrcount);
