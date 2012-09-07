@@ -3,6 +3,7 @@
  ------------------- 
 0.8.3 [not-released-yet]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
+  - AFTR option on-wire encoding fixed
 
 0.8.3RC1 [2012-08-17]
   - Srv: address and prefix assignment rewritten

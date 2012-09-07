@@ -908,7 +908,7 @@ AddrParams
 DsLiteAftrName
 : OPTION_ AFTR_ STRING_
 {
-    SPtr<TOpt> tunnelName = new TOptString(OPTION_AFTR_NAME, $3, 0);
+    SPtr<TOpt> tunnelName = new TOptDomainLst(OPTION_AFTR_NAME, $3, 0);
     Log(Debug) << "Enabling DS-Lite tunnel option, AFTR name=" << $3 << LogEnd;
     SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
 };
