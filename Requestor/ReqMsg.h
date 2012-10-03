@@ -26,9 +26,10 @@ public:
     TReqMsg(int iface, SPtr<TIPv6Addr> addr,int msgSize, int msgType);
 
     void addOption(SPtr<TOpt> opt);
+    int ReqMsgType;
 
     std::string getName() const;
-
+    int getReqMsgType();
     void validateLQ();//defined in rfc 5007 (why validate ?)
     void isComletion(); //check completion of server replay (rfc 5460 p.11)
     void multipleQuery();//requestor can send multiple query to receive more data

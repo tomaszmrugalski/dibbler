@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.o
 *.a
 *.Po
@@ -40,3 +41,17 @@ Port-win32/Debug*
 Port-win32/*.user
 Port-win32/dibbler-win32.vs2008.ncb
 Port-win32/dibbler-win32.vs2008.suo
+=======
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+>>>>>>> 616164382c2420997c55561d27ee2418e8096925

@@ -44,7 +44,10 @@ void TReqMsg::isComletion()
 
 void TReqMsg::multipleQuery()
 {
+
 }
+
+
 
 //this->setAttributes(iface,addr,msgSize,msgType,transID);
 string TReqMsg::getName()
@@ -68,6 +71,11 @@ std::string TReqMsg::getName() const
     default:
         return "unknown";
     }
+}
+
+int TReqMsg::getReqMsgType()
+{
+    return ReqMsgType;
 }
 
 void TReqMsg::addOption(SPtr<TOpt> opt)

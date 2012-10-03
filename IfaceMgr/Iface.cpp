@@ -287,6 +287,19 @@ bool TIfaceIface::addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool 
     SocketsLst.append(ptr);
     return true;
 }
+//bool addTcpSocket(SPtr<TIPv6Addr> addr, int port,bool iffaceonly, bool reuse);
+bool TIfaceIface::addTcpSocket(SPtr<TIPv6Addr> addr, int port, bool socketType)
+{
+    socketType = 1;
+    // Log(Debug) << "Creating Tcp socket on " << *addr << " address." << LogEnd;
+    SPtr<TIfaceSocket> ptr = new TIfaceSocket(this->Name, this->ID, port, addr, ifaceonly, reuse, socketType, isMulticast);
+    if (ptr->getStatus()!=STATE_CONFIGURED) {
+        return false;
+    }
+    SocketsLst.append(ptr);
+    return true;
+
+}
 
 #if 0
 /*
