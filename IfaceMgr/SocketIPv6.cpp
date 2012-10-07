@@ -36,10 +36,10 @@ int TIfaceSocket::MaxFD=0;
  * @param ifaceonly force interface-only flag in setsockopt()?
  * @param reuse   should socket be bound with reuse flag in setsockopt()?
  */
-TIfaceSocket::TIfaceSocket(char * iface, int ifindex, int port,
-				   SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse) { 
+TIfaceSocket::TIfaceSocket(char * iface, int ifindex, int port,SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse) { 
+
     if (this->Count==0) {
-	FD_ZERO(getFDS());
+        FD_ZERO(getFDS());
     }
     this->Count++;
     this->createSocket(iface, ifindex, addr, port, ifaceonly, reuse);
@@ -68,6 +68,15 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bo
     SPtr<TIPv6Addr> smartAny (new TIPv6Addr(anyaddr));   
     this->createSocket(iface, ifaceid, smartAny, port, ifaceonly, reuse);
     this->Count++;
+}
+
+TIfaceSocket::TIfaceSocket(char *iface, int ifaceid, SPtr<TIPv6Addr> addr, int port)
+{
+    if (this->Count==0) {
+        FD_ZERO(getFDS());
+    }
+    this->Count++;
+    this->createSocket_TCP(iface, ifaceid, addr, port);
 }
 
 /**
@@ -120,6 +129,50 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr,
     return 0;
 }
 
+
+
+/**
+ * creates socket on this interface.
+ * @param iface - interface name
+ * @param ifaceid - interface ID
+ * @param port - port, to which socket will be bound
+ * @param addr - address
+ *
+ * @return negative error code (or 0 if everything is ok)
+ */
+int TIfaceSocket::createSocket_TCP(char *iface, int ifaceid, SPtr<TIPv6Addr> addr, int port)
+{
+    int sock;
+
+    // store info about this socket
+    strncpy(this->Iface,iface,MAX_IFNAME_LENGTH);
+    this->IfaceID = ifaceid;
+    this->Port = port;
+    this->Status = STATE_NOTCONFIGURED;
+    this->Addr   = addr;
+
+    int connectionNumber = BULKLQ_MAX_CONNS;
+
+    // create socket
+    sock = sock_add_tcp(this->Iface, this->IfaceID, addr->getPlain(),this->Port, connectionNumber);
+    if (sock<0) {
+        printError(sock, iface, ifaceid, addr, port);
+        this->Status = STATE_FAILED;
+        return -3;
+    }
+
+    this->FD = sock;
+    this->Status = STATE_CONFIGURED;
+
+    // add FileDescriptior fd_set using FD_SET macro
+    FD_SET(this->FD,this->getFDS());
+    if (FD>MaxFD)
+        MaxFD = FD;
+
+    return 0;
+}
+
+
 /**
  * sends data through socket
  * @param buf - buffer to send
@@ -161,6 +214,67 @@ int TIfaceSocket::recv(char * buf, SPtr<TIPv6Addr> addr) {
 
     if ( len  < 0 ) {
 	printError(len, this->Iface, this->IfaceID, addr, this->Port);
+        return -1;
+    }
+
+    // convert to packed form (plain->16-byte)
+    char packedAddr[16];
+    inet_pton6(peerPlainAddr,packedAddr);
+    addr->setAddr(packedAddr);
+    return len;
+}
+
+/**
+ * sends data through socket
+ * @param buf - buffer to send
+ * @param len - number of bytes to send
+ * @param addr - where send this data
+ * @param port - to which port
+ * returns number of bytes sent or -1 if something went wrong
+ */
+int TIfaceSocket::send_tcp(char *buf, int len, SPtr<TIPv6Addr> addr, int port)
+{
+    int result;
+    int flags = 0;
+    //extern "C" int sock_send(int fd, char * addr, char * buf, int buflen, int port, int ifaceID);
+
+    result = sock_send_tcp(this->FD, addr->getPlain(), buf, len,flags, port);
+
+    if (result<0) {
+    printError(result, this->Iface, this->IfaceID, addr, port);
+    return -1;
+    }
+
+    /* send success full */
+    return result;
+
+}
+
+
+/**
+ * receives data from socket
+ * @param buf - received data are stored here
+ * @param addr - will contain info about sender
+ */
+int TIfaceSocket::recv_tcp(char *buf, SPtr<TIPv6Addr> addr)
+{
+    char myPlainAddr[48];
+    char peerPlainAddr[48];
+
+    // maximum DHCPv6 packet size
+    int len=1500;
+
+    /* define flags ( 0 - default):
+    MSG_DONOTROUTE
+    MSG_DONOTWAIT
+    MSG_OOB
+    MSG_PEEK
+    MSG_WAITALL*/
+
+    int flags = 0;
+    len = sock_recv_tcp(this->FD, buf, len, flags);
+    if ( len  < 0 ) {
+        printError(len, this->Iface, this->IfaceID, addr, this->Port);
         return -1;
     }
 

@@ -35,6 +35,11 @@ TReqOptGeneric::TReqOptGeneric(int optType, char * data, int dataLen, TMsg* pare
 {
 }
 
+TReqOptGeneric::TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent, int remoteId)
+    :TOptGeneric(optType, data, dataLen, parent)
+{
+
+}
 bool TReqOptGeneric::doDuties()
 {
     return true;
@@ -42,6 +47,7 @@ bool TReqOptGeneric::doDuties()
 
 TReqOptRelayId::TReqOptRelayId(int type,int optionLen,SPtr<TDUID> duid, TMsg *parent)
 {
+
 }
 
 bool TReqOptRelayId::doDuties()
@@ -49,8 +55,9 @@ bool TReqOptRelayId::doDuties()
     return true;
 }
 
-TReqOptRemoteId::TReqOptRemoteId(int optType, char *data, int dataLen, TMsg *parent)
+TReqOptRemoteId::TReqOptRemoteId(int optType, char *data, TMsg *parent)
 {
+    return true;
 }
 
 bool TReqOptRemoteId::doDuties()

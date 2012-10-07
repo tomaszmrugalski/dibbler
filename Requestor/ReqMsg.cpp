@@ -27,7 +27,7 @@ TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 //bulk
-TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgSize, int msgType):TMsg (iface, addr, msgSize, msgType,transID)
+TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgSize, int msgType):TMsg (iface, addr, msgSize, msgType)
 {
 
 }
@@ -47,20 +47,6 @@ void TReqMsg::multipleQuery()
 
 }
 
-
-
-//this->setAttributes(iface,addr,msgSize,msgType,transID);
-string TReqMsg::getName()
-{
-    switch (MsgType) {
-    case LEASEQUERY_MSG:
-        return "LEASEQUERY";
-    case LEASEQUERY_REPLY_MSG:
-        return "LEASEQUERY_RSP";
-    default:
-        return "unknown";
-    }
-}
 std::string TReqMsg::getName() const
 {
     switch (MsgType) {

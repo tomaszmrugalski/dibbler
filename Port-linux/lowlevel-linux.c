@@ -504,15 +504,15 @@ int sock_send(int sock, char *addr, char *buf, int message_len, int port, int if
     hints.ai_family = PF_INET6;
     hints.ai_socktype = SOCK_DGRAM;
     if (getaddrinfo(addr, cport, &hints, &res) < 0) {
-	return -1; /* Error in transmitting */
+        return -1; /* Error in transmitting */
     }
 
     result = sendto(sock, buf, message_len, 0, res->ai_addr, res->ai_addrlen);
     freeaddrinfo(res);
 
     if (result<0) {
-	sprintf(Message, "Unable to send data (dst addr: %s)", addr);
-	return LOWLEVEL_ERROR_SOCKET;
+        sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+        return LOWLEVEL_ERROR_SOCKET;
     }
     return LOWLEVEL_NO_ERROR;
 }
@@ -765,7 +765,7 @@ void print_trace(void)
 
 
 
-extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
+extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber){
 
     int error;
     int on = 1;
@@ -776,16 +776,10 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
     char * tmp;
     struct sockaddr_in6 bindme;
     sprintf(port_char,"%d",port);
-
-
-    int	hops=1;
-    char packedAddr[16];
-
-
+    int fd_new;
 
 #ifdef LOWLEVEL_DEBUG
-    printf("### iface: %s(id=%d), addr=%s, port=%d,
-    ifacename,ifaceid, addr, port);
+    printf("### iface: %s(id=%d), addr=%s, port=%d", ifacename,ifaceid, addr, port);
     fflush(stdout);
 #endif
 
@@ -823,11 +817,33 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
     inet_pton6(addr, tmp);
 
     if ( port > 0) {
-        if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme))) {
+        if (bind(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme))) {
             sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
             return LOWLEVEL_ERROR_BIND_FAILED;
         } else {
+            sprintf(Message, "Socket has been bind succesfully");
+        }
 
+        if (connectionNumber > 0)  {
+             if ( listen_tcp (Insock,connectionNumber) != 0 ) {
+                 return LOWLEVEL_ERROR_LISTEN_FAILED;
+             } else {
+                 sprintf(Message,"Listen function has been called correctly");
+             }
+        } else {
+            sprintf(Message, "Connection number hasn't been specified");
+            return LOWLEVEL_ERROR_LISTEN_FAILED;
+        }
+
+
+        while ((fd_new = accept(Insock, (struct sockaddr_in6*)&bindme, sizeof(struct sockaddr_in6) )) == 0) {
+            if (fd_new == -1) {
+                sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+                close(fd_new);
+                return 1;
+            } else {
+                return fd_new;
+            }
         }
     }
 
@@ -838,8 +854,8 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
 
 extern int listen_tcp (int fd,int connectionNumber ) {
 
-    if ( listen( fd, connectionNumber ) == SOCKET_ERROR ) {
-              printf( "Listen function failed\n");
+    if ( listen( fd, connectionNumber ) < 0 ) {
+              sprintf(Message, "Listen function failed");
               close(fd);
               return 1;
     } else {
@@ -847,36 +863,38 @@ extern int listen_tcp (int fd,int connectionNumber ) {
     }
 }
 
-extern int accept_tcp (int fd,char * addr, struct socketStruct) {
+//extern int accept_tcp (int fd,char * addr, struct socketStruct) {
 
-    addrLength = sizeof(socketStruct.sockaddr_in);
-    fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
-    if (fd_new == -1) {
-        printf( "Accept function failed. Cannot create net socket descriptor\n");
-        close(fd_new);
-        return 1;
-    } else {
-        return fd_new;
-    }
+//    int fd_new;
 
-}
+//    addrLength = sizeof(socketStruct.sockaddr_in);
+//    fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
+//    if (fd_new == -1) {
+//        sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+//        close(fd_new);
+//        return 1;
+//    } else {
+//        return fd_new;
+//    }
 
-extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
+//}
 
-     addrLength = sizeof(socketStruct.sockaddr_in);
-     if(getpeername(fd, addr, addrLength) < 0) {
-         printf( "Getpeername function failed. Cannot return peername address\n");
-         close(fd_new);
-         return 1;
-     } else {
-         return 0;
-     }
+//extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
 
-}
+//    int addrLength;
+//    int fd_new;
+//    addrLength = sizeof(socketStruct.sockaddr_in);
+//     if(getpeername(fd, addr, addrLength) < 0) {
+//         sprintf(Message, "Getpeername function failed. Cannot return peername address");
+//         close(fd_new);
+//         return 1;
+//     } else {
+//         return 0;
+//     }
+//}
 
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
-    //int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
     int iResult;
     if (!(iResult = recv (fd, recvBuffer, bufLength, flags))) {
         return -1;
@@ -889,8 +907,7 @@ extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 }
 
 
-extern int sock_send_tcp(int fd,char *buf, int buflen, int flags ) {
-
+extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, int port) {
 
     struct addrinfo hints, *res;
     int iResult = 0;
@@ -901,11 +918,16 @@ extern int sock_send_tcp(int fd,char *buf, int buflen, int flags ) {
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = PF_INET6;
     hints.ai_socktype = SOCK_STREAM;
+
     if (getaddrinfo(addr, cport, &hints, &res) < 0) {
-    return -1; /* Error in transmitting */
+        return -1; /* Error in transmitting */
     }
 
-    if (iResult=send(fd,buf,buflen,0))
+    if (!buflen){
+        buflen=(int)strlen(buf);
+    }
+
+    if (iResult = send (fd,buf,buflen,flags))
     {
         if (iResult < 0);
         sprintf(Message, "Unable to send data (dst addr: %s)", addr);
@@ -914,34 +936,21 @@ extern int sock_send_tcp(int fd,char *buf, int buflen, int flags ) {
 
     freeaddrinfo(res);
 
-    int iResult;
-
-    /*if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
-       ||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
-    strcat(strcat(addrStr,"%"),ifaceStr);*/
+    return iResult;
 }
 
 extern int terminate_tcp_connection(int fd,int how) {
 
-    //SD_RECEIVE 0
-    //SD_SEND    1
-    //SD_BOTH    2
-    int howChar;
-    if(how==0) {
-        howChar=SD_RECEIVE;
-    }
-    if(how==1) {
-        howChar=SD_SEND;
-    }
-    if(how==2) {
-        howChar=SD_BOTH;
-    }
-    iResult = shutdown(ConnectSocket,howInt);
-    if (iResult == SOCKET_ERROR) {
-        close(ConnectSocket);
-        sprintf(Message, "Shutdown failed. Close function called\n", addr);
+    /*SD_RECEIVE 0
+    SD_SEND    1
+    SD_BOTH    2*/
+    int iResult;
+
+    iResult = shutdown(fd,how);
+    if (iResult < 0) {
+        close(fd);
+        sprintf(Message, "Shutdown failed. Close function called\n");
         return LOWLEVEL_ERROR_SOCKET;
-        return 1;
     }
     return iResult;
 
