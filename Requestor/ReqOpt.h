@@ -37,16 +37,17 @@ class TReqOptGeneric : public TOptGeneric
 {
 public:
     TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent);
+    TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent, int remoteId);
 protected:
     bool doDuties();
 };
 
 
 
-class TReqOptRemoteId : public TOptGener
+class TReqOptRemoteId : public TOptGeneric
 {
 public:
-    TReqOptGeneric(int optType,int remoteId, TMsg* parent);
+    TReqOptRemoteId(int optType,int remoteId, TMsg* parent);
 protected:
     bool doDuties();
 };
@@ -57,7 +58,7 @@ class TReqOptRelayId : public TOptDUID
     public:
         //TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg* parent);
         TReqOptRelayId(int type,int optionLen,SPtr<TDUID> duid,TMsg* parent);
-       int getSize();
+       //int getSize();
 
         SPtr<TDUID> getRelayDUID();
         char * storeSelf(char *buf);
@@ -65,12 +66,4 @@ class TReqOptRelayId : public TOptDUID
         bool doDuties();
 };
 
-
-class TReqOptLinkAddr : public TOpt
-{
-    public:
-        TReqOptLinkAddr(int optType, char * data, int dataLen, TMsg* parent);
-    protected:
-        bool doDuties();
-};
 #endif

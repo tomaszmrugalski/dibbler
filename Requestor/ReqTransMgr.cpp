@@ -147,7 +147,7 @@ bool ReqTransMgr::BindTcpSockets()
     SPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
     Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName()
         << "/" << loopback->getID() << " interface." << LogEnd;
-//zły port, dodam później
+
     if (!loopback->addTcpSocket(loopback,DHCLIENT_PORT, false,true,true,false)){
         Log(Crit) << "Proper socket creation failed." << LogEnd;
         return false;
@@ -382,7 +382,7 @@ bool ReqTransMgr::SendTcpMsg()
 
     Log(Debug) << msg->getSize() << "-byte long LQ_QUERY message prepared." << LogEnd;
 
-    if (this->Socket->send(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
+    if (this->Socket->send_tcp(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
         Log(Error) << "Message transmission failed." << LogEnd;
         return false;
     }

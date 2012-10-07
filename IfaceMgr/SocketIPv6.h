@@ -30,15 +30,22 @@ class TIfaceSocket;
 class TIfaceSocket {
     friend std::ostream& operator<<(std::ostream& strum, TIfaceSocket &x);
  public:
-    TIfaceSocket(char * iface,int ifaceid, int port, 
-		     SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
-    TIfaceSocket(char * iface,int ifaceid, int port,
-		     bool ifaceonly, bool reuse);
+    TIfaceSocket(char * iface,int ifaceid, int port, SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
+    TIfaceSocket(char * iface,int ifaceid, int port, bool ifaceonly, bool reuse);
+
+    //bulk's constructor
+    TIfaceSocket(char * iface, int ifaceid,SPtr<TIPv6Addr> addr, int port);
+
+
    
     // ---transmission---
     int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv(char * buf,SPtr<TIPv6Addr> addr);
-    
+
+    // ---TCP-transmission---
+    int send_tcp(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
+    int recv_tcp(char * buf,SPtr<TIPv6Addr> addr);
+
     // ---get info---
     inline static int getCount() { return Count; }
     int getFD();
@@ -58,8 +65,9 @@ class TIfaceSocket {
     ~TIfaceSocket();
  private:
     // adds socket to this interface
-    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, 
-		     int port, bool ifaceonly, bool reuse);
+    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port, bool ifaceonly, bool reuse);
+    int createSocket_TCP(char * iface, int ifaceid, SPtr<TIPv6Addr> addr,int port);
+
     void printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port);
 
     // FileDescriptor

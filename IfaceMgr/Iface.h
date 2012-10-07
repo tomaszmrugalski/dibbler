@@ -25,8 +25,8 @@ class TIfaceIface{
  public:
     friend std::ostream & operator <<(std::ostream & strum, TIfaceIface &x);
 
-    TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-                int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType);
+    TIfaceIface(const char * name, int id, unsigned int flags, char* mac, int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType);
+
     char * getName();
     int getID();
     std::string getFullName();
@@ -68,7 +68,10 @@ class TIfaceIface{
     
     // ---socket related---
     bool addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
-    // bool addSocket(int port, bool ifaceonly, bool reuse); 
+    // bool addSocket(int port, bool ifaceonly, bool reuse);
+    //addTcpSocket(SPtr<TIPv6Addr> addr, int port, bool socketType)
+    bool addTcpSocket(SPtr<TIPv6Addr> addr, int port);
+
     bool delSocket(int id);
     void firstSocket();
     SPtr <TIfaceSocket> getSocketByFD(int fd);

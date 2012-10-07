@@ -256,6 +256,7 @@ struct link_state_notify_t
 #define LOWLEVEL_ERROR_FILE             -10
 #define LOWLEVEL_ERROR_SOCKET           -11
 #define LOWLEVEL_ERROR_NOT_IMPLEMENTED  -12
+#define LOWLEVEL_ERROR_LISTEN_FAILED    -13
 
 #define LOWLEVEL_TENTATIVE_YES 1
 #define LOWLEVEL_TENTATIVE_NO  0
@@ -316,6 +317,11 @@ unsigned long pref, unsigned long valid, int prefixLength);
      */
     extern int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                                  char* mac, int* mac_len);
+
+    extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber);
+    extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, int port);
+    extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags);
+    extern int terminate_tcp_connection(int fd,int how);
 
     /* pack/unpack address */
     extern void print_packed(char addr[]);
