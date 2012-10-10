@@ -16,11 +16,13 @@
 #include "OptIAAddress.h"
 #include "OptDUID.h"
 #include "OptGeneric.h"
+#include "SmartPtr.h"
 
 class TReqOptAddr : public TOptIAAddress
 {
 public:
     TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
+
 protected:
     bool doDuties();
 };
@@ -31,6 +33,7 @@ public:
     TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent);
 protected:
     bool doDuties();
+
 };
 
 class TReqOptGeneric : public TOptGeneric

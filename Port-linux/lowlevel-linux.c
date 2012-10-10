@@ -887,7 +887,7 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int
         }
 
 
-        while ((fd_new = accept(Insock, (struct sockaddr_in6*)&bindme, sizeof(struct sockaddr_in6) )) == 0) {
+        while ((fd_new = accept(Insock, (struct sockaddr_in6 *)&bindme, sizeof(struct sockaddr_in6) )) == 0) {
             if (fd_new == -1) {
                 sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
                 close(fd_new);

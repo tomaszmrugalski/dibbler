@@ -298,6 +298,7 @@ bool TIfaceIface::addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool 
     SocketsLst.append(ptr);
     return true;
 }
+
 //bool addTcpSocket(SPtr<TIPv6Addr> addr, int port,bool iffaceonly, bool reuse);
 bool TIfaceIface::addTcpSocket(SPtr<TIPv6Addr> addr, int port)
 {
