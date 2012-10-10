@@ -24,6 +24,8 @@ typedef struct {
     char * bulk;
     char * linkAddr; //to będzie nie potrzebne
     char * remoteId; //to będzie nie potrzebne
+    char * relayId;
+    char * clientId;
 
 } ReqCfgMgr;
 

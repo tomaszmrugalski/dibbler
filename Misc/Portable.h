@@ -302,10 +302,9 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern int sock_del(int fd);
     extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
     extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
-    extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber);
     extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, int port);
     extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags);
-    extern int terminate_tcp_connection(int fd,int how);
+    extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber);
 
     /* pack/unpack address */
     extern void print_packed(char addr[]);

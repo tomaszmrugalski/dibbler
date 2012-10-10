@@ -13,13 +13,14 @@
 
 #include "IfaceMgr.h"
 #include "ReqCfgMgr.h"
+#include "SmartPtr.h"
 
 class ReqTransMgr {
 public:
     ReqTransMgr(TIfaceMgr * ifaceMgr);
     void SetParams(ReqCfgMgr * cfgMgr);
     bool BindSockets();
-    bool BindTcpSockets();
+    bool CreateNewTCPSocket();
     bool SendMsg();
     bool SendTcpMsg();
     bool WaitForRsp();

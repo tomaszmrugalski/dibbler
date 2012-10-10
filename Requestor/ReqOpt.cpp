@@ -9,6 +9,7 @@
  *
  */
 #include "ReqOpt.h"
+#include "SmartPtr.h"
 
 TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent)
   :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
@@ -20,6 +21,8 @@ bool TReqOptAddr::doDuties()
     return true;
 }
 
+
+
 TReqOptDUID::TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
     :TOptDUID(type, duid, parent)
 {
@@ -29,6 +32,17 @@ bool TReqOptDUID::doDuties()
 {
     return true;
 }
+
+//char TReqOptDUID::storeSelf(char *buf)
+//{
+//    return buf;
+//}
+
+//int TReqOptDUID::getSize()
+//{
+//    int size = 10;
+//    return size;
+//}
 
 TReqOptGeneric::TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent)
     :TOptGeneric(optType, data, dataLen, parent)
@@ -45,23 +59,13 @@ bool TReqOptGeneric::doDuties()
     return true;
 }
 
-TReqOptRelayId::TReqOptRelayId(int type,int optionLen,SPtr<TDUID> duid, TMsg *parent)
-{
-    int Type=type;
-    int Len=optionLen;
-    int DUID=duid;
-    Parent=parent;
-}
+
 
 bool TReqOptRelayId::doDuties()
 {
     return true;
 }
 
-TReqOptRemoteId::TReqOptRemoteId(int optType, char *data, TMsg *parent)
-{
-    return true;
-}
 
 bool TReqOptRemoteId::doDuties()
 {
