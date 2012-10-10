@@ -18,8 +18,8 @@ using namespace std;
 
 TClntAddrMgr * TClntAddrMgr::Instance = 0;
 
-void TClntAddrMgr::instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, const std::string& xmlFile, bool loadDB)
-{
+void TClntAddrMgr::instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm,
+                                  const std::string& xmlFile, bool loadDB) {
   if (Instance) {
       Log(Crit) << "Attempt to create another instance of TClntAddrMgr!" << LogEnd;
       return;
@@ -43,7 +43,8 @@ TClntAddrMgr& TClntAddrMgr::instance()
  * @param loadDB should existing dump be loaded?
  *
  */
-TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm, const std::string& xmlFile, bool loadDB)
+TClntAddrMgr::TClntAddrMgr(SPtr<TDUID> clientDUID, bool useConfirm,
+                           const std::string& xmlFile, bool loadDB)
     :TAddrMgr(xmlFile, useConfirm)
 {
     // client may have been already loaded from client-AddrMgr.xml file
@@ -75,7 +76,6 @@ void TClntAddrMgr::processLoadedDB() {
 	ia->setState(STATE_CONFIRMME);
     }
 }
-
 
 unsigned long TClntAddrMgr::getT1Timeout() {
     return Client->getT1Timeout();

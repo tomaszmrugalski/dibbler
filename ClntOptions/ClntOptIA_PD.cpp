@@ -340,6 +340,11 @@ bool TClntOptIA_PD::isValid()
 void TClntOptIA_PD::setState(EState state)
 {
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(this->Iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable to set PD state for iaid=" << getIAID() << " received on interface "
+                   << "ifindex=" << Iface << ": No such interface in CfgMgr found." << LogEnd;
+        return;
+    }
 
     SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(getIAID());
     if (!cfgPD) {
