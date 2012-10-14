@@ -34,6 +34,7 @@ class TMsg
     // used to create TMsg object based on received char[] data
     TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     
+
     virtual int getSize();
     
     // transmit (or retransmit)
@@ -54,6 +55,7 @@ class TMsg
     
     long getType();
     long getTransID();
+
     TOptList & getOptLst();
     SPtr<TIPv6Addr> getAddr(); /// @todo: rename to getPeerAddr()
     int getIface();
@@ -86,6 +88,10 @@ class TMsg
   protected:
     int MsgType;
     long TransID;
+
+    //bulk's parameter
+    int MsgSize;
+    bool Bulk;
 
     bool delOption(int code);
 

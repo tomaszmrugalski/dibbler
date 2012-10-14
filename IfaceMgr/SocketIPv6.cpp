@@ -224,6 +224,13 @@ int TIfaceSocket::recv(char * buf, SPtr<TIPv6Addr> addr) {
     return len;
 }
 
+int TIfaceSocket::terminate_tcp(int how)
+{
+    int fd;
+    fd = this->getFD();
+    terminate_tcp_connection(fd,how);
+}
+
 /**
  * sends data through socket
  * @param buf - buffer to send
