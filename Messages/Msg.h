@@ -59,6 +59,7 @@ class TMsg
 
     long getType();
     long getTransID();
+
     TOptList & getOptLst();
     int getIface();
     virtual ~TMsg();
@@ -100,6 +101,10 @@ class TMsg
   protected:
     int MsgType;
     long TransID;
+
+    //bulk's parameter
+    int MsgSize;
+    bool Bulk;
 
     bool delOption(int code);
 

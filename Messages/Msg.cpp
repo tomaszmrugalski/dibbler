@@ -43,6 +43,11 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
+
+    if (msgType == LEASEQUERY_MSG) {
+      MsgSize=getSize();
+    }
+
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
@@ -50,6 +55,7 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
 {
     setAttribs(iface,addr,msgType,transID);
 }
+
 
 void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {

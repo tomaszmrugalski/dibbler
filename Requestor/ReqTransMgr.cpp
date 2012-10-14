@@ -263,8 +263,8 @@ bool ReqTransMgr::SendTcpMsg()
     Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to "
            << dstAddr->getPlain() << " address by tcp protocol." << LogEnd;
 
-    int msgSize = 10;
-    TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, msgSize, LEASEQUERY_MSG);
+
+    TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, LEASEQUERY_MSG);
 
     char buf[1024];
     int bufLen;

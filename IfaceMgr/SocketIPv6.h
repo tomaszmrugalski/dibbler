@@ -41,6 +41,7 @@ class TIfaceSocket {
     // ---transmission---
     int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv(char * buf,SPtr<TIPv6Addr> addr);
+    int terminate_tcp(int how);
 
     // ---TCP-transmission---
     int send_tcp(char * buf,int len, SPtr<TIPv6Addr> addr,int port);

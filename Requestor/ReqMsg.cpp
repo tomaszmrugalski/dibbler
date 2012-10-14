@@ -26,11 +26,6 @@ TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 
 }
 
-//bulk
-TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgSize, int msgType):TMsg (iface, addr, msgSize, msgType)
-{
-
-}
 
 void TReqMsg::validateLQ()
 {

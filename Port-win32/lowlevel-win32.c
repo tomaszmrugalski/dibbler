@@ -765,6 +765,17 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
 
+    //TCP client part
+    if (port == 0) {
+
+         if (connect(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme)) != 0) {
+             sprintf(Message, "Unable to connect with DHCP server, connect function failed");
+             return LOWLEVEL_ERROR_CONNECT_FAILED;
+
+        }
+    }
+
+    //TCP server part
     if ( port > 0) {
         if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme))) {
             sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
