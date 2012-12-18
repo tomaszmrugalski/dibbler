@@ -4,6 +4,7 @@
 0.8.3 [not-released-yet]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
   - AFTR option on-wire encoding fixed
+  - Compilation fix in Port-linux/interface.c on CentOS 5.x
 
 0.8.3RC1 [2012-08-17]
   - Srv: address and prefix assignment rewritten
