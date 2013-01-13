@@ -62,7 +62,7 @@ char* TIPv6Addr::getAddr() {
 }
 
 char* TIPv6Addr::getPlain() {
-    inet_ntop6( Addr, Plain);
+    inet_ntop6(Addr, Plain);
     return Plain;
 }
 
@@ -185,6 +185,42 @@ TIPv6Addr TIPv6Addr::operator+(const TIPv6Addr &other)
  */
 TIPv6Addr& TIPv6Addr::operator--()
 {
+//#define ALGO_ANIA
+//#define OLD_CRAPPY_CODE
+//#define NEW_CRAPPY_CODE
+#define NEW_AWESOME_CODE
+
+#ifdef ALGO_ANIA
+    // Start with first non-zero most significant byte. 
+    // For i-th byte randomize a value from 0..Addr[i]
+    // If randomized value equals i-th (randomized max allowed
+    // value, then continue)
+    // If randomized value is smaller than i-th byte, then
+    // all following bytes are random.
+    //
+    // Issue: for 1:: half of the addresses are 1::
+    bool any = false; // insert any (0-255) value?
+    for (int i=0; i<16; ++i) {
+
+        if (!any) {
+            // Let's search for first non-zero byte
+            if (Addr[i] == 0)
+                continue;
+
+            // let's random a number from 0 to Addr[i]
+            uint8_t x = random()%( (uint16_t)(Addr[i]) + 1);
+            if (x < Addr[i]) {
+                Addr[i] = x; // decrease this byte
+                any = true; // next bytes are random
+            }
+        } else {
+            // Completely random value
+            Addr[i] = random() % 256;
+        }
+    }
+#endif
+
+#ifdef OLD_CRAPPY_CODE
     for (int i=15;i>=0;i--)
     {
         int j=i-1;
@@ -201,6 +237,93 @@ TIPv6Addr& TIPv6Addr::operator--()
         }
         else Addr[i]=r;
     }
+    return *this;
+#endif
+
+#ifdef NEW_CRAPPY_CODE
+
+    // Let's iterate over all octects, starting with the least significant
+    for (int i=15; i>=0; --i)
+    {
+        int j=i-1;
+        while( (j>=0) && (!Addr[j]))
+            j--;
+
+        if (j == i - 1) {
+            // this is the last non-zero byte
+            Addr[i] = random()%(Addr[i] + 1);
+        } else {
+
+        }
+        if (j < 0) {
+            // there are no non-zero bytes left of current position
+
+            // If i-th address is non-zero, let's decrease it randomly
+            if (Addr[i]) {
+                Addr[i] = rand()%(Addr[i] + 1);
+            }
+            return *this;
+        }
+
+        // Let's decrease this byte by a random value
+        int16_t r = random()%256;
+
+        // we try to decrease n-th byte by value greater than that byte,
+        // so we need to borrow from n-1-th byte
+        j = i;
+        while (r > Addr[i] && j>=0) {
+
+            // Borrow one from the next byte (it becomes 256 in this byte)
+            Addr[j] = static_cast<uint8_t>( (int16_t)(256) + (int16_t)(Addr[i]) - r);
+            r = 1; // subtract from the next 
+            j--;
+        }
+        if (j >= 0) {
+            Addr[j] = Addr[j] - (uint8_t)(r); // decrease this byte
+        }
+    }
+#endif
+
+#ifdef NEW_AWESOME_CODE
+
+    int j = 0;     // j - the most significant non-zero byte
+    for (j = 0; j<15; j++) {
+        if (Addr[j])
+            break;
+    }
+
+    uint8_t b = 0; // Borrow from the next byte
+    // Let's iterate over all octects, starting with the least significant
+    for (int i=15; i>=0; --i)
+    {
+        // Did we underflow (subtract below zero) this byte?
+        if (Addr[i] < b) {
+            // Yes - borrow 256 from the next byte
+            Addr[i] = Addr[i] - (int16_t)(b);
+            b = 1;
+        } else {
+            // No - we don't need to borrow anything
+            Addr[i] = Addr[i] - (int16_t)(b);
+            b = 0;
+        }
+
+        if (j == i) {
+            // this is the last non-zero byte
+            Addr[i] = random()%(Addr[i] + 1);
+            return *this;
+        }
+            
+        // Let's decrease this byte by a random value
+        int16_t r = random() % 256;
+
+        // Do we need to borrow 256 from the next byte?
+        b += (r > Addr[i]);
+
+        r = (uint8_t)(-r + 256 + Addr[i]);
+        Addr[i] = (uint8_t)(r);
+    }
+#endif
+
     return *this;
 }
 
