@@ -16,8 +16,8 @@
 #include "Portable.h"
 #include "Logger.h"
 
-static char truncLeft[] = { 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1, 0 };
-static char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
+static unsigned char truncLeft[] = { 0xff, 0x7f, 0x3f, 0x1f, 0xf,  0x7,  0x3,  0x1, 0 };
+static unsigned char truncRight[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
 TIPv6Addr::TIPv6Addr() {
     memset(Addr,0,16);
@@ -195,7 +195,8 @@ TIPv6Addr& TIPv6Addr::operator--()
         if (r>Addr[i])
         {
             Addr[j]--;
-            for(j++;j<i;j++) Addr[j]=255;
+            for(j++;j<i;j++)
+				Addr[j]=255;
             Addr[i]=char(int(256)+int(Addr[i])-r);
         }
         else Addr[i]=r;

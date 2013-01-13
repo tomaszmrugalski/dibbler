@@ -11,7 +11,6 @@
 #ifndef IPV6ADDR_H
 #define IPV6ADDR_H
 
-#include <iostream>
 #include <list>
 #include <SmartPtr.h>
 
