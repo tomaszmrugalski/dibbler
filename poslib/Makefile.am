@@ -5,7 +5,7 @@ if HAVE_GTEST
 endif
 
 noinst_LIBRARIES = libPoslib.a
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
 
 libPoslib_a_SOURCES = \
   dnsmessage.cpp \
