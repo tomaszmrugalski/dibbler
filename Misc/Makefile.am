@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
 noinst_LIBRARIES = libMisc.a
 
 libMisc_a_CFLAGS = -std=c99
