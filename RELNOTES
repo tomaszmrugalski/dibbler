@@ -1,8 +1,8 @@
 
-  Dibbler 0.8.3RC1 release notes [2012-08-17]
+  Dibbler 0.8.3 release notes [2013-01-14]
  ---------------------------------------------------------
 
- This is a first Release Candidate for 0.8.3 release of the Dibbler software.
+ This is a final 0.8.3 release of the Dibbler software.
 
  This is a release with several new features and many bug fixes.
 
@@ -32,5 +32,5 @@
  want to share your thoughts, take a look at one of the
  Dibbler-related mailing lists: dibbler or dibbler-devel.
 
-                               Tomasz Mrugalski,
+                               Tomek Mrugalski,
                                author

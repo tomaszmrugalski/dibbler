@@ -739,10 +739,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\GUIDELINES"
-			>
-		</File>
-		<File
 			RelativePath=".\relay-win32.vs2003.rc"
 			>
 		</File>
