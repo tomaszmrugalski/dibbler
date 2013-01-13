@@ -129,7 +129,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
+				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib;..\nettle"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -1207,6 +1207,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\IPv6Addr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\KeyList.h"
 					>
 				</File>
 				<File

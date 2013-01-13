@@ -23,9 +23,9 @@
 #include "dnssec-sign.h"
 
 extern "C" {
-#include "hmac.h"
-#include "base64.h"
-#include "md5.h"
+#include "nettle/hmac.h"
+#include "nettle/base64.h"
+#include "nettle/md5.h"
 }
 
 /// @brief verifies TSIG of received response

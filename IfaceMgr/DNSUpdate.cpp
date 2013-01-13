@@ -23,14 +23,12 @@ _addr ToPoslibAddr(const std::string& text_addr) {
     _addr dst;
     memset(&dst, 0, sizeof(dst));
 
-#ifndef WIN32
-    // LINUX, BSD
+    // It seems that Windows now have sockaddr_storage with ss_family field.
+	// It used to be sa_family on earlier Windows.
+	// dst.sa_family = AF_INET6;
     dst.ss_family = AF_INET6;
-#else
-    // WINDOWS
-    dst.sa_family = AF_INET6;
-#endif
-    txt_to_addr(&dst, text_addr.c_str());
+
+	txt_to_addr(&dst, text_addr.c_str());
     return dst;
 }
 

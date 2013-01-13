@@ -322,3 +322,15 @@ std::ostream & operator<<(std::ostream &s, TRelTransMgr &x)
     s << "</TRelTransMgr>" << std::endl;
     return s;
 }
+
+// Stub definitions, added because they are called in TMsg::storeSelf()
+extern "C" {
+void *hmac_sha (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf, int type) {
+	return NULL;
+}
+
+void *hmac_md5 (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf) {
+	return NULL;
+}
+
+}
