@@ -409,10 +409,15 @@ AC_ARG_WITH(gtest,
 
 if test "$gtest_path" != "no"
 then
-	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    if test -x "${gtest_path}/scripts/gtest-config"
+    then
+        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+        GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    else
+        AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
+    fi
 fi
 
 AC_SUBST(GTEST_INCLUDES)

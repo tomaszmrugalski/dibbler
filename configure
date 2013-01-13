@@ -17265,10 +17265,15 @@ fi
 
 if test "$gtest_path" != "no"
 then
-	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    if test -x "${gtest_path}/scripts/gtest-config"
+    then
+        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+        GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    else
+        as_fn_error $? "Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config" "$LINENO" 5
+    fi
 fi
 
 
