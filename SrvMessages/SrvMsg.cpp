@@ -230,7 +230,7 @@ void TSrvMsg::setDefaults() {
 /// @param quiet (false will make this method verbose)
 void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
-    SPtr<TOpt>       opt;
+    SPtr<TOpt> opt;
     SPtr<TIPv6Addr> clntAddr = PeerAddr;
 
     // --- process this message ---
@@ -1069,15 +1069,12 @@ void TSrvMsg::appendStatusCode()
 
 void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
     int opt = ptrOpt->getOptType();
-    switch(opt)
-    {
-    case OPTION_ELAPSED_TIME :
-        break;
-    default:
-        if (!ORO->isOption(opt) && !getOption(opt))
-            ORO->addOption(opt);
-        break;
-    }
+
+	// RECONF_ACCEPT is the last standard option defined in RFC3315
+	// All other options are considered extensions
+	if (opt> OPTION_RECONF_ACCEPT && !ORO->isOption(opt) && !getOption(opt)) {
+        ORO->addOption(opt);
+	}
 }
 
 /**

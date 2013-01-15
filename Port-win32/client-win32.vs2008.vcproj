@@ -140,6 +140,7 @@
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				DefaultCharIsUnsigned="true"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"

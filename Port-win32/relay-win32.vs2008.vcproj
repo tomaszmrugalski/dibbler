@@ -132,6 +132,7 @@
 				PreprocessorDefinitions="WIN32;MOD_DISABLE_AUTH"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
+				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"

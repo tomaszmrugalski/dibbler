@@ -662,7 +662,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
 
 bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     // worst case: address does not belong to supported class
-    // or specified hint is invalid
+    // or specified hint is invalid (or there was no hint at all)
     SPtr<TIPv6Addr> candidate;
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
     if (!iface) {
@@ -672,8 +672,8 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     SPtr<TSrvCfgAddrClass> pool = iface->getRandomClass(ClntDuid, ClntAddr);
 
     if (!pool) {
-	Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
-	return 0;
+        Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
+        return 0;
     }
 
     if (pool->clntSupported(ClntDuid, ClntAddr, queryMsg) &&

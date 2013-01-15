@@ -162,9 +162,15 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
     if (sockid>0) {
+
         if (bufsize<4) {
-            Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
-            return 0; //NULL
+            if (bufsize == 1 && buf[0] == CONTROL_MSG) {
+                Log(Debug) << "Control message received." << LogEnd;
+                return 0;
+            }
+            Log(Warning) << "Received message is too short (" << bufsize
+                         << ") bytes, at least 4 bytes are required." << LogEnd;
+            return 0; // NULL
         }
 
         // check message type
