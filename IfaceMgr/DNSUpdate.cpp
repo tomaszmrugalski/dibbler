@@ -109,7 +109,8 @@ DnsUpdateResult DNSUpdate::run(int timeout){
 	}
     }
     catch (const PException& p) {
-	return DNSUPDATE_ERROR;
+        Log(Warning) << "DNS Update failed: " << p.message << LogEnd;
+        return DNSUPDATE_ERROR;
     }
 
     if (Keyname_.length()>0) {
@@ -391,7 +392,7 @@ DnsRR* DNSUpdate::get_oldDnsRR(){
 	    tcpclose(sockid);
 	if (RemoteDnsRR)
 	    delete RemoteDnsRR;
-	Log(Error) << "DDNS: Attempt to get old DNS record failed." << LogEnd;
+    Log(Error) << "DDNS: Attempt to get old DNS record failed:" << p.message << LogEnd;
 	return 0;
     }
 }

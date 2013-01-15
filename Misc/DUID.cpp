@@ -27,30 +27,28 @@ TDUID::TDUID(const char* DUID,int DUIDlen)
 {
     this->DUID = 0;
 
-    if ((DUID)&&(DUIDlen))
-    {
+    if ((DUID)&&(DUIDlen)) {
         this->DUID=new char[DUIDlen];
         memcpy(this->DUID,DUID,DUIDlen);
         this->len=DUIDlen;
-	this->packedToPlain();
-    }
-    else
-    {
-        this->DUID=NULL;
-        this->len=0;
-	this->Plain="";
+		this->packedToPlain();
+    } else {
+		this->DUID=NULL;
+		this->len=0;
+		this->Plain="";
     }
 }
 
 void TDUID::packedToPlain() {
-    ostringstream tmp;
-    for(int i=0; i<this->len; i++) {
-	if (i) tmp << ":";
-	tmp << setfill('0')<<setw(2)<<hex<< (unsigned int) this->DUID[i];
-    }
-    tmp << dec;
-    this->Plain = tmp.str();
- }
+	ostringstream tmp;
+	for(int i=0; i<this->len; i++) {
+		if (i)
+			tmp << ":";
+		tmp << setfill('0') << setw(2) << hex << (unsigned short)((unsigned char) this->DUID[i]);
+	}
+	tmp << dec;
+	this->Plain = tmp.str();
+}
 
 void TDUID::plainToPacked() {
     int DUIDlen = Plain.length();

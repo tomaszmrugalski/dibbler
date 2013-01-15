@@ -299,22 +299,23 @@ TIPv6Addr& TIPv6Addr::operator--()
         // Did we underflow (subtract below zero) this byte?
         if (Addr[i] < b) {
             // Yes - borrow 256 from the next byte
-            Addr[i] = Addr[i] - (int16_t)(b);
+            Addr[i] = Addr[i] - b;
             b = 1;
         } else {
             // No - we don't need to borrow anything
-            Addr[i] = Addr[i] - (int16_t)(b);
+            Addr[i] = Addr[i] - b;
             b = 0;
         }
 
         if (j == i) {
             // this is the last non-zero byte
-            Addr[i] = random()%(Addr[i] + 1);
+            unsigned int div = (unsigned int)(Addr[i]) + 1;
+            Addr[i] = rand()%(div);
             return *this;
         }
             
         // Let's decrease this byte by a random value
-        int16_t r = random() % 256;
+        short int r = rand() % 256;
 
         // Do we need to borrow 256 from the next byte?
         b += (r > Addr[i]);

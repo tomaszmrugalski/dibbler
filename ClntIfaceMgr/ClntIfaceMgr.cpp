@@ -100,12 +100,12 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 
     if (sockid>0) {
         if (bufsize<4) {
-            if (buf[0]!=CONTROL_MSG) {
-                Log(Warning) << "Received message is too short (" << bufsize
-                             << ") bytes." << LogEnd;
-            } else {
-                Log(Warning) << "Control message received." << LogEnd;
+            if (bufsize == 1 && buf[0] == CONTROL_MSG) {
+                Log(Debug) << "Control message received." << LogEnd;
+                return 0;
             }
+            Log(Warning) << "Received message is too short (" << bufsize
+                         << ") bytes, at least 4 bytes are required.." << LogEnd;
             return 0; // NULL
         }
         int msgtype = buf[0];
