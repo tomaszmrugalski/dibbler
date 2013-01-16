@@ -6,6 +6,7 @@
   - AFTR option on-wire encoding fixed
   - Compilation fix in Port-linux/interface.c on CentOS 5.x
   - DUID is now written properly on 64 bit Windows
+  - Resource leak (socket not closed) in iterface detection fixed (bug #255)
 
 0.8.3RC1 [2012-08-17]
   - Srv: address and prefix assignment rewritten
