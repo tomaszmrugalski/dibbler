@@ -1,6 +1,6 @@
 SUBDIRS = .
 
-dist_noinst_DATA = addrpack.c client-win32.cpp ClntService.cpp ClntService.h config.h dibbler-config.h
+dist_noinst_DATA = addrpack.c client-win32.cpp ClntService.cpp ClntService.h dibbler-config.h
 dist_noinst_DATA += client-win32.vs2003.rc client-win32.vs2003.suo client-win32.vs2008.vcproj
 dist_noinst_DATA += dibbler-requestor.rc ipv6-wrapper.c lowlevel-win32.c relay-win32.cpp
 dist_noinst_DATA += relay-win32.vs2003.rc relay-win32.vs2003.suo relay-win32.vs2008.vcproj
