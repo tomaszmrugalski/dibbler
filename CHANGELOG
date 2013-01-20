@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
-0.8.3 [2013-01-14]
+0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
   - AFTR option on-wire encoding fixed
   - Compilation fix in Port-linux/interface.c on CentOS 5.x

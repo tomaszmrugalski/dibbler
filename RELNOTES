@@ -1,13 +1,13 @@
 
-  Dibbler 0.8.3 release notes [2013-01-14]
+  Dibbler 0.8.3 release notes [2013-01-20]
  ---------------------------------------------------------
 
  This is a final 0.8.3 release of the Dibbler software.
 
  This is a release with several new features and many bug fixes.
 
- The biggest feature is a rewritten address and prefix allocation engine. It
- follows the same algorithm now. It is possible to reserve specific address
+ The biggest feature is a rewritten address and prefix allocation engine. Both
+ follow the same algorithm now. It is possible to reserve specific address
  and/or prefix for a given host. The host can be referenced by DUID, remote-id
  or link-local address. Both in-pool and out-of-pool reservations are now
  supported.
