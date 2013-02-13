@@ -178,6 +178,57 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
 @endverbatim
 for a list of available parameters.
 
+Currently the following features can be enabled (--enable-feature) or
+disabled (--disable-feature):
+
+ - \b --enable-debug - This will change compilation flags, so the binaries will include 
+debugging symbols and are easier to debug. This disables -O2 flag and
+enables -O0 (no optimization) and adds -g (include debugging symbols).
+
+ - \b --enable-efence - This will link the code with <a href="http://en.wikipedia.org/wiki/Electric_Fence">electric fence</a>, a popular memory debugger. Do not use it, unless you
+are a developer or were explicitely asked to enable it. Make sure that
+you have efence library installed in your system.
+
+ - \b --enable-bind-reuse - When creating sockets, it is possible to configure socket
+options to allow binding the same address/port many times (SO_REUSEADDR
+flag passed to setsockopt). In certain cases this is convenient, so it is
+enabled by default.
+
+- \b --enable-resolvconf - Dibbler client may update /etc/resolv.conf to add, change
+or remove entries for DNS servers and domain names. There may be other
+processes in your system (e.g. pppd) that may do the same. In some cases
+this may cause the /etc/resolv.conf to become currupted. To manage such
+modifications, a 
+<a href="http://alioth.debian.org/projects/resolvconf/">tool called resolvconf</a>
+was developed. If enable-resolvconf is passed, then dibbler will try to
+use that tool to update /etc/resolv.conf file. If resolvconf is not present
+if your PATH or support for it has been disabled, dibbler will update /etc/resolv.conf
+on its own.
+
+- \b --enable-dns-update - Dibbler server and client supports FQDN option that
+informs the client about its hostname. Together with IPv6 address that
+information can be added to the DNS using DNS Update mechanism. If you
+are not planning on using that feature, you may disable DNS Updates as
+it requires additional library called poslib. Disabling DNS Update will
+make the code smaller. Server will be able to assign FQDNs and client will
+be able to receive it, but either will be able to update DNS server.
+
+- \b --enable-auth - Dibbler implements its own custom authentication and
+authorization. It is described in section 4.15 of Dibbler User's Guide.
+If you are not planning on using it and are concerned about binary size,
+you may consider disabling it.
+
+- \b --enable-link-state - Dibbler client running on Linux is able to detect
+link state changes and act based on those changes, i.e. send CONFIRM messages 
+after reconnecting. There is a slight overhard related to this. If you are
+not interested in detecting link changes, you may choose to not link this
+feature into your binary.
+
+- \b --enable-remote-autoconf - Dibbler implements remote autoconf mechanism
+described in (currently expired) draft draft-mrugalski-remote-dhcpv6-01.
+Enable this functionality only if you read that draft, understand it and
+plan to use it.
+
  * @subsection compilationCross 2.17 Cross-compilation
  * Since 0.6.1 version, dibbler supports cross-compilation. It was
  * possible in previous versions, but with considerable amount of work.
