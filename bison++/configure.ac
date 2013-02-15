@@ -4,6 +4,9 @@ AC_INIT([bison++], [2.21.5-dibbler], [alain.coetmeur@caissedesdepots.fr])
 AC_CONFIG_SRCDIR([bison.cc])
 AM_INIT_AUTOMAKE
 
+# DO NOT trigger rebuild rules, unless I tell you so.
+AM_MAINTAINER_MODE([disable])
+
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
