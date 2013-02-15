@@ -6,23 +6,22 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: KeyList.cpp,v 1.3 2008-08-29 00:07:30 thomson Exp $
  */
 
 #include "KeyList.h"
 #include "Logger.h"
+#include <stdio.h>
 
 KeyList::~KeyList() {
-        KeyListElement * tmp1 = beginning, * tmp2;
-        while(tmp1) {
-                tmp2 = tmp1;
-                tmp1 = tmp1->next;
-                delete tmp2->AuthInfoKey;
-                delete tmp2;
-        }
+    KeyListElement * tmp1 = beginning, * tmp2;
+    while(tmp1) {
+        tmp2 = tmp1;
+        tmp1 = tmp1->next;
+        delete tmp2->AuthInfoKey;
+        delete tmp2;
+    }
 }
 
-#include <stdio.h>
 void KeyList::Add(uint32_t SPI, uint32_t AAASPI, char * AuthInfoKey) {
     char buf[100];
     sprintf(buf, "Auth: Key (SPI: 0x%8.8x, AAASPI: 0x%8.8x, pointer: %p) added to keylist.", SPI, AAASPI, AuthInfoKey);
@@ -57,10 +56,6 @@ void KeyList::Add(uint32_t SPI, uint32_t AAASPI, char * AuthInfoKey) {
 }
 
 char * KeyList::Get(uint32_t SPI) {
-    // char buf[100];
-    //sprintf(buf, "KeyList get: 0x%8.8x", SPI);
-    //Log(Debug) << buf << LogEnd;
-
     KeyListElement * tmp = beginning;
     while (tmp) {
         if (tmp->SPI == SPI)
@@ -73,19 +68,19 @@ char * KeyList::Get(uint32_t SPI) {
 }
 
 void KeyList::Del(uint32_t SPI) {
-        KeyListElement * tmp = beginning, * prev = NULL;
-        while (tmp) {
-                if (tmp->SPI == SPI) {
-                        if (prev)
-                                prev->next = tmp->next;
-                        else
-                                beginning = tmp->next;
+    KeyListElement * tmp = beginning, * prev = NULL;
+    while (tmp) {
+        if (tmp->SPI == SPI) {
+            if (prev)
+                prev->next = tmp->next;
+            else
+                beginning = tmp->next;
 
-                        delete tmp->AuthInfoKey;
-                        delete tmp;
-                        return;
-                }
-                prev = tmp;
-                tmp = tmp->next;
+            delete tmp->AuthInfoKey;
+            delete tmp;
+            return;
         }
+        prev = tmp;
+        tmp = tmp->next;
+    }
 }

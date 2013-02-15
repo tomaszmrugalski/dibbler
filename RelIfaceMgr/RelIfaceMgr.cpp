@@ -92,7 +92,6 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
-    int msgtype;
 
     // read data
     sockid = TIfaceMgr::select(timeout, data, dataLen, peer);
@@ -103,7 +102,7 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 	}
 	
 	// check message type
-	msgtype = data[0];
+	int msgtype = data[0];
 
         if (msgtype > LEASEQUERY_REPLY_MSG) {
             Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
@@ -300,7 +299,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     }
 }
 
-void TRelIfaceMgr::instanceCreate( const std::string xmlFile )
+void TRelIfaceMgr::instanceCreate(const std::string& xmlFile)
 {
     if (Instance)
       Log(Crit) << "RelIfaceMgr instance already created. Application error!" << LogEnd;

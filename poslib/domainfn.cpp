@@ -127,7 +127,7 @@ void dom_write(stl_string &ret, _cdomain dom, stl_slist(dom_compr_info) *comprin
         if (nlabels == best->nl) break; /* perfect match */
       }
     }
-    it++;
+    ++it;
   }
 
   /* let's go! */
@@ -212,7 +212,7 @@ domainname::domainname() {
   domain = (unsigned char *)strdup("");
 }
 
-domainname::domainname(const char *string, const domainname origin) {
+domainname::domainname(const char *string, const domainname& origin) {
   unsigned char tmp[DOM_LEN];
 
   txt_to_email(tmp, string, origin.domain);
@@ -345,6 +345,21 @@ stl_string domainname::torelstring(const domainname &root) const {
     return str;
   } else return tostring();
 }
+
+stl_string domainname::canonical () const {
+  unsigned char val[DOM_LEN];
+  int len = domlen (domain);
+  memcpy (val, domain, len);
+  unsigned char *lenlabel = val;
+  for (int t = 0; t < len; t++) {
+    if (val + t == lenlabel)
+      lenlabel += *lenlabel + 1;
+    else
+      val[t] = tolower (val[t]);
+  }
+  return std::string ((char*)val, len);
+}
+
 
 int domainname::ncommon(const domainname &dom) const {
   return domncommon(domain, dom.domain);

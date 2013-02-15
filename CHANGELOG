@@ -1,7 +1,14 @@
 
   Dibbler changelog
  ------------------- 
-0.8.3 [not-released-yet]
+0.8.3 [2013-01-20]
+  - Cli: workaround for odd link-local interface detection code on OpenBSD
+  - AFTR option on-wire encoding fixed
+  - Compilation fix in Port-linux/interface.c on CentOS 5.x
+  - DUID is now written properly on 64 bit Windows
+  - Resource leak (socket not closed) in iterface detection fixed (bug #255)
+
+0.8.3RC1 [2012-08-17]
   - Srv: address and prefix assignment rewritten
   - Srv: implemented per-client prefix configuration
   - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
@@ -18,6 +25,22 @@
   - Rel: Recent regression (complain about server and client on the same link) fixed
   - Srv: relays parameters (link, peer address) are now passed to the notify script
   - Cli: client no longer crashes, when client-AddrMgr.xml is empty (bug #245)
+  - Srv: Secure DNS Update (using TSIG) is now supported
+  - Srv: Expired leases are now removed from the DNS (using DNS Update)
+  - Srv: Many smaller FQDN related fixes
+  - Srv: Support for FQDN-related data in server-AddrMgr.xml improved
+  - Srv: Server no longer loads empty IAs or empty clients from server-AddrMgr.xml
+  - Experimental port to Solaris 11
+  - Srv: Cached entries for reserved address/prefix will no longer cause server to assign
+    reserved address/prefix to another client
+  - Srv: Fixed problem when reserved address/prefix was assigned to different client when
+    nearing addresses/prefixes depletion
+  - Cli: Script can now be called in stateless mode (inf-request)
+  - Cli: Script for MacOS dns and domain setting added
+  - Cli: Silent address expiration (T1>valid lifetime) is now supported properly
+  - Cli/Srv: FQDN, Vendor options are now passed to script correctly
+  - Cli: IAID is now parsed properly in PD definitions in client-AddrMgr.xml
+  - Cli: Silent prefix expiration (T1>valid lifetime) is now supported properly
 
   - Many changes related to Reconfigure support (in progress)
 

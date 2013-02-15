@@ -115,10 +115,11 @@ void daemon_die() {
 
 int init(const char * pidfile, const char * workdir) {
     string tmp;
-    char buf[20];
-    char cmd[256];
     int pid = getPID(pidfile);
     if (pid > 0) {
+        /** @todo: This is Linux specific. It will most likely not work on BSD or Mac OS */
+        char buf[20];
+        char cmd[256];
 	sprintf(buf,"/proc/%d", pid);
 	if (!access(buf, F_OK)) {
 	    sprintf(buf, "/proc/%d/exe", pid);

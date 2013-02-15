@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvTransMgr.h,v 1.12 2008-10-12 20:10:25 thomson Exp $
- *
  */
 
 #ifndef SRVTRANSMGR_H
@@ -30,7 +28,7 @@ class TSrvTransMgr
 {
     friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
   public:
-    static void instanceCreate(const std::string config);
+    static void instanceCreate(const std::string& config);
     static TSrvTransMgr &instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface);

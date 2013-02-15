@@ -45,7 +45,8 @@ TDHCPClient::TDHCPClient(const std::string& config)
         return;
     }
 
-        TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(), CLNTADDRMGR_FILE, false);
+        TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(),
+                                     CLNTADDRMGR_FILE, false);
     if ( ClntAddrMgr().isDone() ) {
         Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
             IsDone = true;

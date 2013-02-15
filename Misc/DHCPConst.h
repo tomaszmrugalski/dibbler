@@ -9,8 +9,6 @@
  *
  */
 
-#include "DHCPDefaults.h"
-
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
 
@@ -163,6 +161,7 @@
 #define OPTION_AAAAUTH              240
 #define OPTION_KEYGEN               241
 
+// draft-ietf-mif-dhcpv6-route-option-04
 #define OPTION_NEXT_HOP         242
 #define OPTION_RTPREFIX         243
 
@@ -200,7 +199,7 @@ typedef enum {
 #define STATUSCODE_NOTALLOWED       10
 
 // INFINITY + 1 is 0. That's cool!
-#define DHCPV6_INFINITY (uint32_t) 0xffffffff
+#define DHCPV6_INFINITY 0xffffffffu
 
 enum ETentative {
     TENTATIVE_UNKNOWN = -1,
@@ -237,34 +236,8 @@ enum EUnknownFQDNMode {
 #define ADDRPARAMS_MASK_ANYCAST   0x02
 #define ADDRPARAMS_MASK_MULTICAST 0x04
 
-
 int allowOptInOpt(int msgType, int optOut, int optIn);
 int allowOptInMsg(int msgType, int optType);
-
-#ifdef WIN32
-//#define uint8_t  unsigned char
-//#define uint16_t unsigned short int
-//#define uint32_t unsigned int
-
-#ifndef uint8_t
-#define uint8_t  unsigned char
-#endif
-
-#ifndef uint16_t
-#define uint16_t unsigned short int
-#endif
-
-#ifndef uint32_t
-#define uint32_t unsigned int
-#endif
-
-#ifndef uint64_t
-#define uint64_t unsigned long long int
-#endif
-
-#else
-#include <stdint.h>
-#endif
 
 enum DigestTypes {
 	DIGEST_NONE = 0,

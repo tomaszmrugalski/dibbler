@@ -21,7 +21,7 @@
 
 class TSrvIfaceMgr :public TIfaceMgr {
  public:
-   static void instanceCreate(const std::string xmlDumpFile);
+   static void instanceCreate(const std::string& xmlDumpFile);
    static TSrvIfaceMgr &instance();
 
    ~TSrvIfaceMgr();

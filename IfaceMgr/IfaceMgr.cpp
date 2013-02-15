@@ -70,6 +70,8 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
+
+    dump();
 }
 
 /*
@@ -404,6 +406,7 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         break;
     case RENEW_MSG:
     case REBIND_MSG:
+    case INFORMATION_REQUEST_MSG:
         action = "update";
         break;
     default:
@@ -426,7 +429,14 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
     params.addParam("IFINDEX", tmp.str().c_str());
     tmp.str("");
 
-    params.addParam("REMOTE_ADDR", reply->getAddr()->getPlain());
+    string remote;
+    if (reply->getAddr()) {
+      remote = reply->getAddr()->getPlain();
+    } else {
+      remote = string(ALL_DHCP_RELAY_AGENTS_AND_SERVERS);
+    }
+
+    params.addParam("REMOTE_ADDR", remote);
 
     params.addParam("CLNT_MESSAGE", question->getName());
 

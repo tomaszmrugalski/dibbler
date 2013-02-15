@@ -1,12 +1,28 @@
 
-  Dibbler 0.8.2 release notes [2011-02-29]
+  Dibbler 0.8.3 release notes [2013-01-20]
  ---------------------------------------------------------
 
- This is the 0.8.2 release of the Dibbler software.
+ This is a final 0.8.3 release of the Dibbler software.
 
- This is a maintenance release and includes number of bug fixes, without any
- significant new functionalities. If you are happy with 0.8.1 operation, you do
- not need to upgrade.
+ This is a release with several new features and many bug fixes.
+
+ The biggest feature is a rewritten address and prefix allocation engine. Both
+ follow the same algorithm now. It is possible to reserve specific address
+ and/or prefix for a given host. The host can be referenced by DUID, remote-id
+ or link-local address. Both in-pool and out-of-pool reservations are now
+ supported.
+
+ Support for DDNS is now significantly improved. Secure DNS Updates using TSIG
+ are now supported. Many, many bugs were fixed and the FQDN handling code is now
+ much more robust.
+
+ The code now compiles on Solaris 11. It is not yet fully usable, and there are
+ outstanding problems with link-layer address detection, but it is better than
+ nothing.
+
+ Script execution is now improved as well. It is called when receiving stateless
+ configuration (after receiving reply to INF-REQUEST) and extra options (like
+ FQDN and vendor-specific info) are now properly passed.
 
  See CHANGELOG for a complete list of changes.
 
@@ -16,5 +32,5 @@
  want to share your thoughts, take a look at one of the
  Dibbler-related mailing lists: dibbler or dibbler-devel.
 
-                               Tomasz Mrugalski,
+                               Tomek Mrugalski,
                                author

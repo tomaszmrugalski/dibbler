@@ -10,17 +10,14 @@
  */
 
 #include <limits.h>
+#include <string.h>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
-#include <string.h>
-
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 using namespace std;
 
@@ -305,7 +302,7 @@ unsigned long TAddrIA::getT2Timeout() {
 }
 
 unsigned long TAddrIA::getPrefTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -338,7 +335,7 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 }
 
 unsigned long TAddrIA::getValidTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -567,17 +564,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
     strum << "\" T1=\"" << x.T1 << "\""
 	  << " T2=\"" << x.T2 << "\"";
 
-    switch (x.Type)
-    {
-    case TAddrIA::TYPE_IA:
-    case TAddrIA::TYPE_TA:
-	strum << " IAID=\"";
-	break;
-    case TAddrIA::TYPE_PD:
-	strum << " PDID=\"";
-	break;
-    }
-    strum << x.IAID << "\""
+    strum << " IAID=\"" << x.IAID << "\""
 	  << " state=\"" << StateToString(x.State) 
 	  << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
@@ -605,7 +592,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
             strum << "      <!--<fqdnDnsServer>-->" << endl;
         }
         if (x.fqdn) {
-            strum << "      " << *x.fqdn << endl;
+            strum << "      " << *x.fqdn;
         } else {
             strum << "      <!-- <fqdn>-->" << endl;
         }

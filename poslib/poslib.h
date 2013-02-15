@@ -21,9 +21,9 @@
 #ifndef __POSLIB_POSLIB_H
 #define __POSLIB_POSLIB_H
 
-/*! \page Poslib documentation
+/*! @page poslib Poslib documentation
  *
- * \section intro Introduction
+ * \section poslibIntro Introduction
  * Poslib is a DNS client/server library written in C++, which is available for
  * many different platforms, including Linux, FreeBSD and other Unices, but
  * also the Windows family of operating systems. This documentation describes
@@ -35,7 +35,7 @@
  * class), and DNS message creation (the DnsMessage class). Also, it provices
  * a system-independent abstaction layer for socket functionality (socket.h).
  * The functions of the client library can be accessed by
- * #including <poslib/poslib.h>.
+ * \#including <poslib/poslib.h>.
  *
  * The server library, based on the client core, can be used to develop Domain
  * Name System servers. By implementing a query entry-point function using the
@@ -46,13 +46,12 @@
  * The poslib server functionality is in <poslib/server/server.h>.
  *
  * See also:
- *   - \ref client,
- *   - \ref server.
+ *   - \ref poslibClient,
  */
 /*!
- * \page client Using the client library
+ * \page poslibClient Using the client library
  *
- * \subsection clientexceptions Exceptions
+ * \section clientexceptions Exceptions
  *
  * The Poslib library is built using 100% pure C++. One of the implications of
  * this is, that Poslib uses \b exceptions all the way. This is a very
@@ -85,10 +84,10 @@
  * \include host.cpp
  *
  * This example uses the following Poslib functionality:
- *  - #txt_to_addr() to interpret the argument specifying the server address
- *  - #create_query() to create a query DnsMessage object
+ *  - txt_to_addr() to interpret the argument specifying the server address
+ *  - create_query() to create a query DnsMessage object
  *  - pos_cliresolver::query() to query the DNS server
- *  - #get_a_record() to extract the A record from the answer
+ *  - get_a_record() to extract the A record from the answer
  *
  * Also, note the use of the \p try...catch block with the PException object
  * we used here. Any error that might occur will be caught by this block and
@@ -107,12 +106,13 @@
  * \brief Poslib main include file
  *
  * This file can be used to include all Poslib client header files in one.
- * See \ref client.
+ * See \ref poslibClient.
  */
 
 #include "bits.h"
 #include "dnsdefs.h"
 #include "dnsmessage.h"
+#include "dnssec-sign.h"
 #include "domainfn.h"
 #include "exception.h"
 #include "lexfn.h"

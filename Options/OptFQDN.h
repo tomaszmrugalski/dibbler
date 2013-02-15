@@ -61,7 +61,7 @@ class TOptFQDN : public TOpt
     void setOFlag(bool flag);
     void setSFlag(bool flag);
     std::string getFQDN() const;
-
+    virtual std::string getPlain();
   	
   private:
     std::string fqdn_;

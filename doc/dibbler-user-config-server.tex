@@ -14,6 +14,14 @@ Server configuration is stored in \verb+server.conf+ file in the
 \verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
 directory.
 
+\subsection{Scopes}
+
+Configuration file can be logically split into separate ``sections''
+that are called \emph{scopes}, for example interface scope contains
+parameters related to configuration served over a given interface.
+Some scopes can contain other scopes. Some commands are specific to a
+given a given scope.
+
 \subsubsection{Global scope}
 \label{server-global-scope}
 Every option can be declared in a global scope. Global options can be
@@ -96,7 +104,7 @@ That is an equivalent of address class for temporary addresses. It
 contains definition of temporary addresses that are going to be
 assigned to clients that request temporary addresses. Only ta-class
 scoped parameters can be defined here. Prefix class is declared as
-follows: 
+follows:
 \begin{lstlisting}
 ta-class {
     pool 2001:db8:1::1-2001:db81:1::ffff
@@ -122,9 +130,9 @@ next-hop address-of-a-router
 \subsubsection{Client scope}
 \label{server-scope-client}
 Server allows defining custom parameters on a per-host basis. See
-Sections \ref{feature-exceptions} and \ref{example-server-exceptions} 
-for details. There are two types of reservations: DUID-based and 
-remote-id based. Following syntax can be used:
+Sections \ref{feature-exceptions} and \ref{example-server-exceptions}
+for details. There are three types of reservations: DUID-based,
+remote-id based and link-local based. Following syntax can be used:
 
 \begin{lstlisting}
 client duid 00:00:00:00:00
@@ -148,7 +156,33 @@ client remote-id 5-0x01020304
 }
 \end{lstlisting}
 
-\subsubsection{Server options}
+\begin{lstlisting}
+client link-local fe80::1234:56ff:fe78:9abc
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
+\subsubsection{Key scope}
+Dibbler 0.8.3 introduced support for secure DNS Updates using TSIG
+mechanism. Since this key is expected to be also used in DNS server
+software, syntax is kept very similar to syntax accepted in
+\href{http://www.isc.org/software/bind}{ISC BIND9} software. Note
+semicolons at the end of each statement.
+
+\begin{lstlisting}
+key key-name {
+   secret "base64encodedSecretHere==";
+   algorithm algorithm-type;
+   ...
+};
+\end{lstlisting}
+
+\subsection{Server options}
 
 So called standard options are defined by the base DHCPv6 specification,
 a so called RFC 3315 document \cite{rfc3315}. Those options are
@@ -186,7 +220,7 @@ OptionName option-value
   the DHCPv6 autoconfiguration process. Syslog works under POSIX
   systems (Linux, Mac OS X, BSD family) and allows default POSIX
   logging functions.
-  
+
 \item[log-colors] -- (scope: global). Takes one boolean parameter.
   Defines if logs printed to console should use colors. That feature
   is used to enhance logs readability.  As it makes the log files
@@ -424,7 +458,7 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
             accept-only list is defined, only client from that list
             will be supported.
 
-\item[addr-params] -- (scope: class). Experimental feature that takes 
+\item[addr-params] -- (scope: class). Experimental feature that takes
   one boolean parameter. It defines prefix length that is configured
   in addr-params option. See Section \ref{feature-addr-params}.
 
@@ -511,13 +545,13 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
    parameters that are followed by FQDN list. Additional integer
    parameters designate fqdn-mode and reverse zone length in DNS
    Update. FQDN-mode can have 3 values: 2 (both AAAA and PTR record
-   will be updated by server), 1 (server will update PTR only) or 
+   will be updated by server), 1 (server will update PTR only) or
    0 (server will not update anything). Reverse zone length is an
    integer between 0 and 128 and designates reverse zone length. FQDN
    list is a coma separated list of fully qualified domain names, with
    possible reservations for DUIDs or addresses. FQDN mechanism is
    defined in \cite{rfc4704}. See Section \ref{feature-dns-update}.
-   
+
 \item[accept-unknown-fqdn] -- (scope: Interface). Takes one integer
   parameter, possibly followed by second string parameter that
   designated domain name. It specifies how server should react to
@@ -529,7 +563,7 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
   name). Choices 3 and 4 require additional string parameter that
   defines domain suffix. See Sections \ref{feature-dns-update}
   and \label{example-server-fqdn}.
- 
+
 \item[option] -- (scope: interface). Takes one integer number followed
   by several possible parameter combinations. It defines custom
   option that server may send out to clients. Supported formats are:
@@ -593,6 +627,25 @@ string is any string enclosed in single or double quotes. See Section
    specified prefix for defined client. See Sections \ref{feature-exceptions}
    and \ref{example-server-exceptions} for details.
 
+\item[key] -- (scope: global). Take one string parameter that
+   specifies key name. This keyword instructs server to create a key
+   with a specified name. This key will be used for TSIG in DNS
+   Updates. It is followed by curly braces that open up a new key
+   scope. Closing curly brace is followed by a semicolon.
+
+\item[secret] -- (scope: key). Takes one string parameter and is
+   followed by a semicolon. That parameter is a base64-encode secret
+   value of the key. It is mandatory if key scope is defined.
+\item[algorithm] -- (scope: key). Takes one enum argument that is
+   followed by a semicolon. This parameter is mandatory if the key
+   scope is present. It specifies agorithm for the key. Currently the
+   supported value is hmac-md5.
+\item[fudge] -- (scope: key). Takes one integer parameter that is
+   followed by a semicolon. Each TSIG signature is valid for a
+   specified amount of time only. This optional parameter specifies
+   period in which TSIG is valid, expressed in seconds. If missing,
+   the default value of 300 is used. The allowed values are between 0
+   and 65535.
 \end{description}
 
 \subsubsection{Client class quantifiers}
@@ -601,7 +654,7 @@ Additional parameters are used during client class definition. See
 Section \ref{feature-client-class} for details and examples.
 
 \begin{description}
-\item[match-if] -- (scope: client-class). 
+\item[match-if] -- (scope: client-class).
 \item[contain] -- (scope: client-class).
 \item[substring] -- (scope: client-class).
 \item[==] -- (scope: client-class).
@@ -1073,6 +1126,22 @@ example in this section.
 Note that per client reservation was significantly refactored after
 0.8.2, so its stability is not yet confirmed.
 
+\textbf{Warning:} Reservation by link-local address is not always
+reliable and DUID reservations should be used instead, if
+possible. Typically for directly connected clients (i.e. without using
+relays) server can obtain client's link local address. For relayed
+traffic, that information is recorded by the first (closest to the
+client) relay and stored in \msg{RELAY-FORW}, so in most cases this
+should work. However, there are two cases when link-local address
+reservation will fail. The first one is when client is using IPv6
+privacy extensions (\cite{rfc4941}). With privacy extensions enabled,
+client may use its temporary random addresses that are changing over
+time. Another case when such reservation could fail is when server
+allows unicast traffic. Once clients get their addresses, they can
+send \msg{RENEW} messages over unicast, using their global address as
+a source address. In such case link-local address will not ever be
+used in the transmission, so the server can get confused.
+
 \begin{lstlisting}
 # server.conf
 # Example server configuration file: per-client configuaration
@@ -1080,7 +1149,7 @@ Note that per client reservation was significantly refactored after
 # In this example, some clients receive different parameters than others.
 
 # Logging level range: 1(Emergency)-8(Debug)
-# 
+#
 log-level 8
 
 # Don't log full date
@@ -1094,7 +1163,7 @@ iface "eth0" {
 
     pd-class {
         pd-pool 2001:db8:2::/48
-	pd-length 64
+        pd-length 64
     }
 
   # common configuration options, provided for all clients
@@ -1102,34 +1171,36 @@ iface "eth0" {
   option domain example.com
   option vendor-spec 5678-2-0xaaaa,1234-3-0x0102
 
-  # special parameters for client with DUID 00:01:02:03:04:06      
+  # special parameters for client with DUID 00:01:02:03:04:06
   client duid 00:01:02:03:04:06
   {
         address 2001:db8:1::123
-	prefix 2001:db8:abcd::/64
-	option domain second.client.biz
-	option dns-server 2001:db8::5678:abcd
-	option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
+        prefix 2001:db8:abcd::/64
+        option domain second.client.biz
+        option dns-server 2001:db8::5678:abcd
+        option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
   }
 
-  # this client should receive default domain and dns-server, 
+  # this client should receive default domain and dns-server,
   # but different vendor-spec info
+  # Both DUID forms are accepted (0x1234... and 12:34...)
   client duid 0x0001000044e8ef3400085404a324
   {
-	option vendor-spec 1111-57-0x01020304
+        option vendor-spec 1111-57-0x01020304
   }
-  
+
+  # Parameters can be reserved based on remote-id option
   client remote-id 5-0x01020304
   {
-	address 2001:db8:1::0102:0304
-	option domain our.special.remoteid.client.org
+        address 2001:db8:1::0102:0304
+        option domain our.special.remoteid.client.org
   }
 
-  #  client link-local fe80::1:2:3:4
-  #  {
-  #      option domain link.local.detected.interop.test.com
-  #  } 
-
+  # Parameters can be reserved based on link-local address
+  client link-local fe80::1:2:3:4
+  {
+       option domain link.local.detected.interop.test.com
+  }
 }
 
 \end{lstlisting}
@@ -1138,7 +1209,7 @@ The following example shows out of pool reservation. Regular clients
 will get addresses from the 2001:db8:123::/64 pool. However, the
 client with DUID 00:01:00:0a:0b:0c:0d:0e:0f will get an 2002::babe
 address that does not belong to any configured pool. That particular
-client with get parameters from the interface on which this 
+client with get parameters from the interface on which this
 exception was defined. In this discussed example, what will be
 t1=1000, t2=2000, preferred-lifetime=3000 and valid-lifetime=4000.
 
@@ -1352,4 +1423,3 @@ Server does support experimental extension called remote
 autoconfiguration, as defined in \cite{draft-remote-autoconf}. See
 Section \ref{feature-remote-autoconf} for details and configuration
 examples.
-

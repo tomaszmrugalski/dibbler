@@ -10,20 +10,13 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-
 #include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h"
 #include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Msg.h"
 #include "SrvCfgMgr.h"
 
@@ -232,7 +225,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
     bool fake  = false; // is this assignment for real?
     if (msgType == SOLICIT_MSG)
         fake = true;
-    if (parent->getOption(OPTION_RAPID_COMMIT))
+
+    if (parent->getType() == REPLY_MSG)
         fake = false;
 
     switch (msgType) {
@@ -611,15 +605,14 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
         return lst;  // return empty list
     }
 
-
-    int attempts = 100;
+    int attempts = SERVER_MAX_PD_RANDOM_TRIES;
     while (attempts--) {
         List(TIPv6Addr) lst;
         lst = ptrPD->getRandomList();
         lst.first();
         bool allFree = true;
         while (prefix = lst.get()) {
-            if (!SrvAddrMgr().prefixIsFree(prefix)) {
+            if (!SrvAddrMgr().prefixIsFree(prefix) || SrvCfgMgr().prefixReserved(prefix)) {
                 allFree = false;
             }
         }

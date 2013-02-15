@@ -10,6 +10,8 @@
 #ifndef CLNTAAAAUTHENTICATION_H
 #define CLNTAAAAUTHENTICATION_H
 
+#ifndef MOD_DISABLE_AUTH
+
 #include "DHCPConst.h"
 #include "OptAAAAuthentication.h"
 #include "ClntMsg.h"
@@ -22,5 +24,6 @@ class TClntOptAAAAuthentication : public TOptAAAAuthentication
     bool doDuties();
 };
 
+#endif
+#endif
 
-#endif /* AAAAUTHENTICATION_H_HEADER_INCLUDED */

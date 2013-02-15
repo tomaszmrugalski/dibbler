@@ -254,10 +254,10 @@ extern	struct iface* if_list_get()
 
     	//set interface flags
     	iface->flags=0;
-    	if (adaptaddr->OperStatus==IfOperStatusUp)
-	        iface->flags|=IF_UP|IF_RUNNING|IF_MULTICAST;
+    	if (adaptaddr->OperStatus == IfOperStatusUp)
+	        iface->flags |= IFF_UP|IFF_RUNNING|IFF_MULTICAST;
 	    if (adaptaddr->IfType==IF_TYPE_SOFTWARE_LOOPBACK)
-    	    iface->flags|=IF_LOOPBACK;
+    	    iface->flags |= IFF_LOOPBACK;
 	
     	//go to next returned adapter
     	if (adaptaddr->Next)
@@ -655,7 +655,7 @@ void link_state_change_cleanup()
    /// @todo: implement this
 }
 
-int execute(const char *filename, char * argv[], char *env[])
+int execute(const char *filename, const char * argv[], const char *env[])
 {
     intptr_t i;
 	i=_spawnvpe(_P_WAIT, filename, argv, env);

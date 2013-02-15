@@ -93,10 +93,8 @@ bool tcpisopen(int sockid);
 /** Converts an IPv4 binary address to an _addr structure. */
 void getaddress_ip4(_addr *res, const unsigned char *ipv4_data, int port = 0);
 
-#ifdef HAVE_IPV6
 /** Converts an IPv6 binary address to an _addr structure. */
 void getaddress_ip6(_addr *res, const unsigned char *ipv6_data, int port = 0);
-#endif
 /** Converts an textual address (either IPv4/IPv6) to an _addr structure. */
 void getaddress(_addr *res, const char *data, int port = 0);
 /** Looks up the specified domain name using the system resolver, and creates an _addr structure. */
@@ -128,12 +126,10 @@ bool addr_is_any(_addr *addr);  /** Returns true if the given address is the IPv
 bool addr_is_none(_addr *addr); /** Returns true if the given address is the IPv4 none address */
 
 /** Returns pointer to the sixteen bytes of the IPv6 address. */
-#ifdef HAVE_IPV6
 unsigned char* get_ipv6_ptr(_addr *a);
-#endif
 
 /** Converts the _addr structure to a human-readable string. */
-stl_string addr_to_string(_addr *addr, bool include_port = true);
+stl_string addr_to_string(const _addr *addr, bool include_port = true);
 
 /* small watchset functions */
 

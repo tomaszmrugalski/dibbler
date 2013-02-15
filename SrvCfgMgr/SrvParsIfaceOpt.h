@@ -89,6 +89,7 @@ public:
     const TOptList& getForcedOptions();
 
 private:
+    /// @todo: Preference should be a global value
     char Preference_;
     bool RapidCommit_;
     long IfaceMaxLease_;
@@ -103,14 +104,11 @@ private:
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_;
 
     // options
-    bool FQDNSupport_;
-    bool VendorSpecSupport;
-
-    List(TFQDN) FQDNLst_;
-
     List(TOptVendorSpecInfo) VendorSpec_;
 
     // FQDN
+    bool FQDNSupport_;
+    List(TFQDN) FQDNLst_;
     int FQDNMode_;
     EUnknownFQDNMode UnknownFQDN_; // accept, reject, append domain, generate procedurally
     std::string FQDNDomain_;

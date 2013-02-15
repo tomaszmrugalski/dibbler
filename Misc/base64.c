@@ -43,6 +43,12 @@
 
 /* adapted to dibbler project by Tomasz Mrugalski (2011-08-16) */
 
+#ifdef WIN32
+// Visual Studio is a dumb compiler. It does not support those C99 features
+#define inline
+#define restrict
+#endif
+
 /* Get prototype. */
 #include "base64.h"
 

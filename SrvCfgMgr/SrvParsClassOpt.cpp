@@ -11,7 +11,7 @@
 
 #include <limits.h>
 #include "SrvParsClassOpt.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 
 using namespace std;
 
