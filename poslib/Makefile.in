@@ -339,7 +339,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . $(am__append_1)
 noinst_LIBRARIES = libPoslib.a
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
 libPoslib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \

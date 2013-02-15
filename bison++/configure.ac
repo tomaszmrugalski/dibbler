@@ -1,12 +1,8 @@
 # Process this file with autoconf to produce a configure script.
 PACKAGE=bison++
-FULL-PACKAGE-NAME=PACKAGE
-VERSION=2.21.5
-BUG-REPORT-ADDRESS=alain.coetmeur@caissedesdepots.fr
-AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
-AM_INIT_AUTOMAKE(bison++, 2.21.5)
+AC_INIT([bison++], [2.21.5-dibbler], [alain.coetmeur@caissedesdepots.fr])
 AC_CONFIG_SRCDIR([bison.cc])
-#AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_AWK

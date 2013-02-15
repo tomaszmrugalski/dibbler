@@ -56,7 +56,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	depcomp $(dist_noinst_DATA) COPYING ChangeLog INSTALL \
 	install-sh mdate-sh missing texinfo.tex
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -315,7 +315,7 @@ pkgdata_DATA = bison.cc bison.hairy bison.h Example
 PFILE = bison.cc
 PFILE1 = bison.hairy
 HFILE = bison.h
-INCLUDES = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
+AM_CPPFLAGS = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
 	 -DXHFILE=\"$(datadir)/bison++/$(HFILE)\" \
 	 -DXPFILE1=\"$(datadir)/bison++/$(PFILE1)\"
 
