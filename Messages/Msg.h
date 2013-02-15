@@ -38,6 +38,8 @@ class TMsg
 
     // used to create TMsg object based on received char[] data
     TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+    
+    TMsg(int iface, SPtr<TIPv6Addr> addr, char *buf, int msgType, int msgSize);
 
     virtual int getSize();
 

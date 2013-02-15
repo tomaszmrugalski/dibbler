@@ -198,6 +198,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     SPtr<TIPv6Addr> peer(new TIPv6Addr());
     SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
     int sockid;
+    int msgtype;
+    int isBulk;
 
     // read data
     sockid = receive(timeout, buf, bufsize, peer, myaddr);
@@ -212,10 +214,103 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             Log(Debug) << "Control message received." << LogEnd;
             return SPtr<TSrvMsg>(); // NULL
         }
-        Log(Warning) << "Received message is too short (" << bufsize
-                     << ") bytes, at least 4 are required." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
     }
+
+    // check message type
+    msgtype = buf[0];
+    //SPtr<TMsg> ptr;
+    SPtr<TSrvIfaceIface> ptrIface;
+
+    // get interface
+    ptrIface = (Ptr*)getIfaceBySocket(sockid);
+
+    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+               << ")." << LogEnd;
+    
+    // create specific message object
+    SPtr<TSrvMsg> ptr;
+    switch (msgtype) {
+    case SOLICIT_MSG:
+    case REQUEST_MSG:
+    case CONFIRM_MSG:
+    case RENEW_MSG:
+    case REBIND_MSG:
+    case RELEASE_MSG:
+    case DECLINE_MSG:
+    case INFORMATION_REQUEST_MSG:
+    case LEASEQUERY_MSG:
+        {
+            ptr = decodeMsg(ptrIface, peer, buf, bufsize,false);
+            if (!ptr->validateReplayDetection() ||
+                !ptr->validateAuthInfo(buf, bufsize)) {
+                Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                return 0;
+            }
+            return ptr;
+        }
+    case RELAY_FORW_MSG:
+        {
+            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+            if (!ptr)
+                return 0;
+            if (!ptr->validateReplayDetection() ||
+                !ptr->validateAuthInfo(buf, bufsize)) {
+                Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+                return 0;
+            }
+        }
+        return ptr;
+    case ADVERTISE_MSG:
+    case REPLY_MSG:
+    case RECONFIGURE_MSG:
+    case RELAY_REPL_MSG:
+    case LEASEQUERY_REPLY_MSG:
+        Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+        return 0; //NULL;
+    case LEASEQUERY_DONE_MSG:
+        Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+        return 0;
+    case LEASEQUERY_DATA_MSG:
+        Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+        return 0;
+    default:
+        isBulk=buf[3];
+        Log(Debug) << "Checking if received data is Bulk session" << LogEnd;
+        switch (isBulk) {
+            
+        case LEASEQUERY_MSG:
+            {
+                Log (Debug) << "Bulk leasequery massage received with code:"<<isBulk << LogEnd;
+                ptr = decodeMsg(ptrIface, peer, buf, bufsize,true);
+                if (!ptr->validateReplayDetection() ||
+                    !ptr->validateAuthInfo(buf, bufsize)) {
+                    Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                    return 0;
+                }
+                return ptr;
+                
+            }
+        case LEASEQUERY_REPLY_MSG:
+            Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+            return 0; //NULL;
+        case LEASEQUERY_DONE_MSG:
+            Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+            return 0;
+        case LEASEQUERY_DATA_MSG:
+            Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+            return 0;
+            
+        default:
+            Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
+                return 0; //NULL
+        }
+        
+    }
+    Log(Warning) << "Received message is too short (" << bufsize
+                 << ") bytes, at least 4 are required." << LogEnd;
+    return SPtr<TSrvMsg>(); // NULL
+}
 
     // check message type
     int msgtype = buf[0];
@@ -556,10 +651,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
 		    << " by " << how_found << LogEnd;
     }
 
-    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
+    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize, false);
     if (!msg) {
         return SPtr<TSrvMsg>(); // NULL
     }
+
     for (int i=0; i<relays; i++) {
         msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
     }
@@ -580,9 +676,10 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     return msg;
  }
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
-                                      SPtr<TIPv6Addr> peer,
-                                      char * buf, int bufsize) {
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
+                                             SPtr<TIPv6Addr> peer,
+                                             char * buf, int bufsize, bool isTcp) {
+    int ifaceid = ptrIface->getID();
     if (bufsize < 4) {// 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
         Log(Warning) << "Truncated message received (len " << bufsize
                      << ", at least 4 is required)." << LogEnd;
@@ -606,7 +703,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
     case INFORMATION_REQUEST_MSG:
         return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
-        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
         return SPtr<TSrvMsg>(); // NULL

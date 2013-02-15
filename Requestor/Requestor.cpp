@@ -2,6 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Tomasz Mrugalski <thomson@klub.com.pl>
+ * help desk: Asia Czerniak
  *
  * Released under GNU GPL v2 licence
  *
@@ -22,6 +23,7 @@
 #endif
 
 using namespace std;
+
 
 void printHelp()
 {
@@ -161,21 +163,51 @@ int main(int argc, char *argv[])
     TIfaceMgr   * ifaceMgr = new TIfaceMgr(REQIFACEMGR_FILE, true);
     ReqTransMgr * transMgr = new ReqTransMgr(ifaceMgr);
 
+    //leasequery's part
     transMgr->SetParams(&a);
+    if (!a.bulk) {
+        if (!transMgr->BindSockets()) {
+            Log(Crit) << "Aborted. Socket binding failed." << LogEnd;
+            return LOWLEVEL_ERROR_BIND_FAILED;
+        }
 
-    if (!transMgr->BindSockets()) {
-        Log(Crit) << "Aborted. Socket binding failed." << LogEnd;
-        return LOWLEVEL_ERROR_BIND_FAILED;
-    }
+        if (!transMgr->SendMsg()) {
+            Log(Crit) << "Aborted. Message transmission failed." << LogEnd;
+            return LOWLEVEL_ERROR_SOCKET;
+        }
 
-    if (!transMgr->SendMsg()) {
-        Log(Crit) << "Aborted. Message transmission failed." << LogEnd;
-        return LOWLEVEL_ERROR_SOCKET;
+        if (!transMgr->WaitForRsp()) {
+            Log(Crit) << "Aborted. Cannot receive any data, WaitForResponse function failed." << LogEnd;
+            return LOWLEVEL_ERROR_SOCKET;
+        }
     }
 
 	if (!transMgr->WaitForRsp()) {
 
+    //bulk's part
+    if (a.bulk != 0) {
+
+        if(!transMgr->CreateNewTCPSocket()){
+            Log(Crit) << "Aborted. TCP socket creation failed." << LogEnd;
+            return LOWLEVEL_ERROR_SOCKET;
+        }
+
+        if(!transMgr->SendTcpMsg()) {
+            Log(Crit) << "Aborted. TCP message transmission failed." << LogEnd;
+            return LOWLEVEL_ERROR_SOCKET;
+        }
+
+        if (!transMgr->WaitForRsp()) {
+            Log(Crit) << "Aborted. Cannot receive any data, WaitForResponse function failed." << LogEnd;
+            //transMgr->RetryConnection();
+            return LOWLEVEL_ERROR_SOCKET;
+        }
+
+        transMgr->TerminateTcpConn();
+
     }
+
+
 
     delete transMgr;
 

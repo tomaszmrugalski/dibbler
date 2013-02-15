@@ -60,11 +60,11 @@ class TReqOptRelayId : public TOptDUID
 {
     public:
         //TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg* parent);
-        TReqOptRelayId(int type,int optionLen,SPtr<TDUID> duid,TMsg* parent);
+        TReqOptRelayId(int type,SPtr<TDUID> duid,TMsg* parent);
        //int getSize();
 
-        SPtr<TDUID> getRelayDUID();
-        char * storeSelf(char *buf);
+        //SPtr<TDUID> getRelayDUID();
+        //char * storeSelf(char *buf);
     protected:
         bool doDuties();
 };

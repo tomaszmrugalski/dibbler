@@ -36,16 +36,15 @@ class TIfaceSocket {
     //bulk's constructor
     TIfaceSocket(char * iface, int ifaceid,SPtr<TIPv6Addr> addr, int port);
 
-
    
     // ---transmission---
     int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv(char * buf,SPtr<TIPv6Addr> addr);
-    int terminate_tcp(int how);
 
     // ---TCP-transmission---
     int send_tcp(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv_tcp(char * buf,SPtr<TIPv6Addr> addr);
+    int terminate_tcp(int how);
 
     // ---get info---
     inline static int getCount() { return Count; }

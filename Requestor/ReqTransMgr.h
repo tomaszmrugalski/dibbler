@@ -26,10 +26,12 @@ public:
     bool WaitForRsp();
     bool RetryConnection(); //if server doesn't answer retry attemption
     void TerminateTcpConn();
+	int GetQueryType();
 
 private:
     void PrintRsp(char * buf, int bufLen);
     bool ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen);
+	int QueryType;
     std::string BinToString(char * buf, int bufLen);
     TIfaceMgr * IfaceMgr;
     SPtr<TIfaceIface> Iface;

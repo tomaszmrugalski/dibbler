@@ -137,7 +137,7 @@ bool ReqTransMgr::SendMsg()
         // Address based query
         buf[0] = QUERY_BY_ADDRESS;
         // buf[1..16] - link address, leave as ::
-        memset(buf+1, 0, 16);
+        //memset(buf+1, 0, 16);
         bufLen = 17;
 
         // add new IAADDR option
@@ -152,7 +152,7 @@ bool ReqTransMgr::SendMsg()
         // DUID based query
         buf[0] = QUERY_BY_CLIENT_ID;
         // buf[1..16] - link address, leave as ::
-        memset(buf+1, 0, 16);
+        //memset(buf+1, 0, 16);
         bufLen = 17;
 
         SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
@@ -166,7 +166,7 @@ bool ReqTransMgr::SendMsg()
         // Link-address based query
         buf[0] = QUERY_BY_LINK_ADDRESS;
         // buf[1..16] - link address, leave as ::
-        memset(buf+1, 16, 0);
+        memset(buf+1, 0, 16);
         bufLen = 17;
 
         // add new IAADDR option
@@ -264,14 +264,17 @@ bool ReqTransMgr::SendTcpMsg()
            << dstAddr->getPlain() << " address by tcp protocol." << LogEnd;
 
 
-    TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, LEASEQUERY_MSG);
+
 
     char buf[1024];
     int bufLen;
    // char queryType;
+    bufLen= sizeof(buf);
     memset(buf, 1024, 0xff);
 
-    switch (msg->getReqMsgType()) {
+    TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, buf, LEASEQUERY_MSG,bufLen);
+
+    switch (CfgMgr->queryType) {
 
     case QUERY_BY_ADDRESS:
         if (CfgMgr->addr) {
@@ -307,7 +310,7 @@ bool ReqTransMgr::SendTcpMsg()
             // Link-address based query
             buf[0] = QUERY_BY_LINK_ADDRESS;
             // buf[1..16] - link address, leave as ::
-            memset(buf+1, 16, 0);
+            memset(buf+1, 0, 16);
             bufLen = 17;
         } else {
             Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
@@ -321,7 +324,7 @@ bool ReqTransMgr::SendTcpMsg()
             // RelayId-based query
             buf[0] = QUERY_BY_CLIENT_ID;
             // buf[1..16] - link address, leave as ::
-            memset(buf+1, 16, 0);
+            memset(buf+1, 0, 16);
             bufLen = 17;
 
             // add new OPTION_RELAY_ID option
@@ -341,12 +344,14 @@ bool ReqTransMgr::SendTcpMsg()
             // RelayId-based query
             buf[0] = QUERY_BY_RELAY_ID;
             // buf[1..16] - link address, leave as ::
-            memset(buf+1, 16, 0);
+            //memset(buf+1, 16, 0);
+			memset(buf+1, 0, 16);
             bufLen = 17;
 
             // add new OPTION_RELAY_ID option
             SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
-            SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
+            //SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
+            SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, duid, msg);//bufLen=optLen ?
             optRelayId->storeSelf(buf+bufLen);
             bufLen += optRelayId->getSize();
         } else {
@@ -360,12 +365,14 @@ bool ReqTransMgr::SendTcpMsg()
             // RelayId-based query
             buf[0] = QUERY_BY_REMOTE_ID;
             // buf[1..16] - link address, leave as ::
-            memset(buf+1, 16, 0);
+            //memset(buf+1, 16, 0);
+			memset(buf+1, 0, 16);
             bufLen = 17;
 
             // add new OPTION_REMOTE_ID option
             SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
-            SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
+            //SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
+             SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, duid, msg);//bufLen=optLen ?
             optRelayId->storeSelf(buf+bufLen);
             bufLen += optRelayId->getSize();
         } else {
@@ -405,7 +412,7 @@ bool ReqTransMgr::SendTcpMsg()
         return false;
     }
 
-    Log(Info) << "LQ_QUERY message sent." << LogEnd;
+     Log(Info) << "LQ_QUERY message has been send." << LogEnd;
     return true;
 }
 
@@ -579,7 +586,13 @@ bool ReqTransMgr::RetryConnection()
 
 void ReqTransMgr::TerminateTcpConn()
 {
+    int how;
+    how=1;
+    this->Socket->terminate_tcp(how);
 
 
 }
-
+int ReqTransMgr::GetQueryType()
+{
+    return QueryType;
+}

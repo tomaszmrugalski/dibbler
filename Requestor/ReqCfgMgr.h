@@ -26,6 +26,7 @@ typedef struct {
     char * remoteId; //to będzie nie potrzebne
     char * relayId;
     char * clientId;
+    int  queryType;
 
 } ReqCfgMgr;
 

@@ -56,6 +56,17 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
     setAttribs(iface,addr,msgType,transID);
 }
 
+TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType, int msgSize)
+    :pkt(0), NotifyScripts(NULL)
+{
+    long tmp = rand() % (255*255*255);
+    setAttribs(iface,addr,msgType,tmp);
+    MsgSize = msgSize;
+    buf[0]=MsgSize;
+    buf[2]=MsgType;
+    buf[3]=TransID;
+}
+
 
 void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {

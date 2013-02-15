@@ -223,8 +223,16 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     char myPlainAddr[48];   // my plain address
     char peerPlainAddr[48]; // peer plain address
 
-    // receive data (pure C function used)
-    result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
+    //recive data from TCP socket
+    int flags=0;
+    if (result == 1) {
+        sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+    } else {
+        // receive data (pure C function used)
+        result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
+    }
+
+
     char peerAddrPacked[16];
     char myAddrPacked[16];
     inet_pton6(peerPlainAddr,peerAddrPacked);

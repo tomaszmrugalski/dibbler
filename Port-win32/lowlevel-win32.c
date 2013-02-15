@@ -867,17 +867,12 @@ extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
 
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
-    //int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
-
     int iResult;
-
-    if (!(iResult = recv (fd, recvBuffer, bufLength, flags))) {
-        return -1;
-    } else if(iResult < 0)  {
-        return 0;
-    } else  {
+    if ((iResult = recv (fd, recvBuffer, bufLength, flags)) == -1) {
+        sprintf ("Cannot receive data, receive function socket error" );
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
         return iResult;
-       // printf("recv failed: %d\n", WSAGetLastError());
     }
 }
 

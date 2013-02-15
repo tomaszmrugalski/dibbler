@@ -22,6 +22,8 @@ public:
     // used to create TMsg object based on received char[] data
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
 
+    // bulk constructor
+    TReqMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType,int msgSize);
 
     void addOption(SPtr<TOpt> opt);
 
