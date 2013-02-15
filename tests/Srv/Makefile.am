@@ -44,7 +44,8 @@ Srv_tests_LDADD += $(top_builddir)/Messages/libMessages.a
 Srv_tests_LDADD += $(top_builddir)/SrvOptions/libSrvOptions.a
 Srv_tests_LDADD += $(top_builddir)/Options/libOptions.a
 Srv_tests_LDADD += $(top_builddir)/Misc/libMisc.a
-Srv_tests_LDADD += $(top_builddir)/poslib/libposlib.a
+Srv_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
+Srv_tests_LDADD += $(top_builddir)/nettle/libNettle.a
 Srv_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 

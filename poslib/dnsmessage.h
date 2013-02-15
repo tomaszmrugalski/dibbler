@@ -18,11 +18,14 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+class DnsRR;
+
 #ifndef __POSLIB_DNSMESSAGE_H
 #define __POSLIB_DNSMESSAGE_H
 
 class message_buff;
 
+#include <time.h>
 #include "dnsdefs.h"
 #include "types.h"
 #include "sysstl.h"
@@ -31,7 +34,7 @@ class message_buff;
 /* when constructed with the message and length, the data is regarded static
    and not cleaned up on destruction */
 
-/*! \file poslib/dnsmessage.h
+/** \file poslib/dnsmessage.h
  * \brief DNS message functions
  *
  * This file contains functions and classes for dealing with DNS messages. The
@@ -43,7 +46,7 @@ class message_buff;
  * \brief message buffer
  *
  * This is a structure that can hold a piece of binary data and its length.
- * Depending on the way it is constructed, or whether #is_static is set, it
+ * Depending on the way it is constructed, or whether is_static is set, it
  * will choose whether or not to free the resources associated with it upon
  * destruction.
  */
@@ -52,10 +55,10 @@ class message_buff {
   /*!
    * \brief static constructor
    *
-   * This constructor will just set the #msg pointer to the address pointed to
+   * This constructor will just set the msg pointer to the address pointed to
    * by \p _msg, and copy the length. It will not copy the data, and, when the
    * structure is destroyed, the data will not be freed (e.g., it sets
-   * #is_static to \p true), unless you set is_dynamic to true.
+   * is_static to \p true), unless you set is_dynamic to true.
    * \param _msg Source data
    * \param _len Source length
    * \param is_dynamic Whether the data is dynamic.
@@ -73,30 +76,30 @@ class message_buff {
   /*!
    * \brief dynamic constructor
    *
-   * This constructor will set #msg to NULL, #len to 0 and #is_static to false.
-   * Thus, it will creatr a dynamic message buffer whose #msg will be destroyed
+   * This constructor will set msg to NULL, len to 0 and is_static to false.
+   * Thus, it will creatr a dynamic message buffer whose msg will be destroyed
    * by the destructor.
    */
   message_buff();
   /*!
    * \brief destructor
    *
-   * If #is_static is set to false, this destructor will free the memory
-   * associated with #msg.
+   * If is_static is set to false, this destructor will free the memory
+   * associated with msg.
    */
   ~message_buff();
   /*!
    * \brief assignment operator
    *
    * This operator will copy the given message buffer. It works the same as
-   * #message_buff(const messagebuf &buff).
+   * message_buff(const messagebuf &buff).
    * \param buff Message buffer to copy
    */
   message_buff& operator=(const message_buff& buff);
   /*!
    * \brief whether the message is static
    *
-   * This determines whether the #msg field is static - that is, whether it
+   * This determines whether the msg field is static - that is, whether it
    * should be freed by the message_buffer ( \p false ) or not. The default value
    * of this depends on the used constructor.
    */
@@ -104,7 +107,7 @@ class message_buff {
   /*!
    * \brief buffer length
    *
-   * The length, in bytes, of the data pointed to by #msg.
+   * The length, in bytes, of the data pointed to by msg.
    */
   int len;
   /*!
@@ -144,16 +147,16 @@ class DnsQuestion {
    */
   DnsQuestion& operator=(const DnsQuestion& q);
 
-  /*!
-   * \brief constructor
+  /**
+   * @brief constructor
    *
    * This constructor takes values for the various fields of the question
    * structure.
-   * \param QNAME Domain name to query
-   * \param QTYPE Type to query
-   * \param QCLASS Class the data is in (or #CLASS_IN if none specified)
+   * @param qname Domain name to query
+   * @param qtype Type to query
+   * @param qclass Class the data is in (or CLASS_IN if none specified)
    */
-  DnsQuestion(domainname QNAME, u_int16 QTYPE, u_int16 QCLASS = CLASS_IN);
+  DnsQuestion(domainname qname, u_int16 qtype, u_int16 qclass = CLASS_IN);
 
   /*!
    * \brief destructor
@@ -173,7 +176,7 @@ class DnsQuestion {
    * \brief query type
    *
    * The type of data to query for. This can be a RR type constant (for
-   * example, #DNS_TYPE_A), or a QTYPE_* constant (for example, #QTYPE_ANY).
+   * example, DNS_TYPE_A), or a QTYPE_* constant (for example, QTYPE_ANY).
    * These constants can be found in the dnsdefs.h header.
    */
   u_int16 QTYPE;
@@ -181,8 +184,8 @@ class DnsQuestion {
    * \brief query class
    *
    * The class to query. This is mainly historical, the only class that is used
-   * nowadays is #CLASS_IN (the internet). Other values as #CLASS_HS for Hesiod,
-   * #CLASS_CH for chaos, and #CLASS_CS for CSNET. The QCLASS_ANY constant means
+   * nowadays is CLASS_IN (the internet). Other values as CLASS_HS for Hesiod,
+   * CLASS_CH for chaos, and CLASS_CS for CSNET. The QCLASS_ANY constant means
    * you don't care what class, but this is usually not supported. The list of
    * constants can be found in the dnsdefs.h header.
    */
@@ -193,8 +196,8 @@ class DnsQuestion {
  * \brief resource record
  *
  * This class represents a resource record (RR), the fundamental building block
- * of the DNS. A RR contains type-dependent information in its #RDATA field, as
- * well as some general information on the RR itself, such as its #TTL.
+ * of the DNS. A RR contains type-dependent information in its RDATA field, as
+ * well as some general information on the RR itself, such as its TTL.
  */
 class DnsRR {
  public:
@@ -323,6 +326,13 @@ class DnsRR {
    * \sa rr_tostring(), rr_getdomain(), rr_getmail(), ...
    */
   unsigned char *RDATA;
+
+
+  // RDLENGTH copy of data before TSIG_RR is signed
+  uint16_t presign_RDLENGTH;
+
+  // RDATA copy of data before TSIG_RR is signed
+  unsigned char *presign_RDATA;
 };
 
 /*!
@@ -425,7 +435,7 @@ class DnsMessage {
    * \brief return code
    *
    * Code indicating whether the query was succesful. Some famous RCODEs,
-   * which are #defined in dnsdefs.h, are: RCODE_NOERROR to indicate success,
+   * which are defined in dnsdefs.h, are: RCODE_NOERROR to indicate success,
    * RCODE_NXDOMAIN if the domain name queried for didn't exist, or
    * RCODE_SERVFAIL in case of a server failure.
    */
@@ -456,7 +466,7 @@ class DnsMessage {
    */
   stl_list(DnsRR) authority;
 
-  /*!
+  /**
    * \brief additional section
    *
    * This section contains additional information that might be interesting for
@@ -465,17 +475,27 @@ class DnsMessage {
    */
   stl_list(DnsRR) additional;
 
-  /*!
+  /**
    * \brief read DNS message
    *
    * This function will read DNS message information from the binary DNS
-   * message pointed to by data.
-   * \param data Binary DNS message
-   * \param len Length of message
+   * message pointed to by data. If the DNS message contains a TSIG record, the
+   * function returns the number of bytes read before the TSIG record.
+   * This information is nessecary in case you want to call #verify_signature on
+   * the message manually.
+   *
+   * If the #tsig_rr is non-NULL, the message is verified; if it is NULL and
+   * the message still contains a TSIG record, then #tsig_rr is set to the
+   * TSIG record found in the message (for use in later checking).
+   *
+   * \param  data Binary DNS message
+   * \param  len Length of message
+   * \return The length of the data read, not including a TSIG record if it is
+   *         present
    */
-  void read_from_data(unsigned char *data, int len);
+  int read_from_data(unsigned char *data, int len);
 
-  /*!
+  /**
    * \brief compile DNS message
    *
    * This function will compile the DNS message into the binary format sent
@@ -491,32 +511,70 @@ class DnsMessage {
   static void write_rr(DnsRR &rr, stl_string &message, stl_slist(dom_compr_info) *comprinfo,
   int flags = 0);
   void write_section(stl_list(DnsRR)& section, int lenpos, stl_string& message, stl_slist(dom_compr_info) &comprinfo, int maxlen, bool is_additional = false);
-  void read_section(stl_list(DnsRR)& section, int count, message_buff &buff, int &pos);
+  void read_section(stl_list(DnsRR)& section, int count, message_buff &buff, int &pos, unsigned int *tsig_pos = NULL);
   static DnsRR read_rr(message_buff &buff, int &pos, int flags = 0);
+  
+  /**
+   * \brief TSIG record for message
+   *
+   * When compiling a message, if tsig_rr is non-null, this TSIG record will be
+   * used to sign the DNS message, in combination with the key sign_key.
+   *
+   * When reading a message, if tsig_rr is non-null, this TSIG record will be
+   * used to verify the DNS message, in combination with the key sign_key
+   * (i.e., #verify_signature will be called automatically). If it is set to
+   * NULL and the message is signed, instead, it will be set to the TSIG record
+   * found in the message.
+   *
+   * When calling #verify_signature, this record will be used to
+   * verify the DNS message.
+   */
+  DnsRR *tsig_rr;
+
+  /// optional tsig_rr signing time (if set to 0, time(NULL) will be used
+  time_t tsig_rr_signtime;
+  
+  /**
+   * \brief TSIG key for message
+   *
+   * Key to use when signing or verifying a signed message; see #tsig_rr.
+   */
+  stl_string sign_key;  
+  
+  /**
+   * \brief create answer message
+   * TODO: rename?
+   * Creates a DNS message that has the same sign key, so that read_data
+   * can check whether it is an answer to the DNS message.
+   * TODO: note: not for clients
+   * \return the answer message
+   */
+  DnsMessage *initialize_answer();
 };
 
 u_int16 uint16_value(const unsigned char *buff);
 u_int32 uint32_value(const unsigned char *buff);
+u_int48 uint48_value(const unsigned char *buff);
 
 unsigned char *uint16_buff(uint16_t val);
 unsigned char *uint32_buff(uint32_t val);
+unsigned char *uint48_buff(u_int48 val);
 
-/*!
- * \brief create a query message
- *
- * Creates a Dns question message which can be used to query a DNS server.
- * This message is dynamically allocated, so you'll have to delete it yourself.
- * \param QNAME Domain name to query. See DnsQuestion::QNAME.
- * \param QTYPE Type of RR to query. See DnsQuestion::QTYPE for more information.
- *              Defaults to \p DNS_TYPE_A .
- * \param RD whether we want the server to do recursion. See DnsMessage::RD.
- *           Defaults to \p true .
- * \param QCLASS The class to query in. See DnsQuestion::QCLASS. Defaults to
- *               \p CLASS_IN .
- * \return DNS message containing the query.
- */
-DnsMessage *create_query(domainname QNAME, uint16_t QTYPE = DNS_TYPE_A, bool RD = true, uint16_t QCLASS = CLASS_IN);
-
+/// @brief create a query message
+///
+/// Creates a Dns question message which can be used to query a DNS server.
+/// This message is dynamically allocated, so you'll have to delete it yourself.
+///
+/// @param qname Domain name to query. See DnsQuestion::QNAME.
+/// @param qtype Type of RR to query. See DnsQuestion::QTYPE for more information.
+///             Defaults to \p DNS_TYPE_A .
+/// @param rd whether we want the server to do recursion. See DnsMessage::RD.
+///          Defaults to \p true .
+/// @param qclass The class to query in. See DnsQuestion::QCLASS. Defaults to
+///              \p CLASS_IN .
+/// @return DNS message containing the query.
+DnsMessage *create_query(domainname qname, uint16_t qtype = DNS_TYPE_A, bool rd = true, 
+                         uint16_t qclass = CLASS_IN);
 
 /*!
  * \brief ipv4 address
@@ -524,32 +582,34 @@ DnsMessage *create_query(domainname QNAME, uint16_t QTYPE = DNS_TYPE_A, bool RD 
  * Class representing an IPv4 address.
  */
 class a_record {
- public:
-  char address[4];    /**< The four-byte IPv4 address. */
+public:
+    char address[4];    /// The four-byte IPv4 address.
 };
 
-//! Gets the first address in the answer to an address query.
+/// Gets the first address in the answer to an address query.
 a_record get_a_record(DnsMessage *a);
-//! Gets a list of addresses in the answer to an address query.
+
+/// Gets a list of addresses in the answer to an address query.
 stl_list(a_record) get_a_records(DnsMessage *a, bool fail_if_none = false);
 
-/*!
+/**
  * \brief ipv6 address
  *
  * Class representing an IPv6 address.
  */
 class aaaa_record {
- public:
-  char address[16];   /**< The sixteen-byte IPv6 address. */
+public:
+    char address[16];   /// The sixteen-byte IPv6 address.
 };
 
-//! Gets the first IPv6 address in the answer to an IPv6 address query.
+/// Gets the first IPv6 address in the answer to an IPv6 address query.
 aaaa_record get_aaaa_record(DnsMessage *a);
-//! Gets a list of addresses in the answer to an IPv6 address query.
+
+/// Gets a list of addresses in the answer to an IPv6 address query.
 stl_list(aaaa_record) get_aaaa_records(DnsMessage *a, bool fail_if_none = false);
 
-/*!
- * \brief mx record
+/**
+ * @brief mx record
  *
  * Class representing an Mail eXchanger (MX) record.
  */
@@ -559,22 +619,25 @@ class mx_record {
   domainname server;   /**< Domain name for the mail server. */
 };
 
-//! Gets the first MX record in te answer to a MX query.
+/// Gets the first MX record in te answer to a MX query.
 mx_record get_mx_record(DnsMessage *a);
-//! Gets a list of MX records in te answer to a MX query.
+
+/// Gets a list of MX records in te answer to a MX query.
 stl_list(mx_record) get_mx_records(DnsMessage *a, bool fail_if_none = false);
 
-//! Gets the first NS record in te answer to a NS query.
+/// Gets the first NS record in te answer to a NS query.
 domainname get_ns_record(DnsMessage *a);
-//! Gets the list of NS records in te answer to a NS query.
+
+/// Gets the list of NS records in te answer to a NS query.
 stl_list(domainname) get_ns_records(DnsMessage *a, bool fail_if_none = false);
 
-//! Gets the first PTR record in te answer to a PTR query.
+/// Gets the first PTR record in te answer to a PTR query.
 domainname get_ptr_record(DnsMessage *a);
-//* Gets the list of PTR records in te answer to a PTR query.
+
+/// Gets the list of PTR records in te answer to a PTR query.
 stl_list(domainname) get_ptr_records(DnsMessage *a, bool fail_if_none = false);
 
-//* Structure for RR data returned by get_records
+/// Structure for RR data returned by get_records
 class rrdat {
  public:
   rrdat(uint16_t, uint16_t, unsigned char *); //! constructor
@@ -583,10 +646,16 @@ class rrdat {
   unsigned char *msg;                         //! rdata
 };
 
-//! Gets a list of all RRs in the answer section answering the DNS query. May follow CNAMEs. */
-stl_list(rrdat) get_records(DnsMessage *a, bool fail_if_none = false, bool follow_cname = true, stl_list(domainname) *followed_cnames = NULL);
+/// Gets a list of all RRs in the answer section answering the DNS query. May follow CNAMEs.
+/// @param a
+/// @param fail_if_none
+/// @param follow_cname
+/// @param followed_cnames
+/// @return 
+stl_list(rrdat) get_records(DnsMessage *a, bool fail_if_none = false, bool follow_cname = true, 
+                            stl_list(domainname) *followed_cnames = NULL);
 
-//! Enumeration of different possible answer types
+/// Enumeration of different possible answer types
 enum  _answer_type {
   A_ERROR,      //! Error
   A_CNAME,      //! Alias
@@ -596,11 +665,22 @@ enum  _answer_type {
   A_NODATA      //! No such data
 };
 
-//! Returns the answer type of an answer message for a given query
+/// @brief Returns the answer type of an answer message for a given query
+///
+/// @param msg
+/// @param qname
+/// @param qtype
+///
+/// @return answer type
 _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtype);
 
-//! Returns true if the given RRset is present in the DNS message section
-bool has_rrset(stl_list(DnsRR) &rrlist, domainname &QNAME, uint16_t QTYPE = QTYPE_ANY);
+/// @brief Returns true if the given RRset is present in the DNS message section
+///
+/// @param rrlist a list of Resource Records
+/// @param name the name that is looked for
+/// @param type type of query
+///
+/// @return true, if requested domainname exists, false otherwise
+bool has_rrset(stl_list(DnsRR) &rrlist, domainname &name, uint16_t type = QTYPE_ANY);
 
 #endif /* __POSLIB_DNSMESSAGE_H */
-

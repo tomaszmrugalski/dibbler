@@ -200,6 +200,8 @@ struct iface * if_list_get()
     release_nlmsg_list(linfo);
     release_nlmsg_list(ainfo);
 
+    rtnl_close(&rth);
+
     return head;
 }
 

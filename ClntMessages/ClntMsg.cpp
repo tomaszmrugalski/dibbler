@@ -183,7 +183,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_AFTR_NAME:
-	    ptr = new TOptString(code, buf+pos, length, this);
+	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA: {
 	    ptr = new TClntOptTA(buf+pos, length, this);
@@ -344,6 +344,9 @@ void TClntMsg::setDefaults()
 #endif
     KeyGenNonce = NULL;
     KeyGenNonceLen = 0;
+
+    /// @todo: This should be moved to TMsg
+    PeerAddr = 0;
 }
 
 unsigned long TClntMsg::getTimeout()

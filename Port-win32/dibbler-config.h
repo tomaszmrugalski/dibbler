@@ -19,6 +19,10 @@
 /* Define to 1 if you have the `inet_aton' function. */
 #define HAVE_INET_ATON 1
 
+#define HAVE_SOCKADDR_STORAGE 1
+
+#define HAVE_IPV6
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 // #define HAVE_INTTYPES_H 1 // not available in WIN32
 

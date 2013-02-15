@@ -892,17 +892,17 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 	}
 
 	if (d || nhs_ok)  {
-		int idx;
 
-		ll_init_map(&rth);
+            ll_init_map(&rth);
 
-		if (d) {
-			if ((idx = ll_name_to_index(d)) == 0) {
-				fprintf(stderr, "Cannot find device \"%s\"\n", d);
-				return -1;
-			}
-			addattr32(&req.n, sizeof(req), RTA_OIF, idx);
-		}
+            if (d) {
+                int idx;
+                if ((idx = ll_name_to_index(d)) == 0) {
+                    fprintf(stderr, "Cannot find device \"%s\"\n", d);
+                    return -1;
+                }
+                addattr32(&req.n, sizeof(req), RTA_OIF, idx);
+            }
 	}
 
 	if (mxrta->rta_len > RTA_LENGTH(0)) {
@@ -984,6 +984,7 @@ static int iproute_flush_cache(void)
 		
 	if ((write (flush_fd, (void *)buffer, len)) < len) {
 		fprintf (stderr, "Cannot flush routing cache\n");
+                close(flush_fd);
 		return -1;
 	}
 	close(flush_fd);

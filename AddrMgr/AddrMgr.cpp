@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  *          Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
@@ -19,7 +19,7 @@
 #include <limits.h>
 #include "AddrMgr.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;
@@ -189,7 +189,7 @@ bool TAddrMgr::delClient(SPtr<TDUID> duid)
 
 unsigned long TAddrMgr::getT1Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -201,7 +201,7 @@ unsigned long TAddrMgr::getT1Timeout()
 
 unsigned long TAddrMgr::getT2Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -213,7 +213,7 @@ unsigned long TAddrMgr::getT2Timeout()
 
 unsigned long TAddrMgr::getPrefTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -225,7 +225,7 @@ unsigned long TAddrMgr::getPrefTimeout()
 
 unsigned long TAddrMgr::getValidTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -651,11 +651,15 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 unicast = new TIPv6Addr(uni.c_str(), true);
             }
             if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, iface)) {
-                if (!ia)
+                if (!ia || !clnt)
                     continue;
-                clnt->addIA(ia);
-                Log(Debug) << "Parsed IA, iaid=" << iaid;
-                if (unicast) {
+		if (ia->countAddr()) { // we don't want empty IAs here
+		    clnt->addIA(ia);
+		} else {
+		    Log(Debug) << "IA with iaid=" << iaid << " has no valid addresses." << LogEnd;
+		    continue;
+		}
+		if (unicast) {
                     ia->setUnicast(unicast);
                     Log(Cont) << ", unicast=" << unicast->getPlain();
                     unicast = 0;
@@ -677,7 +681,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 t2=atoi(x+4);
                 // Log(Debug) << "Parsed AddrPD::T2=" << t2 << LogEnd;
             }
-            if ((x=strstr(buf,"PDID"))) {
+            if ((x=strstr(buf,"IAID"))) {
                 pdid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrPD::PDID=" << pdid << LogEnd;
             }
@@ -686,12 +690,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 // Log(Debug) << "Parsed AddrPD::iface=" << iface << LogEnd;
             }
             if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, iface)) {
-                if (!ptrpd)
+                if (!ptrpd || !clnt)
                     continue;
                 if (ptrpd->countPrefix()) {
                     clnt->addPD(ptrpd);
-                    Log(Debug) << "Parsed PD, pdid=" << pdid << ", t1=" << t1
-                               << ", t2=" << t2 << LogEnd;
                 } else {
                     Log(Debug) << "PD with iaid=" << pdid << " has no valid prefixes." << LogEnd;
                 }
@@ -819,34 +821,80 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
             Log(Error) << "Failed to parse AddrIA entry. File " << xmlFile << " truncated." << LogEnd;
             return 0;
         }
-        if (strstr(buf,"duid")) {
-                  //char * x;
-                  x = strstr(buf,">")+1;
-                  x = strstr(x,"</duid>");
-                  if (x)
-                      *x = 0; // remove trailing xml tag
-                  duid = new TDUID(strstr(buf,">")+1);
-                  // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+        if (strstr(buf,"<duid")) {
+	    //char * x;
+	    x = strstr(buf,">")+1;
+	    x = strstr(x,"</duid>");
+	    if (x)
+		*x = 0; // remove trailing xml tag
+	    duid = new TDUID(strstr(buf,">")+1);
+	    // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+	    
+	    Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
+		       << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+	    
+	    ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
+	    continue;
+	}
+	if (strstr(buf,"<fqdnDnsServer>")) {
+	    char * beg = strstr(buf, ">")+1;
+	    if (!beg)
+		continue; // malformed line, ignore it
+	    char * end = strstr(beg, "</fqdnDnsServer>");
+	    if (!end)
+		continue; // malformed line, ignore it
+	    *end = 0;
+	    SPtr<TIPv6Addr> dns = new TIPv6Addr(beg, true);
+	    // Log(Debug) << "#### Parsed DNS addr=" << *dns << LogEnd;
+	    if (ia)
+		ia->setFQDNDnsServer(dns);
+	    continue;
+	}
+	if (strstr(buf, "<fqdn ")) {
+	    // TODO: parse DUID
+	    char * beg = strstr(buf, "duid=\"") + 6;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    char * end = strstr(beg, "\"");
+	    string duidTxt(beg, end);
 
-                  Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
-                             << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+	    SPtr<TDUID> duid = new TDUID(duidTxt.c_str());
 
-                  ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
-                  continue;
-              }
-              if (strstr(buf,"<AddrAddr")) {
-                  addr = parseAddrAddr(xmlFile, buf,false);
-                  if (ia && addr) {
-                      if (verifyAddr(addr->get())) {
-                              ia->addAddr(addr);
-                              addr->setTentative(TENTATIVE_NO);
-                      } else {
-                          Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
-                      }
-                  }
-              }
-              if (strstr(buf,"</AddrIA>"))
-                  break;
+	    beg = strstr(buf, "used=\"") + 6;
+	    if (!beg) {
+		continue;
+	    }
+	    end = strstr(beg, "\"");
+	    string usedTxt(beg, end);
+	    bool used = false;
+	    if (usedTxt == "TRUE")
+		used = true;
+
+	    beg = strstr(buf, ">") + 1;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    end = strstr(beg, "<");
+	    if (!end)
+		continue;
+	    *end = 0;
+	    SPtr<TFQDN> fqdn = new TFQDN(duid, string(beg, end), used);
+	    if (ia)
+		ia->setFQDN(fqdn);
+	    continue;
+	}
+	if (strstr(buf,"<AddrAddr")) {
+	    addr = parseAddrAddr(xmlFile, buf,false);
+	    if (ia && addr) {
+		if (verifyAddr(addr->get())) {
+		    ia->addAddr(addr);
+		    addr->setTentative(TENTATIVE_NO);
+		} else {
+		    Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
+		}
+	    }
+	}
+	if (strstr(buf,"</AddrIA>"))
+	    break;
     }
     if (ia)
         ia->setTentative();
@@ -870,9 +918,9 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
     int prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrAddr> addraddr;
-    char * x = 0;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = 0;
         uint32_t timestamp = 0;
         uint32_t pref = 0;
         uint32_t valid = 0;
@@ -920,9 +968,9 @@ SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bo
     // address parameters
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrPrefix> addraddr;
-    char * x;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = NULL;
         unsigned long timestamp = 0, pref = 0, valid = 0, length = 0;
         addr = 0;
         if ((x=strstr(buf,"timestamp"))) {

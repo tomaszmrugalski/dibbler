@@ -112,6 +112,7 @@ public:
     List(TIPv6Addr) * getProposedNTPServerLst();
 
     // --- option: Timezone ---
+    /// @todo: Once set, these are never used
     bool isReqTimezone();
     EState getTimezoneState();
     unsigned long getTimezoneTimeout();

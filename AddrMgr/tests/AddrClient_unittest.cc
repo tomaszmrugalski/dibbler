@@ -28,10 +28,10 @@ TEST_F(AddrClientTest, constructor) {
     EXPECT_EQ(0, client->countPD());
     EXPECT_EQ(0, client->countTA());
 
-    EXPECT_EQ(ULONG_MAX, client->getT1Timeout());
-    EXPECT_EQ(ULONG_MAX, client->getT2Timeout());
-    EXPECT_EQ(ULONG_MAX, client->getPrefTimeout());
-    EXPECT_EQ(ULONG_MAX, client->getValidTimeout());
+    EXPECT_EQ(UINT_MAX, client->getT1Timeout());
+    EXPECT_EQ(UINT_MAX, client->getT2Timeout());
+    EXPECT_EQ(UINT_MAX, client->getPrefTimeout());
+    EXPECT_EQ(UINT_MAX, client->getValidTimeout());
 
     delete client;
 }

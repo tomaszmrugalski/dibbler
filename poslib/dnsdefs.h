@@ -24,7 +24,7 @@
 /*! \file poslib/dnsdefs.h
  * \brief DNS definitions
  *
- * This file contains #defines for the various RR types, QTYPEs, RCODEs,
+ * This file contains \#defines for the various RR types, QTYPEs, RCODEs,
  * OPCODEs and such, as mostly defined in RFC 1035.
  */
 
@@ -56,9 +56,11 @@
 #define DNS_TYPE_A6                 38  /**< Prefixed IPv6 address (experimental) */
 #define DNS_TYPE_DNAME              39  /**< Sub-canonical Domain Name RR type (experimental) */
 
+#define DNS_TYPE_TSIG              250  /**< Secure Key Transaction Authentication (RFC 2845) */
+
 /* QTYPEs */
 
-#define QTYPE_NONE                   0  /**< No RR (DNS update) */                                                                  
+#define QTYPE_NONE                   0  /**< No RR (DNS update) */
 #define QTYPE_IXFR                 251  /**< Incremental Zone Transfer QTYPE */
 #define QTYPE_AXFR                 252  /**< Complete Zone Transfer QTYPE */
 #define QTYPE_MAILB                253  /**< Mailbox-related RRs QTYPE (experimental) */
@@ -94,6 +96,10 @@
 #define RCODE_NOTAUTH                9  /**< Not authoritative when required */
 #define RCODE_NOTZONE               10  /**< Domain name not in zone */
 
+#define RCODE_BADSIG                16  /**< Bad signature */
+#define RCODE_BADKEY                17  /**< Bad key */
+#define RCODE_BADTIME               18  /**< Bad sign time */
+
 /* OPCODEs */
 
 #define OPCODE_QUERY                 0  /**< Normal query */
@@ -104,4 +110,3 @@
 #define OPCODE_UPDATE                5  /**< DNS update message */
 
 #endif /* __DNS_DNSDEFS_H */
-

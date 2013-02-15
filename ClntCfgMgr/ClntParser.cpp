@@ -1529,6 +1529,7 @@ YYLABEL(yynewstate)
 		 &yyls1, size * sizeof (*yylsp),
 		 &yystacksize);
 #else
+      // cppcheck-suppress constStatement
       yyoverflow("parser stack overflow",
 		 &yyss1, size * sizeof (*yyssp),
 		 &yyvs1, size * sizeof (*yyvsp),
@@ -1716,7 +1717,7 @@ YYLABEL(yyreduce)
 #endif
 
 
- #line 839 "../bison++/bison.cc"
+ #line 840 "../bison++/bison.cc"
 
   switch (yyn) {
 
@@ -2682,7 +2683,7 @@ case 218:
     break;}
 }
 
-#line 839 "../bison++/bison.cc"
+#line 840 "../bison++/bison.cc"
    /* the action file gets copied in in place of this dollarsign  */
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2883,7 +2884,7 @@ YYLABEL(yyerrhandle)
 
 /* END */
 
- #line 1038 "../bison++/bison.cc"
+ #line 1039 "../bison++/bison.cc"
 #line 1146 "ClntParser.y"
 
 

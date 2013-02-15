@@ -267,7 +267,7 @@ bool TSrvCfgAddrClass::isLinkLocal() {
     }
 
     addr = Pool_->getAddrL();
-    char linklocal[] = { 0xfe, 0x80};
+    char linklocal[] = {0xfeu, 0x80u};
 
     if (!memcmp(addr->getAddr(), linklocal,2)) {
         Log(Crit) << "Staring address " << addr->getPlain() << " is link-local." << LogEnd;

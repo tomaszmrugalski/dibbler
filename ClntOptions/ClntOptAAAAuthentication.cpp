@@ -6,6 +6,9 @@
  * released under GNU GPL v2 only licence
  *
  */
+
+#ifndef MOD_DISABLE_AUTH
+
 #include "ClntOptAAAAuthentication.h"
 
 TClntOptAAAAuthentication::TClntOptAAAAuthentication( char * buf,  int n, TMsg* parent)
@@ -20,3 +23,5 @@ TClntOptAAAAuthentication::TClntOptAAAAuthentication(TClntMsg* parent)
 bool TClntOptAAAAuthentication::doDuties() {
     return false;
 }
+
+#endif

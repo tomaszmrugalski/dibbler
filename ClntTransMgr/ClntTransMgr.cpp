@@ -209,6 +209,7 @@ void TClntTransMgr::removeExpired() {
     SPtr<TAddrAddr> ptrAddr;
     SPtr<TIfaceIface> ptrIface;
 
+    // are there any expired IA_NAs?
     ClntAddrMgr().firstIA();
     while (ptrIA = ClntAddrMgr().getIA()) {
         if (ptrIA->getValidTimeout())
@@ -220,17 +221,82 @@ void TClntTransMgr::removeExpired() {
                 continue;
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
             Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
-                         << ptrIface->getName() << "/" << ptrIface->getID() 
+                         << ptrIface->getFullName()
                          << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
             ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrIA->delAddr(ptrAddr->get());
+	    Log(Info) << "Expired address " << ptrAddr->get()->getPlain()
+		      << " from IA " << ptrIA->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
         }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrIA->countAddr()) {
+	    Log(Debug) << "The IA_NA (with IAID=" << ptrIA->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIface());
+	    if (cfgIface) {
+		SPtr<TClntCfgIA> cfgIA = cfgIface->getIA(ptrIA->getIAID());
+		if (cfgIA) {
+		    cfgIA->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
     }
+
+    // are there any expired IA_PDs?
+    SPtr<TAddrIA> ptrPD;
+    SPtr<TAddrPrefix> ptrPrefix;
+    ClntAddrMgr().firstPD();
+    while (ptrPD = ClntAddrMgr().getPD()) {
+        if (ptrPD->getValidTimeout())
+            continue;
+
+        ptrPD->firstPrefix();
+        while (ptrPrefix = ptrPD->getPrefix()) {
+            if (ptrPrefix->getValidTimeout())
+                continue;
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIface());
+            Log(Warning) << "Prefix " << ptrPrefix->get()->getPlain() << " obtained on the "
+                         << ptrIface->getFullName()
+                         << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
+
+            // remove that address from the physical interace
+	    ClntIfaceMgr().delPrefix(ptrPD->getIface(), ptrPrefix->get(), ptrPrefix->getLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrPD->delPrefix(ptrPrefix);
+	    Log(Info) << "Expired prefix " << ptrPrefix->get()->getPlain() << "/" << ptrPrefix->getLength()
+		      << " from IA_PD " << ptrPD->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
+        }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrPD->countPrefix()) {
+	    Log(Debug) << "The IA_PD (with IAID=" << ptrPD->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrPD->getIface());
+	    if (cfgIface) {
+		SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(ptrPD->getIAID());
+		if (cfgPD) {
+		    cfgPD->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
+    }
+
 }
 
 /** 
- * checks if loaded Address database is sanite (i.e. does not reffer to non-existing interface)
+ * checks if loaded Address database is sane (i.e. does not reffer to non-existing interface)
  * 
  */
 void TClntTransMgr::checkDB()
@@ -453,7 +519,7 @@ void TClntTransMgr::shutdown()
                 if (cfgPD)
                     cfgPD->setState(STATE_DISABLED);
             }
-            sendRelease(releasedIAs,ta, releasedPDs);
+            sendRelease(releasedIAs, ta, releasedPDs);
     }
 
     // now check if there are any TA left
@@ -591,11 +657,19 @@ unsigned long TClntTransMgr::getTimeout()
     tmp     = ClntAddrMgr().getTentativeTimeout();
     if (timeout > tmp)
         timeout = tmp;
+    // Uncomment for timeout debugging
+    // Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
+
+    if (timeout == 0) {
+	ClntAddrMgr().getTimeout();
+    }
 
     // IfaceMgr (Lifetime option) timeout
     tmp = ClntIfaceMgr().getTimeout();
     if (timeout > tmp)
         timeout = tmp;
+    // Uncomment for timeout debugging
+    // Log(Debug) << "Timeout after IfaceMgr=" << timeout << LogEnd;
 
     // Messages timeout
     SPtr<TClntMsg> ptrMsg;
@@ -768,6 +842,10 @@ void TClntTransMgr::checkSolicit() {
             Log(Cont) << " on " << iface->getFullName() <<" interface." << LogEnd;
             Transactions.append(new TClntMsgSolicit(iface->getID(), 0, iaLst, ta, pdLst, 
                                                     iface->getRapidCommit()));
+	    
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
 
     }//for every iface
@@ -804,6 +882,10 @@ void TClntTransMgr::checkConfirm()
             Log(Info) << "Creating CONFIRM: " << IALst.count() << " IA(s) on " << iface->getFullName() << LogEnd;
             Transactions.append(
                 new TClntMsgConfirm(iface->getID(), IALst));
+
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
     }
 }
@@ -938,6 +1020,10 @@ void TClntTransMgr::checkRenew()
     Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
     SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(iaLst, pdLst);
     Transactions.append(ptrRenew);
+
+    // state of certain IAs has changed. Let's log it.
+    ClntAddrMgr().dump();
+    ClntCfgMgr().dump();
 }
 
 void TClntTransMgr::checkDecline()
@@ -1008,6 +1094,9 @@ void TClntTransMgr::checkDecline()
             request = new TClntMsgRequest(declineIALst, duid, firstIA->getIface() );
             Transactions.append( (Ptr*) request);
 
+	    // state of certain IAs has changed. Let's log it.
+	    ClntAddrMgr().dump();
+	    ClntCfgMgr().dump();
         }
     } while(firstIA);
 }

@@ -24,7 +24,6 @@ using namespace std;
 #include "FlexLexer.h"
 #include "ClntIfaceMgr.h"
 #include "ClntParsGlobalOpt.h"
-#include "TimeZone.h"
 #include "ClntParser.h"
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;
@@ -49,9 +48,8 @@ void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
 
 
 TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
-  :TCfgMgr()
+    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT)
 {
-    ScriptName = DEFAULT_SCRIPT;
 
 #ifdef MOD_REMOTE_AUTOCONF
     RemoteAutoconf = false;
@@ -470,17 +468,6 @@ bool TClntCfgMgr::validateConfig()
 }
 
 bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
-
-    if(ptrIface->isReqTimezone()&&(ptrIface->getProposedTimezone()!=""))
-    {
-        TTimeZone tmp(ptrIface->getProposedTimezone());
-        if(!tmp.isValid())
-        {
-            Log(Crit) << "Wrong time zone option for the " << ptrIface->getName()
-                      << "/" <<ptrIface->getID() << " interface." << LogEnd;
-            return false;
-        }
-    }
 
     SPtr<TClntCfgIA> ptrIA;
     ptrIface->firstIA();

@@ -4,6 +4,7 @@
 #include "SrvTransMgr.h"
 #include "OptDUID.h"
 #include "OptAddrLst.h"
+#include "OptStatusCode.h"
 #include "SrvOptTA.h"
 #include "DHCPConst.h"
 #include "HostRange.h"
@@ -287,6 +288,57 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 56));
 }
+
+TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative2) {
+
+    // check that if the pool is small and prefix is reserved for client A, client B
+    // will not get it
+    string cfg = "iface REPLACE_ME {\n"
+        "  t1 1000\n"
+        "  t2 2000\n"
+        "  preferred-lifetime 3000\n"
+        "  valid-lifetime 4000\n"
+        "  pd-class {\n"
+        "    pd-pool 2001:db8:123::/64\n"
+        "    pd-length 64\n"
+        "  }\n"
+        "  client duid 00:01:00:00:00:00:00:00:00 {\n" // not our DUID
+        "    prefix 2001:db8:123::/64\n"
+        "  }\n"
+        "}\n";
+
+    ASSERT_TRUE( createMgrs(cfg) );
+
+    // now generate SOLICIT
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption((Ptr*)pd_); // include PD_NA
+    pd_->setIAID(100);
+    pd_->setT1(101);
+    pd_->setT2(102);
+    const uint8_t prefixLen = 68;
+    SPtr<TIPv6Addr> prefix = new TIPv6Addr("2002:babe::", true);
+    SPtr<TSrvOptIAPrefix> optPrefix = new TSrvOptIAPrefix(prefix, prefixLen, 1000, 2000, &(*sol));
+    pd_->addOption((Ptr*)optPrefix);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+
+    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    ASSERT_TRUE(rcvPD);
+
+    SPtr<TSrvOptIAPrefix> rcvOptPrefix = (Ptr*)rcvPD->getOption(OPTION_IAPREFIX);
+    if (rcvOptPrefix) {
+        FAIL() << "Client received " << rcvOptPrefix->getPrefix()->getPlain()
+               << " prefix, but expected NoPrefixAvail status." << endl;
+    }
+
+    SPtr<TOptStatusCode> rcvStatusCode = (Ptr*)rcvPD->getOption(OPTION_STATUS_CODE);
+    ASSERT_TRUE(rcvStatusCode);
+
+    EXPECT_EQ(STATUSCODE_NOPREFIXAVAIL, rcvStatusCode->getCode());
+}
+
 
 TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
 

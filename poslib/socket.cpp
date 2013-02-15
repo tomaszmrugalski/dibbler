@@ -36,20 +36,16 @@ bool posclient_quitflag = false;
 int struct_pf(_addr *addr) {
     if (addr->s_family == AF_INET) 
 	return PF_INET;
-#ifdef HAVE_IPV6
     else  if (addr->s_family == AF_INET6) 
 	return PF_INET6;
-#endif
     return -1;
 }
 
 int struct_len(_addr *addr) {
     if (addr->s_family == AF_INET) 
 	return sizeof(sockaddr_in);
-#ifdef HAVE_IPV6
     else if (addr->s_family == AF_INET6) 
 	return sizeof(sockaddr_in6);
-#endif
     return -1;
 }
 
@@ -62,11 +58,7 @@ class __init_socklib {
  public:
   __init_socklib() {
     WSADATA info;
-#   ifdef HAVE_IPV6
       WSAStartup(MAKEWORD(2, 2), &info);
-#   else
-      WSAStartup(MAKEWORD(1, 1), &info);
-#   endif
   }
 
   ~__init_socklib() {
@@ -274,7 +266,6 @@ void getaddress_ip4(_addr *res, const unsigned char *ipv4_data, int port) {
   memcpy(&((sockaddr_in *)res)->sin_addr.s_addr, ipv4_data, 4);
 }
 
-#ifdef HAVE_IPV6
 void getaddress_ip6(_addr *res, const unsigned char *ipv6_data, int port) {
   memset(res, 0, sizeof(_addr));
 #ifdef HAVE_SIN6_LEN
@@ -284,10 +275,8 @@ void getaddress_ip6(_addr *res, const unsigned char *ipv6_data, int port) {
   ((sockaddr_in6 *)res)->sin6_port = htons(port);
   memcpy(&((sockaddr_in6 *)res)->sin6_addr, ipv6_data, 16);
 }
-#endif
 
 void getaddress(_addr *res, const char *ip, int port) {
-#ifdef HAVE_IPV6
   char *ptr = strchr((char*)ip, ':');
 
   if (ptr) {
@@ -301,7 +290,6 @@ void getaddress(_addr *res, const char *ip, int port) {
     txt_to_ipv6((unsigned char *)&((sockaddr_in6 *)res)->sin6_addr, ip);
     return;
   }
-#endif
   /* ipv4 */
   memset(res, 0, sizeof(sockaddr_in));
 #ifdef HAVE_SIN_LEN
@@ -347,10 +335,8 @@ bool address_matches(_addr *addr1, _addr *addr2) {
 
   if (addr1->s_family == AF_INET)
     return (memcmp(&((sockaddr_in *)addr1)->sin_addr, &((sockaddr_in *)addr2)->sin_addr, 4) == 0);
-#ifdef HAVE_IPV6
   else if (addr1->s_family == AF_INET6)
     return (memcmp(&((sockaddr_in6 *)addr1)->sin6_addr, &((sockaddr_in6 *)addr2)->sin6_addr, 16) == 0);
-#endif
   return false;
 }
 
@@ -358,20 +344,14 @@ bool addrport_matches(_addr *addr1, _addr *addr2) {
   if (address_matches(addr1, addr2)) {
     if (addr1->s_family == AF_INET)
       return ((sockaddr_in *)addr1)->sin_port == ((sockaddr_in *)addr2)->sin_port;
-#ifdef HAVE_IPV6
     else if (addr1->s_family == AF_INET6)
       return ((sockaddr_in6 *)addr1)->sin6_port == ((sockaddr_in6 *)addr2)->sin6_port;
-#endif
   }
   return false;
 }
 
 bool sock_is_ipv6(_addr *a) {
-#ifdef HAVE_IPV6
   return (a->s_family == AF_INET6);
-#else
-  return false;
-#endif
 }
 
 bool addr_is_ipv6(_addr *a) { return sock_is_ipv6(a); }
@@ -396,28 +376,25 @@ bool addr_is_none(_addr *addr) {
   return (ptr[0] == 255 && ptr[1] == 255 && ptr[2] == 255 && ptr[3] == 255);
 }
 
-#ifdef HAVE_IPV6
 unsigned char *get_ipv6_ptr(_addr *a) {
   return (unsigned char *)&((sockaddr_in6 *)a)->sin6_addr;
 }
-#endif
 
-
-stl_string addr_to_string(_addr *addr, bool include_port) {
-  char *caddr, msg[64];
+stl_string addr_to_string(const _addr *addr, bool include_port) {
+  unsigned char *caddr;
+  char msg[64];
 
   if (addr->s_family == AF_INET) {
     /* IPv4 */
-    caddr = (char *)&((sockaddr_in *)addr)->sin_addr;
+    caddr = (unsigned char *)&((sockaddr_in *)addr)->sin_addr;
     sprintf(msg, "%d.%d.%d.%d", caddr[0], caddr[1], caddr[2], caddr[3]);
     if (include_port)
       sprintf(msg + strlen(msg),"#%d", ntohs(((sockaddr_in *)addr)->sin_port) & 32767);
     return stl_string(msg);
   }
-#ifdef HAVE_IPV6
   if (addr->s_family == AF_INET6) {
     /* IPv6 */
-    caddr = (char *)&((sockaddr_in6 *)addr)->sin6_addr;
+    caddr = (unsigned char *)&((sockaddr_in6 *)addr)->sin6_addr;
     sprintf(msg, "%x:%x:%x:%x:%x:%x:%x:%x",
             caddr[0]*256+ caddr[1], caddr[2]*256+ caddr[3], caddr[4]*256+ caddr[5],
             caddr[6]*256+ caddr[7], caddr[8]*256+ caddr[9], caddr[10]*256+ caddr[11],
@@ -426,7 +403,6 @@ stl_string addr_to_string(_addr *addr, bool include_port) {
       sprintf(msg + strlen(msg), "#%d",ntohs(((sockaddr_in6 *)addr)->sin6_port) & 32767);
     return stl_string(msg);
   }
-#endif
   sprintf(msg, "<unknown socket family %d>", addr->s_family);
   return stl_string(msg);
 }

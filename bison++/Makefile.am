@@ -33,7 +33,7 @@ CXX=g++
 PFILE = bison.cc
 PFILE1 = bison.hairy
 HFILE = bison.h
-INCLUDES = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
+AM_CPPFLAGS = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
 	 -DXHFILE=\"$(datadir)/bison++/$(HFILE)\" \
 	 -DXPFILE1=\"$(datadir)/bison++/$(PFILE1)\"
 

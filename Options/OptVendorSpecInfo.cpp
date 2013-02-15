@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.10 2008-03-02 19:19:43 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -103,13 +101,26 @@ char * TOptVendorSpecInfo::storeSelf( char* buf)
 
     SPtr<TOpt> opt;
     firstOption();
-
     while (opt = getOption())
     {
         buf = opt->storeSelf(buf);
     }
     
     return buf;
+}
+
+std::string TOptVendorSpecInfo::getPlain() {
+    std::stringstream tmp;
+    tmp << "vendor=" << Vendor << " ";
+
+    SPtr<TOpt> opt;
+    firstOption();
+    while (opt = getOption())
+    {
+	tmp << opt->getOptType() << "=";
+	tmp << opt->getPlain() << " ";
+    }
+    return tmp.str();
 }
 
 bool TOptVendorSpecInfo::isValid()
