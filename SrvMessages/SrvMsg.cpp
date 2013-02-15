@@ -188,9 +188,9 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
                         client->setSPI(SPI);
                 }
             }
+            break;
 #endif
 
-        break;
         case OPTION_VENDOR_OPTS:
             ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
             break;
@@ -233,7 +233,7 @@ void TSrvMsg::setDefaults() {
 /// @param quiet (false will make this method verbose)
 void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
-    SPtr<TOpt>       opt;
+    SPtr<TOpt> opt;
     SPtr<TIPv6Addr> clntAddr = PeerAddr;
 
     // --- process this message ---
@@ -498,13 +498,19 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
     string hint = requestFQDN->getFQDN();
     SPtr<TSrvOptFQDN> optFQDN;
 
-    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
-    if (!clntAssignedAddr)
-        /// @todo: Perhaps we should not do the update at all?
-        clntAssignedAddr = PeerAddr; // it's better than nothing
+    bool doRealUpdate = false;
+    if (clientMsg->getType() == REQUEST_MSG ||
+	clientMsg->getType() == RELEASE_MSG) {
+	doRealUpdate = true;
+    }
 
-    optFQDN = addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, false);
-    /// @todo: Why is doRealUpdate set to false???
+    SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
+    if (!clntAssignedAddr) {
+        clntAssignedAddr = PeerAddr; // it's better than nothing. Put it in FQDN option,
+	// doRealUpdate = false; // but do not do the actual update
+    }
+
+    optFQDN = addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, doRealUpdate);
 
     if (optFQDN)
         Options.push_back((Ptr*) optFQDN);
@@ -568,14 +574,13 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
                << FQDNMode << LogEnd;
 
     if ( FQDNMode==1 || FQDNMode==2 ) {
-        Log(Debug) << "FQDN: Server configuration allow DNS updates for " << clntDuid->getPlain()
-                   << LogEnd;
+        //Log(Debug) << "FQDN: Server configuration allows DNS updates for " << clntDuid->getPlain()
+        //           << LogEnd;
 
         if (FQDNMode == 1)
             optFQDN->setSFlag(false);
         else
-            if (FQDNMode == 2)
-                optFQDN->setSFlag(true); // letting client update his AAAA
+            optFQDN->setSFlag(true); // letting client update his AAAA
         // Setting the O Flag correctly according to the difference between O flags
         optFQDN->setOFlag(requestFQDN->getSFlag() /*xor 0*/);
 
@@ -594,21 +599,27 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
         ptrAddrClient->firstIA();
         SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
         if (!ptrAddrIA) {
-            Log(Warning) << "Client does not have any addresses assigned." << LogEnd;
+            Log(Warning) << "Client does not have any IA(s) assigned." << LogEnd;
             return 0;
         }
         ptrAddrIA->firstAddr();
         SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
-        SPtr<TIPv6Addr> IPv6Addr = addr->get();
-
-        Log(Notice) << "FQDN: About to perform DNS Update: DNS server=" << DNSAddr->getPlain() << ", IP="
-                    << IPv6Addr->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+	if (!addr) {
+	    Log(Warning) << "Client does not have any address(es) assigned." << LogEnd;
+	    return 0;
+	}
 
         // regardless of the result, store the info
         ptrAddrIA->setFQDN(fqdn);
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
-        SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
+	if (doRealUpdate) {
+	    Log(Notice) << "FQDN: About to perform DNS Update: IP="
+			<< addr->get()->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+	    SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
+	} else {
+	    Log(Debug) << "FQDN: Skipping DNS Update." << LogEnd;
+	}
     } else {
         Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
         optFQDN->setNFlag(true);
@@ -1061,15 +1072,12 @@ void TSrvMsg::appendStatusCode()
 
 void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
     int opt = ptrOpt->getOptType();
-    switch(opt)
-    {
-    case OPTION_ELAPSED_TIME :
-        break;
-    default:
-        if (!ORO->isOption(opt) && !getOption(opt))
-            ORO->addOption(opt);
-        break;
-    }
+
+	// RECONF_ACCEPT is the last standard option defined in RFC3315
+	// All other options are considered extensions
+	if (opt> OPTION_RECONF_ACCEPT && !ORO->isOption(opt) && !getOption(opt)) {
+        ORO->addOption(opt);
+	}
 }
 
 /**

@@ -95,6 +95,7 @@ public:
     void setRelayID(int id);
 
     // per-client parameters (exceptions)
+    unsigned int removeReservedFromCache();
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
     SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, TMsg* message, bool quiet=true);
     bool checkReservedPrefix(SPtr<TIPv6Addr> pfx,

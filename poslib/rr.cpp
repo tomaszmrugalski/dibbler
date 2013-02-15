@@ -52,6 +52,7 @@ const rr_type rr_types[] = {
     { "NAPTR",  35, "sscccd",   R_NONE        },
     { "A6",     38, "7",        R_NONE        },
     { "DNAME",  39, "d",        R_ASP         },
+    { "KEY",   250, "d4s*ss*",  R_NONE        },
 };
 
 const int n_rr_types = sizeof(rr_types) / sizeof(rr_type);
@@ -68,8 +69,7 @@ rr_type *rrtype_getinfo(const char *name) {
    int t;
    for (t = 0; t < n_rr_types; t++)
      if (strcmpi(rr_types[t].name, name) == 0) return (rr_type *)&rr_types[t];
-
-     
+       
    return NULL;
 }
 
@@ -142,7 +142,7 @@ int rr_len(char prop, message_buff &buff, int ix, int len) {
       return 16;
     case '7': /* ipv6 address + prefix */
       x = ((135 - buff.msg[ix]) / 8); /* prefix length in bytes */
-      if (ix + x + 1 >= len) throw PException("A6 too long for RR");
+      if (x + 1 >= len) throw PException("A6 too long for RR");
       if (buff.msg[ix] != 0)
         /* domain name nessecary */
         x += dom_comprlen(buff, ix + x + 1);
@@ -150,6 +150,11 @@ int rr_len(char prop, message_buff &buff, int ix, int len) {
     case 'o': /* DNS LOC */
       if (buff.msg[ix] != 0) throw PException("Unsupported LOC version");
       return 16;
+    case '4': /* uint48 */
+      return 6;
+    case '*': /* data with length prefix */
+      if (len < 2) throw PException ("Data too long for RR");
+      return buff.msg[ix] * 256 + buff.msg[ix+1] + 2;
   }
   throw PException(true, "Unknown RR item type %c", prop);
 }
@@ -158,7 +163,6 @@ void rr_read(u_int16 RRTYPE, unsigned char*& RDATA, uint16_t &RDLEN, message_buf
   rr_type *info = rrtype_getinfo(RRTYPE);
   char *ptr;
   stl_string res;
-  int x;
   _domain dom;
 
   if (ix + len > buff.len) throw PException("RR doesn't fit in DNS message");
@@ -168,21 +172,22 @@ void rr_read(u_int16 RRTYPE, unsigned char*& RDATA, uint16_t &RDLEN, message_buf
     try {
       ptr = info->properties;
       while (*ptr) {
-        x = rr_len(*ptr, buff, ix, len);
-        if (x > len) throw PException("RR item too long!");
-        if (*ptr == 'd' || *ptr == 'm') {
-          /* domain name: needs to be decompressed */
-          dom = dom_uncompress(buff, ix);
-          res.append((char*)dom, domlen(dom));
-          free(dom);
-        } else {
-          res.append((char*)buff.msg + ix, x);
-        }
-        
-        ix += x;
-        len -= x;
-        
-        ptr++;
+          int x;
+          x = rr_len(*ptr, buff, ix, len);
+          if (x > len) throw PException("RR item too long!");
+          if (*ptr == 'd' || *ptr == 'm') {
+              /* domain name: needs to be decompressed */
+              dom = dom_uncompress(buff, ix);
+              res.append((char*)dom, domlen(dom));
+              free(dom);
+          } else {
+              res.append((char*)buff.msg + ix, x);
+          }
+          
+          ix += x;
+          len -= x;
+          
+          ptr++;
       }
       if (len != 0) throw PException("extra data in RR");
     } catch(PException p) {
@@ -300,6 +305,18 @@ stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDL
         return ret;
       case 'o': // RFC1876 location information
         return str_loc(RDATA);
+      case '4': // 3-byte integer
+          sprintf(buff, "%lu", (unsigned long)uint48_value (RDATA));
+        RDATA += 6;
+        return buff;
+      case '*': // length+data
+        x = RDATA[0] * 256 + RDATA[1];
+        if (x == 0)
+          buff[0] = 0;
+        else
+          sprintf(buff, "(%d bytes)", x);
+        RDATA += x + 2;
+        return buff;
       default:
         return "?";
     }  
@@ -315,9 +332,9 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *_RDATA, int RDLEN
 
   ptr = info->properties;
   while (*ptr) {
-    if (ret != "") ret.append(" ");
-    ret.append (rr_property_to_string (*ptr, RDATA, RDLENGTH - (int)(RDATA - _RDATA), zone));
+    ret.append (rr_property_to_string (*ptr, RDATA, RDLENGTH - (int)(RDATA - _RDATA), zone));    
     ptr++;
+    if (*ptr) ret.append (" ");
   }
   return ret;
 }
@@ -452,6 +469,11 @@ stl_string rr_fromstring(u_int16 RRTYPE, const char *_data, _domain origin) {
         val = txt_to_int((char *)tmp.c_str());
         ret.append((char*)uint16_buff(val), 2);
         break;
+      case '4': // TODO: this should actually also accept long longs?
+        tmp = read_entry(data);
+        val = txt_to_int((char *)tmp.c_str());
+        ret.append((char*)uint48_buff(val), 6);
+        break;
       case 'l':
       case 't':
         tmp = read_entry(data);
@@ -497,6 +519,8 @@ stl_string rr_fromstring(u_int16 RRTYPE, const char *_data, _domain origin) {
       case 'o':
         txt_to_loc((unsigned char *)buff, data);
         ret.append(buff, 16);
+        break;
+      case '*':
         break;
       default:
         throw PException("Unknown RR property type");
@@ -552,13 +576,19 @@ domainname rr_getmail(const unsigned char *RDATA, u_int16 RRTYPE, int ix) {
 u_int16 rr_getshort(const unsigned char *_RDATA, u_int16 RRTYPE, int ix) {
   unsigned char *RDATA = (unsigned char*)_RDATA;
   rr_goto(RDATA, RRTYPE, ix);
-  return RDATA[0] * 256 + RDATA[1];
+  return uint16_value (RDATA);
 }  
   
 u_int32 rr_getlong(const unsigned char *_RDATA, u_int16 RRTYPE, int ix) {
   unsigned char *RDATA = (unsigned char*)_RDATA;
   rr_goto(RDATA, RRTYPE, ix);
-  return RDATA[0] * 16777216 + RDATA[1] * 65536 + RDATA[2] * 256 + RDATA[3];
+  return uint32_value (RDATA);
+}
+
+u_int48 rr_getlonglong(const unsigned char *_RDATA, u_int16 RRTYPE, int ix) {
+  unsigned char *RDATA = (unsigned char*)_RDATA;
+  rr_goto(RDATA, RRTYPE, ix);
+  return uint48_value (RDATA);
 }
 
 unsigned char *rr_getip4(const unsigned char *_RDATA, u_int16 RRTYPE, int ix) {
@@ -569,10 +599,16 @@ unsigned char *rr_getip4(const unsigned char *_RDATA, u_int16 RRTYPE, int ix) {
   return ret;
 }
 
-unsigned char *rr_getip6(const unsigned char *_RDATA, int RRTYPE, int ix) {
+unsigned char *rr_getip6(const unsigned char *_RDATA, uint16_t RRTYPE, int ix) {
   unsigned char *RDATA = (unsigned char*)_RDATA;
   rr_goto(RDATA, RRTYPE, ix);
   unsigned char *ret = (unsigned char *)malloc(16);
   memcpy(ret, RDATA, 16);
   return ret;
+}
+
+unsigned char *rr_getdata(const unsigned char *_RDATA, uint16_t RRTYPE, int ix) {
+  unsigned char *RDATA = (unsigned char*)_RDATA;
+  rr_goto(RDATA, RRTYPE, ix);
+  return RDATA;
 }

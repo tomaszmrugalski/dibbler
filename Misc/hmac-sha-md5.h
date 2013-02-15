@@ -6,7 +6,6 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: hmac.h,v 1.2 2006-11-30 03:39:29 thomson Exp $
  */	
 
 #ifdef __cplusplus

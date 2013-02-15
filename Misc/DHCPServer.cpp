@@ -65,6 +65,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
     SrvGeolocMgr().setCacheSize();
     SrvGeolocMgr().dump();
 
+    SrvCfgMgr().removeReservedFromCache();
     SrvCfgMgr().setCounters();
     SrvCfgMgr().dump();
     SrvIfaceMgr().dump(); // dump it once more (important, if relay interfaces were added)

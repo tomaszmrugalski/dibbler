@@ -162,7 +162,7 @@ char *rrtype_getname(u_int16 type);
  * This function tries to return the QTYPE code for a given string, that can
  * either be a RR, "any", "ixfr", "axfr", "maila" or "mailb", or a numeric
  * value.
- * \param type The query type
+ * \param name 
  * \param allow_qtype If set to false (default true), only allow common types
  * \return The 16-bit QTYPE value for the given string
  */
@@ -236,13 +236,13 @@ stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENGTH)
 /*!
  * \brief Convert RR property to strings
  * 
- * Converts a RR property as in #rr_type.property, to string.
- * \param type     Property type (see #rr_type.property)
+ * Converts a RR property as in rr_type.property, to string.
+ * \param type     Property type (see rr_type.property)
  * \param RDATA    RR data
  * \param RDLENGTH Lenth of rest of RR
  * \param zone     Zone to make domains relative to
  */
-stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int& RDLENGTH, domainname& zone);
+stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDLENGTH, domainname& zone);
 
 /*!
  * \brief convert a binary RR to string
@@ -267,7 +267,7 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENG
  * number of spaces and tabs. For example, MX data might be "10 mail.yo.net.".
  * You can specify an origin to which domain names are considered relative by
  * means of the origin parameter.
- * \param RRTYTPE Type of the RR
+ * \param rrtype Type of the RR
  * \param data The text describing the RR
  * \param origin If given, the domain name relative domain names are considered
                  relative to. This should be a binary domain name, like the
@@ -276,7 +276,7 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENG
  * \return Binary data describing the RR
  * \sa rr_tostring()
  */
-stl_string rr_fromstring(u_int16 RRTYPE, const char *data, _domain origin = (unsigned char*)"");
+stl_string rr_fromstring(u_int16 rrtype, const char *data, _domain origin = (unsigned char*)"");
 
 /*!
  * \brief convert a string to binary RR data
@@ -287,7 +287,7 @@ stl_string rr_fromstring(u_int16 RRTYPE, const char *data, _domain origin = (uns
  * number of spaces and tabs. For example, MX data might be "10 mail.yo.net.".
  * You can specify an origin to which domain names are considered relative by
  * means of the origin parameter.
- * \param RRTYTPE Type of the RR
+ * \param RRTYPE Type of the RR
  * \param data The text describing the RR
  * \param origin If given, the domain name relative domain names are considered
                  relative to. This should be a binary domain name, like the
@@ -349,6 +349,13 @@ u_int16 rr_getshort(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 u_int32 rr_getlong(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 
 /*!
+ * \brief read a 48-bit value from RR data
+ *
+ * For details, see rr_getdomain().
+ */
+u_int48 rr_getuint48(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+
+/*!
  * \brief read an IP address from RR data
  *
  * For details, see rr_getdomain().  Data is dynamically allocated.
@@ -361,6 +368,13 @@ unsigned char *rr_getip4(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0)
  * For details, see rr_getdomain(). Data is dynamically allocated.
  */
 unsigned char *rr_getip6(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+
+/*!
+ * \brief return pointer to start of data in RR
+ *
+ * For details, see rr_getdomain().
+ */
+unsigned char *rr_getdata(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 
 /*!
  * \brief read next item in a space-delimited string

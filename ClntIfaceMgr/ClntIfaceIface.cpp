@@ -13,6 +13,7 @@
 #include "ClntIfaceIface.h"
 #include "Portable.h"
 #include "Logger.h"
+#include "DHCPDefaults.h"
 #ifdef MINGWBUILD
 #include <io.h>
 #endif
@@ -108,8 +109,6 @@ bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             this->DNSServerLst.append(addr);
         }
     }
-    this->DNSServerLstAddr = srv;
-    this->DNSServerLstDUID = duid;
     return true;
 }
 
@@ -162,8 +161,6 @@ bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(s
             this->DomainLst.append(domain);
         }
     }
-    this->DomainLstAddr = srv;
-    this->DomainLstDUID = duid;
     return true;
 }
 
@@ -217,14 +214,10 @@ bool TClntIfaceIface::setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             this->NTPServerLst.append(addr);
         }
     }
-    this->NTPServerLstAddr = srv;
-    this->NTPServerLstDUID = duid;
     return true;
 }
 
 bool TClntIfaceIface::setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& timezone) {
-    this->TimezoneAddr = srv;
-    this->TimezoneDUID = duid;
     if (timezone==this->Timezone) {
         // timezone has not changed
         Log(Info) << "Timezone " << timezone << " is already set on the interface "
@@ -290,8 +283,6 @@ bool TClntIfaceIface::setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             this->SIPServerLst.append(addr);
         }
     }
-    this->SIPServerLstAddr = srv;
-    this->SIPServerLstDUID = duid;
     return true;
 }
 bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(std::string) domains) {
@@ -343,15 +334,11 @@ bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             this->SIPDomainLst.append(domain);
         }
     }
-    this->SIPDomainLstAddr = srv;
-    this->SIPDomainLstDUID = duid;
     return true;
 }
 
 bool TClntIfaceIface::setFQDN(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& fqdn) {
-    this->FQDN = fqdn;
-    this->FQDNDUID = duid;
-    this->FQDNAddr = srv;
+    FQDN = fqdn;
     return true;
 }
 
@@ -404,13 +391,9 @@ bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             this->NISServerLst.append(addr);
         }
     }
-    this->NISServerLstAddr = srv;
-    this->NISServerLstDUID = duid;
     return true;
 }
 bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
-    this->NISDomainAddr = srv;
-    this->NISDomainDUID = duid;
     if (domain==this->NISDomain) {
         // NIS Domain has not changed
         Log(Info) << "NIS Domain " << timezone << " is already set on the interface "
@@ -475,13 +458,9 @@ bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Li
             this->NISPServerLst.append(addr);
         }
     }
-    this->NISPServerLstAddr = srv;
-    this->NISPServerLstDUID = duid;
     return true;
 }
 bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
-    this->NISPDomainAddr = srv;
-    this->NISPDomainDUID = duid;
     if (domain==this->NISPDomain) {
         // NIS+ Domain has not changed
         Log(Info) << "NIS+ Domain " << timezone << " is already set on the interface "
@@ -525,12 +504,11 @@ void TClntIfaceIface::addString(const char * filename, const char * str) {
 void TClntIfaceIface::delString(const char * filename, const char * str) {
     FILE *f, *fout;
     char buf[512];
-    char fileout[512];
-    snprintf(buf,511,"%s-old", filename);
     unsigned int len = (unsigned int)strlen(str);
     bool found = false;
+    string fileout(filename);
 
-    strncpy(fileout,filename,511);
+    fileout += "-old";
 
     if ( !(f=fopen(filename,"r"))) {
         Log(Debug) << "Unable to open file " << filename <<" while trying to delete " << str
@@ -538,7 +516,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
         return;
     }
 
-    if ( !(fout=fopen(fileout,"w"))) {
+    if ( !(fout=fopen(fileout.c_str(),"w"))) {
         Log(Debug) << "Unable to create/overwrite file " << fileout << " while trying to delete "
                    << str << " line." << LogEnd;
         fclose(f);
@@ -561,7 +539,7 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
     fclose(fout); // file with specified string cut out
 
     unlink(filename); // delete old version
-    rename(fileout,filename);
+    rename(fileout.c_str(), filename);
     return;
 }
 
@@ -694,7 +672,10 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
+	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
+          << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
+
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
@@ -721,11 +702,8 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << "    <!-- options -->" << endl;
 
     // --- option: DNS-SERVERS ---
-    if (!x.DNSServerLstAddr || !x.DNSServerLstDUID) {
+    if (!x.DNSServerLst.count()) {
         strum << "    <!-- <dns-servers /> -->" << endl;
-    } else {
-        strum << "    <dns-servers addr=\"" << *x.DNSServerLstAddr << "\" duid=\""
-              << x.DNSServerLstDUID->getPlain() << "\" />" << endl;
     }
     x.DNSServerLst.first();
     while (addr = x.DNSServerLst.get()) {
@@ -733,11 +711,8 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     }
 
     // --- option: DOMAINS ---
-    if (!x.DomainLstAddr || !x.DomainLstDUID) {
+    if (!x.DomainLst.count()) {
         strum << "    <!-- <domains /> -->" << endl;
-    } else {
-        strum << "    <domains addr=\"" << *x.DomainLstAddr << "\" duid=\""
-              << x.DomainLstDUID->getPlain() << "\" />" << endl;
     }
     x.DomainLst.first();
     while (str = x.DomainLst.get()) {
@@ -745,11 +720,8 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     }
 
     // --- option: NTP-SERVERS ---
-    if (!x.NTPServerLstAddr || !x.NTPServerLstDUID) {
+    if (!x.NTPServerLst.count()) {
         strum << "    <!-- <ntp-servers /> -->" << endl;
-    } else {
-        strum << "    <ntp-servers addr=\"" << *x.NTPServerLstAddr << "\" duid=\""
-              << x.NTPServerLstDUID->getPlain() << "\" />" << endl;
     }
     x.NTPServerLst.first();
     while (addr = x.NTPServerLst.get()) {
@@ -760,28 +732,21 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     if (!x.Timezone.length()) {
         strum << "    <!-- <timezone /> -->" << endl;
     } else {
-        strum << "    <timezone addr=\"" << x.TimezoneAddr->getPlain() << "\" duid=\""
-              << x.TimezoneDUID->getPlain() << "\">" << x.Timezone << "</timezone>" << endl;
+        strum << "    <timezone>" << x.Timezone << "</timezone>" << endl;
     }
 
     // --- option: SIP-SERVERS ---
-    if (!x.SIPServerLstAddr || !x.SIPServerLstDUID) {
+    if (!x.SIPServerLst.count()) {
         strum << "    <!-- <sip-servers /> -->" << endl;
-    } else {
-        strum << "    <sip-servers addr=\"" << *x.SIPServerLstAddr << "\" duid=\""
-              << x.SIPServerLstDUID->getPlain() << "\" />" << endl;
-    }
+    } 
     x.SIPServerLst.first();
     while (addr = x.SIPServerLst.get()) {
         strum << "      <sip-server>" << *addr << "</sip-server>" << endl;
     }
 
     // --- option: SIP-DOMAINS ---
-    if (!x.SIPDomainLstAddr || !x.SIPDomainLstDUID) {
+    if (!x.SIPDomainLst.count()) {
         strum << "    <!-- <sip-domains /> -->" << endl;
-    } else {
-        strum << "    <sip-domains addr=\"" << *x.SIPDomainLstAddr << "\" duid=\""
-              << x.SIPDomainLstDUID->getPlain() << "\" />" << endl;
     }
     x.SIPDomainLst.first();
     while (str = x.SIPDomainLst.get()) {
@@ -789,11 +754,8 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     }
 
     // --- option: NIS-SERVERS ---
-    if (!x.NISServerLstAddr || !x.NISServerLstDUID) {
+    if (!x.NISServerLst.count()) {
         strum << "    <!-- <nis-servers /> -->" << endl;
-    } else {
-        strum << "    <nis-servers addr=\"" << *x.NISServerLstAddr << "\" duid=\""
-              << x.NISServerLstDUID->getPlain() << "\" />" << endl;
     }
     x.NISServerLst.first();
     while (addr = x.NISServerLst.get()) {
@@ -804,16 +766,12 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     if (!x.NISDomain.length()) {
         strum << "    <!-- <nis-domain /> -->" << endl;
     } else {
-        strum << "    <nis-domain add=\"" << x.NISDomainAddr->getPlain() << "\" duid=\""
-              << x.NISDomainDUID->getPlain() << "\" >" << x.NISDomain << "</nis-domain>" << endl;
+        strum << "    <nis-domain>" << x.NISDomain << "</nis-domain>" << endl;
     }
 
     // --- option: NIS+-SERVERS ---
-    if (!x.NISPServerLstAddr || !x.NISPServerLstDUID) {
+    if (!x.NISPServerLst.count()) {
         strum << "    <!-- <nisplus-servers /> -->" << endl;
-    } else {
-        strum << "    <nisplus-servers addr=\"" << *x.NISPServerLstAddr << "\" duid=\""
-              << x.NISPServerLstDUID->getPlain() << "\" />" << endl;
     }
     x.NISPServerLst.first();
     while (addr = x.NISPServerLst.get()) {
@@ -824,8 +782,7 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     if (!x.NISPDomain.length()) {
         strum << "    <!-- <nisplus-domain /> -->" << endl;
     } else {
-        strum << "    <nisplus-domain add=\"" << x.NISPDomainAddr->getPlain() << "\" duid=\""
-              << x.NISPDomainDUID->getPlain() << "\">" << x.NISPDomain << "</nisplus-domain>" << endl;
+        strum << "    <nisplus-domain>" << x.NISPDomain << "</nisplus-domain>" << endl;
     }
 
     // --- option: LIFETIME ---

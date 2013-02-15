@@ -41,7 +41,8 @@ SrvCfgMgr_tests_LDADD += $(top_builddir)/Messages/libMessages.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/SrvOptions/libSrvOptions.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/Options/libOptions.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
-SrvCfgMgr_tests_LDADD += $(top_builddir)/poslib/libposlib.a
+SrvCfgMgr_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
+SrvCfgMgr_tests_LDADD += $(top_builddir)/nettle/libNettle.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 

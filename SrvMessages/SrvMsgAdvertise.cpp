@@ -34,8 +34,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
     copyRemoteID( (Ptr*)solicit );
 
     if (!handleSolicitOptions(solicit)) {
-	IsDone = true;
-	return;
+        IsDone = true;
+        return;
     }
     IsDone = false;
 }

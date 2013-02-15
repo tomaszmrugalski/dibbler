@@ -139,8 +139,9 @@ FILE *try_fopen_r(const char *file);
  *
  * This function tests whether the given filename is a directory, and if it
  * isn't, it will try opening it and return a C-style FILE* pointer.
- * \param file file name
- * \return FILE* pointer, or \p NULL on error
+ * @param file file name
+ * @param mode access mode
+ * @return FILE* pointer, or \p NULL on error
  */
 FILE *try_fopen(const char *file, const char *mode);
 

@@ -1,0 +1,6 @@
+dhcp-and-ddns.pcap - downloaded from wireshark.org sample library
+  DHCPv4 with DDNS using TSIG
+
+dns.cap -various DNS queries
+
+

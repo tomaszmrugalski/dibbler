@@ -118,8 +118,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     ClntAddr = queryMsg->getAddr();
     ClntDuid  = queryMsg->getClientDUID();
 
-    /// @todo: SOLICIT with RAPID COMMIT should set this to true
-    bool quiet = false;
+    // true for advertise, false for everything else
+    bool quiet = (parent->getType()==ADVERTISE_MSG);
 
     // --- LEASE ASSIGN STEP 3: check if client already has binding
     if (renew(queryOpt, false)) {
@@ -212,14 +212,15 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
         SPtr<TSrvCfgAddrClass> pool = SrvCfgMgr().getClassByAddr(Iface, candidate);
         if (pool) {
 	    Log(Info) << "Cache: Cached address " << *candidate << " found. Welcome back." << LogEnd;
-	    if (SrvAddrMgr().addrIsFree(candidate)) {
+
+	    if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate)) {
                 if (assignAddr(candidate, pool->getPref(), pool->getValid(), quiet))
                     return true;
                 // WTF? Address is free, buy we can't assign it?
-                Log(Error) << "Failed to assign cached address that is empty. Strange." << LogEnd;
+                Log(Error) << "Failed to assign cached address that seems unused. Strange." << LogEnd;
 		return false;
             }
-	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used." << LogEnd;
+	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used or reserved." << LogEnd;
 	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
             return false;
 	} else {
@@ -231,7 +232,6 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
 
     return false;
 }
-
 
 /// @brief Tries to assign fixed (reserved) lease.
 ///
@@ -662,7 +662,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
 
 bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     // worst case: address does not belong to supported class
-    // or specified hint is invalid
+    // or specified hint is invalid (or there was no hint at all)
     SPtr<TIPv6Addr> candidate;
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
     if (!iface) {
@@ -672,19 +672,30 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     SPtr<TSrvCfgAddrClass> pool = iface->getRandomClass(ClntDuid, ClntAddr);
 
     if (!pool) {
-	Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
-	return 0;
+        Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
+        return 0;
     }
 
     if (pool->clntSupported(ClntDuid, ClntAddr, queryMsg) &&
         pool->getAssignedCount() < pool->getClassMaxLease() ) {
 
-        do {
-            candidate = pool->getRandomAddr();
-        } while (!SrvAddrMgr().addrIsFree(candidate));
-        return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
-    }
+        int safety = 0;
 
+        while (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            candidate = pool->getRandomAddr();
+
+            if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate))
+                break;
+
+            safety++;
+        }
+        if (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
+        } else {
+            Log(Error) << "Unable to randomly choose address after " << SERVER_MAX_IA_RANDOM_TRIES << " tries." << LogEnd;
+            return false;
+        }
+    }
     return false;
 }
 

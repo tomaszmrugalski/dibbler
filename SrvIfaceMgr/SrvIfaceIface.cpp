@@ -100,7 +100,7 @@ std::ostream & operator <<(std::ostream & strum, TSrvIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"" << x.Flags << "\">" << endl;
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
 
     if (x.Relay_) {
         strum << "    <UnderlayingRelay name=\"" << x.UnderRelay_->getName() << "\" ifindex=\""

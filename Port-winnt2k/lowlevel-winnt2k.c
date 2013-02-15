@@ -568,8 +568,10 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
         return NULL;
 
     retval = malloc(st.st_size);
-    if (!retval)
+    if (!retval) {
+        close(fd);
         return NULL;
+    }
 
     while (offset < st.st_size) {
         ret = read(fd, retval + offset, st.st_size - offset);

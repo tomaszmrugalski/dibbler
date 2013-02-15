@@ -79,7 +79,7 @@ class domainname {
    * \param text Human-readable domain name
    * \param origin Origin to which relative domain names are relative
    */
-  domainname(const char *text, const domainname origin);
+  domainname(const char *text, const domainname& origin);
 
   /*!
    * \brief constructor from human-readable text
@@ -114,7 +114,7 @@ class domainname {
    * contructor takes a boolean value as well to prevent it from being
    * ambiguous. The value of the boolean is silently ignored.
    * \param is_binary Ignored
-   * \param  The binary domain name
+   * \param dom The binary domain name
    */
   domainname(bool is_binary, const unsigned char* dom);
 
@@ -229,7 +229,7 @@ class domainname {
    * \brief length of binary representation
    *
 
-   * Returns the length, in bytes, also counting the terminating \r \0
+   * Returns the length, in bytes, also counting the terminating \\r \\0
    * character, of the binary representation of the domain name.
    * \return Length of binary representation
    */
@@ -270,7 +270,7 @@ class domainname {
    *
    * Returns a label in the domain name. This is just plain human-readable
    * text. It does not contain dots.
-   * \param Label index (0 <= ix < nlabels())
+   * \param ix Label index (0 <= ix < nlabels())
    * \return The label at the specified index
    * \sa nlabels()
    */
@@ -304,11 +304,21 @@ class domainname {
    * origin. If the domain is not a child of the given root, the complete,
    * absolte domain name is returned. If we are the domain name queried
    * itself, an "@" is returned.
-   * \param Domain name this domain is relative to
+   * \param root Domain name this domain is relative to
    * \return Relative string representation
    * \sa tostring()
    */
   stl_string torelstring(const domainname &root) const;
+  
+  /*!
+   * \brief RFC 2345 canonical form
+   *
+   * Returns the RFC 2535 canonical form of the domain name. The canonical form
+   * is a unique binary representation of a domain name that is used for
+   * checksummming domain names.
+   * \return The Canonical form of the RR
+   */
+  stl_string canonical () const;
 
   /*!
    * \brief check label match count
@@ -458,7 +468,7 @@ bool domcmp(_cdomain dom1, _cdomain dom2);
  * \brief domain name concatenation
  *
  * Appends \p src to \p target. Since it does not re-allocate memory, Make sure
- * that \p target can hold at least #DOM_MAX bytes.
+ * that \p target can hold at least DOM_MAX bytes.
  * \param target Target
  * \param src Source
  */
@@ -468,7 +478,7 @@ void domcat(_domain target, _cdomain src);
  * \brief static copy of binary domain name
  *
  * Makes a static copy of a domain name. Make sure that \p res can hold at least
- * #DOM_MAX bytes.
+ * DOM_MAX bytes.
  * \param res Target
  * \param src Source
  * \sa domdup()
@@ -480,7 +490,7 @@ void domcpy(_domain res, _cdomain src);
  *
  * Creates a domain name containing just one label: the string argument given.
  * If a length is given, only the first few characters of the string are used.
- * Make sure that \p dom can hold at least #DOM_MAX bytes.
+ * Make sure that \p dom can hold at least DOM_MAX bytes.
  * \param dom Result
  * \param label String label
  * \param len If given, length of string label (default: strlen(label)).
@@ -512,7 +522,7 @@ int dom_nlabels(_cdomain dom);
  *
  * Returns a label of the domain name in human-readable form.
  * \param dom The domain name
- * \param label Label index (0 <= label < #dom_nlabels(dom))
+ * \param label Label index (0 <= label < dom_nlabels(dom))
  * \return The label
  * \sa dom_nlabels()
  */
@@ -523,7 +533,7 @@ stl_string dom_label(_cdomain dom, int label);
  *
  * Returns a label of the domain name as a pointer to the position in the domain.
  * \param dom The domain name
- * \param label Label index (0 < label < #dom_nlabels(dom))
+ * \param label Label index (0 < label < dom_nlabels(dom))
  * \return The label
  * \sa dom_nlabels()
  */
@@ -535,7 +545,8 @@ _domain dom_plabel(_cdomain dom, int label);
  * Returns the number of labels the two domain names have in common at their
  * ends; for example this returns 2 for \c www.acdam.net and
  * \c www.foo.acdam.net .
- * \param dom The domain name to check with
+ * \param dom1 The domain name to check with
+ * \param dom2 The domain name to check against
  * \return Number of common labels
  * \sa nlabels()
  */

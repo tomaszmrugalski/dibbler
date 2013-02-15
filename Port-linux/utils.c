@@ -532,7 +532,7 @@ int cmdlineno;
 /* Like glibc getline but handle continuation lines and comments */
 size_t getcmdline(char **linep, size_t *lenp, FILE *in)
 {
-	size_t cc;
+	ssize_t cc;
 	char *cp;
 		
 	if ((cc = getline(linep, lenp, in)) < 0)

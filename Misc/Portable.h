@@ -13,8 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-/* #define DIBBLER_VERSION "0.8.0-git (" __DATE__ " " __TIME__ ")" */
-#define DIBBLER_VERSION "0.8.2"
+#define DIBBLER_VERSION "0.8.3"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -31,6 +30,13 @@
 #ifdef WIN32
 #define strcasecmp strcmpi
 
+#define snprintf _snprintf
+#endif
+
+#if defined (BSD) || defined(SUNOS)
+#include <stdint.h>
+#endif
+
 #ifndef uint8_t
 #define uint8_t  unsigned char
 #endif
@@ -43,15 +49,10 @@
 #define uint32_t unsigned int
 #endif
 
+#ifdef WIN32
 #ifndef uint64_t
 #define uint64_t unsigned long long int
 #endif
-
-#define snprintf _snprintf
-#endif
-
-#ifdef BSD
-#include <stdint.h>
 #endif
 
 /* this should look like this: 
@@ -158,17 +159,14 @@ struct link_state_notify_t
 #define NULLFILE           "nul"
 #endif
 
-#ifdef LINUX
+#if defined(LINUX) || defined(BSD) || defined(SUNOS)
 #define WORKDIR            "/var/lib/dibbler"
 #define DEFAULT_SCRIPT     ""
 #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define RESOLVCONF         "/sbin/resolvconf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
-#define TIMEZONE_FILE      "/etc/localtime"
-#define TIMEZONES_DIR      "/usr/share/zoneinfo"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
 #define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
@@ -177,6 +175,7 @@ struct link_state_notify_t
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define NULLFILE           "/dev/null"
+
 #define SRVGEOLOCINFOCFG_FILE	"/etc/dibbler/server-geoloc.conf"
 #define CLNTGEOLOCINFOCFG_FILE 	"/etc/dibbler/client-geoloc.conf"
 #define JSONRESPONSE_FILE  		"/var/lib/dibbler/geoloc.json"
@@ -185,22 +184,12 @@ struct link_state_notify_t
 #define GEOLOCINFOLOG_FILE 		"/var/lib/dibbler/curl-json.log"
 #endif
 
-#ifdef BSD
-#define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPT     ""
-#define CLNTCONF_FILE      "/etc/dibbler/client.conf"
-#define SRVCONF_FILE       "/etc/dibbler/server.conf"
-#define RELCONF_FILE       "/etc/dibbler/relay.conf"
-#define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define NTPCONF_FILE       "/etc/ntp.conf"
-#define RADVD_FILE         "/etc/dibbler/radvd.conf"
-#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
-#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
-#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
-#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
-#define NULLFILE           "/dev/null"
+/* those defines were initially used on Linux only, but hopefully 
+   they will work on other Posix systems as well */
+#define RESOLVCONF         "/sbin/resolvconf"
+#define TIMEZONE_FILE      "/etc/localtime"
+#define TIMEZONES_DIR      "/usr/share/zoneinfo"
+
 #endif
 
 /* --- options --- */
@@ -225,28 +214,15 @@ struct link_state_notify_t
 /* *** interface flags ************************************************** */
 /* ********************************************************************** */
 /* those flags are used to parse flags in the structure
-   returned by if_list_get(). They are highly system specific. */
-#define LOGLEVEL          0
+   returned by if_list_get(). They are highly system specific.
+   Posix systems use values imported from headers */
 
 #ifdef WIN32
-#define IF_RUNNING        0x1
-#define IF_UP             0x1
-#define IF_MULTICAST      0x4
-#define IF_LOOPBACK       0x8
-#endif
-
-#ifdef LINUX
-#define IF_UP		      0x1
-#define IF_LOOPBACK	      0x8
-#define IF_RUNNING	      0x40
-#define IF_MULTICAST	      0x1000
-#endif
-
-#ifdef BSD
-#define IF_UP        0x1
-#define IF_LOOPBACK  0x8
-#define IF_RUNNING   0x40
-#define IF_MULTICAST 0x8000
+#define IFF_RUNNING        IFF_UP
+// those defines are in ws2ipdef.h
+//#define IFF_UP             0x1
+//#define IFF_MULTICAST      0x4
+//#define IFF_LOOPBACK       0x8
 #endif
 
 /* ********************************************************************** */

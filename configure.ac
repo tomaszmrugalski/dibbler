@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.2], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [0.8.3], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
@@ -206,27 +206,35 @@ dnl ---------------------------------------------
     Linux)
       ARCH="LINUX"
       PORT_SUBDIR="Port-linux"
-      PORT_CFLAGS=
+      PORT_CFLAGS=""
       PORT_LDFLAGS="-lpthread"
-      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k"
+      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=
+      PORT_CFLAGS=""
       PORT_LDFLAGS=
-      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
     OpenBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=-DOPENBSD
+      PORT_CFLAGS="-DOPENBSD"
       PORT_LDFLAGS=
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
+      ;;
+    SunOS)
+      ARCH="SUNOS"
+      PORT_SUBDIR="Port-sun"
+      PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__"
+      PORT_LDFLAGS="-lsocket -lnsl"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
       ;;
     MINGW32*)
       ARCH="WIN2K"
       PORT_LDFLAGS = "-lws2_32"
-      PORT_CFLAGS  = "-DMINGWBUILD"
+      PORT_CFLAGS  = "-std=c99 -DMINGWBUILD"
       PORT_SUBDIR  = "Port-win2k"
       EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
@@ -236,7 +244,7 @@ dnl ---------------------------------------------
   esac
   AC_MSG_RESULT($PORT_SUBDIR)
 
-CFLAGS="${CFLAGS} -std=c99 ${PORT_CFLAGS}"
+CFLAGS="${CFLAGS} ${PORT_CFLAGS}"
 LDFLAGS="${LDFLAGS} ${PORT_LDFLAGS}"
 CPPFLAGS="${CPPFLAGS} -D${ARCH}"
 
@@ -401,10 +409,15 @@ AC_ARG_WITH(gtest,
 
 if test "$gtest_path" != "no"
 then
-	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    if test -x "${gtest_path}/scripts/gtest-config"
+    then
+        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+        GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    else
+        AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
+    fi
 fi
 
 AC_SUBST(GTEST_INCLUDES)
@@ -479,7 +492,54 @@ AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
 
-AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg CfgMgr/tests/Makefile tests/Makefile tests/Srv/Makefile)
+AC_OUTPUT(
+Makefile
+AddrMgr/Makefile
+CfgMgr/Makefile
+ClntAddrMgr/Makefile
+ClntCfgMgr/Makefile
+ClntIfaceMgr/Makefile
+ClntMessages/Makefile
+ClntOptions/Makefile
+ClntTransMgr/Makefile
+IfaceMgr/Makefile
+Messages/Makefile
+Misc/Makefile
+Options/Makefile
+RelCfgMgr/Makefile
+RelIfaceMgr/Makefile
+RelMessages/Makefile
+RelOptions/Makefile
+RelTransMgr/Makefile
+Requestor/Makefile
+SrvAddrMgr/Makefile
+SrvCfgMgr/Makefile
+SrvIfaceMgr/Makefile
+SrvMessages/Makefile
+SrvOptions/Makefile
+SrvTransMgr/Makefile
+poslib/Makefile
+nettle/Makefile
+$PORT_SUBDIR/Makefile
+Port-linux/Makefile
+Port-bsd/Makefile
+Port-sun/Makefile
+Port-win32/Makefile
+Port-winnt2k/Makefile
+doc/Makefile
+Misc/Portable.h
+doc/doxygen.cfg
+doc/version.tex
+AddrMgr/tests/Makefile
+IfaceMgr/tests/Makefile
+Options/tests/Makefile
+SrvCfgMgr/tests/Makefile
+CfgMgr/tests/Makefile
+poslib/tests/Makefile
+Misc/tests/Makefile
+tests/Makefile
+tests/Srv/Makefile
+tests/utils/Makefile)
 
 dnl ----------------------------------------
 dnl Print out configured parameters

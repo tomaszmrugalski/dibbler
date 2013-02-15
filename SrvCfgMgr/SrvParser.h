@@ -16,7 +16,9 @@
 
 #include <iostream>
 #include <string>
-#include <malloc.h>
+#include <stdint.h>
+#include <sstream>
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -28,26 +30,24 @@
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
 #include "OptString.h"
+#include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
+#include "SrvOptAddrParams.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
+#include "SrvCfgClientClass.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "SrvCfgOptions.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-#include "OptVendorSpecInfo.h"
-#include "OptRtPrefix.h"
-#include "SrvOptAddrParams.h"
-#include "Portable.h"
-#include "SrvCfgClientClass.h"
+#include "Key.h"
 #include "Node.h"
 #include "NodeConstant.h"
 #include "NodeClientSpecific.h"
 #include "NodeOperator.h"
-#include "CfgMgr.h"
-#include <sstream>
 
 using namespace std;
 
@@ -64,8 +64,9 @@ List(std::string) PresentStringLst;             /* string list */               
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-List(THostRange) PresentRangeLst;                                                 \
-List(THostRange) PDLst;                                                           \
+SPtr<TSIGKey> CurrentKey;                                                            \
+List(THostRange) PresentRangeLst;                                                    \
+List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -94,7 +95,7 @@ virtual ~SrvParser();
                      yychar = 0;                                        \
                      PDPrefix = 0;
 
-#line 93 "SrvParser.y"
+#line 94 "SrvParser.y"
 typedef union
 {
     unsigned int ival;
@@ -340,42 +341,46 @@ typedef
 #define	AUTH_METHOD_	319
 #define	AUTH_LIFETIME_	320
 #define	AUTH_KEY_LEN_	321
-#define	DIGEST_NONE_	322
-#define	DIGEST_PLAIN_	323
-#define	DIGEST_HMAC_MD5_	324
-#define	DIGEST_HMAC_SHA1_	325
-#define	DIGEST_HMAC_SHA224_	326
-#define	DIGEST_HMAC_SHA256_	327
-#define	DIGEST_HMAC_SHA384_	328
-#define	DIGEST_HMAC_SHA512_	329
-#define	ACCEPT_LEASEQUERY_	330
-#define	BULKLQ_ACCEPT_	331
-#define	BULKLQ_TCPPORT_	332
-#define	BULKLQ_MAX_CONNS_	333
-#define	BULKLQ_TIMEOUT_	334
-#define	CLIENT_CLASS_	335
-#define	MATCH_IF_	336
-#define	EQ_	337
-#define	AND_	338
-#define	OR_	339
-#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	340
-#define	CLIENT_VENDOR_SPEC_DATA_	341
-#define	CLIENT_VENDOR_CLASS_EN_	342
-#define	CLIENT_VENDOR_CLASS_DATA_	343
-#define	ALLOW_	344
-#define	DENY_	345
-#define	SUBSTRING_	346
-#define	STRING_KEYWORD_	347
-#define	ADDRESS_LIST_	348
-#define	CONTAIN_	349
-#define	NEXT_HOP_	350
-#define	ROUTE_	351
-#define	INFINITE_	352
-#define	STRING_	353
-#define	HEXNUMBER_	354
-#define	INTNUMBER_	355
-#define	IPV6ADDR_	356
-#define	DUID_	357
+#define	KEY_	322
+#define	SECRET_	323
+#define	ALGORITHM_	324
+#define	FUDGE_	325
+#define	DIGEST_NONE_	326
+#define	DIGEST_PLAIN_	327
+#define	DIGEST_HMAC_MD5_	328
+#define	DIGEST_HMAC_SHA1_	329
+#define	DIGEST_HMAC_SHA224_	330
+#define	DIGEST_HMAC_SHA256_	331
+#define	DIGEST_HMAC_SHA384_	332
+#define	DIGEST_HMAC_SHA512_	333
+#define	ACCEPT_LEASEQUERY_	334
+#define	BULKLQ_ACCEPT_	335
+#define	BULKLQ_TCPPORT_	336
+#define	BULKLQ_MAX_CONNS_	337
+#define	BULKLQ_TIMEOUT_	338
+#define	CLIENT_CLASS_	339
+#define	MATCH_IF_	340
+#define	EQ_	341
+#define	AND_	342
+#define	OR_	343
+#define	CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_	344
+#define	CLIENT_VENDOR_SPEC_DATA_	345
+#define	CLIENT_VENDOR_CLASS_EN_	346
+#define	CLIENT_VENDOR_CLASS_DATA_	347
+#define	ALLOW_	348
+#define	DENY_	349
+#define	SUBSTRING_	350
+#define	STRING_KEYWORD_	351
+#define	ADDRESS_LIST_	352
+#define	CONTAIN_	353
+#define	NEXT_HOP_	354
+#define	ROUTE_	355
+#define	INFINITE_	356
+#define	STRING_	357
+#define	HEXNUMBER_	358
+#define	INTNUMBER_	359
+#define	IPV6ADDR_	360
+#define	DUID_	361
 
 
 #line 169 "../bison++/bison.h"
@@ -488,6 +493,10 @@ static const int AFTR_;
 static const int AUTH_METHOD_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
+static const int KEY_;
+static const int SECRET_;
+static const int ALGORITHM_;
+static const int FUDGE_;
 static const int DIGEST_NONE_;
 static const int DIGEST_PLAIN_;
 static const int DIGEST_HMAC_MD5_;
@@ -596,42 +605,46 @@ static const int DUID_;
 	,AUTH_METHOD_=319
 	,AUTH_LIFETIME_=320
 	,AUTH_KEY_LEN_=321
-	,DIGEST_NONE_=322
-	,DIGEST_PLAIN_=323
-	,DIGEST_HMAC_MD5_=324
-	,DIGEST_HMAC_SHA1_=325
-	,DIGEST_HMAC_SHA224_=326
-	,DIGEST_HMAC_SHA256_=327
-	,DIGEST_HMAC_SHA384_=328
-	,DIGEST_HMAC_SHA512_=329
-	,ACCEPT_LEASEQUERY_=330
-	,BULKLQ_ACCEPT_=331
-	,BULKLQ_TCPPORT_=332
-	,BULKLQ_MAX_CONNS_=333
-	,BULKLQ_TIMEOUT_=334
-	,CLIENT_CLASS_=335
-	,MATCH_IF_=336
-	,EQ_=337
-	,AND_=338
-	,OR_=339
-	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=340
-	,CLIENT_VENDOR_SPEC_DATA_=341
-	,CLIENT_VENDOR_CLASS_EN_=342
-	,CLIENT_VENDOR_CLASS_DATA_=343
-	,ALLOW_=344
-	,DENY_=345
-	,SUBSTRING_=346
-	,STRING_KEYWORD_=347
-	,ADDRESS_LIST_=348
-	,CONTAIN_=349
-	,NEXT_HOP_=350
-	,ROUTE_=351
-	,INFINITE_=352
-	,STRING_=353
-	,HEXNUMBER_=354
-	,INTNUMBER_=355
-	,IPV6ADDR_=356
-	,DUID_=357
+	,KEY_=322
+	,SECRET_=323
+	,ALGORITHM_=324
+	,FUDGE_=325
+	,DIGEST_NONE_=326
+	,DIGEST_PLAIN_=327
+	,DIGEST_HMAC_MD5_=328
+	,DIGEST_HMAC_SHA1_=329
+	,DIGEST_HMAC_SHA224_=330
+	,DIGEST_HMAC_SHA256_=331
+	,DIGEST_HMAC_SHA384_=332
+	,DIGEST_HMAC_SHA512_=333
+	,ACCEPT_LEASEQUERY_=334
+	,BULKLQ_ACCEPT_=335
+	,BULKLQ_TCPPORT_=336
+	,BULKLQ_MAX_CONNS_=337
+	,BULKLQ_TIMEOUT_=338
+	,CLIENT_CLASS_=339
+	,MATCH_IF_=340
+	,EQ_=341
+	,AND_=342
+	,OR_=343
+	,CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_=344
+	,CLIENT_VENDOR_SPEC_DATA_=345
+	,CLIENT_VENDOR_CLASS_EN_=346
+	,CLIENT_VENDOR_CLASS_DATA_=347
+	,ALLOW_=348
+	,DENY_=349
+	,SUBSTRING_=350
+	,STRING_KEYWORD_=351
+	,ADDRESS_LIST_=352
+	,CONTAIN_=353
+	,NEXT_HOP_=354
+	,ROUTE_=355
+	,INFINITE_=356
+	,STRING_=357
+	,HEXNUMBER_=358
+	,INTNUMBER_=359
+	,IPV6ADDR_=360
+	,DUID_=361
 
 
 #line 215 "../bison++/bison.h"

@@ -19,8 +19,8 @@
 
 class TRelIfaceMgr: public TIfaceMgr {
  public:
-   static void instanceCreate(const std::string xmlFile);
-   static TRelIfaceMgr& instance();
+    static void instanceCreate(const std::string& xmlFile);
+    static TRelIfaceMgr& instance();
     ~TRelIfaceMgr();
     friend std::ostream & operator <<(std::ostream & strum, TRelIfaceMgr &x);
 

@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelParsGlobalOpt.h,v 1.6 2008-08-29 00:07:32 thomson Exp $
- *
  */
 
 #ifndef TRELPARSGLOBALOPT_H_
@@ -46,11 +44,11 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     SPtr<TRelOptEcho> getEcho();
 
 private:
-    std::string WorkDir;
-    bool GuessMode;
+    std::string WorkDir_;
+    bool GuessMode_;
 
-    ERelIfaceIdOrder InterfaceIDOrder;
-    SPtr<TOptVendorData> RemoteID;
-    SPtr<TRelOptEcho>     Echo;
+    ERelIfaceIdOrder InterfaceIDOrder_;
+    SPtr<TOptVendorData> RemoteID_;
+    SPtr<TRelOptEcho> Echo_;
 };
 #endif

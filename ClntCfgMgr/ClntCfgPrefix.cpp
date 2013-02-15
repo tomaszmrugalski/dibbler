@@ -49,15 +49,15 @@ void TClntCfgPrefix::setOptions(SPtr<TClntParsGlobalOpt> opt)
 
 TClntCfgPrefix::TClntCfgPrefix() 
 {
-    this->Valid=ULONG_MAX;
-    this->Pref=ULONG_MAX;
+    this->Valid=UINT_MAX;
+    this->Pref=UINT_MAX;
     Prefix = new TIPv6Addr();
     PrefixLength = 0;
 }
 
 TClntCfgPrefix::TClntCfgPrefix(SPtr<TIPv6Addr> prefix, 
                                unsigned char len)
-    :Prefix(prefix), Valid(ULONG_MAX), Pref(ULONG_MAX), PrefixLength(len)
+    :Prefix(prefix), Valid(UINT_MAX), Pref(UINT_MAX), PrefixLength(len)
 {
 }
 

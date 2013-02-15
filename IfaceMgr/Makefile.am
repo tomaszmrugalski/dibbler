@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
 noinst_LIBRARIES = libIfaceMgr.a
 
 libIfaceMgr_a_CPPFLAGS = -I$(top_srcdir)/poslib/poslib -I$(top_srcdir)/poslib -I$(top_srcdir)/Misc -I$(top_srcdir)/Messages -I$(top_srcdir)/Options

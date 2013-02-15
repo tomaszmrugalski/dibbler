@@ -9,6 +9,7 @@
 *
 */
 
+#include <sstream>
 #include <string.h>
 #include "Portable.h"
 #include "OptFQDN.h"
@@ -155,6 +156,19 @@ char * TOptFQDN::storeSelf(char *buffer) {
     *buffer = 0;
 
     return buffer;
+}
+
+std::string TOptFQDN::getPlain() {
+    stringstream tmp;
+
+    tmp << fqdn_;
+    if (flag_N_)
+	tmp << " N";
+    if (flag_O_)
+	tmp << " O";
+    if (flag_S_)
+	tmp << " S";
+    return tmp.str();
 }
 
 bool TOptFQDN::isValid() const {
