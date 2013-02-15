@@ -154,6 +154,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
     int msgtype;
+    int isBulk;
 
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
@@ -188,7 +189,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         case INFORMATION_REQUEST_MSG:
         case LEASEQUERY_MSG:
         {
-            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+            ptr = decodeMsg(ptrIface, peer, buf, bufsize,false);
             if (!ptr->validateReplayDetection() ||
                 !ptr->validateAuthInfo(buf, bufsize)) {
                 Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
@@ -215,9 +216,44 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         case LEASEQUERY_REPLY_MSG:
             Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
             return 0; //NULL;
+		case LEASEQUERY_DONE_MSG:
+            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+            return 0;
+        case LEASEQUERY_DATA_MSG:
+            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+            return 0;
         default:
-            Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
-            return 0; //NULL
+            isBulk=buf[3];
+            Log(Debug) << "Checking if received data is Bulk session" << LogEnd;
+            switch (isBulk) {
+
+            case LEASEQUERY_MSG:
+            {
+                Log (Debug) << "Bulk leasequery massage received with code:"<<isBulk << LogEnd;
+                ptr = decodeMsg(ptrIface, peer, buf, bufsize,true);
+                if (!ptr->validateReplayDetection() ||
+                    !ptr->validateAuthInfo(buf, bufsize)) {
+                    Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                    return 0;
+                }
+                return ptr;
+
+            }
+            case LEASEQUERY_REPLY_MSG:
+               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+               return 0; //NULL;
+            case LEASEQUERY_DONE_MSG:
+               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+               return 0;
+            case LEASEQUERY_DATA_MSG:
+               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
+               return 0;
+
+            default:
+                Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
+                return 0; //NULL
+            }
+
         }
     } else {
         return 0; //NULL
@@ -437,7 +473,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
         bufsize = relay_bufsize;
     }
 
-    SPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
+    SPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize,false);
     for (int i=0; i<relays; i++) {
         msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i], echoListTbl[i]);
     }
@@ -455,7 +491,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 
 SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
                                              SPtr<TIPv6Addr> peer,
-                                             char * buf, int bufsize) {
+                                             char * buf, int bufsize, bool isTcp) {
     int ifaceid = ptrIface->getID();
     if (bufsize<4)
         return 0;
@@ -476,8 +512,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
               return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
     case INFORMATION_REQUEST_MSG:
               return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
-    case LEASEQUERY_MSG:
-              return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+    case LEASEQUERY_MSG:  
+              return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
         return 0; //NULL;;

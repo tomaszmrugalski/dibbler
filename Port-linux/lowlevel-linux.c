@@ -765,7 +765,7 @@ void print_trace(void)
 
 
 
-extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber){
+extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
 
     int error;
     int on = 1;
@@ -777,6 +777,7 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int
     struct sockaddr_in6 bindme;
     sprintf(port_char,"%d",port);
     int fd_new;
+    int connectionNumber =1;
 
 #ifdef LOWLEVEL_DEBUG
     printf("### iface: %s(id=%d), addr=%s, port=%d", ifacename,ifaceid, addr, port);
@@ -907,13 +908,11 @@ extern int listen_tcp (int fd,int connectionNumber ) {
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
     int iResult;
-    if (!(iResult = recv (fd, recvBuffer, bufLength, flags))) {
-        return -1;
-    } else if(iResult < 0)  {
-        return 0;
-    } else  {
+    if ((iResult = recv (fd, recvBuffer, bufLength, flags)) == -1) {
+        sprintf (Message,"Cannot receive data, receive function socket error" );
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
         return iResult;
-       // printf("recv failed: %d\n", WSAGetLastError());
     }
 }
 

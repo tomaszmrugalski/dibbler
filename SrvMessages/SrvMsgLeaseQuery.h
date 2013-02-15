@@ -23,9 +23,10 @@ class TSrvMsgLeaseQuery : public TSrvMsg
 
     void doDuties();
     bool check();
+    unsigned int getBulkSize(char * buf);
     ~TSrvMsgLeaseQuery();
     std::string getName() const;
-    bool isTCP() { return tcp; };
+    bool isTCP();
   private:
     bool tcp;
 };

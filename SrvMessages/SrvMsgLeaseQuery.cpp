@@ -36,10 +36,21 @@ bool TSrvMsgLeaseQuery::check() {
     return true;
 }
 
+unsigned int TSrvMsgLeaseQuery::getBulkSize(char *buf)
+{
+    unsigned int bulkMsgSize;
+    bulkMsgSize = readUint16(buf);
+    return bulkMsgSize;
+}
+
 TSrvMsgLeaseQuery::~TSrvMsgLeaseQuery() {
 
 }
 
 std::string TSrvMsgLeaseQuery::getName() const {
     return "LEASE-QUERY";
+}
+bool TSrvMsgLeaseQuery::isTCP()
+{
+    return tcp;
 }

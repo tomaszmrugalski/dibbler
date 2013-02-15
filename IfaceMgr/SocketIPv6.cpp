@@ -154,7 +154,7 @@ int TIfaceSocket::createSocket_TCP(char *iface, int ifaceid, SPtr<TIPv6Addr> add
     int connectionNumber = BULKLQ_MAX_CONNS;
 
     // create socket
-    sock = sock_add_tcp(this->Iface, this->IfaceID, addr->getPlain(),this->Port, connectionNumber);
+    sock = sock_add_tcp(this->Iface, this->IfaceID, addr->getPlain(),this->Port);
     if (sock<0) {
         printError(sock, iface, ifaceid, addr, port);
         this->Status = STATE_FAILED;
@@ -229,6 +229,7 @@ int TIfaceSocket::terminate_tcp(int how)
     int fd;
     fd = this->getFD();
     terminate_tcp_connection(fd,how);
+    return 1;
 }
 
 /**

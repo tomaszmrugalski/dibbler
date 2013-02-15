@@ -85,7 +85,7 @@ void TDHCPServer::run()
 	}
 #endif
 	
-	SPtr<TSrvMsg> msg=SrvIfaceMgr().select(timeout);
+    SPtr<TSrvMsg> msg = SrvIfaceMgr().select(timeout);
 	if (!msg) 
 	    continue;
 	silent = false;
@@ -94,9 +94,9 @@ void TDHCPServer::run()
 	ptrIface = SrvIfaceMgr().getIfaceByID(iface);
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
-		    << dec << ", " << msg->countOption() << " opts:";
+            << dec << ", " << msg->countOption() << " opts:";
 	SPtr<TOpt> ptrOpt;
-	msg->firstOption();
+    msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
 	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;

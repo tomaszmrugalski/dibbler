@@ -10,6 +10,7 @@
  */
 #include "ReqOpt.h"
 #include "SmartPtr.h"
+#include "OptDUID.h"
 
 TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent)
   :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
@@ -70,5 +71,11 @@ bool TReqOptRelayId::doDuties()
 bool TReqOptRemoteId::doDuties()
 {
     return true;
+}
+
+TReqOptRelayId::TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg *parent):TOptDUID(type, duid, parent)
+{
+
+
 }
 
