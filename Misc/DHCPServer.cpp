@@ -93,6 +93,10 @@ void TDHCPServer::run()
 	int iface = msg->getIface();
 	SPtr<TIfaceIface> ptrIface;
 	ptrIface = SrvIfaceMgr().getIfaceByID(iface);
+        if (!ptrIface) {
+            Log(Error) << "Received data over unknown interface: ifindex=" << iface << LogEnd;
+            continue;
+        }
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
 		    << dec << ", " << msg->countOption() << " opts:";
