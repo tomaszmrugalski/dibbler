@@ -57,7 +57,7 @@
     2011-04: MacOSX debugging/improvements.
 
   - Christopher Small <chsmall(at)grnoc(dot)iu(dot)edu>
-    2009-05: MaxOSX fixes.
+    2009-05: Max OS X fixes.
 
   - Wojciech Guminski <wojciech.guminski(at)eti(dot)pg(dot)gda(dot)pl>
     2010-11: Windows/Linux compilation fixes
@@ -79,6 +79,9 @@
 
   - Mickael Marchand <mikmak(at)freenux(dot)org>
     2012-03: link-local client reservation, several fixes
+
+  - Tao Cui <Cuit(at)ihep(dot)ac(dot)cn>
+    2013-01: interface-id shorter than 4 bytes are now handled ok
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
