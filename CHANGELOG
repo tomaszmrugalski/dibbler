@@ -4,6 +4,8 @@
 0.8.4 [not released]
   - Inteface-ids shorter than 4 bytes are not handled properly
     (patch by Tao Cui)
+  - It is now possible to send custom options (hex, string, address or address-list
+    is supported for now, but other data formats may be added in the future)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

@@ -53,10 +53,11 @@ namespace std {
 [ \t]    ; // ignore TABs and spaces
 iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
-address               { return ClntParser::ADDRESS_;}
+address               { return ClntParser::ADDRESS_KEYWORD_;}
 string                { return ClntParser::STRING_KEYWORD_; }
 duid                  { return ClntParser::DUID_KEYWORD_; }
-address-list          { return ClntParser::ADDRESS_LIST_; }
+hex                   { return ClntParser::HEX_KEYWORD_; }
+address-list          { return ClntParser::ADDRESS_LIST_KEYWORD_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
 ta                    { return ClntParser::TA_; }
@@ -126,7 +127,6 @@ downlink-prefix-ifaces { return ClntParser::DOWNLINK_PREFIX_IFACES_; }
 
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
-request               { return ClntParser::REQUEST_; }
 
 #.* ;
 

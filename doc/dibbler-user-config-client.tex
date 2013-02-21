@@ -1122,22 +1122,25 @@ iface "eth0" {
 Client is able to ask for custom options, that are not supported by
 default. Following config file allows client to ask for many
 options. Also, see Section \ref{feature-custom-options} for
-extended explanation.
+extended explanation. Note that the syntax changed slightly
+after Dibbler 0.8.3 was released.
 
 \begin{lstlisting}
 #client.conf
 iface "eth0" {
-  unicast 1
   ia
 
-  option 145 duid 01:02:a3:b4:c5:dd:ea
+  # This will send specified option value  
+  option 145 hex 01:02:a3:b4:c5:dd:ea
   option 146 address 2001:db8:1::dead:beef
   option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
   option 148 string "secretlair.example.org"
 
-  option 149 string request
-  option 150 address request
-  option 151 address-list request
+  # This will request specific options and interpret responses
+  option 149 hex
+  option 150 address
+  option 151 address-list
+  option 152 string
 \end{lstlisting}
 
 \subsubsection{Example 18: Remote Autoconfiguration}
