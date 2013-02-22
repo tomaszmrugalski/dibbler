@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sstream>
 #include "SocketIPv6.h"
+#include "../RelOptions/RelOptRemoteID.h"
 #include "ReqTransMgr.h"
 #include "ReqMsg.h"
 #include "OptAddr.h"
@@ -21,6 +22,8 @@
 #include "Portable.h"
 #include "hex.h"
 #include "SmartPtr.h"
+#include "OptVendorSpecInfo.h"
+
 
 using namespace std;
 
@@ -272,6 +275,7 @@ bool ReqTransMgr::SendTcpMsg()
     bufLen= sizeof(buf);
     memset(buf, 1024, 0xff);
 
+    // nedded to create DHCP over TCP msg
     TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, buf, LEASEQUERY_MSG,bufLen);
 
     switch (CfgMgr->queryType) {
@@ -327,14 +331,14 @@ bool ReqTransMgr::SendTcpMsg()
             memset(buf+1, 0, 16);
             bufLen = 17;
 
-            // add new OPTION_RELAY_ID option
+            // add new OPTION_CLIENT_ID option
             SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
-            //SPtr<TReqOptRelayId>  optClientId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
-            //optClientId->storeSelf(buf+bufLen);
-            //bufLen += optClientId->getSize();
-            duid->storeSelf(buf);
+            SPtr<TReqOptDUID>  optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
+            optDuid->storeSelf(buf+bufLen);
+            bufLen += optDuid->getSize();
+
         } else {
-            Log(Debug) << "Cannot creating RelayId-based query for " << CfgMgr->clientId << " RelayId." << "It's not present in the server" <<LogEnd;
+            Log(Debug) << "Cannot creating ClientId-based query for " << CfgMgr->clientId << " RelayId." << "It's not present in the server" <<LogEnd;
         }
     break;
 
@@ -350,7 +354,6 @@ bool ReqTransMgr::SendTcpMsg()
 
             // add new OPTION_RELAY_ID option
             SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
-            //SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
             SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, duid, msg);//bufLen=optLen ?
             optRelayId->storeSelf(buf+bufLen);
             bufLen += optRelayId->getSize();
@@ -368,15 +371,16 @@ bool ReqTransMgr::SendTcpMsg()
             //memset(buf+1, 16, 0);
 			memset(buf+1, 0, 16);
             bufLen = 17;
+            int n = 5; // should be greater then 4 ??
 
             // add new OPTION_REMOTE_ID option
-            SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
-            //SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
-             SPtr<TReqOptRelayId>  optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, duid, msg);//bufLen=optLen ?
-            optRelayId->storeSelf(buf+bufLen);
-            bufLen += optRelayId->getSize();
+
+           // TRelOptRemoteID( char * buf,  int n, TMsg* parent)
+            SPtr<TRelOptRemoteID> optRemoteId = new TRelOptRemoteID(buf,n, msg);
+            optRemoteId->storeSelf(buf+bufLen);
+            bufLen += optRemoteId->getSize();
         } else {
-            Log(Debug) << "Cannot creating RelayId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
+            Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
         }
     break;
 
@@ -391,8 +395,9 @@ bool ReqTransMgr::SendTcpMsg()
         Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
     }
 
-
+    // is it use as link - layer adress ??
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
+
     SPtr<TOpt> opt = new TReqOptDUID(OPTION_CLIENTID, clientDuid, msg);
     msg->addOption(opt);
 

@@ -380,7 +380,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
         //a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
         SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        processLeaseQuery(lq);
+        a = new TSrvMsgLeaseQueryReply(lq);
         break;
     }
     case RECONFIGURE_MSG:

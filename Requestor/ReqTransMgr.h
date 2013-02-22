@@ -14,6 +14,8 @@
 #include "IfaceMgr.h"
 #include "ReqCfgMgr.h"
 #include "SmartPtr.h"
+#include "../RelOptions/RelOptRemoteID.h"
+#include "OptVendorSpecInfo.h"
 
 class ReqTransMgr {
 public:
