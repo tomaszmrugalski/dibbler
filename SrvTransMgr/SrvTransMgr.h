@@ -36,7 +36,6 @@ class TSrvTransMgr
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
-    void processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq);
     void doDuties();
     void dump();
 

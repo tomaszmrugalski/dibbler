@@ -57,9 +57,10 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType, int msgSize
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
     MsgSize = msgSize;
-    buf[0]=MsgSize;
-    buf[2]=MsgType;
-    buf[3]=TransID;
+    this->Bulk = true;
+  //  buf[0]=MsgSize;
+  //  buf[2]=MsgType;
+  //  buf[3]=TransID;
 }
 
 
@@ -122,13 +123,26 @@ int TMsg::storeSelf(char * buffer)
 
     enum DigestTypes UsedDigestType;
     
-    *(buffer++) = (char)MsgType;
-    
-    /* ugly 3-byte version of htons/htonl */
-    buffer[2] = tmp%256;  tmp = tmp/256;
-    buffer[1] = tmp%256;  tmp = tmp/256;
-    buffer[0] = tmp%256;  tmp = tmp/256;
-    buffer+=3;
+    if (Bulk) {
+        int tmpSize = this->MsgSize;
+
+        buffer[1]=tmpSize%256; tmpSize/=256;
+        buffer[0]=tmpSize%256; tmpSize/=256;
+
+        buffer[2]=(char)MsgType;
+        buffer[5] = tmp%256;  tmp = tmp/256;
+        buffer[4] = tmp%256;  tmp = tmp/256;
+        buffer[3] = tmp%256;  tmp = tmp/256;
+    } else {
+
+        *(buffer++) = (char)MsgType;
+
+        /* ugly 3-byte version of htons/htonl */
+        buffer[2] = tmp%256;  tmp = tmp/256;
+        buffer[1] = tmp%256;  tmp = tmp/256;
+        buffer[0] = tmp%256;  tmp = tmp/256;
+        buffer+=3;
+    }
 
     TOptList::iterator option;
     for (option=Options.begin(); option!=Options.end(); ++option) {
