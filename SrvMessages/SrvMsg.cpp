@@ -50,7 +50,8 @@ using namespace std;
  * @param transID
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-    :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0)
+  :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0),
+   forceMsgType_(0)
 {
 }
 
@@ -375,7 +376,7 @@ int TSrvMsg::getRelayCount() {
     return RelayInfo_.size();
 }
 
-void TSrvMsg::send()
+void TSrvMsg::send(int dstPort /* = 0 */)
 {
     static char buf[2048];
     int offset = 0;
@@ -445,6 +446,7 @@ void TSrvMsg::send()
         offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
         // check if there are underlaying interfaces
+        // ####@todo: Remove this crap
         for (unsigned int i=0; i < RelayInfo_.size(); i++) {
             under = ptrIface->getUnderlaying();
             if (!under) {
@@ -459,6 +461,11 @@ void TSrvMsg::send()
     } else {
         offset += this->storeSelf(buf+offset);
     }
+
+    if (dstPort) {
+        port = dstPort;
+    }
+
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
@@ -697,7 +704,7 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
     if (relayDepth == RelayInfo_.size()) {
         return storeSelf(buf);
     }
-    buf[offset++] = RELAY_REPL_MSG;
+    buf[offset++] = forceMsgType_?forceMsgType_:RELAY_REPL_MSG;
     buf[offset++] = RelayInfo_[relayDepth].Hop_;
     RelayInfo_[relayDepth].LinkAddr_->storeSelf(buf+offset);
     RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf+offset+16);

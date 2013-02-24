@@ -78,11 +78,15 @@ public:
 
     unsigned long getTimeout();
     void doDuties();
-    void send();
+    void send(int dstPort = 0);
 
     void processOptions(SPtr<TSrvMsg> clientMsg, bool quiet);
     SPtr<TDUID> getClientDUID();
     SPtr<TIPv6Addr> getClientPeer();
+
+    inline void setMsgType(uint8_t type) {
+      forceMsgType_ = type;
+    }
 
 protected:
     void setDefaults();
@@ -120,6 +124,10 @@ protected:
     /// @todo: this should be moved to RelayInfo_ structure
     SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay
                                    // AND relay appended RemoteID
+
+    /// @brief used in tests only. If non-zero, send message type is set to that 
+    /// type
+    uint8_t forceMsgType_;
 };
 
 #endif

@@ -465,8 +465,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
  }
 
 SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
-                                             SPtr<TIPv6Addr> peer,
-                                             char * buf, int bufsize) {
+                                      SPtr<TIPv6Addr> peer,
+                                      char * buf, int bufsize) {
     int ifaceid = ptrIface->getID();
     if (bufsize < 4) // 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
         return 0;
