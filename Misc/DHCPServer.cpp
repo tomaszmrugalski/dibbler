@@ -114,6 +114,7 @@ void TDHCPServer::run()
 	} 
 	SrvTransMgr().relayMsg(msg);
     }
+    SrvIfaceMgr().closeSockets();
     Log(Notice) << "Bye bye." << LogEnd;
 }
 

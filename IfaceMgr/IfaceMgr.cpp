@@ -264,6 +264,7 @@ void TIfaceMgr::dump()
  */
 TIfaceMgr::~TIfaceMgr()
 {
+    closeSockets();
 }
 
 string TIfaceMgr::printMac(char * mac, int macLen) {
@@ -457,6 +458,19 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
 #endif
 
     notifyScript(scriptName, action, params);
+}
+
+/// @brief closes all sockets
+void TIfaceMgr::closeSockets() {
+    Log(Debug) << "Closing all sockets." << LogEnd;
+    firstIface();
+    while (SPtr<TIfaceIface> iface = getIface()) {
+        iface->firstSocket();
+
+        while (SPtr<TIfaceSocket> socket = iface->getSocket()) {
+            iface->delSocket(socket->getFD());
+        }
+    }
 }
 
 

@@ -48,6 +48,8 @@ class TIfaceMgr {
     virtual void notifyScript(const std::string& scriptName, std::string action,
                               TNotifyScriptParams& params);
 
+    virtual void closeSockets();
+
     virtual ~TIfaceMgr();
 
  protected:
