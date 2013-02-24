@@ -53,14 +53,30 @@ TEST_F(ServerTest, decodeRelayForw) {
 
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
 
-    if (received) {
-        cout << "#### Received" << endl;
-    } else {
-        cout << "#### NOT Received" << endl;
-    }
+    ASSERT_TRUE(received);
 
+    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
 
+    // Check that there's info about 1 relay
+    ASSERT_EQ(rcvRelay.size(), 1u);
 
+    // Check link-address, peer-addr and hop fields
+    ASSERT_TRUE(rcvRelay[0].LinkAddr_);
+    EXPECT_EQ(string(rcvRelay[0].LinkAddr_->getPlain()), "2001:db8:123::1");
+    ASSERT_TRUE(rcvRelay[0].PeerAddr_);
+    EXPECT_EQ(string(rcvRelay[0].PeerAddr_->getPlain()), "fe80::abcd");
+    EXPECT_EQ(rcvRelay[0].Hop_, 31);
+
+    // Check that there are no echo request options stored
+    EXPECT_EQ(rcvRelay[0].EchoList_.count(), 0u);
+
+    // Check that no remote-id was stored
+    EXPECT_FALSE(received->getRemoteID());
+
+    // Check that the packet was marked as received over proper interface
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(received->getIface());
+    ASSERT_TRUE(cfgIface);
+    EXPECT_EQ(cfgIface->getName(), "relay1");
 }
 
 }
