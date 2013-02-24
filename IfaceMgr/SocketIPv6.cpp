@@ -216,7 +216,7 @@ TIfaceSocket::~TIfaceSocket() {
     if (Status!=STATE_CONFIGURED) 
 	return;
 
-    Log(Debug) << "Closing socket " << this->FD << " opened on " << Addr->getPlain()
+    Log(Debug) << "Closing socket " << this->FD << " on " << Addr->getPlain()
                << ":" << Port << " on interface " << Iface << "/" << IfaceID << LogEnd;
 
     //execute low-level function
