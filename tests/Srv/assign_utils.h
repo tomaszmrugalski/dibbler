@@ -151,6 +151,13 @@ namespace test {
                         SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1,
                         uint32_t t2, uint32_t pref, uint32_t valid, uint8_t prefixLen);
 
+        void addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
+                          SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
+                          List(TOptGeneric) echoList);
+
+        void clearRelayInfo();
+        void setRelayInfo(SPtr<TSrvMsg> msg);
+
         ~ServerTest() {
             delete transmgr_;
             delete cfgmgr_;
@@ -175,6 +182,9 @@ namespace test {
         uint32_t ia_iaid_;
         uint32_t ta_iaid_;
         uint32_t pd_iaid_;
+
+        // Relay info
+        std::vector<TSrvMsg::RelayInfo> relayInfo_;
     };
 
 } // namespace test

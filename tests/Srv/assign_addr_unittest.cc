@@ -1,9 +1,17 @@
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * author: Tomasz Mrugalski <thomson@klub.com.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
+ */
+
 #include "IPv6Addr.h"
 #include "SrvIfaceMgr.h"
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 #include "OptDUID.h"
-//#include "OptAddrLst.h"
 #include "OptStatusCode.h"
 #include "SrvOptTA.h"
 #include "DHCPConst.h"
@@ -43,7 +51,8 @@ TEST_F(ServerTest, SARR_single_class) {
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
     SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123::ffff:ffff:ffff:ffff", true);
 
-    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
+    EXPECT_TRUE( checkIA_NA(rcvIA, minRange, maxRange, 100, 101, 102,
+                            SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID) );
 
     SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface_->getID());
     ASSERT_TRUE(cfgIface);

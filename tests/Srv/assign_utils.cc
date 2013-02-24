@@ -124,10 +124,13 @@ bool ServerTest::createMgrs(std::string config) {
     }
 
     // try to repalace IFACE name with an actual string name
-    size_t pos = config.find("REPLACE_ME");
-    if (pos != std::string::npos) {
-        config.replace(pos, 10, iface_->getName());
-    }
+    size_t pos;
+    do {
+        pos = config.find("REPLACE_ME");
+        if (pos != std::string::npos) {
+            config.replace(pos, 10, iface_->getName());
+        }
+    } while (pos != std::string::npos);
 
     std::ofstream cfgfile("testdata/server.conf");
     cfgfile << config;
@@ -158,5 +161,30 @@ bool ServerTest::createMgrs(std::string config) {
     return true;
 }
 
+void ServerTest::addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
+                              SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
+                              List(TOptGeneric) echoList) {
+    TSrvMsg::RelayInfo x;
+    x.LinkAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(linkAddr.c_str(), true));
+    x.PeerAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(peerAddr.c_str(), true));
+    x.InterfaceID_ =  interfaceId;
+    x.Len_ = 0;
+    x.Hop_ = hopCount;
+    x.EchoList_ = echoList;
+
+    relayInfo_.push_back(x);
+}
+
+void ServerTest::clearRelayInfo() {
+    relayInfo_.clear();
+}
+
+void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
+    for (std::vector<TSrvMsg::RelayInfo>::const_iterator relay = relayInfo_.begin();
+         relay != relayInfo_.end(); ++relay) {
+        msg->addRelayInfo(relay->LinkAddr_, relay->PeerAddr_, relay->Hop_, 
+                          relay->InterfaceID_, relay->EchoList_);
+    }
+}
 
 }
