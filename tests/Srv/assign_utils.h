@@ -158,12 +158,7 @@ namespace test {
         void clearRelayInfo();
         void setRelayInfo(SPtr<TSrvMsg> msg);
 
-        ~ServerTest() {
-            delete transmgr_;
-            delete cfgmgr_;
-            delete addrmgr_;
-            delete ifacemgr_;
-        }
+        ~ServerTest();
 
         NakedSrvIfaceMgr * ifacemgr_;
         NakedSrvCfgMgr * cfgmgr_;

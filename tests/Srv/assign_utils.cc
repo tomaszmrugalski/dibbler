@@ -187,4 +187,11 @@ void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
     }
 }
 
+ServerTest::~ServerTest() {
+    delete transmgr_;
+    delete cfgmgr_;
+    delete addrmgr_;
+    delete ifacemgr_;
+}
+
 }
