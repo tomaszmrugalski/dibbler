@@ -13,6 +13,7 @@
 #include <string>
 #include "Msg.h"
 #include "SmartPtr.h"
+#include "ReqOpt.h"
 
 class TReqMsg: public TMsg
 {

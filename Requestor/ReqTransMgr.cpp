@@ -11,7 +11,6 @@
 #include <string.h>
 #include <sstream>
 #include "SocketIPv6.h"
-#include "../RelOptions/RelOptRemoteID.h"
 #include "ReqTransMgr.h"
 #include "ReqMsg.h"
 #include "OptAddr.h"
@@ -363,7 +362,7 @@ bool ReqTransMgr::SendTcpMsg()
     break;
 
     case QUERY_BY_REMOTE_ID:
-        if (CfgMgr->remoteId) {
+        if (CfgMgr->remoteId && CfgMgr->enterpriseNumber) {
             Log(Debug) << "Creating RemoteId-based query. Asking for " << CfgMgr->remoteId << " RelayId." << LogEnd;
             // RelayId-based query
             buf[0] = QUERY_BY_REMOTE_ID;
@@ -371,13 +370,13 @@ bool ReqTransMgr::SendTcpMsg()
             //memset(buf+1, 16, 0);
 			memset(buf+1, 0, 16);
             bufLen = 17;
-            int n = 5; // should be greater then 4 ??
+            int dataLen = 5; // option-len: 4+ the length, in octets, of the remote-id field. Minimum opt-len is 5 octets
 
             // add new OPTION_REMOTE_ID option
 
-           // TRelOptRemoteID( char * buf,  int n, TMsg* parent)
-            SPtr<TRelOptRemoteID> optRemoteId = new TRelOptRemoteID(buf,n, msg);
-            optRemoteId->storeSelf(buf+bufLen);
+            //TReqOptRemoteId(int type,char * remoteId,char * enterprise, int dataLen, TMsg* parent);
+            SPtr<TReqOptRemoteId> optRemoteId = new TReqOptRemoteId(OPTION_REMOTE_ID,CfgMgr->remoteId, CfgMgr->enterpriseNumber, dataLen, msg);
+            optRemoteId->storeSelf(buf+bufLen,QueryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {
             Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;

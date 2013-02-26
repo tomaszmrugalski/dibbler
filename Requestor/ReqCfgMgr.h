@@ -22,10 +22,11 @@ typedef struct {
     char * addr;
     char * duid;
     char * bulk;
-    char * linkAddr; //to będzie nie potrzebne
-    char * remoteId; //to będzie nie potrzebne
+    char * linkAddr;
+    char * remoteId;
     char * relayId;
     char * clientId;
+    char * enterpriseNumber;
     int  queryType;
 
 } ReqCfgMgr;
