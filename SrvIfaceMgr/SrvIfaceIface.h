@@ -35,9 +35,6 @@ class TSrvIfaceIface: public TIfaceIface {
     void setUnderlaying(SPtr<TSrvIfaceIface> under);
     bool appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfaceID> interfaceID);
     SPtr<TSrvIfaceIface> getUnderlaying();
-    SPtr<TSrvIfaceIface> getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
-    SPtr<TSrvIfaceIface> getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
-    SPtr<TSrvIfaceIface> getAnyRelay();
     int getRelayCnt();
 
  private:

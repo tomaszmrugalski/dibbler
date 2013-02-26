@@ -1145,3 +1145,63 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     }
     return DNSAddr;
 }
+
+/// @brief returns ifindex of an interface with specified interface-id
+///
+/// @param interfaceID pointer to TSrvOptInterfaceID
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
+    if (!interfaceID) {
+        return -1;
+    }
+
+    firstIface();
+    while (SPtr<TSrvCfgIface> cfgIface = getIface()) {
+        SPtr<TSrvOptInterfaceID> cfgIfaceID = cfgIface->getRelayInterfaceID();
+        if (cfgIfaceID && (*cfgIfaceID == *interfaceID)) {
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
+}
+
+
+/// @brief returns ifindex of an interface with matched address
+///
+/// @param addr address to be matched
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->addrInSubnet(addr)) {
+            Log(Debug) << "Address " << addr->getPlain() << " matched on interface "
+                       << cfgIface->getFullName() << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    Log(Warning) << "Finding RELAYs using link address failed." << LogEnd;
+    return -1;
+}
+
+/// @brief return any relay (used with guess-mode on)
+///
+/// @return interface index of the first relay (or -1 if there are no relays)
+int TSrvCfgMgr::getAnyRelay() {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->isRelay()) {
+            Log(Debug) << "Guess-mode: Picked " << cfgIface->getFullName() << " as relay." << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
+}

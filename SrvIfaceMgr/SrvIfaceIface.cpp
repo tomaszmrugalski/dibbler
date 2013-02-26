@@ -44,43 +44,6 @@ bool TSrvIfaceIface::appendRelay(SPtr<TSrvIfaceIface> relay, SPtr<TSrvOptInterfa
     return true;
 }
 
-SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
-    int i=0;
-    if (!interfaceID) {
-        return 0;
-    }
-
-    if (RelaysCnt_ == 0) {
-        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-        return 0;
-    }
-    for (i = 0; i < RelaysCnt_; i++) {
-        if (Relays_[i].interfaceID && (*Relays_[i].interfaceID == *interfaceID) )
-            return Relays_[i].iface;
-    }
-    return 0;
-}
-
-SPtr<TSrvIfaceIface> TSrvIfaceIface::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
-    if (RelaysCnt_ == 0) {
-        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-        return 0;
-    }
-
-    //// @todo: Implement finding RELAYs using link address
-    Log(Error) << "Finding RELAYs using link address is not implemented yet. Using first relay:"
-              << Relays_[0].iface->getFullName() << LogEnd;
-    return Relays_[0].iface;
-}
-
-SPtr<TSrvIfaceIface> TSrvIfaceIface::getAnyRelay() {
-    if (RelaysCnt_==0) {
-        Log(Warning) << "No relay interface defined on the " << this->getFullName() << LogEnd;
-        return 0;
-    }
-    return Relays_[0].iface;
-}
-
 int TSrvIfaceIface::getRelayCnt() {
     return RelaysCnt_;
 }

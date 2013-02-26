@@ -27,11 +27,11 @@ class TSrvIfaceMgr :public TIfaceMgr {
    ~TSrvIfaceMgr();
    friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceMgr &x);
 
-   SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeMsg(int ifindex,
                            SPtr<TIPv6Addr> peer,
                            char * buf, int bufsize);
 
-   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> physicalIface,
                                  SPtr<TIPv6Addr> peer,
                                  char * buf, int bufsize);
 

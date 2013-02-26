@@ -523,7 +523,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     } else {
         Relay_ = false;
         RelayName_ = "";
-        RelayID_ = 0;
+        RelayID_ = -1;
         RelayInterfaceID_ = 0;
     }
 
@@ -864,8 +864,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <!--" << iface.Subnets_.size() << " subnet(s) -->" << std::endl;
     for (std::vector<THostRange>::const_iterator range = iface.Subnets_.begin();
          range != iface.Subnets_.end(); ++range) {
-        out << "    <subnet>" << range->getAddrL() << "-" << range->getAddrR() << "</subnet>" << std::endl;
-
+        out << "    <subnet>" << range->getAddrL()->getPlain() << "-"
+            << range->getAddrR()->getPlain() << "</subnet>" << std::endl;
     }
 
     out << "    <preference>" << (int)iface.Preference_ << "</preference>" << std::endl;
@@ -889,7 +889,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     // print IA objects
     SPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst_.first();
-    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
+    out << "    <!-- IA: non-temporary addr class count: "
+        << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
     while( ia=iface.SrvCfgAddrClassLst_.get() ) {
         out << *ia;
     }

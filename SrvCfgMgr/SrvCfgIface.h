@@ -157,7 +157,7 @@ private:
     // --- relay ---
     bool Relay_;
     std::string RelayName_;     // name of the underlaying physical interface (or other relay)
-    int RelayID_;          // ifindex
+    int RelayID_;          // ifindex (-1 means this is not a relay)
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_; // value of interface-id option (optional)
 
     // --- option: FQDN ---

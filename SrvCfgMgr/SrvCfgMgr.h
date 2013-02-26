@@ -120,6 +120,11 @@ public:
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
 
+    // Used to find specific relay
+    int getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
+    int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
+    int getAnyRelay();
+
     // used to be private, but we need access in tests
 protected:
     TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
