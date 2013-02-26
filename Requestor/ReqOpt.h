@@ -17,6 +17,10 @@
 #include "OptDUID.h"
 #include "OptGeneric.h"
 #include "SmartPtr.h"
+#include "OptVendorSpecInfo.h"
+#include "Portable.h"
+#include "DHCPConst.h"
+#include "Logger.h"
 
 class TReqOptAddr : public TOptIAAddress
 {
@@ -40,17 +44,19 @@ class TReqOptGeneric : public TOptGeneric
 {
 public:
     TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent);
-    TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent, int remoteId);
+   // TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent, int remoteId);
 protected:
     bool doDuties();
 };
 
 
 
-class TReqOptRemoteId : public TOptGeneric
+class TReqOptRemoteId : public TReqOptGeneric
 {
 public:
-    TReqOptRemoteId(int optType,int remoteId, TMsg* parent);
+    TReqOptRemoteId(int type,char * remoteId,char * enterprise, int dataLen, TMsg* parent);
+    size_t getSize();
+    char * storeSelf( char* buf, int queryType, char* enterpriseNum);
 protected:
     bool doDuties();
 };

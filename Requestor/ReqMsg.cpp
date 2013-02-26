@@ -11,6 +11,7 @@
 #include <string>
 #include "ReqMsg.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 using namespace std;
 

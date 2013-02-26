@@ -43,6 +43,9 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     char * bulk    = 0;
     char * iface   = 0;
     char * dstaddr = 0;
+    char * remoteId =0;
+    char * enterpriseNumber =0;
+
     int timeout  = 60; // default timeout value
     for (int i=1; i<argc; i++) {
         if (!strncmp(argv[i],"-addr", 5)) {
@@ -92,6 +95,25 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             dstaddr = argv[++i];
             continue;
         }
+
+        // add opportunity to send queryByRemoteId over TCP (bulk)
+        if (!strncmp(argv[i],"-remoteId", 5)) {
+            if (argc==i) {
+                Log(Error) << "Unable to parse command-line. -remoteId used, but actual address is missing." << LogEnd;
+                return false;
+            }
+            remoteId = argv[++i];
+            continue;
+        }
+
+        if (!strncmp(argv[i],"-enterpriseNumber", 5)) {
+            if (argc==i) {
+                Log(Error) << "Unable to parse command-line. -enterpriseNumber used, but actual address is missing." << LogEnd;
+                return false;
+            }
+            enterpriseNumber = argv[++i];
+            continue;
+        }
         if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) ||
             !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
             return false;
@@ -122,6 +144,8 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     a->iface = iface;
     a->timeout= timeout;
     a->dstaddr = dstaddr;
+    a->remoteId = remoteId;
+    a->enterpriseNumber = enterpriseNumber;
     return true;
 }
 
