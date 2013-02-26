@@ -17,10 +17,11 @@ using namespace std;
 
 namespace test {
 
-TEST_F(ServerTest, decodeRelayForw) {
+TEST_F(ServerTest, decodeRelayForwGuessMode) {
 
     // check that an interface was successfully selected
-    string cfg = "iface REPLACE_ME {\n"
+    string cfg = "guess-mode\n"
+                 "iface REPLACE_ME {\n"
                  "  class { pool 2001:db8:1::/64 }\n"
                  "}\n"
                  "\n"
@@ -407,7 +408,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
 
     // Check link-address, peer-addr and hop fields
     ASSERT_TRUE(rcvRelay[0].LinkAddr_);
-    EXPECT_EQ(string(rcvRelay[0].LinkAddr_->getPlain()), "2001:db8:123::1");
+    EXPECT_EQ(string(rcvRelay[0].LinkAddr_->getPlain()), "2001:db8:2::1");
     ASSERT_TRUE(rcvRelay[0].PeerAddr_);
     EXPECT_EQ(string(rcvRelay[0].PeerAddr_->getPlain()), "fe80::abcd");
     EXPECT_EQ(rcvRelay[0].Hop_, 31);
