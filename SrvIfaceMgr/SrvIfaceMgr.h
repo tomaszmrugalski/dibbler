@@ -35,8 +35,8 @@ class TSrvIfaceMgr :public TIfaceMgr {
                                  SPtr<TIPv6Addr> peer,
                                  char * buf, int bufsize);
 
-   bool setupRelay(std::string name, int ifindex, int underIfindex,
-                   SPtr<TSrvOptInterfaceID> interfaceID);
+   //bool setupRelay(std::string name, int ifindex, int underIfindex,
+   //                SPtr<TSrvOptInterfaceID> interfaceID);
    void dump();
 
    // ---sends messages---

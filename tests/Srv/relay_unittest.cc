@@ -36,8 +36,7 @@ TEST_F(ServerTest, decodeRelayForwGuessMode) {
     SrvIfaceMgr().dump();
 
     // now generate SOLICIT
-    ASSERT_TRUE(SrvIfaceMgr().getIfaceByName("relay1"));
-    iface_ = SrvIfaceMgr().getIfaceByName("relay1");
+    setIface("relay1");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
     SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
@@ -108,8 +107,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     SrvIfaceMgr().dump();
 
     // now generate SOLICIT
-    ASSERT_TRUE(SrvIfaceMgr().getIfaceByName("relay2"));
-    iface_ = SrvIfaceMgr().getIfaceByName("relay2");
+    setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
     SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
@@ -194,8 +192,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     SrvIfaceMgr().dump();
 
     // now generate SOLICIT
-    ASSERT_TRUE(SrvIfaceMgr().getIfaceByName("relay2"));
-    iface_ = SrvIfaceMgr().getIfaceByName("relay2");
+    setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
     SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
@@ -280,8 +277,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     SrvIfaceMgr().dump();
 
     // now generate SOLICIT
-    ASSERT_TRUE(SrvIfaceMgr().getIfaceByName("relay2"));
-    iface_ = SrvIfaceMgr().getIfaceByName("relay2");
+    setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
     SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id
@@ -369,8 +365,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     SrvIfaceMgr().dump();
 
     // now generate SOLICIT
-    ASSERT_TRUE(SrvIfaceMgr().getIfaceByName("relay2"));
-    iface_ = SrvIfaceMgr().getIfaceByName("relay2");
+    setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
     SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
     sol->addOption((Ptr*)clntId_); // include client-id

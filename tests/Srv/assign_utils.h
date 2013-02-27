@@ -84,6 +84,8 @@ namespace test {
             pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
         }
 
+	void setIface(const std::string& name);
+
         SPtr<TSrvMsgSolicit> createSolicit() {
 
             char empty[] = { SOLICIT_MSG, 0x1, 0x2, 0x3};

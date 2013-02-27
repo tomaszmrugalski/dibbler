@@ -62,23 +62,29 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
  */
 bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
 
-    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(confIface->getID());
+    int ifindex = -1;
+    if (confIface->isRelay()) {
+      ifindex = confIface->getRelayID();
+    } else {
+      ifindex = confIface->getID();
+    }
+    SPtr<TSrvIfaceIface> iface = (Ptr*) SrvIfaceMgr().getIfaceByID(ifindex);
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
+    if (!iface) {
+        Log(Crit) << "Unable to find interface with ifindex=" << ifindex << LogEnd;
+        return false;
+    }
 
     if (confIface->isRelay()) {
-        while (iface->getUnderlaying()) {
-            iface = iface->getUnderlaying();
-        }
-        if (!iface->countSocket())
-            Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
-                        << "/" << iface->getID() << "." << LogEnd;
+        Log(Info) << "Relay init: Creating socket on the underlaying interface: "
+		  << iface->getFullName() << "." << LogEnd;
     }
 
     if (unicast) {
         /* unicast */
-        Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName()
-                    << "/" << confIface->getID() << " interface." << LogEnd;
-        if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
+        Log(Notice) << "Creating unicast (" << *unicast << ") socket on "
+		    << confIface->getFullName() << " interface." << LogEnd;
+        if (!iface->addSocket(unicast, DHCPSERVER_PORT, true, false)) {
             Log(Crit) << "Proper socket creation failed." << LogEnd;
             return false;
         }
@@ -92,9 +98,9 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     }
 
     SPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
-    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName()
-                << "/" << confIface->getID() << " (" << iface->getName() << "/"
-                << iface->getID() << ") interface." << LogEnd;
+    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on "
+                << confIface->getFullName() << " (" << iface->getFullName()
+                << ") interface." << LogEnd;
     if (iface->getSocketByAddr(ipAddr)) {
         Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
                     << iface->getName() << "." << LogEnd;

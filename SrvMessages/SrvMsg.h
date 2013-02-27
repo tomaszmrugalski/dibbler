@@ -84,9 +84,18 @@ public:
     SPtr<TDUID> getClientDUID();
     SPtr<TIPv6Addr> getClientPeer();
 
+    /// @brief sets message type (used in testing only)
+    ///
+    /// @param type type of a message (RELAY_FORW or RELAY_REPL)
     inline void setMsgType(uint8_t type) {
       forceMsgType_ = type;
     }
+
+    /// @brief clears relay information (used in testing only)
+    void clearRelayInfo() {
+        RelayInfo_.clear();
+    }
+
 
 protected:
     void setDefaults();

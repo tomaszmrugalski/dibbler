@@ -187,6 +187,12 @@ void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
     }
 }
 
+void ServerTest::setIface(const std::string& name) {
+    ASSERT_TRUE(SrvCfgMgr().getIfaceByName(name));
+    ASSERT_NE(-1, SrvCfgMgr().getIfaceByName("relay1")->getRelayID());
+    iface_ = (Ptr*) SrvIfaceMgr().getIfaceByID(SrvCfgMgr().getIfaceByName(name)->getRelayID());
+}
+
 ServerTest::~ServerTest() {
     delete transmgr_;
     delete cfgmgr_;

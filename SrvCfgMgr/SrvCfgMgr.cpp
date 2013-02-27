@@ -180,10 +180,17 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
         // relay interface
         if (cfgIface->isRelay()) {
             cfgIface->setID(this->NextRelayID++);
-            if (!this->setupRelay(cfgIface)) {
+
+            ifaceIface = SrvIfaceMgr().getIfaceByName(cfgIface->getRelayName());
+            if (!ifaceIface) {
+                Log(Crit) << "Interface " << cfgIface->getFullName()
+                          << " defined physical interface as " << cfgIface->getRelayName()
+                          << ", but there is no such interface present." << LogEnd;
                 return false;
             }
-            this->addIface(cfgIface);
+            cfgIface->setRelayID(ifaceIface->getID());
+
+            addIface(cfgIface);
 
             continue; // skip physical interface checking part
         }
@@ -753,13 +760,28 @@ bool TSrvCfgMgr::validateClass(SPtr<TSrvCfgIface> ptrIface, SPtr<TSrvCfgAddrClas
 
 SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
     SPtr<TSrvCfgIface> ptrIface;
-    this->firstIface();
-    while ( ptrIface = this->getIface() ) {
+    firstIface();
+    while ( ptrIface = getIface() ) {
         if ( ptrIface->getID()==iface )
             return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface
-               << ") specifed, cannot get address." << LogEnd;
+    Log(Error) << "Invalid interface (ifindex=" << iface
+               << ") specifed: no such interface." << LogEnd;
+    return 0; // NULL
+}
+
+SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
+    SPtr<TSrvCfgIface> ptrIface;
+    firstIface();
+    while ( ptrIface = getIface() ) {
+        Log(Debug) << "#### looking for iface=" << name << ", found " << ptrIface->getName() << LogEnd;
+        if ( ptrIface->getName()==name ) {
+            Log(Debug) << "#### Found!" << LogEnd;
+            return ptrIface;
+        }
+    }
+    Log(Error) << "Invalid interface (name=" << name
+               << ") specifed: no such interface." << LogEnd;
     return 0; // NULL
 }
 
@@ -828,16 +850,11 @@ bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
 
     iface = SrvIfaceMgr().getIfaceByName(name);
     if (!iface) {
-        Log(Crit) << "Underlaying interface for " << cfgIface->getName() << "/" << cfgIface->getID()
+        Log(Crit) << "Underlaying interface for " << cfgIface->getFullName()
                   << " with name " << name << " is missing." << LogEnd;
         return false;
     }
     cfgIface->setRelayID(iface->getID());
-
-    if (!SrvIfaceMgr().setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
-        Log(Crit) << "Relay setup for " << cfgIface->getName() << "/" << cfgIface->getID() << " interface failed." << LogEnd;
-        return false;
-    }
 
     return true;
 }

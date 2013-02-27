@@ -386,7 +386,27 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     SPtr<TSrvIfaceIface> ptrIface;
     SPtr<TSrvIfaceIface> under;
     ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
-    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getName() << "/" << this->Iface
+    if (!ptrIface) {
+        SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(this->Iface);
+        if (!cfgIface) {
+            Log(Error) << "Can't send message: interface with ifindex=" << this->Iface
+                       << " not found." << LogEnd;
+            return;
+        }
+        if (cfgIface->getRelayID()==-1) {
+            Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
+                       << " is invalid relay." << LogEnd;
+            return;
+        }
+        ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
+        if (!ptrIface) {
+            Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
+                       << " has invalid physical interface defined (ifindex="
+                       << cfgIface->getRelayID() << "." << LogEnd;
+            return;
+        }
+    }
+    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getFullName()
                 << hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SPtr<TOpt> ptrOpt;
     this->firstOption();
@@ -404,11 +424,8 @@ void TSrvMsg::send(int dstPort /* = 0 */)
             return;
         }
 
-
         size_t len = getSize();
         RelayInfo_.back().Len_ = len;
-
-
 
         for (int i = RelayInfo_.size() - 1; i > 0; i--) {
             // 38 = 34 bytes (relay header) + 4 bytes (relay-msg option header)
@@ -445,18 +462,8 @@ void TSrvMsg::send(int dstPort /* = 0 */)
         // recursive storeSelf
         offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
-        // check if there are underlaying interfaces
-        // ####@todo: Remove this crap
-        for (unsigned int i=0; i < RelayInfo_.size(); i++) {
-            under = ptrIface->getUnderlaying();
-            if (!under) {
-                Log(Error) << "Sending message on the " << ptrIface->getFullName()
-                           << " failed: No underlaying interface found." << LogEnd;
-                return;
-            }
-            ptrIface = under;
-        }
-        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset << "(relay headers) data on the "
+        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset
+                   << "(relay headers) data on the "
                    << ptrIface->getFullName() << " interface." << LogEnd;
     } else {
         offset += this->storeSelf(buf+offset);
