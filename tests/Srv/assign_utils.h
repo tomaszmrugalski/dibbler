@@ -11,6 +11,8 @@
 #include "SrvMsgInfRequest.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
+#include <string>
+#include <unistd.h>
 
 namespace test {
     class NakedSrvIfaceMgr: public TSrvIfaceMgr {
@@ -156,6 +158,11 @@ namespace test {
         void addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
                           SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
                           List(TOptGeneric) echoList);
+
+        void sendHex(const std::string& src_addr, uint16_t src_port,
+                     const std::string& dst_addr, uint16_t dst_port,
+                     const std::string& iface_name,
+                     const std::string& hex_data);
 
         void clearRelayInfo();
         void setRelayInfo(SPtr<TSrvMsg> msg);

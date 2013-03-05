@@ -4,6 +4,8 @@
 
 #include "OptAddrLst.h"
 #include "OptStatusCode.h"
+#include <unistd.h>
+#include <string>
 
 using namespace std;
 
@@ -151,7 +153,7 @@ bool ServerTest::createMgrs(std::string config) {
     while (cfgIface_ = cfgmgr_->getIface()) {
         if (cfgIface_->getName() == iface_->getName())
             break;
-            }
+    }
     if (!cfgIface_) {
         ADD_FAILURE() << "Failed to find expected " << iface_->getName()
                       << " interface in CfgMgr." << std::endl;
@@ -182,7 +184,7 @@ void ServerTest::clearRelayInfo() {
 void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
     for (std::vector<TSrvMsg::RelayInfo>::const_iterator relay = relayInfo_.begin();
          relay != relayInfo_.end(); ++relay) {
-        msg->addRelayInfo(relay->LinkAddr_, relay->PeerAddr_, relay->Hop_, 
+        msg->addRelayInfo(relay->LinkAddr_, relay->PeerAddr_, relay->Hop_,
                           relay->InterfaceID_, relay->EchoList_);
     }
 }
@@ -191,6 +193,33 @@ void ServerTest::setIface(const std::string& name) {
     ASSERT_TRUE(SrvCfgMgr().getIfaceByName(name));
     ASSERT_NE(-1, SrvCfgMgr().getIfaceByName("relay1")->getRelayID());
     iface_ = (Ptr*) SrvIfaceMgr().getIfaceByID(SrvCfgMgr().getIfaceByName(name)->getRelayID());
+}
+
+void ServerTest::sendHex(const std::string& src_addr, uint16_t src_port,
+                         const std::string& dst_addr, uint16_t dst_port,
+                         const std::string& iface_name,
+                         const std::string& hex_data) {
+
+    // convert hex data to binary data first
+    if (hex_data.length()%2) {
+        ADD_FAILURE() << "Specified hex string (" << hex_data << " has length " <<
+            hex_data.length() << ", even length required.";
+        return;
+    }
+    size_t len = hex_data.length()/2;
+    char* buffer = new char[len];
+    TDUID tmp(hex_data.c_str());
+    EXPECT_EQ(tmp.storeSelf(static_cast<char*>(buffer)), buffer + len);
+
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByName(iface_name);
+    ASSERT_TRUE(iface);
+
+    SPtr<TIPv6Addr> addr = new TIPv6Addr(dst_addr.c_str(), true);
+    bool status = SrvIfaceMgr().send(iface->getID(), buffer, len, addr, dst_port);
+
+    EXPECT_TRUE(status);
+
+    delete [] buffer;
 }
 
 ServerTest::~ServerTest() {
