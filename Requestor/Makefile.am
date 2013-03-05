@@ -6,4 +6,3 @@ libRequestor_a_CPPFLAGS += -I$(top_srcdir)/Options -I$(top_srcdir)/IfaceMgr
 libRequestor_a_SOURCES = ReqCfgMgr.cpp ReqCfgMgr.h ReqMsg.cpp ReqMsg.h ReqOpt.cpp ReqOpt.h ReqOpts.cpp ReqTransMgr.cpp ReqTransMgr.h
 
 dist_noinst_DATA = TODO.txt
-

@@ -371,11 +371,11 @@ bool ReqTransMgr::SendTcpMsg()
 			memset(buf+1, 0, 16);
             bufLen = 17;
             int dataLen = 5; // option-len: 4+ the length, in octets, of the remote-id field. Minimum opt-len is 5 octets
-
+            char data[5];
             // add new OPTION_REMOTE_ID option
 
-            //TReqOptRemoteId(int type,char * remoteId,char * enterprise, int dataLen, TMsg* parent);
-            SPtr<TReqOptRemoteId> optRemoteId = new TReqOptRemoteId(OPTION_REMOTE_ID,CfgMgr->remoteId, CfgMgr->enterpriseNumber, dataLen, msg);
+            // TReqOptRemoteId(int type,char * remoteId,int enterprise,char * data, int dataLen, TMsg* parent);
+            SPtr<TReqOptRemoteId> optRemoteId = new TReqOptRemoteId(OPTION_REMOTE_ID,CfgMgr->remoteId, CfgMgr->enterpriseNumber,data, dataLen, msg);
             optRemoteId->storeSelf(buf+bufLen,QueryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {

@@ -114,7 +114,6 @@ libRequestor_a_LIBADD =
 am_libRequestor_a_OBJECTS = libRequestor_a-ReqCfgMgr.$(OBJEXT) \
 	libRequestor_a-ReqMsg.$(OBJEXT) \
 	libRequestor_a-ReqOpt.$(OBJEXT) \
-	libRequestor_a-ReqOpts.$(OBJEXT) \
 	libRequestor_a-ReqTransMgr.$(OBJEXT)
 libRequestor_a_OBJECTS = $(am_libRequestor_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
