@@ -44,7 +44,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     char * iface   = 0;
     char * dstaddr = 0;
     char * remoteId =0;
-    char * enterpriseNumber =0;
+    int enterpriseNumber =0;
 
     int timeout  = 60; // default timeout value
     for (int i=1; i<argc; i++) {
@@ -111,7 +111,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                 Log(Error) << "Unable to parse command-line. -enterpriseNumber used, but actual address is missing." << LogEnd;
                 return false;
             }
-            enterpriseNumber = argv[++i];
+            enterpriseNumber = atoi(argv[++i]);
             continue;
         }
         if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) ||

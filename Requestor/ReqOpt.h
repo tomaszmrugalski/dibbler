@@ -51,14 +51,15 @@ protected:
 
 
 
-class TReqOptRemoteId : public TReqOptGeneric
+class TReqOptRemoteId : public TOptVendorSpecInfo
 {
 public:
-    TReqOptRemoteId(int type,char * remoteId,char * enterprise, int dataLen, TMsg* parent);
+    TReqOptRemoteId(int type,char * remoteId,int enterprise,char * data, int dataLen, TMsg* parent);
     size_t getSize();
-    char * storeSelf( char* buf, int queryType, char* enterpriseNum);
+    char * storeSelf( char* buf, int queryType, int enterpriseNum);
 protected:
     bool doDuties();
+    char * remoreIdRqOpt;
 };
 
 

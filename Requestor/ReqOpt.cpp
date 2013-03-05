@@ -66,7 +66,7 @@ bool TReqOptRemoteId::doDuties()
     return true;
 }
 
-char *TReqOptRemoteId::storeSelf(char *buf, int queryType, char * enterpriseNum)
+char *TReqOptRemoteId::storeSelf(char *buf, int queryType, int enterpriseNum)
 {
     // option-code OPTION_VENDOR_OPTS (2 bytes long)
     buf = writeUint16(buf,queryType);
@@ -91,6 +91,11 @@ char *TReqOptRemoteId::storeSelf(char *buf, int queryType, char * enterpriseNum)
     }
     buf = storeSubOpt(buf);
     return buf;
+}
+
+ //TOptVendorSpecInfo(int type, int enterprise, char *data, int dataLen, TMsg* parent);
+TReqOptRemoteId::TReqOptRemoteId(int type, char *remoteId, int enterprise,char * data,  int dataLen, TMsg *parent):TOptVendorSpecInfo(type,  enterprise, data, dataLen, parent) {
+   this->remoreIdRqOpt=remoteId;
 }
 
 size_t TReqOptRemoteId::getSize()
