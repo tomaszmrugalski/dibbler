@@ -179,9 +179,19 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
         // relay interface
         if (cfgIface->isRelay()) {
+
             cfgIface->setID(this->NextRelayID++);
 
-            ifaceIface = SrvIfaceMgr().getIfaceByName(cfgIface->getRelayName());
+            // let's find physical interface underneath
+            SPtr<TSrvCfgIface> under_relay = cfgIface;
+            ifaceIface = SPtr<TIfaceIface>();
+            while (!ifaceIface && under_relay && under_relay->getRelayName() != "") {
+                ifaceIface = SrvIfaceMgr().getIfaceByName(under_relay->getRelayName());
+                if (!ifaceIface) {
+                    under_relay = getIfaceByName(under_relay->getRelayName());
+                }
+            }
+
             if (!ifaceIface) {
                 Log(Crit) << "Interface " << cfgIface->getFullName()
                           << " defined physical interface as " << cfgIface->getRelayName()
@@ -691,10 +701,7 @@ bool TSrvCfgMgr::validateConfig() {
 
 bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
-    bool dummyRelay = false;
     SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(ptrIface->getID());
-    if (iface && ptrIface->isRelay() && iface->getRelayCnt())
-        dummyRelay = true;
 
     if (ptrIface->countAddrClass() && stateless()) {
         Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()
@@ -703,13 +710,13 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
     }
     if (!ptrIface->countAddrClass() && !ptrIface->countPD()
         && !ptrIface->getTA() && !stateless()) {
-        if (!dummyRelay) {
+        if (!ptrIface->isRelay()) {
             Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
                       << ": No class definitions (IA,TA or PD) present, but stateless mode not set." << LogEnd;
             return false;
         } else {
-            Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface."
-                         << LogEnd;
+            Log(Notice) << "Interface " << ptrIface->getFullName() << " has no address or prefix pools defined."
+                        << LogEnd;
         }
     }
 

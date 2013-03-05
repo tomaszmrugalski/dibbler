@@ -108,7 +108,7 @@ void TSrvIfaceMgr::dump()
 
 
 /**
- * sends data to client. Uses multicast address as source
+ * sends data to client. Uses unicast address as source
  * @param iface interface index
  * @param msg - buffer containing message ready to send
  * @param size - size of message
@@ -141,7 +141,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // send it!
-    return (sock->send(msg,size,addr,port));
+    if (sock->send(msg,size,addr,port) == 0) {
+        return true; // all ok
+    } else {
+        return false;
+    }
 }
 
 // @brief reads messages from all interfaces
