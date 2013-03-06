@@ -128,16 +128,30 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 
     // find this socket
     SPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> backup;
     ptrIface->firstSocket();
     while (sock = ptrIface->getSocket()) {
+        if (!backup) {
+            backup = sock;
+        }
         if (sock->multicast())
             continue; // don't send anything via multicast sockets
+        if (!addr->linkLocal() && sock->getAddr()->linkLocal())
+            continue; // we need socket bound to global address if dst is global addr
+        if (addr->linkLocal() && !sock->getAddr()->linkLocal())
+            continue; // lets' not use global address as source is dst is link-local
         break;
     }
-    if (!sock) {
-        Log(Error) << "Send failed: interface " << ptrIface->getName()
-                   << "/" << iface << " has no open sockets." << LogEnd;
+    if (!sock && !backup) {
+        Log(Error) << "Send failed: interface " << ptrIface->getFullName()
+                   << " has no suitable open sockets." << LogEnd;
         return false;
+    }
+    if (!sock) {
+        Log(Warning) << "No preferred socket found for transmission to "
+                     << addr->getPlain() << " on interface " << ptrIface->getFullName()
+                     << ". Using backup socket " << backup->getFD() << LogEnd;
+        sock = backup;
     }
 
     // send it!
