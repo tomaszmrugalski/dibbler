@@ -734,6 +734,8 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
 
         params->addParam(peer.str(), relay->PeerAddr_->getPlain());
         params->addParam(link.str(), relay->LinkAddr_->getPlain());
+
+        cnt++;
     }
 
     TIfaceMgr::notifyScripts(scriptName, question, answer);
