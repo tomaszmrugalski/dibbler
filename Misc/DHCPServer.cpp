@@ -104,7 +104,7 @@ void TDHCPServer::run()
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
-	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
+	Log(Cont) << ", " << msg->RelayInfo_.size() << " relay(s)." << LogEnd;
 	if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
 					 (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 

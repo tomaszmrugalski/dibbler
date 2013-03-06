@@ -55,7 +55,7 @@ TEST_F(ServerTest, decodeRelayForwGuessMode) {
 
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> rcvRelay = received->RelayInfo_;
 
     // Check that there's info about exactly one relay
     ASSERT_EQ(rcvRelay.size(), 1u);
@@ -140,7 +140,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> rcvRelay = received->RelayInfo_;
 
     // Check that there's info about 1 relay
     ASSERT_EQ(rcvRelay.size(), 1u);
@@ -225,7 +225,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> &rcvRelay = received->RelayInfo_;
 
     // Check that there's info about 1 relay
     ASSERT_EQ(rcvRelay.size(), 1u);
@@ -312,7 +312,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> rcvRelay = received->RelayInfo_;
 
     // Check that there's info about 1 relay
     ASSERT_EQ(rcvRelay.size(), 1u);
@@ -396,7 +396,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> rcvRelay = received->RelayInfo_;
 
     // Check that there's info about 1 relay
     ASSERT_EQ(rcvRelay.size(), 1u);

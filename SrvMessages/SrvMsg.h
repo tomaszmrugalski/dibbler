@@ -62,10 +62,6 @@ public:
                       int hop,
                       SPtr<TSrvOptInterfaceID> interfaceID,
                       List(TOptGeneric) echoList);
-    const std::vector<RelayInfo>& getRelayInfo() const { return RelayInfo_; };
-
-    /// @todo: redundant (can be replaced with getRelayInfo().size())
-    int getRelayCount();
 
     bool releaseAll(bool quiet);
 
@@ -73,6 +69,7 @@ public:
 
     virtual bool check() = 0;
 
+    /// @todo: get out with this shit
     void setRemoteID(SPtr<TOptVendorData> remoteID);
     SPtr<TOptVendorData> getRemoteID();
 
@@ -96,6 +93,11 @@ public:
         RelayInfo_.clear();
     }
 
+    /// relay information
+    ///
+    /// Let's make this public, so there are issues with reference
+    /// being returned and then used past them message lifetime
+    std::vector<RelayInfo> RelayInfo_;
 
 protected:
     void setDefaults();
@@ -123,9 +125,6 @@ protected:
 
 
     int storeSelfRelay(char * buf, uint8_t relayLevel, ESrvIfaceIdOrder order);
-
-    // relay information
-    std::vector<RelayInfo> RelayInfo_;
 
     unsigned long FirstTimeStamp_; // timestamp of first message transmission
     unsigned long MRT_;            // maximum retransmission timeout

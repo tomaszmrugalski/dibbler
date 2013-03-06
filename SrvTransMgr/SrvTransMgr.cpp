@@ -68,7 +68,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     } else {
       ifindex = confIface->getID();
     }
-    SPtr<TSrvIfaceIface> iface = (Ptr*) SrvIfaceMgr().getIfaceByID(ifindex);
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(ifindex);
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
     if (!iface) {
         Log(Crit) << "Unable to find interface with ifindex=" << ifindex << LogEnd;

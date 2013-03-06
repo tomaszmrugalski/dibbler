@@ -36,7 +36,7 @@
 #include "SrvOptInterfaceID.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
-#include "SrvIfaceIface.h"
+#include "Iface.h"
 #include "OptOptionRequest.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
@@ -77,15 +77,15 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                  // << ", flags=" << ptr->flags
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 
-        SPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
-                                                       ptr->flags,
-                                                       ptr->mac,
-                                                       ptr->maclen,
-                                                       ptr->linkaddr,
-                                                       ptr->linkaddrcount,
-                                                       ptr->globaladdr,
-                                                       ptr->globaladdrcount,
-                                                       ptr->hardwareType));
+        SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name,ptr->id,
+                                                ptr->flags,
+                                                ptr->mac,
+                                                ptr->maclen,
+                                                ptr->linkaddr,
+                                                ptr->linkaddrcount,
+                                                ptr->globaladdr,
+                                                ptr->globaladdrcount,
+                                                ptr->hardwareType));
         this->IfaceLst.append((Ptr*) iface);
         ptr = ptr->next;
     }
@@ -179,7 +179,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         // check message type
         int msgtype = buf[0];
 
-        SPtr<TSrvIfaceIface> ptrIface;
+        SPtr<TIfaceIface> ptrIface;
 
         // get interface
         ptrIface = (Ptr*)getIfaceBySocket(sockid);
@@ -240,7 +240,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 #if 0
 bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
                               SPtr<TSrvOptInterfaceID> interfaceID) {
-    SPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
+    SPtr<TIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
         Log(Crit) << "Unable to setup " << name << "/" << ifindex
                   << " relay: underlaying interface with id=" << underIfindex
@@ -279,7 +279,7 @@ bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
 }
 #endif
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> physicalIface,
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                             SPtr<TIPv6Addr> peer,
                                             char * buf, int bufsize) {
 
@@ -718,7 +718,7 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
     // add info about relays
     SPtr<TSrvMsg> reply = (Ptr*)answer;
 
-    const vector<TSrvMsg::RelayInfo> relayInfo = reply->getRelayInfo();
+    const vector<TSrvMsg::RelayInfo> relayInfo = reply->RelayInfo_;
 
     stringstream relaysNum;
     relaysNum << relayInfo.size();
@@ -741,7 +741,7 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;
-    SPtr<TSrvIfaceIface> ptr;
+    SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
         strum << *ptr;

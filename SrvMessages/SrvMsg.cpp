@@ -372,10 +372,6 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
     RelayInfo_.push_back(info);
 }
 
-int TSrvMsg::getRelayCount() {
-    return RelayInfo_.size();
-}
-
 void TSrvMsg::send(int dstPort /* = 0 */)
 {
     static char buf[2048];
@@ -383,8 +379,8 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     int port;
 
     SPtr<TOptGeneric> gen;
-    SPtr<TSrvIfaceIface> ptrIface;
-    SPtr<TSrvIfaceIface> under;
+    SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> under;
     ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
         SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(this->Iface);

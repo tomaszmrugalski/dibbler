@@ -64,7 +64,7 @@ TEST_F(ServerTest, parseDoubleRelay) {
 
     ASSERT_TRUE(received);
 
-    vector<TSrvMsg::RelayInfo> rcvRelay = received->getRelayInfo();
+    vector<TSrvMsg::RelayInfo> &rcvRelay = received->RelayInfo_;
 
     // Check that there's info about exactly one relay
     ASSERT_EQ(rcvRelay.size(), 2u);

@@ -7,4 +7,4 @@ libSrvIfaceMgr_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvAddrMgr 
 libSrvIfaceMgr_a_CPPFLAGS += -I$(top_srcdir)/SrvMessages -I$(top_srcdir)/Messages
 libSrvIfaceMgr_a_CPPFLAGS += -I$(top_srcdir)/poslib/poslib -I$(top_srcdir)/poslib
 
-libSrvIfaceMgr_a_SOURCES = SrvIfaceIface.cpp SrvIfaceIface.h SrvIfaceMgr.cpp SrvIfaceMgr.h
+libSrvIfaceMgr_a_SOURCES = SrvIfaceMgr.cpp SrvIfaceMgr.h

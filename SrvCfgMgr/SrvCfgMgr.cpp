@@ -701,7 +701,7 @@ bool TSrvCfgMgr::validateConfig() {
 
 bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
-    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(ptrIface->getID());
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(ptrIface->getID());
 
     if (ptrIface->countAddrClass() && stateless()) {
         Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()

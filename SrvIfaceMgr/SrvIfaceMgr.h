@@ -14,7 +14,7 @@
 
 #include "SmartPtr.h"
 #include "IfaceMgr.h"
-#include "SrvIfaceIface.h"
+#include "Iface.h"
 #include "SrvMsg.h"
 
 #define SrvIfaceMgr() (TSrvIfaceMgr::instance())
@@ -31,7 +31,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
                            SPtr<TIPv6Addr> peer,
                            char * buf, int bufsize);
 
-   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> physicalIface,
+   SPtr<TSrvMsg> decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                  SPtr<TIPv6Addr> peer,
                                  char * buf, int bufsize);
 
