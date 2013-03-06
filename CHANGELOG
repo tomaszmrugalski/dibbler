@@ -8,6 +8,8 @@
     is supported for now, but other data formats may be added in the future)
   - Responses to packets sent from global addresses are now sent via sockets
     bound to global addresses
+  - Server now properly calculates number of available addresses and prefixes
+    after expiration (bug #264)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
