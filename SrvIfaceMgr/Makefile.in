@@ -72,9 +72,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libSrvIfaceMgr_a_AR = $(AR) $(ARFLAGS)
 libSrvIfaceMgr_a_LIBADD =
-am_libSrvIfaceMgr_a_OBJECTS =  \
-	libSrvIfaceMgr_a-SrvIfaceIface.$(OBJEXT) \
-	libSrvIfaceMgr_a-SrvIfaceMgr.$(OBJEXT)
+am_libSrvIfaceMgr_a_OBJECTS = libSrvIfaceMgr_a-SrvIfaceMgr.$(OBJEXT)
 libSrvIfaceMgr_a_OBJECTS = $(am_libSrvIfaceMgr_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -298,7 +296,7 @@ libSrvIfaceMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/SrvAddrMgr -I$(top_srcdir)/SrvTransMgr \
 	-I$(top_srcdir)/SrvMessages -I$(top_srcdir)/Messages \
 	-I$(top_srcdir)/poslib/poslib -I$(top_srcdir)/poslib
-libSrvIfaceMgr_a_SOURCES = SrvIfaceIface.cpp SrvIfaceIface.h SrvIfaceMgr.cpp SrvIfaceMgr.h
+libSrvIfaceMgr_a_SOURCES = SrvIfaceMgr.cpp SrvIfaceMgr.h
 all: all-am
 
 .SUFFIXES:
@@ -347,7 +345,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceMgr.Po@am__quote@
 
 .cpp.o:
@@ -370,20 +367,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
-
-libSrvIfaceMgr_a-SrvIfaceIface.o: SrvIfaceIface.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvIfaceMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvIfaceMgr_a-SrvIfaceIface.o -MD -MP -MF $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Tpo -c -o libSrvIfaceMgr_a-SrvIfaceIface.o `test -f 'SrvIfaceIface.cpp' || echo '$(srcdir)/'`SrvIfaceIface.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Tpo $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvIfaceIface.cpp' object='libSrvIfaceMgr_a-SrvIfaceIface.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvIfaceMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvIfaceMgr_a-SrvIfaceIface.o `test -f 'SrvIfaceIface.cpp' || echo '$(srcdir)/'`SrvIfaceIface.cpp
-
-libSrvIfaceMgr_a-SrvIfaceIface.obj: SrvIfaceIface.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvIfaceMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvIfaceMgr_a-SrvIfaceIface.obj -MD -MP -MF $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Tpo -c -o libSrvIfaceMgr_a-SrvIfaceIface.obj `if test -f 'SrvIfaceIface.cpp'; then $(CYGPATH_W) 'SrvIfaceIface.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvIfaceIface.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Tpo $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceIface.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvIfaceIface.cpp' object='libSrvIfaceMgr_a-SrvIfaceIface.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvIfaceMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvIfaceMgr_a-SrvIfaceIface.obj `if test -f 'SrvIfaceIface.cpp'; then $(CYGPATH_W) 'SrvIfaceIface.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvIfaceIface.cpp'; fi`
 
 libSrvIfaceMgr_a-SrvIfaceMgr.o: SrvIfaceMgr.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvIfaceMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvIfaceMgr_a-SrvIfaceMgr.o -MD -MP -MF $(DEPDIR)/libSrvIfaceMgr_a-SrvIfaceMgr.Tpo -c -o libSrvIfaceMgr_a-SrvIfaceMgr.o `test -f 'SrvIfaceMgr.cpp' || echo '$(srcdir)/'`SrvIfaceMgr.cpp
