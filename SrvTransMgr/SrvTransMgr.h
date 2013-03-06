@@ -27,10 +27,10 @@ class TSrvTransMgr
 {
     friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
   public:
-    static void instanceCreate(const std::string& config);
+    static void instanceCreate(const std::string& config, int port);
     static TSrvTransMgr &instance();
 
-    bool openSocket(SPtr<TSrvCfgIface> confIface);
+    bool openSocket(SPtr<TSrvCfgIface> confIface, int port);
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -58,7 +58,7 @@ class TSrvTransMgr
 
     // not private, as we need to instantiate derived SrvTransMgr in tests
   protected:
-    TSrvTransMgr(std::string xmlFile);
+    TSrvTransMgr(std::string xmlFile, int port);
     ~TSrvTransMgr();
 
     std::string XmlFile;
@@ -68,9 +68,9 @@ class TSrvTransMgr
     int ctrlIface;
     char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
 
-    //SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
-
     static TSrvTransMgr * Instance;
+
+    int port_;
 };
 
 

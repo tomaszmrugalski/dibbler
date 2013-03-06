@@ -142,7 +142,7 @@ bool ServerTest::createMgrs(std::string config) {
 
     cfgmgr_ = new NakedSrvCfgMgr("testdata/server.conf", "testdata/server-CfgMgr.xml");
     addrmgr_ = new NakedSrvAddrMgr("testdata/server-AddrMgr.xml", false); // don't load db
-    transmgr_ = new NakedSrvTransMgr("testdata/server-TransMgr.xml");
+    transmgr_ = new NakedSrvTransMgr("testdata/server-TransMgr.xml", 10000 + DHCPSERVER_PORT);
 
     if (cfgmgr_->isDone()) {
         ADD_FAILURE() << "CfgMgr reported problems and is shutting down.";

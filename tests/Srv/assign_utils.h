@@ -50,7 +50,8 @@ namespace test {
 
     class NakedSrvTransMgr: public TSrvTransMgr {
     public:
-        NakedSrvTransMgr(const std::string& xmlFile): TSrvTransMgr(xmlFile) {
+        NakedSrvTransMgr(const std::string& xmlFile, int port)
+            :TSrvTransMgr(xmlFile, port) {
             TSrvTransMgr::Instance = this;
         }
         List(TSrvMsg)& getMsgLst() { return MsgLst; }

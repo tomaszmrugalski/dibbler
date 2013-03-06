@@ -49,7 +49,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
     }
     SrvAddrMgr().dump();
 
-    TSrvTransMgr::instanceCreate(SRVTRANSMGR_FILE);
+    TSrvTransMgr::instanceCreate(SRVTRANSMGR_FILE, DHCPSERVER_PORT);
     if ( SrvTransMgr().isDone() ) {
         Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
         this->IsDone = true;

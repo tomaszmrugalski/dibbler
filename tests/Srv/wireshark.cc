@@ -57,7 +57,7 @@ TEST_F(ServerTest, parseDoubleRelay) {
     SrvIfaceMgr().dump();
 
     // Send doubly encapsulated relay, with
-    sendHex("2001:888:db8:1::5", 547, "ff05::1:3", 547, iface_->getName(),
+    sendHex("2001:888:db8:1::5", 547, "ff05::1:3", 10000 + DHCPSERVER_PORT, iface_->getName(),
             "0c01200108880db800010000000000000000fe80000000000000020021fffe5c18a900"
             "09007d0c0000000000000000000000000000000000fe80000000000000020021fffe5c"
             "18a9001200154953414d3134342065746820312f312f30352f30310025000400000de9"

@@ -49,7 +49,7 @@ TEST_F(ServerTest, decodeRelayForwGuessMode) {
 
     setRelayInfo(sol);
 
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
 
@@ -123,7 +123,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     setRelayInfo(sol);
 
     // Sending packet with mismatched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     // It should not be handled
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
@@ -138,7 +138,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
@@ -211,7 +211,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     setRelayInfo(sol);
 
     // Sending packet with mismatched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     // It should not be handled
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
@@ -226,7 +226,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
@@ -301,7 +301,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     setRelayInfo(sol);
 
     // Sending packet with mismatched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     // It should not be handled
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
@@ -317,7 +317,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);
@@ -389,7 +389,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     setRelayInfo(sol);
 
     // Sending packet with mismatched link-address
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     // It should not be handled
     SPtr<TSrvMsg> received = SrvIfaceMgr().select(1);
@@ -401,7 +401,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
-    sol->send(547);
+    sol->send(10000 + DHCPSERVER_PORT);
 
     received = SrvIfaceMgr().select(1);
     ASSERT_TRUE(received);

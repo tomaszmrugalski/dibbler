@@ -39,8 +39,8 @@ using namespace std;
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
-TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
-: XmlFile(xmlFile), IsDone(false)
+TSrvTransMgr::TSrvTransMgr(const std::string xmlFile, int port)
+    : XmlFile(xmlFile), IsDone(false), port_(port)
 {
     // TransMgr is certainly not done yet. We're just getting started
 
@@ -48,10 +48,10 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
     SPtr<TSrvCfgIface> confIface;
     SrvCfgMgr().firstIface();
     while (confIface = SrvCfgMgr().getIface()) {
-            if (!this->openSocket(confIface)) {
-                  this->IsDone = true;
-                  break;
-              }
+        if (!this->openSocket(confIface, port)) {
+            this->IsDone = true;
+            break;
+        }
     }
 
     SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
@@ -60,7 +60,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
 /*
  * opens proper (multicast or unicast) socket on interface
  */
-bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
+bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
 
     int ifindex = -1;
     if (confIface->isRelay()) {
@@ -84,7 +84,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
         /* unicast */
         Log(Notice) << "Creating unicast (" << *unicast << ") socket on "
 		    << confIface->getFullName() << " interface." << LogEnd;
-        if (!iface->addSocket(unicast, DHCPSERVER_PORT, true, false)) {
+        if (!iface->addSocket(unicast, port, true, false)) {
             Log(Crit) << "Proper socket creation failed." << LogEnd;
             return false;
         }
@@ -107,7 +107,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
         return true;
     }
 
-    if (!iface->addSocket(ipAddr, DHCPSERVER_PORT, true, false)) {
+    if (!iface->addSocket(ipAddr, port, true, false)) {
         Log(Crit) << "Proper socket creation failed." << LogEnd;
         return false;
     }
@@ -126,7 +126,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     } else {
         Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
                     << " interface." << LogEnd;
-        if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
+        if (!iface->addSocket(llAddr, port, true, false)) {
             Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
             return false;
         }
@@ -332,7 +332,7 @@ void TSrvTransMgr::doDuties()
         SPtr<TSrvCfgIface> x;
         x = SrvCfgMgr().checkInactiveIfaces();
         if (x)
-            openSocket(x);
+            openSocket(x, port_);
     }
 
 }
@@ -477,10 +477,10 @@ TSrvTransMgr::~TSrvTransMgr() {
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
 
-void TSrvTransMgr::instanceCreate(const std::string& config)
+void TSrvTransMgr::instanceCreate(const std::string& config, int port)
 {
   if (!Instance)
-    Instance = new TSrvTransMgr(config);
+      Instance = new TSrvTransMgr(config, port);
   else
     Log(Crit) << "Attempt to create another Transmission Manager. One instance already present!" << LogEnd;
 }
