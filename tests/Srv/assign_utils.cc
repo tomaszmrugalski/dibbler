@@ -164,12 +164,10 @@ bool ServerTest::createMgrs(std::string config) {
 }
 
 void ServerTest::addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
-                              SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
-                              const TOptList& echoList) {
+                              uint8_t hopCount, const TOptList& echoList) {
     TSrvMsg::RelayInfo x;
     x.LinkAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(linkAddr.c_str(), true));
     x.PeerAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(peerAddr.c_str(), true));
-    x.InterfaceID_ =  interfaceId;
     x.Len_ = 0;
     x.Hop_ = hopCount;
     x.EchoList_ = echoList;
@@ -185,7 +183,7 @@ void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
     for (std::vector<TSrvMsg::RelayInfo>::const_iterator relay = relayInfo_.begin();
          relay != relayInfo_.end(); ++relay) {
         msg->addRelayInfo(relay->LinkAddr_, relay->PeerAddr_, relay->Hop_,
-                          relay->InterfaceID_, relay->EchoList_);
+                          relay->EchoList_);
     }
 }
 

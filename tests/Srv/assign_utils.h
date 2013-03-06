@@ -156,8 +156,7 @@ namespace test {
                         uint32_t t2, uint32_t pref, uint32_t valid, uint8_t prefixLen);
 
         void addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
-                          SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
-                          const TOptList& echoList);
+                          uint8_t hopCount, const TOptList& echoList);
 
         void sendHex(const std::string& src_addr, uint16_t src_port,
                      const std::string& dst_addr, uint16_t dst_port,

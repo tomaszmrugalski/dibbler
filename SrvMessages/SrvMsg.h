@@ -35,7 +35,6 @@ public:
         int Hop_;
         SPtr<TIPv6Addr> LinkAddr_;
         SPtr<TIPv6Addr> PeerAddr_;
-        SPtr<TSrvOptInterfaceID> InterfaceID_;
         size_t Len_;
         TOptList EchoList_;
     };
@@ -60,7 +59,6 @@ public:
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                       SPtr<TIPv6Addr> peerAddr,
                       int hop,
-                      SPtr<TSrvOptInterfaceID> interfaceID,
                       const TOptList& echoList);
 
     bool releaseAll(bool quiet);

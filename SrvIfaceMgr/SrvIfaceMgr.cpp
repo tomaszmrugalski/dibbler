@@ -285,7 +285,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
 
     SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
     TOptList echoListTbl[HOP_COUNT_LIMIT];
     int relays=0; // number of nested RELAY_FORW messages
@@ -307,8 +306,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
             return 0;
         }
 
-        SPtr<TSrvOptInterfaceID> ptrIfaceID;
-        ptrIfaceID = 0;
+        SPtr<TSrvOptInterfaceID> ptrIfaceID = 0;
 
         char type = buf[0];
         if (type!=RELAY_FORW_MSG)
@@ -347,7 +345,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                  << ") in RELAY_FORW message. Message dropped." << LogEnd;
                     return 0;
                 }
-                gen = new TSrvOptInterfaceID(buf, len, 0);
+                ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
+                gen = (Ptr*)ptrIfaceID;
                 optIfaceIDCnt++;
                 break;
             case OPTION_RELAY_MSG:
@@ -397,7 +396,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         // remember those links
         linkAddrTbl[relays] = linkAddr;
         peerAddrTbl[relays] = peerAddr;
-        interfaceIDTbl[relays] = ptrIfaceID;
         hopTbl[relays] = hopCount;
         relays++;
 
@@ -455,7 +453,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                            << physicalIface->getFullName() << LogEnd;
                 return 0;
             }
-            interfaceIDTbl[relays] = 0;
             SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
             Log(Notice) << "Guess-mode: Relayed interface guessed as "
                         << cfgIface->getFullName() << LogEnd;
@@ -471,8 +468,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         return 0;
     }
     for (int i=0; i<relays; i++) {
-        msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i],
-                          echoListTbl[i]);
+        msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
     }
     if (remoteID) {
         Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()

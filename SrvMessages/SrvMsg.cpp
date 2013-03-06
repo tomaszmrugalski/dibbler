@@ -360,12 +360,10 @@ unsigned long TSrvMsg::getTimeout() {
 void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                            SPtr<TIPv6Addr> peerAddr,
                            int hop,
-                           SPtr<TSrvOptInterfaceID> interfaceID,
                            const TOptList&  echolist) {
     RelayInfo info;
     info.LinkAddr_ = linkAddr;
     info.PeerAddr_ = peerAddr;
-    info.InterfaceID_ = interfaceID;
     info.Hop_      = hop;
     info.EchoList_ = echolist;
     info.Len_      = 0; /// @todo: what about this?
@@ -424,10 +422,12 @@ void TSrvMsg::send(int dstPort /* = 0 */)
         RelayInfo_.back().Len_ = len;
 
         for (int i = RelayInfo_.size() - 1; i > 0; i--) {
+
+            SPtr<TOpt> interface_id = TOpt::getOption(RelayInfo_[i].EchoList_, OPTION_INTERFACE_ID);
             // 38 = 34 bytes (relay header) + 4 bytes (relay-msg option header)
             RelayInfo_[i-1].Len_ = RelayInfo_[i].Len_ + 38;
-            if (RelayInfo_[i].InterfaceID_ && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
-                RelayInfo_[i-1].Len_ += RelayInfo_[i].InterfaceID_->getSize();
+            if (interface_id && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
+                RelayInfo_[i-1].Len_ += interface_id->getSize();
 
                 for (TOptList::iterator it = RelayInfo_[i].EchoList_.begin();
                      it != RelayInfo_[i].EchoList_.end(); ++it) {
@@ -717,11 +717,13 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
     RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf+offset+16);
     offset += 32;
 
+    SPtr<TOpt> interfaceid = TOpt::getOption(RelayInfo_[relayDepth].EchoList_, OPTION_INTERFACE_ID);
+
     if (order == SRV_IFACE_ID_ORDER_BEFORE)
     {
-        if (RelayInfo_[relayDepth].InterfaceID_) {
-            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
-            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
+        if (interfaceid) {
+            interfaceid->storeSelf(buf+offset);
+            offset += interfaceid->getSize();
         }
     }
 
@@ -734,9 +736,9 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)
     {
-        if (RelayInfo_[relayDepth].InterfaceID_) {
-            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
-            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
+        if (interfaceid) {
+            interfaceid->storeSelf(buf+offset);
+            offset += interfaceid->getSize();
         }
     }
 

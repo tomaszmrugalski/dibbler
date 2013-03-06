@@ -45,7 +45,7 @@ TEST_F(ServerTest, decodeRelayForwGuessMode) {
     sol->setMsgType(RELAY_FORW_MSG);
 
     TOptList echoOpts;
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", 0, 31, echoOpts);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
 
     setRelayInfo(sol);
 
@@ -116,8 +116,9 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     sol->setMsgType(RELAY_FORW_MSG);
 
     TOptList echoOpts;
-    SPtr<TSrvOptInterfaceID> ifaceId(new TSrvOptInterfaceID(12346, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    SPtr<TOpt> ifaceId(new TSrvOptInterfaceID(12346, NULL));
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
 
     setRelayInfo(sol);
 
@@ -130,8 +131,10 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
 
     clearRelayInfo();
     sol->clearRelayInfo();
-    ifaceId = SPtr<TSrvOptInterfaceID>(new TSrvOptInterfaceID(12345, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    ifaceId = SPtr<TOpt>(new TSrvOptInterfaceID(12345, NULL));
+    echoOpts.clear();
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
@@ -152,8 +155,8 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     EXPECT_EQ(string(rcvRelay[0].PeerAddr_->getPlain()), "fe80::abcd");
     EXPECT_EQ(rcvRelay[0].Hop_, 31);
 
-    // Check that there are no echo request options stored
-    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 0u);
+    // Check that there is one option stored (it should be interface-id)
+    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 1u);
 
     // Check that no remote-id was stored
     EXPECT_FALSE(received->getRemoteID());
@@ -201,8 +204,9 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     sol->setMsgType(RELAY_FORW_MSG);
 
     TOptList echoOpts;
-    SPtr<TSrvOptInterfaceID> ifaceId(new TSrvOptInterfaceID("delta", 5, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    SPtr<TOpt> ifaceId(new TSrvOptInterfaceID("delta", 5, NULL));
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
 
     setRelayInfo(sol);
 
@@ -215,8 +219,10 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
 
     clearRelayInfo();
     sol->clearRelayInfo();
-    ifaceId = SPtr<TSrvOptInterfaceID>(new TSrvOptInterfaceID("bravo-foxtrot", 13, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    ifaceId = SPtr<TOpt>(new TSrvOptInterfaceID("bravo-foxtrot", 13, NULL));
+    echoOpts.clear();
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
@@ -237,8 +243,8 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     EXPECT_EQ(string(rcvRelay[0].PeerAddr_->getPlain()), "fe80::abcd");
     EXPECT_EQ(rcvRelay[0].Hop_, 31);
 
-    // Check that there are no echo request options stored
-    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 0u);
+    // Check that there are no echo request options stored other than interface-id
+    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 1u);
 
     // Check that no remote-id was stored
     EXPECT_FALSE(received->getRemoteID());
@@ -287,8 +293,10 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
 
     TOptList echoOpts;
     char bogusIfaceId[] = { 0xff };
-    SPtr<TSrvOptInterfaceID> ifaceId(new TSrvOptInterfaceID(bogusIfaceId, 1, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    echoOpts.clear();
+    SPtr<TOpt> ifaceId(new TSrvOptInterfaceID(bogusIfaceId, 1, NULL));
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
 
     setRelayInfo(sol);
 
@@ -302,8 +310,10 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     clearRelayInfo();
     sol->clearRelayInfo();
     char validIfaceId[] = { 0xbc };
-    ifaceId = SPtr<TSrvOptInterfaceID>(new TSrvOptInterfaceID(validIfaceId, 1, NULL));
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", ifaceId, 31, echoOpts);
+    ifaceId = SPtr<TOpt>(new TSrvOptInterfaceID(validIfaceId, 1, NULL));
+    echoOpts.clear();
+    echoOpts.push_back(ifaceId);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
@@ -324,8 +334,8 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     EXPECT_EQ(string(rcvRelay[0].PeerAddr_->getPlain()), "fe80::abcd");
     EXPECT_EQ(rcvRelay[0].Hop_, 31);
 
-    // Check that there are no echo request options stored
-    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 0u);
+    // Check that there are no echo request options stored other than interface-id
+    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 1u);
 
     // Check that no remote-id was stored
     EXPECT_FALSE(received->getRemoteID());
@@ -374,7 +384,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     sol->setMsgType(RELAY_FORW_MSG);
 
     TOptList echoOpts;
-    addRelayInfo("2001:db8:123::1", "fe80::abcd", 0, 31, echoOpts);
+    addRelayInfo("2001:db8:123::1", "fe80::abcd", 31, echoOpts);
 
     setRelayInfo(sol);
 
@@ -387,7 +397,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
 
     clearRelayInfo();
     sol->clearRelayInfo();
-    addRelayInfo("2001:db8:2::1", "fe80::abcd", 0, 31, echoOpts);
+    addRelayInfo("2001:db8:2::1", "fe80::abcd", 31, echoOpts);
     setRelayInfo(sol);
 
     // Sending packet with matched interface-id
