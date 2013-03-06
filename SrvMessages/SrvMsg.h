@@ -32,12 +32,12 @@ class TSrvMsg : public TMsg
 {
 public:
     struct RelayInfo {
+        int Hop_;
         SPtr<TIPv6Addr> LinkAddr_;
         SPtr<TIPv6Addr> PeerAddr_;
         SPtr<TSrvOptInterfaceID> InterfaceID_;
         size_t Len_;
-        int Hop_;
-        List(TOptGeneric) EchoList_;
+        TOptList EchoList_;
     };
 
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
@@ -61,7 +61,7 @@ public:
                       SPtr<TIPv6Addr> peerAddr,
                       int hop,
                       SPtr<TSrvOptInterfaceID> interfaceID,
-                      List(TOptGeneric) echoList);
+                      const TOptList& echoList);
 
     bool releaseAll(bool quiet);
 

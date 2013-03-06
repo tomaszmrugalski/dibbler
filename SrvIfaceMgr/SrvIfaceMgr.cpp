@@ -287,11 +287,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
-    List(TOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
+    TOptList echoListTbl[HOP_COUNT_LIMIT];
     int relays=0; // number of nested RELAY_FORW messages
     SPtr<TOptVendorData> remoteID = 0;
     SPtr<TOptOptionRequest> echo = 0;
-    SPtr<TOptGeneric> gen = 0;
+    SPtr<TOpt> gen = 0;
     int ifindex = -1;
 
     char * relay_buf = buf;
@@ -331,6 +331,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
             buf += sizeof(uint16_t);
             bufsize -= sizeof(uint16_t);
 
+            gen = 0;
+
             if (len > bufsize) {
                 Log(Warning) << "Truncated option " << code << ": " << bufsize
                              << " bytes remaining, but length is " << len
@@ -345,7 +347,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                  << ") in RELAY_FORW message. Message dropped." << LogEnd;
                     return 0;
                 }
-                ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
+                gen = new TSrvOptInterfaceID(buf, len, 0);
                 optIfaceIDCnt++;
                 break;
             case OPTION_RELAY_MSG:
@@ -354,21 +356,24 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                 optRelayCnt++;
                 break;
             case OPTION_REMOTE_ID:
-                remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
+                gen = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
                 break;
             case OPTION_ERO:
                 Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
-                echo = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
+                gen = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
                 break;
             default:
                 gen = new TOptGeneric(code, buf, len, 0);
-                echoListTbl[relays].append(gen);
 
+            }
+            if (gen) {
+                echoListTbl[relays].push_back(gen);
             }
             buf     += len;
             bufsize -= len;
         }
 
+#if 0
         // remember options to be echoed
         echoListTbl[relays].first();
         while (gen = echoListTbl[relays].get()) {
@@ -387,7 +392,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
             }
 
         }
-
+#endif
 
         // remember those links
         linkAddrTbl[relays] = linkAddr;

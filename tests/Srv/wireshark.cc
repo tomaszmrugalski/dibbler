@@ -77,7 +77,7 @@ TEST_F(ServerTest, parseDoubleRelay) {
     EXPECT_EQ(rcvRelay[0].Hop_, 1);
 
     // Check that there are no echo request options stored
-    EXPECT_EQ(rcvRelay[0].EchoList_.count(), 0u);
+    EXPECT_EQ(rcvRelay[0].EchoList_.size(), 0u);
 
     // Check that interface-id was stored
     ASSERT_TRUE(rcvRelay[0].InterfaceID_);

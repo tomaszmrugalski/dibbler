@@ -361,7 +361,7 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                            SPtr<TIPv6Addr> peerAddr,
                            int hop,
                            SPtr<TSrvOptInterfaceID> interfaceID,
-                           List(TOptGeneric) echolist) {
+                           const TOptList&  echolist) {
     RelayInfo info;
     info.LinkAddr_ = linkAddr;
     info.PeerAddr_ = peerAddr;
@@ -429,10 +429,14 @@ void TSrvMsg::send(int dstPort /* = 0 */)
             if (RelayInfo_[i].InterfaceID_ && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
                 RelayInfo_[i-1].Len_ += RelayInfo_[i].InterfaceID_->getSize();
 
-                RelayInfo_[i].EchoList_.first();
-                while (gen = RelayInfo_[i].EchoList_.get()) {
-                    RelayInfo_[i-1].Len_ += gen->getSize();
+                for (TOptList::iterator it = RelayInfo_[i].EchoList_.begin();
+                     it != RelayInfo_[i].EchoList_.end(); ++it) {
+                    RelayInfo_[i-1].Len_ += (*it)->getSize();
                 }
+                //RelayInfo_[i].EchoList_.first();
+                //while (gen = RelayInfo_[i].EchoList_.get()) {
+                //    RelayInfo_[i-1].Len_ += gen->getSize();
+                //}
 
             }
 
@@ -736,6 +740,29 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
         }
     }
 
+    SPtr<TOpt> echo;
+    for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
+         it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
+        if ((*it)->getOptType() == OPTION_ERO) {
+            echo = *it;
+        }
+    }
+
+    if (echo) {
+        SPtr<TOptOptionRequest> ero = (Ptr*) echo;
+
+        for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
+             it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
+            if (ero->isOption((*it)->getOptType())) {
+                    Log(Debug) << "Echoing back option " << (*it)->getOptType() << ", length "
+                               << (*it)->getSize() << LogEnd;
+                    (*it)->storeSelf(buf+offset);
+                    offset += (*it)->getSize();
+            }
+        }
+    }
+
+#if 0
     SPtr<TOptGeneric> gen;
     RelayInfo_[relayDepth].EchoList_.first();
     while (gen = RelayInfo_[relayDepth].EchoList_.get()) {
@@ -744,6 +771,7 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
         gen->storeSelf(buf+offset);
         offset += gen->getSize();
     }
+#endif
 
     return offset;
 }

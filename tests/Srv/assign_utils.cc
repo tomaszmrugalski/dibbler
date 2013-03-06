@@ -165,7 +165,7 @@ bool ServerTest::createMgrs(std::string config) {
 
 void ServerTest::addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
                               SPtr<TSrvOptInterfaceID> interfaceId, uint8_t hopCount,
-                              List(TOptGeneric) echoList) {
+                              const TOptList& echoList) {
     TSrvMsg::RelayInfo x;
     x.LinkAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(linkAddr.c_str(), true));
     x.PeerAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr(peerAddr.c_str(), true));
