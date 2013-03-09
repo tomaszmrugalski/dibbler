@@ -121,7 +121,7 @@ namespace std
 %token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
-%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_
+%token AUTH_ACCEPT_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
@@ -162,7 +162,6 @@ GlobalOptionDeclaration
 | ScriptName
 | DdnsProtocol
 | DdnsTimeout
-| AuthEnabled
 | AuthAcceptMethods
 | AuthProtocol
 | AuthAlgorithm
@@ -556,11 +555,6 @@ ScriptName
 : SCRIPT_ STRING_
 {
     CfgMgr->setScript($2);
-}
-
-AuthEnabled
-: AUTH_ENABLED_ Number {
-    ParserOptStack.getLast()->setAuthEnabled($2); 
 }
 
 AuthAcceptMethods

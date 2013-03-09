@@ -203,10 +203,10 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	case OPTION_AUTH:
             auth_offset = buf + pos;
             auth_len = length;
-	    if (ClntCfgMgr().getAuthEnabled()) {
+	    if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
 		this->DigestType = ClntCfgMgr().getDigest();
-		ptr = new TOptAuthentication(buf+pos, length, this);
 	    }
+            ptr = new TOptAuthentication(buf+pos, length, this);
 	    break;
 #endif
 	case OPTION_VENDOR_OPTS: {
@@ -454,13 +454,9 @@ void TClntMsg::setIface(int iface) {
 void TClntMsg::appendAuthenticationOption()
 {
 #ifndef MOD_DISABLE_AUTH
-    if (!ClntCfgMgr().getAuthEnabled()) {
-	Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
-	DigestType = DIGEST_NONE;
-	return;
-    }
-
     uint8_t algorithm = 0; // algorithm is protocol specific
+
+    DigestType = DIGEST_NONE;
 
     ClntAddrMgr().firstClient();
     SPtr<TAddrClient> client = ClntAddrMgr().getClient();
@@ -733,16 +729,19 @@ void TClntMsg::appendRequestedOptions() {
     }
 
 #ifndef MOD_DISABLE_AUTH
-    if (this->MsgType == SOLICIT_MSG) {
-	    if (ClntCfgMgr().getAuthEnabled()) {
-		    // --- option: AAAAUTH ---
-		    Options.push_back(new TClntOptAAAAuthentication(this));
+    if ((ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER)
+        && (MsgType == SOLICIT_MSG)) {
 
-		    // request KeyGeneration
-		    optORO->addOption(OPTION_KEYGEN);
-		    // request Authentication
-		    optORO->addOption(OPTION_AUTH);
-	    }
+        // --- option: AAAAUTH ---
+        Options.push_back(new TClntOptAAAAuthentication(this));
+
+        // request KeyGeneration
+        optORO->addOption(OPTION_KEYGEN);
+        // request Authentication
+        optORO->addOption(OPTION_AUTH);
+    }
+
+#if 0
     } else {
 	/*
 	    // --- option: AUTH ---
@@ -757,7 +756,8 @@ void TClntMsg::appendRequestedOptions() {
 	    }
 	    */
     }
-#endif
+#endif // if 0
+#endif // MOD_DISABLE_AUTH
 
 #ifdef MOD_REMOTE_AUTOCONF
     if (ClntCfgMgr().getRemoteAutoconf())
@@ -1139,13 +1139,17 @@ bool TClntMsg::checkReceivedAuthOption() {
         /// @todo: implement delayed-auth
         Log(Error) << "Support for delayed authentication if not implementd yet."
                    << LogEnd;
-        return true;
+        return false;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: {
         /// @todo: implement reconfigure-key
+        Log(Error) << "Support for delayed authentication if not implementd yet."
+                   << LogEnd;
+        return false;
     } 
     case AUTH_PROTO_DIBBLER: {
         // this was in ClntOptAuthentication::doDuties()
+        /// @todo: move existing verification here
         SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(getIface());
         cfgIface->setAuthenticationState(STATE_CONFIGURED);
     }

@@ -87,7 +87,6 @@ class TClntCfgMgr : public TCfgMgr
     // Authorization
     uint32_t getAAASPI();
     List(DigestTypes) getAuthAcceptMethods();
-    bool getAuthEnabled();
     SPtr<KeyList> AuthKeys;
 #endif
 
@@ -122,9 +121,8 @@ private:
 
     DigestTypes Digest;
 #ifndef MOD_DISABLE_AUTH
-    bool AuthEnabled;
-    List(DigestTypes) AuthAcceptMethods;
-    uint32_t AAASPI;
+    List(DigestTypes) AuthAcceptMethods; // used in auth protocol dibbler
+    uint32_t AAASPI;                     // used in auth protocol dibbler
 #endif
 
 #ifdef MOD_REMOTE_AUTOCONF

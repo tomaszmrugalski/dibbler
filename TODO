@@ -26,11 +26,12 @@ Important:
 
 - Common option parsing
 
-
-Authentication:
-- implement authentication option: framework for multiple auth protocols
-- 2 protocols defined
+========= Authentication ========
+- implement authentication option: framework for multiple auth protocols (done)
+- 2 protocols defined in 3315, 3rd done by Kowalczuk (3 total)
 - at most one auth option incluended
+- unit-tests for client
+- unit-tests for server
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

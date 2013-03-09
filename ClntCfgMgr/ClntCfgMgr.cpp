@@ -569,12 +569,12 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     }
 
 #ifndef MOD_DISABLE_AUTH
-    AuthEnabled = opt->getAuthEnabled();
-    if (AuthEnabled)
+    if (getAuthProtocol() == AUTH_PROTO_DIBBLER) {
         AuthAcceptMethods = opt->getAuthAcceptMethods();
-    else
+        AAASPI = getAAASPIfromFile();
+    } else {
         AuthAcceptMethods.clear();
-    AAASPI = getAAASPIfromFile();
+    }
 #endif
 
     return true;
@@ -690,10 +690,6 @@ List(DigestTypes) TClntCfgMgr::getAuthAcceptMethods()
     return AuthAcceptMethods;
 }
 
-bool TClntCfgMgr::getAuthEnabled()
-{
-    return AuthEnabled;
-}
 #endif
 
 bool TClntCfgMgr::getFQDNFlagS()
