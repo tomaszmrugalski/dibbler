@@ -16,6 +16,7 @@
 #include "Container.h"
 #include "Msg.h"
 #include "Opt.h"
+#include "OptAuthentication.h"
 #include "Logger.h"
 #include "hmac-sha-md5.h"
 
@@ -54,7 +55,6 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
     TransID = transID;
     IsDone = false;
     MsgType = msgType;
-    //pkt = NULL;
     DigestType = DIGEST_NONE; /* by default digest is none */
     AuthInfoPtr = NULL;
     AuthInfoKey = NULL;
@@ -62,7 +62,6 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
     KeyGenNonceLen = 0;
     AAASPI = 0;
     SPI = 0;
-    ReplayDetection = 0;
 }
 
 int TMsg::getSize()
@@ -292,13 +291,21 @@ uint32_t TMsg::getSPI() {
     return SPI;
 }
 
-void TMsg::setReplayDetection( uint64_t value)
+void TMsg::setReplayDetection(uint64_t value)
 {
-	ReplayDetection = value;
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth) {
+        return;
+    }
+    auth->setReplayDetection(value);
 }
 
 uint64_t TMsg::getReplayDetection() {
-    return ReplayDetection;
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth) {
+        return 0;
+    }
+    return auth->getReplayDetection();
 }
 
 void TMsg::setKeyGenNonce(char *value, unsigned len)

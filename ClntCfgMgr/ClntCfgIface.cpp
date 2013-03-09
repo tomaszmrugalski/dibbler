@@ -30,12 +30,12 @@ TClntCfgIface::TClntCfgIface(const std::string& ifaceName)
     ID=-1;
 }
 
-TClntCfgIface::TClntCfgIface(int ifaceNr)
+TClntCfgIface::TClntCfgIface(int iface_index)
     :Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1),
      RoutingEnabled(false){
     setDefaults();
     NoConfig=false;
-    ID=ifaceNr;
+    ID=iface_index;
     IfaceName="[unknown]";
 }
 
@@ -55,6 +55,7 @@ void TClntCfgIface::setDefaults() {
     PrefixDelegationState = STATE_DISABLED;
     VendorSpecState = STATE_DISABLED;
     RoutingEnabledState = STATE_DISABLED;
+    AuthenticationState = STATE_DISABLED;
 
     ReqDNSServer = false;
     ReqDomain = false;

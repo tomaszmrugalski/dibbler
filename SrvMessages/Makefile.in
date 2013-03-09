@@ -324,9 +324,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu SrvMessages/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign SrvMessages/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu SrvMessages/Makefile
+	  $(AUTOMAKE) --foreign SrvMessages/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -580,18 +580,16 @@ libSrvMessages_a-SrvMsgSolicit.obj: SrvMsgSolicit.cpp
 libSrvMessages_a-SrvMsgReconfigure.o: SrvMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvMessages_a-SrvMsgReconfigure.o -MD -MP -MF $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Tpo -c -o libSrvMessages_a-SrvMsgReconfigure.o `test -f 'SrvMsgReconfigure.cpp' || echo '$(srcdir)/'`SrvMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Tpo $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvMsgReconfigure.cpp' object='libSrvMessages_a-SrvMsgReconfigure.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvMsgReconfigure.cpp' object='libSrvMessages_a-SrvMsgReconfigure.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvMessages_a-SrvMsgReconfigure.o `test -f 'SrvMsgReconfigure.cpp' || echo '$(srcdir)/'`SrvMsgReconfigure.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvMessages_a-SrvMsgReconfigure.o `test -f 'SrvMsgReconfigure.cpp' || echo '$(srcdir)/'`SrvMsgReconfigure.cpp
 
 libSrvMessages_a-SrvMsgReconfigure.obj: SrvMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvMessages_a-SrvMsgReconfigure.obj -MD -MP -MF $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Tpo -c -o libSrvMessages_a-SrvMsgReconfigure.obj `if test -f 'SrvMsgReconfigure.cpp'; then $(CYGPATH_W) 'SrvMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvMsgReconfigure.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Tpo $(DEPDIR)/libSrvMessages_a-SrvMsgReconfigure.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SrvMsgReconfigure.cpp' object='libSrvMessages_a-SrvMsgReconfigure.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvMsgReconfigure.cpp' object='libSrvMessages_a-SrvMsgReconfigure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvMessages_a-SrvMsgReconfigure.obj `if test -f 'SrvMsgReconfigure.cpp'; then $(CYGPATH_W) 'SrvMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvMsgReconfigure.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvMessages_a-SrvMsgReconfigure.obj `if test -f 'SrvMsgReconfigure.cpp'; then $(CYGPATH_W) 'SrvMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvMsgReconfigure.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

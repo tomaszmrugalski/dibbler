@@ -121,7 +121,7 @@ virtual ~SrvParser();
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
-%token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -176,6 +176,9 @@ GlobalOption
 | WorkDirOption
 | StatelessOption
 | CacheSizeOption
+| AuthProtocol
+| AuthAlgorithm
+| AuthReplay
 | AuthMethod
 | AuthLifetime
 | AuthKeyGenNonceLen
@@ -538,9 +541,42 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
         SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
 };
 
-/////////////////////////////////////////////////////////////////////////////
-// Now Options and their parameters
-/////////////////////////////////////////////////////////////////////////////
+AuthProtocol
+: AUTH_PROTOCOL_ STRING_ {
+    if (strcasecmp($2,"none")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (strcasecmp($2, "delayed")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
+    } else if (strcasecmp($2, "reconfigure-key")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
+    } else if (strcasecmp($2, "dibbler")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
+    } else {
+        Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+};
+
+AuthAlgorithm
+: AUTH_ALGORITHM_ STRING_ {
+    Log(Crit) << "auth-algorithm secification is not supported yet." << LogEnd;
+    YYABORT;
+};
+
+AuthReplay
+: AUTH_REPLAY_ STRING_ {
+    if (strcasecmp($2, "none")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
+    } else if (strcasecmp($2, "monotonic")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_MONOTONIC);
+    } else {
+        Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+};
+
 AuthMethod
 : AUTH_METHOD_ DIGEST_NONE_        { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
 | AUTH_METHOD_ DIGEST_PLAIN_       { ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); }
@@ -560,6 +596,10 @@ AuthKeyGenNonceLen
 : AUTH_KEY_LEN_ Number { ParserOptStack.getLast()->setAuthKeyLen($2); }
 ;
 
+/////////////////////////////////////////////////////////////////////////////
+// Now Options and their parameters
+/////////////////////////////////////////////////////////////////////////////
+
 ///////////////////////////////////////////////////
 // Parameters for FQDN Options                   //
 ///////////////////////////////////////////////////
@@ -572,9 +612,9 @@ FQDNList
 }
 | STRING_ '-' DUID_
 {
+    /// @todo: Use SPtr()
     TDUID* duidNew = new TDUID($3.duid,$3.length);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
-    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
 }
 | STRING_ '-' IPV6ADDR_

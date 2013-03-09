@@ -75,7 +75,6 @@ libClntOptions_a_LIBADD =
 am_libClntOptions_a_OBJECTS =  \
 	libClntOptions_a-ClntOptAAAAuthentication.$(OBJEXT) \
 	libClntOptions_a-ClntOptAddrParams.$(OBJEXT) \
-	libClntOptions_a-ClntOptAuthentication.$(OBJEXT) \
 	libClntOptions_a-ClntOptElapsed.$(OBJEXT) \
 	libClntOptions_a-ClntOptFQDN.$(OBJEXT) \
 	libClntOptions_a-ClntOptIAAddress.$(OBJEXT) \
@@ -314,6 +313,7 @@ libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/IfaceMgr -I$(top_srcdir)/ClntCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/ClntAddrMgr \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
+#libClntOptions_a_SOURCES += ClntOptAuthentication.cpp ClntOptAuthentication.h
 #libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
 #libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 
 #libClntOptions_a_SOURCES += ClntOptNISDomain.cpp ClntOptNISDomain.h
@@ -323,8 +323,7 @@ libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 #libClntOptions_a_SOURCES += ClntOptSIPServer.cpp ClntOptSIPServer.h
 libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp \
 	ClntOptAAAAuthentication.h ClntOptAddrParams.cpp \
-	ClntOptAddrParams.h ClntOptAuthentication.cpp \
-	ClntOptAuthentication.h ClntOptElapsed.cpp ClntOptElapsed.h \
+	ClntOptAddrParams.h ClntOptElapsed.cpp ClntOptElapsed.h \
 	ClntOptFQDN.cpp ClntOptFQDN.h ClntOptIAAddress.cpp \
 	ClntOptIAAddress.h ClntOptIA_NA.cpp ClntOptIA_NA.h \
 	ClntOptIA_PD.cpp ClntOptIA_PD.h ClntOptIAPrefix.cpp \
@@ -386,7 +385,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAAAAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAddrParams.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptElapsed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptFQDN.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIAAddress.Po@am__quote@
@@ -452,20 +450,6 @@ libClntOptions_a-ClntOptAddrParams.obj: ClntOptAddrParams.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptAddrParams.cpp' object='libClntOptions_a-ClntOptAddrParams.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptAddrParams.obj `if test -f 'ClntOptAddrParams.cpp'; then $(CYGPATH_W) 'ClntOptAddrParams.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptAddrParams.cpp'; fi`
-
-libClntOptions_a-ClntOptAuthentication.o: ClntOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptAuthentication.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Tpo -c -o libClntOptions_a-ClntOptAuthentication.o `test -f 'ClntOptAuthentication.cpp' || echo '$(srcdir)/'`ClntOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Tpo $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptAuthentication.cpp' object='libClntOptions_a-ClntOptAuthentication.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptAuthentication.o `test -f 'ClntOptAuthentication.cpp' || echo '$(srcdir)/'`ClntOptAuthentication.cpp
-
-libClntOptions_a-ClntOptAuthentication.obj: ClntOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptAuthentication.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Tpo -c -o libClntOptions_a-ClntOptAuthentication.obj `if test -f 'ClntOptAuthentication.cpp'; then $(CYGPATH_W) 'ClntOptAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptAuthentication.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Tpo $(DEPDIR)/libClntOptions_a-ClntOptAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptAuthentication.cpp' object='libClntOptions_a-ClntOptAuthentication.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptAuthentication.obj `if test -f 'ClntOptAuthentication.cpp'; then $(CYGPATH_W) 'ClntOptAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptAuthentication.cpp'; fi`
 
 libClntOptions_a-ClntOptElapsed.o: ClntOptElapsed.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptElapsed.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptElapsed.Tpo -c -o libClntOptions_a-ClntOptElapsed.o `test -f 'ClntOptElapsed.cpp' || echo '$(srcdir)/'`ClntOptElapsed.cpp

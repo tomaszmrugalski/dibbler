@@ -548,18 +548,16 @@ libClntMessages_a-ClntMsgSolicit.obj: ClntMsgSolicit.cpp
 libClntMessages_a-ClntMsgReconfigure.o: ClntMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntMessages_a-ClntMsgReconfigure.o -MD -MP -MF $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Tpo -c -o libClntMessages_a-ClntMsgReconfigure.o `test -f 'ClntMsgReconfigure.cpp' || echo '$(srcdir)/'`ClntMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Tpo $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntMsgReconfigure.cpp' object='libClntMessages_a-ClntMsgReconfigure.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntMsgReconfigure.cpp' object='libClntMessages_a-ClntMsgReconfigure.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntMessages_a-ClntMsgReconfigure.o `test -f 'ClntMsgReconfigure.cpp' || echo '$(srcdir)/'`ClntMsgReconfigure.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntMessages_a-ClntMsgReconfigure.o `test -f 'ClntMsgReconfigure.cpp' || echo '$(srcdir)/'`ClntMsgReconfigure.cpp
 
 libClntMessages_a-ClntMsgReconfigure.obj: ClntMsgReconfigure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntMessages_a-ClntMsgReconfigure.obj -MD -MP -MF $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Tpo -c -o libClntMessages_a-ClntMsgReconfigure.obj `if test -f 'ClntMsgReconfigure.cpp'; then $(CYGPATH_W) 'ClntMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntMsgReconfigure.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Tpo $(DEPDIR)/libClntMessages_a-ClntMsgReconfigure.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ClntMsgReconfigure.cpp' object='libClntMessages_a-ClntMsgReconfigure.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntMsgReconfigure.cpp' object='libClntMessages_a-ClntMsgReconfigure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntMessages_a-ClntMsgReconfigure.obj `if test -f 'ClntMsgReconfigure.cpp'; then $(CYGPATH_W) 'ClntMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntMsgReconfigure.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntMessages_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntMessages_a-ClntMsgReconfigure.obj `if test -f 'ClntMsgReconfigure.cpp'; then $(CYGPATH_W) 'ClntMsgReconfigure.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntMsgReconfigure.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -58,6 +58,6 @@ std::string StatusCodeToString(int status);
 std::string MsgTypeToString(int msgType);
 
 // for debugging purposes
-void PrintHex(const std::string& message, char *buf, unsigned len);
+void PrintHex(const std::string& message, const char *buf, unsigned len);
 
 #endif

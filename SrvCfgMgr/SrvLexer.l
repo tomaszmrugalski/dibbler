@@ -131,6 +131,9 @@ bulk-leasequery-accept    { return SrvParser::BULKLQ_ACCEPT_; }
 bulk-leasequery-tcp-port  { return SrvParser::BULKLQ_TCPPORT_; }
 bulk-leasequery-max-conns { return SrvParser::BULKLQ_MAX_CONNS_; }
 bulk-leasequery-timeout   { return SrvParser::BULKLQ_TIMEOUT_; }
+auth-protocol       { return SrvParser::AUTH_PROTOCOL_; }
+auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
+auth-replay         { return SrvParser::AUTH_REPLAY_;}
 auth-method         { return SrvParser::AUTH_METHOD_; }
 auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
 auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }

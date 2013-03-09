@@ -27,7 +27,12 @@ TCfgMgr::TCfgMgr()
   DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */
   DUIDEnterpriseNumber(-1),
   DdnsProto(DNSUPDATE_TCP),
-  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
+  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT), // default is 1000 ms
+
+  // Authentication
+  AuthProtocol_(AUTH_PROTO_NONE),
+  AuthAlgorithm_(0),
+  AuthReplay_(AUTH_REPLAY_NONE)
 {
 
 }
@@ -335,4 +340,28 @@ SPtr<TSIGKey> TCfgMgr::getKey() {
     /// @todo: add some parameter that will pick the right key
 
     return Keys_.front(); // just return first key for now
+}
+
+void TCfgMgr::setAuthProtocol(AuthProtocols proto) {
+    AuthProtocol_ = proto;
+}
+
+void TCfgMgr::setAuthReplay(AuthReplay replay_detection_mode) {
+    AuthReplay_ = replay_detection_mode;
+}
+
+void TCfgMgr::setAuthAlgorithm(uint8_t algorithm) { // protocol specific value
+    AuthAlgorithm_ = algorithm;
+}
+
+AuthProtocols TCfgMgr::getAuthProtocol() {
+    return AuthProtocol_;
+}
+
+AuthReplay TCfgMgr::getAuthReplay() {
+    return AuthReplay_;
+}
+
+uint8_t TCfgMgr::getAuthAlgorithm() {
+    return AuthAlgorithm_;
 }

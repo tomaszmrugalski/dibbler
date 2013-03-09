@@ -27,6 +27,45 @@ Important:
 - Common option parsing
 
 
+Authentication:
+- implement authentication option: framework for multiple auth protocols
+- 2 protocols defined
+- at most one auth option incluended
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |          OPTION_AUTH          |          option-len           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |   protocol    |   algorithm   |      RDM      |               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    |                                                               |
+    |          replay detection (64 bits)           +-+-+-+-+-+-+-+-+
+    |                                               |   auth-info   |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    .                   authentication information                  .
+    .                       (variable length)                       .
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+RDM = 0 => monotonically increasing counter
+    (must be supported by all protocols)
+
+Delayed auth protocol
+protocol = 2, delayed auth mechanism.
+
+algorithm
+ 1 = hmac-md5
+
+- Client and server preconfigured with keys
+
+
+-client requests auth in solicit
+-srv includes auth in advertise
+-contains nonce value generate by the source as a message auth code (MAC)
+ HMAC-MD5 is used
+
+
+
+
 Refactor:
 - remove Msg* in TOpt
 - remove many SrvOpt and ClntOpt classes

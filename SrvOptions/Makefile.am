@@ -7,7 +7,7 @@ libSrvOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvTransMgr
 
 libSrvOptions_a_SOURCES = SrvOptAAAAuthentication.cpp SrvOptAAAAuthentication.h
 libSrvOptions_a_SOURCES += SrvOptAddrParams.cpp SrvOptAddrParams.h
-libSrvOptions_a_SOURCES += SrvOptAuthentication.cpp SrvOptAuthentication.h
+#libSrvOptions_a_SOURCES += SrvOptAuthentication.cpp SrvOptAuthentication.h
 #libSrvOptions_a_SOURCES += SrvOptClientIdentifier.cpp SrvOptClientIdentifier.h
 #libSrvOptions_a_SOURCES += SrvOptDNSServers.cpp SrvOptDNSServers.h
 #libSrvOptions_a_SOURCES += SrvOptDomainName.cpp SrvOptDomainName.h

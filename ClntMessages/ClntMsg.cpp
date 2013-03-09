@@ -40,7 +40,7 @@
 #ifndef MOD_DISABLE_AUTH
 #include "ClntOptAAAAuthentication.h"
 #include "ClntOptKeyGeneration.h"
-#include "ClntOptAuthentication.h"
+#include "OptAuthentication.h"
 #endif
 
 #include "Logger.h"
@@ -48,21 +48,21 @@
 using namespace std;
 
 static string msgs[] = { "",
-		  "SOLICIT",
-		  "ADVERTISE",
-		  "REQUEST",
-		  "CONFIRM",
-		  "RENEW",
-		  "REBIND",
-		  "REPLY",
-		  "RELEASE",
-		  "DECLINE",
-		  "RECONFIGURE",
-		  "INF-REQUEST",
-		  "RELAY-FORWARD"
-		  "RELAY-REPLY",
-	  "LEASEQUERY",
-	  "LEASEQUERY-REPLY"};
+                         "SOLICIT",
+                         "ADVERTISE",
+                         "REQUEST",
+                         "CONFIRM",
+                         "RENEW",
+                         "REBIND",
+                         "REPLY",
+                         "RELEASE",
+                         "DECLINE",
+                         "RECONFIGURE",
+                         "INF-REQUEST",
+                         "RELAY-FORWARD"
+                         "RELAY-REPLY",
+                         "LEASEQUERY",
+                         "LEASEQUERY-REPLY"};
 
 void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
     string name;
@@ -102,6 +102,9 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     //read options contained in message
     int pos=0;
     SPtr<TOpt> ptr;
+
+    char* auth_offset = 0;
+    size_t auth_len = 0;
 
     while (pos<bufSize) {
 	if (pos+4>bufSize) {
@@ -198,9 +201,11 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
 	    break;
 	case OPTION_AUTH:
+            auth_offset = buf + pos;
+            auth_len = length;
 	    if (ClntCfgMgr().getAuthEnabled()) {
 		this->DigestType = ClntCfgMgr().getDigest();
-		ptr = new TClntOptAuthentication(buf+pos, length, this);
+		ptr = new TOptAuthentication(buf+pos, length, this);
 	    }
 	    break;
 #endif
@@ -263,6 +268,8 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     SPtr<TOpt> opt;
     while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
+
+    // @todo: confirm verification here
 
 }
 
@@ -447,27 +454,52 @@ void TClntMsg::setIface(int iface) {
 void TClntMsg::appendAuthenticationOption()
 {
 #ifndef MOD_DISABLE_AUTH
-    if (!ClntCfgMgr().getAuthEnabled() || ClntCfgMgr().getDigest() == DIGEST_NONE) {
+    if (!ClntCfgMgr().getAuthEnabled()) {
 	Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
 	DigestType = DIGEST_NONE;
 	return;
     }
 
-    this->DigestType = ClntCfgMgr().getDigest();
+    uint8_t algorithm = 0; // algorithm is protocol specific
 
-    if (!getOption(OPTION_AUTH)) {
-	ClntAddrMgr().firstClient();
-	SPtr<TAddrClient> client = ClntAddrMgr().getClient();
-	if (client && client->getSPI())
-	    this->setSPI(client->getSPI());
-	if (client)
-	    this->ReplayDetection = client->getNextReplayDetectionSent();
-	else
-	    this->ReplayDetection = 1;
-	Options.push_back(new TClntOptAuthentication(this));
-	if (client)
-	    client->setSPI(this->getSPI());
+    ClntAddrMgr().firstClient();
+    SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+
+    switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NONE: {
+        algorithm = 0;
+        break;
     }
+    case AUTH_PROTO_DELAYED: {
+        algorithm = 1;
+        break;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: { // RFC 3315, section 21.5.1
+        /// @todo: reconfigure-key
+        Log(Error) << "Auth: reconfigure key not supported yet." << LogEnd;
+        break;
+    }
+    case AUTH_PROTO_DIBBLER: { // Mechanism proposed by Kowalczuk
+        DigestType = ClntCfgMgr().getDigest();
+        algorithm = static_cast<uint8_t>(ClntCfgMgr().getDigest());
+        if (client && client->getSPI())
+            this->setSPI(client->getSPI());
+        break;
+    }
+    default: {
+        Log(Error) << "Auth: Invalid protocol specified. Can't sent AUTH option." << LogEnd;
+        return;
+    }
+    }
+
+    SPtr<TOptAuthentication> auth = new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
+                                                           algorithm,
+                                                           ClntCfgMgr().getAuthReplay(), this);
+    // replay detection
+    if (client && ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
+        auth->setReplayDetection(client->getNextReplayDetectionSent());
+    }
+    // otherwise replay value is zero
 #endif
 }
 
@@ -795,7 +827,6 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
  *
  * @param reply
  */
-
 void TClntMsg::answer(SPtr<TClntMsg> reply)
 {
     SPtr<TOptDUID> ptrDUID;
@@ -820,8 +851,14 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     // analyse all options received
     SPtr<TOpt> option;
 
+    // Check authentication first. If the checks fail, we need to drop the whole message
+    // without using its contents.
+    if (!checkReceivedAuthOption()) {
+        Log(Warning) << "Auth option verification failed. Ignoring message." << LogEnd;
+        return;
+    }
+
     // find ORO in received options
-    reply->firstOption();
     SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
     
     reply->firstOption();
@@ -1087,35 +1124,65 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     return;
 }
 
-bool TClntMsg::validateReplayDetection() {
-    if (this->MsgType == SOLICIT_MSG)
-	return true;
+bool TClntMsg::checkReceivedAuthOption() {
 
+    // If replay detection fails, we don't bother to try anything fancy
+    if (!validateReplayDetection()) {
+        return false;
+    }
+
+    switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NONE: {
+        return true;
+    }
+    case AUTH_PROTO_DELAYED: {
+        /// @todo: implement delayed-auth
+        Log(Error) << "Support for delayed authentication if not implementd yet."
+                   << LogEnd;
+        return true;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+        /// @todo: implement reconfigure-key
+    } 
+    case AUTH_PROTO_DIBBLER: {
+        // this was in ClntOptAuthentication::doDuties()
+        SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(getIface());
+        cfgIface->setAuthenticationState(STATE_CONFIGURED);
+    }
+    }
+
+    return false;
+}
+
+bool TClntMsg::validateReplayDetection() {
+
+    if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_NONE) {
+        // we don't care about replay detection
+        return true;
+    }
+
+    // get the client's (ours) information
     ClntAddrMgr().firstClient();
     SPtr<TAddrClient> client = ClntAddrMgr().getClient();
-
     if (!client) {
-	Log(Crit) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;
+	Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
 	return false;
     }
 
-    if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)
-	return true;
+    uint64_t received = getReplayDetection();
+    uint64_t last_received = client->getReplayDetectionRcvd();
 
-    if (client->getReplayDetectionRcvd() < this->ReplayDetection) {
-	Log(Debug)
-	    << "Replay detection field should be greater than "
-	    << client->getReplayDetectionRcvd()
-	    << " and it actually is "
-	    << this->ReplayDetection << LogEnd;
-	client->setReplayDetectionRcvd(this->ReplayDetection);
+    if (last_received < received) {
+	Log(Debug) << "Auth: Replay detection field should be greater than "
+                   << last_received << " and it actually is ("
+                   << received << ")" << LogEnd;
+	client->setReplayDetectionRcvd(received);
 	return true;
     } else {
-	Log(Warning) << "Replayed message detected: Replay detection field should be greater than "
-		     << client->getReplayDetectionRcvd()
-		     << ", but "
-		     << this->ReplayDetection
-		     << " received." << LogEnd;
+	Log(Warning) << "Auth: Replayed message detected: previously received: "
+                     << last_received << ", now received " << received << LogEnd;
 	return false;
     }
+
+    return true; // not really needed
 }

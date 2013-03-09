@@ -113,6 +113,9 @@ insist-mode           { return ClntParser::INSIST_MODE_; }
 inactive-mode         { return ClntParser::INACTIVE_MODE_; }
 auth-enabled          { return ClntParser::AUTH_ENABLED_; }
 auth-accept-methods   { return ClntParser::AUTH_ACCEPT_METHODS_; }
+auth-protocol         { return ClntParser::AUTH_PROTOCOL_; }
+auth-algorithm        { return ClntParser::AUTH_ALGORITHM_; }
+auth-replay           { return ClntParser::AUTH_REPLAY_; }
 digest-none           { return ClntParser::DIGEST_NONE_; }
 digest-plain          { return ClntParser::DIGEST_PLAIN_; }
 digest-hmac-md5       { return ClntParser::DIGEST_HMAC_MD5_; }

@@ -52,8 +52,18 @@ class TCfgMgr
     void setDDNSTimeout(unsigned int timeout) { DDNSTimeout_ = timeout; }
     unsigned int getDDNSTimeout() { return DDNSTimeout_; }
 
+
+#ifndef MOD_DISABLE_AUTH
     void addKey(SPtr<TSIGKey> key);
     SPtr<TSIGKey> getKey();
+
+    void setAuthProtocol(AuthProtocols proto);
+    void setAuthReplay(AuthReplay replay_detection_mode);
+    void setAuthAlgorithm(uint8_t algorithm); // protocol specific value
+    AuthProtocols getAuthProtocol();
+    AuthReplay getAuthReplay();
+    uint8_t getAuthAlgorithm();
+#endif
 
  protected:
     SPtr<TDUID> DUID;
@@ -69,6 +79,13 @@ class TCfgMgr
     SPtr<TDUID> DUIDEnterpriseID;
     DNSUpdateProtocol DdnsProto;
     unsigned int DDNSTimeout_;
+
+
+#ifndef MOD_DISABLE_AUTH
+    AuthProtocols AuthProtocol_;
+    uint8_t AuthAlgorithm_;
+    AuthReplay AuthReplay_;
+#endif
 
     // for TSIG in DDNS
     TSIGKeyList Keys_;

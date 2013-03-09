@@ -43,6 +43,7 @@ public:
     void appendAuthenticationOption();
     void appendElapsedOption();
     void appendRequestedOptions();
+    bool checkReceivedAuthOption();
 
     bool validateReplayDetection();
 

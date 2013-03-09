@@ -146,7 +146,7 @@ char *getDigestName(enum DigestTypes type) {
     return DIGESTNAME[type];
 }
 
-void PrintHex(const std::string& message, char *buffer, unsigned len) {
+void PrintHex(const std::string& message, const char *buffer, unsigned len) {
     char *buf = new char[len*3+1];
 
     if (len) {

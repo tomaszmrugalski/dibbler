@@ -16,30 +16,28 @@
 #include "Msg.h"
 #include "Portable.h"
 
-TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), Valid_(false) {
+TOptAuthentication::TOptAuthentication(char* buf, int buflen, TMsg* parent)
+    :TOpt(OPTION_AUTH, parent) {
     AuthInfoLen_ = getDigestSize(parent->DigestType);
 
-    if (n < 13) {
-        buf += n;
-        n = 0;
+    if (buflen < 13) {
+        Valid = false;
         return;
     }
-    setRDM(*buf);
-    buf += 1;
-    n -= 1;
+    setRDM(static_cast<AuthReplay>(buf[0]));
+    buf++;
+    buflen--;
 
     Parent->setReplayDetection(readUint64(buf));
     buf += sizeof(uint64_t);
-    n -= sizeof(uint64_t);
+    buflen -= sizeof(uint64_t);
 
     Parent->setSPI(readUint32(buf));
     buf += sizeof(uint32_t);
-    n -= sizeof(uint32_t);
+    buflen -= sizeof(uint32_t);
 
-    if (n != AuthInfoLen_){
-        buf += n;
-        n = 0;
+    if (buflen != AuthInfoLen_){
+        Valid = false;
         return;
     }
 
@@ -50,23 +48,24 @@ TOptAuthentication::TOptAuthentication( char * &buf,  int &n, TMsg* parent)
 
     PrintHex("Received digest: ", buf, AuthInfoLen_);
 
-    buf += n;
-    n = 0;
-
     Valid = true;
 }
 
-TOptAuthentication::TOptAuthentication(TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), Valid_(true) {
+TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo, AuthReplay rdm, TMsg* parent)
+    :TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0) {
     AuthInfoLen_ = getDigestSize(parent->DigestType);
 }
 
-void TOptAuthentication::setRDM( uint8_t value) {
-    RDM_ = value;
+void TOptAuthentication::setRDM(AuthReplay value) {
+    rdm_ = value;
 }
 
 size_t TOptAuthentication::getSize() {
     return 17 + AuthInfoLen_;
+}
+
+bool TOpt::doDuties() {
+    return true;
 }
 
 char * TOptAuthentication::storeSelf( char* buf) {
@@ -76,7 +75,7 @@ char * TOptAuthentication::storeSelf( char* buf) {
 
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize() - 4);
-    *buf = RDM_;
+    *buf = rdm_;
     buf+=1;
     buf = writeUint64(buf, Parent->getReplayDetection());
     buf = writeUint32(buf, spi);
@@ -97,4 +96,16 @@ char * TOptAuthentication::storeSelf( char* buf) {
     buf += AuthInfoLen_;
 
     return buf;
+}
+
+void TOptAuthentication::setReplayDetection(uint64_t value) {
+    replay_ = value;
+}
+
+uint64_t TOptAuthentication::getReplayDetection() {
+    return replay_;
+}
+
+bool TOptAuthentication::doDuties() {
+    return true;
 }

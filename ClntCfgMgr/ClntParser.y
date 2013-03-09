@@ -121,7 +121,7 @@ namespace std
 %token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
-%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
+%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
@@ -162,8 +162,11 @@ GlobalOptionDeclaration
 | ScriptName
 | DdnsProtocol
 | DdnsTimeout
-| AuthEnabledOption
-| AuthAcceptOption
+| AuthEnabled
+| AuthAcceptMethods
+| AuthProtocol
+| AuthAlgorithm
+| AuthReplay
 | AnonInfRequest
 | InactiveMode
 | InsistMode
@@ -555,16 +558,56 @@ ScriptName
     CfgMgr->setScript($2);
 }
 
-AuthEnabledOption
-: AUTH_ENABLED_ Number    { ParserOptStack.getLast()->setAuthEnabled($2); }
+AuthEnabled
+: AUTH_ENABLED_ Number {
+    ParserOptStack.getLast()->setAuthEnabled($2); 
+}
 
-AuthAcceptOption
+AuthAcceptMethods
 : AUTH_ACCEPT_METHODS_
 {
     DigestLst.clear();
 } DigestList {
     ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst);
 }
+
+AuthProtocol
+: AUTH_PROTOCOL_ STRING_ {
+    if (strcasecmp($2,"none")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (strcasecmp($2, "delayed")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
+    } else if (strcasecmp($2, "reconfigure-key")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
+    } else if (strcasecmp($2, "dibbler")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
+    } else {
+        Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+};
+
+AuthAlgorithm
+: AUTH_ALGORITHM_ STRING_ {
+    Log(Crit) << "auth-algorithm secification is not supported yet." << LogEnd;
+    YYABORT;
+};
+| AuthReplay
+
+AuthReplay
+: AUTH_REPLAY_ STRING_ {
+    if (strcasecmp($2, "none")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
+    } else if (strcasecmp($2, "monotonic")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_MONOTONIC);
+    } else {
+        Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+};
+
 
 DigestList
 : Digest

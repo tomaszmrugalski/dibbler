@@ -31,7 +31,7 @@
 #ifndef MOD_DISABLE_AUTH
 #include "SrvOptAAAAuthentication.h"
 #include "SrvOptKeyGeneration.h"
-#include "SrvOptAuthentication.h"
+#include "OptAuthentication.h"
 #endif
 
 #include "Logger.h"
@@ -181,7 +181,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
                 this->DigestType = SrvCfgMgr().getDigest();
 
-                ptr = new TSrvOptAuthentication(buf+pos, length, this);
+                ptr = new TOptAuthentication(buf+pos, length, this);
                 SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
                 if (optDUID) {
                     SPtr<TAddrClient> client = SrvAddrMgr().getClient(optDUID->getDUID());
@@ -807,7 +807,6 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 
     DigestType = SrvCfgMgr().getDigest();
     if (DigestType == DIGEST_NONE) {
-        // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
         return;
     }
 
@@ -819,10 +818,11 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
             client->setSPI(this->getSPI());
 
         if (client)
-            this->ReplayDetection = client->getNextReplayDetectionSent();
-        else
-            this->ReplayDetection = 1;
-        Options.push_back(new TSrvOptAuthentication(this));
+            setReplayDetection(client->getNextReplayDetectionSent());
+        Options.push_back(new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
+                                                 SrvCfgMgr().getAuthAlgorithm(),
+                                                 SrvCfgMgr().getAuthReplay(),
+                                                 this));
     }
 #endif
 }
@@ -1038,36 +1038,45 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOp
     return false;
 }
 
+/// verifies if the received packet is a replayed message
+///
+/// @return true if message is ok (false if it is replayed and should be dropped)
 bool TSrvMsg::validateReplayDetection() {
 
-#ifndef MOD_DISABLE_AUTH
-    if (this->MsgType == SOLICIT_MSG)
-        return true;
-
-    if (SrvCfgMgr().getDigest() ==  DIGEST_NONE) {
-        // Log(Debug) << "Auth: Authentication is disabled." << LogEnd;
+    if (SrvCfgMgr().getAuthReplay() == AUTH_REPLAY_NONE) {
+        // we don't care about replay detection
         return true;
     }
 
-    SPtr<TAddrClient> client = SrvAddrMgr().getClient(SPI);
+    // get the client's information
+    SPtr<TAddrClient> client;
+    SPtr<TOptDUID> optDUID = (Ptr*)getOption(OPTION_CLIENTID);
+    if (optDUID) {
+        client = SrvAddrMgr().getClient(optDUID->getDUID());
+    }
+
+    // This is either anonymous inf-request,
+    // Or this is the first transmission from the client
     if (!client) {
-        Log(Debug) << "Auth: Unable to find client with SPI=" << SPI << "." << LogEnd;
         return true;
     }
 
-    if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)
-        return true;
+    uint64_t received = getReplayDetection();
+    uint64_t last_received = client->getReplayDetectionRcvd();
 
-    if (client->getReplayDetectionRcvd() < this->ReplayDetection) {
-        client->setReplayDetectionRcvd(this->ReplayDetection);
-        return true;
+    if (last_received < received) {
+	Log(Debug) << "Auth: Replay detection field should be greater than "
+                   << last_received << " and it actually is ("
+                   << received << ")" << LogEnd;
+	client->setReplayDetectionRcvd(received);
+	return true;
     } else {
-        Log(Warning) << "Auth: Replayed message detected, message dropped." << LogEnd;
-        return false;
+	Log(Warning) << "Auth: Replayed message detected: previously received: "
+                     << last_received << ", now received " << received << LogEnd;
+	return false;
     }
-#else
-    return true;
-#endif
+
+    return true; // not really needed
 }
 
 void TSrvMsg::setRemoteID(SPtr<TOptVendorData> remoteID)

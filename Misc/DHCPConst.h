@@ -239,17 +239,45 @@ enum EUnknownFQDNMode {
 int allowOptInOpt(int msgType, int optOut, int optIn);
 int allowOptInMsg(int msgType, int optType);
 
+// Supported authorization protocols
+enum AuthProtocols {
+    AUTH_PROTO_NONE = 0,    // disabled
+    AUTH_PROTO_DELAYED = 2, // RFC 3315
+    AUTH_PROTO_RECONFIGURE_KEY = 3, // RFC 3315, section 21.5.1
+    AUTH_PROTO_DIBBLER = 4 // Mechanism proposed by Kowalczuk
+};
+
+enum AuthReplay {
+    AUTH_REPLAY_NONE,
+    AUTH_REPLAY_MONOTONIC
+};
+
+// AUTH_ALGORITHM values for protocol type None (0)
+// 0
+
+// AUTH_ALGORITHM values for delayed auth (2)
+
+// AUTH_ALGORITHM values for reconfigure key (3)
+// This is protocol specific value and is useful only when AuthProtocols = 3
+enum AuthAlgorithm_ReconfigureKey {
+    AUTH_ALGORITHM_NONE = 0,
+    AUTH_ALGORITHM_RECONFIGURE_KEY = 1
+};
+
+// AUTH_ALGORITHM values for protocol type Dibbler (4)
+/// @todo: rename to AuthAlgorithm_DibblerDigestTypes
+// This is protocol specific value and is useful only when AuthProtocols = 4
 enum DigestTypes {
-	DIGEST_NONE = 0,
-	DIGEST_PLAIN = 1,
-	DIGEST_HMAC_MD5 = 2,
-	DIGEST_HMAC_SHA1 = 3,
-	DIGEST_HMAC_SHA224 = 4,
-	DIGEST_HMAC_SHA256 = 5,
-	DIGEST_HMAC_SHA384 = 6,
-	DIGEST_HMAC_SHA512 = 7,
-	//this must be last, increase it if necessary
-	DIGEST_INVALID = 8
+    DIGEST_NONE = 0,
+    DIGEST_PLAIN = 1,
+    DIGEST_HMAC_MD5 = 2,
+    DIGEST_HMAC_SHA1 = 3,
+    DIGEST_HMAC_SHA224 = 4,
+    DIGEST_HMAC_SHA256 = 5,
+    DIGEST_HMAC_SHA384 = 6,
+    DIGEST_HMAC_SHA512 = 7,
+    //this must be last, increase it if necessary
+    DIGEST_INVALID = 8
 };
 
 unsigned getDigestSize(enum DigestTypes type);

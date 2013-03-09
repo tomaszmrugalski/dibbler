@@ -62,7 +62,7 @@ class TMsg
     bool isDone(bool done);
 
     // auth stuff below
-    void setAuthInfoPtr(char* ptr);
+    void setAuthInfoPtr(char* ptr); /// @todo: remove this
     int setAuthInfoKey();
     void setAuthInfoKey(char *ptr);
     char * getAuthInfoKey();
@@ -97,22 +97,19 @@ class TMsg
     
     bool IsDone; // Is this transaction done?
 
-    // @todo: remove this
-    // char * pkt;  // buffer where this packet will be build
     int Iface;   // interface from/to which message was received/should be sent
     SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 
     // auth stuff below
-    char * AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
-    char * AuthInfoKey; // pointer to key used do calculate Authentication information
+    char* AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
+    char* AuthInfoKey; // pointer to key used do calculate Authentication information
     uint32_t SPI; // SPI sent by server in OPTION_KEYGEN
-    uint64_t ReplayDetection;
     uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
     char *KeyGenNonce;
     unsigned KeyGenNonceLen;
 
     // a pointer to NotifyScriptParams structure (if defined)
-    TNotifyScriptParams * NotifyScripts;
+    TNotifyScriptParams* NotifyScripts;
 };
 
 typedef std::list< SPtr<TMsg> > TMsgLst;
