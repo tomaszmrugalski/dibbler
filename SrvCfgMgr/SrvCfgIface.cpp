@@ -523,7 +523,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     } else {
         Relay_ = false;
         RelayName_ = "";
-        RelayID_ = 0;
+        RelayID_ = -1;
         RelayInterfaceID_ = 0;
     }
 
@@ -818,6 +818,24 @@ void TSrvCfgIface::delTAAddr() {
     ta->decrAssigned();
 }
 
+// subnet management
+void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length) {
+    Subnets_.push_back(THostRange(prefix, length));
+}
+
+void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max) {
+    Subnets_.push_back(THostRange(min, max));
+}
+
+bool TSrvCfgIface::addrInSubnet(SPtr<TIPv6Addr> addr) {
+    for (std::vector<THostRange>::const_iterator range = Subnets_.begin();
+         range != Subnets_.end(); ++range) {
+        if (range->in(addr)) {
+            return true;
+        }
+    }
+    return false;
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -843,6 +861,13 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <!-- <relay/> -->" << std::endl;
     }
 
+    out << "    <!--" << iface.Subnets_.size() << " subnet(s) -->" << std::endl;
+    for (std::vector<THostRange>::const_iterator range = iface.Subnets_.begin();
+         range != iface.Subnets_.end(); ++range) {
+        out << "    <subnet>" << range->getAddrL()->getPlain() << "-"
+            << range->getAddrR()->getPlain() << "</subnet>" << std::endl;
+    }
+
     out << "    <preference>" << (int)iface.Preference_ << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease_ << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease_ << "</clntMaxLease>" << std::endl;
@@ -864,7 +889,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     // print IA objects
     SPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst_.first();
-    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
+    out << "    <!-- IA: non-temporary addr class count: "
+        << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
     while( ia=iface.SrvCfgAddrClassLst_.get() ) {
         out << *ia;
     }

@@ -14,7 +14,7 @@
 
 #include "SmartPtr.h"
 #include "IfaceMgr.h"
-#include "SrvIfaceIface.h"
+#include "Iface.h"
 #include "SrvMsg.h"
 
 #define SrvIfaceMgr() (TSrvIfaceMgr::instance())
@@ -27,16 +27,16 @@ class TSrvIfaceMgr :public TIfaceMgr {
    ~TSrvIfaceMgr();
    friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceMgr &x);
 
-   SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeMsg(int ifindex,
                            SPtr<TIPv6Addr> peer,
                            char * buf, int bufsize);
 
-   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                  SPtr<TIPv6Addr> peer,
                                  char * buf, int bufsize);
 
-   bool setupRelay(std::string name, int ifindex, int underIfindex,
-                   SPtr<TSrvOptInterfaceID> interfaceID);
+   //bool setupRelay(std::string name, int ifindex, int underIfindex,
+   //                SPtr<TSrvOptInterfaceID> interfaceID);
    void dump();
 
    // ---sends messages---

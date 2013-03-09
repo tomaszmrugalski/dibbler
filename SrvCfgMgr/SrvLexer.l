@@ -100,6 +100,7 @@ time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
 next-hop            { return SrvParser::NEXT_HOP_; }
+subnet              { return SrvParser::SUBNET_; }
 route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
 infinite            { return SrvParser::INFINITE_; }

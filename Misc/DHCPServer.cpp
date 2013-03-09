@@ -49,7 +49,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
     }
     SrvAddrMgr().dump();
 
-    TSrvTransMgr::instanceCreate(SRVTRANSMGR_FILE);
+    TSrvTransMgr::instanceCreate(SRVTRANSMGR_FILE, DHCPSERVER_PORT);
     if ( SrvTransMgr().isDone() ) {
         Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
         this->IsDone = true;
@@ -93,6 +93,10 @@ void TDHCPServer::run()
 	int iface = msg->getIface();
 	SPtr<TIfaceIface> ptrIface;
 	ptrIface = SrvIfaceMgr().getIfaceByID(iface);
+        if (!ptrIface) {
+            Log(Error) << "Received data over unknown interface: ifindex=" << iface << LogEnd;
+            continue;
+        }
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
 		    << dec << ", " << msg->countOption() << " opts:";
@@ -100,7 +104,7 @@ void TDHCPServer::run()
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
-	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
+	Log(Cont) << ", " << msg->RelayInfo_.size() << " relay(s)." << LogEnd;
 	if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
 					 (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 
@@ -110,6 +114,7 @@ void TDHCPServer::run()
 	} 
 	SrvTransMgr().relayMsg(msg);
     }
+    SrvIfaceMgr().closeSockets();
     Log(Notice) << "Bye bye." << LogEnd;
 }
 

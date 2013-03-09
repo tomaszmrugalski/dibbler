@@ -22,12 +22,12 @@ class THostRange
 {
     friend std::ostream& operator<<(std::ostream& out, THostRange& station);
  public:
-    ~THostRange(void);
     THostRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
     THostRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
-    bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr);
-    bool in(SPtr<TIPv6Addr> addr);
-    bool in(SPtr<TDUID> duid);
+    ~THostRange(void);
+    bool in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr) const;
+    bool in(SPtr<TIPv6Addr> addr) const;
+    bool in(SPtr<TDUID> duid) const;
     SPtr<TIPv6Addr> getRandomAddr() const;
     SPtr<TIPv6Addr> getRandomPrefix() const;
     unsigned long rangeCount() const;

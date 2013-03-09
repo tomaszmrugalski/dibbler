@@ -179,11 +179,28 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
         // relay interface
         if (cfgIface->isRelay()) {
+
             cfgIface->setID(this->NextRelayID++);
-            if (!this->setupRelay(cfgIface)) {
+
+            // let's find physical interface underneath
+            SPtr<TSrvCfgIface> under_relay = cfgIface;
+            ifaceIface = SPtr<TIfaceIface>();
+            while (!ifaceIface && under_relay && under_relay->getRelayName() != "") {
+                ifaceIface = SrvIfaceMgr().getIfaceByName(under_relay->getRelayName());
+                if (!ifaceIface) {
+                    under_relay = getIfaceByName(under_relay->getRelayName());
+                }
+            }
+
+            if (!ifaceIface) {
+                Log(Crit) << "Interface " << cfgIface->getFullName()
+                          << " defined physical interface as " << cfgIface->getRelayName()
+                          << ", but there is no such interface present." << LogEnd;
                 return false;
             }
-            this->addIface(cfgIface);
+            cfgIface->setRelayID(ifaceIface->getID());
+
+            addIface(cfgIface);
 
             continue; // skip physical interface checking part
         }
@@ -684,10 +701,7 @@ bool TSrvCfgMgr::validateConfig() {
 
 bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
-    bool dummyRelay = false;
-    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(ptrIface->getID());
-    if (iface && ptrIface->isRelay() && iface->getRelayCnt())
-        dummyRelay = true;
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(ptrIface->getID());
 
     if (ptrIface->countAddrClass() && stateless()) {
         Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()
@@ -696,13 +710,13 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
     }
     if (!ptrIface->countAddrClass() && !ptrIface->countPD()
         && !ptrIface->getTA() && !stateless()) {
-        if (!dummyRelay) {
+        if (!ptrIface->isRelay()) {
             Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
                       << ": No class definitions (IA,TA or PD) present, but stateless mode not set." << LogEnd;
             return false;
         } else {
-            Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface."
-                         << LogEnd;
+            Log(Notice) << "Interface " << ptrIface->getFullName() << " has no address or prefix pools defined."
+                        << LogEnd;
         }
     }
 
@@ -753,13 +767,28 @@ bool TSrvCfgMgr::validateClass(SPtr<TSrvCfgIface> ptrIface, SPtr<TSrvCfgAddrClas
 
 SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
     SPtr<TSrvCfgIface> ptrIface;
-    this->firstIface();
-    while ( ptrIface = this->getIface() ) {
+    firstIface();
+    while ( ptrIface = getIface() ) {
         if ( ptrIface->getID()==iface )
             return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface
-               << ") specifed, cannot get address." << LogEnd;
+    Log(Error) << "Invalid interface (ifindex=" << iface
+               << ") specifed: no such interface." << LogEnd;
+    return 0; // NULL
+}
+
+SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
+    SPtr<TSrvCfgIface> ptrIface;
+    firstIface();
+    while ( ptrIface = getIface() ) {
+        Log(Debug) << "#### looking for iface=" << name << ", found " << ptrIface->getName() << LogEnd;
+        if ( ptrIface->getName()==name ) {
+            Log(Debug) << "#### Found!" << LogEnd;
+            return ptrIface;
+        }
+    }
+    Log(Error) << "Invalid interface (name=" << name
+               << ") specifed: no such interface." << LogEnd;
     return 0; // NULL
 }
 
@@ -828,16 +857,11 @@ bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
 
     iface = SrvIfaceMgr().getIfaceByName(name);
     if (!iface) {
-        Log(Crit) << "Underlaying interface for " << cfgIface->getName() << "/" << cfgIface->getID()
+        Log(Crit) << "Underlaying interface for " << cfgIface->getFullName()
                   << " with name " << name << " is missing." << LogEnd;
         return false;
     }
     cfgIface->setRelayID(iface->getID());
-
-    if (!SrvIfaceMgr().setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
-        Log(Crit) << "Relay setup for " << cfgIface->getName() << "/" << cfgIface->getID() << " interface failed." << LogEnd;
-        return false;
-    }
 
     return true;
 }
@@ -1144,4 +1168,64 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     if (!DNSAddr) {
     }
     return DNSAddr;
+}
+
+/// @brief returns ifindex of an interface with specified interface-id
+///
+/// @param interfaceID pointer to TSrvOptInterfaceID
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
+    if (!interfaceID) {
+        return -1;
+    }
+
+    firstIface();
+    while (SPtr<TSrvCfgIface> cfgIface = getIface()) {
+        SPtr<TSrvOptInterfaceID> cfgIfaceID = cfgIface->getRelayInterfaceID();
+        if (cfgIfaceID && (*cfgIfaceID == *interfaceID)) {
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
+}
+
+
+/// @brief returns ifindex of an interface with matched address
+///
+/// @param addr address to be matched
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->addrInSubnet(addr)) {
+            Log(Debug) << "Address " << addr->getPlain() << " matched on interface "
+                       << cfgIface->getFullName() << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    Log(Warning) << "Finding RELAYs using link address failed." << LogEnd;
+    return -1;
+}
+
+/// @brief return any relay (used with guess-mode on)
+///
+/// @return interface index of the first relay (or -1 if there are no relays)
+int TSrvCfgMgr::getAnyRelay() {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->isRelay()) {
+            Log(Debug) << "Guess-mode: Picked " << cfgIface->getFullName() << " as relay." << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
 }

@@ -36,7 +36,7 @@
 #include "SrvOptInterfaceID.h"
 #include "IPv6Addr.h"
 #include "AddrClient.h"
-#include "SrvIfaceIface.h"
+#include "Iface.h"
 #include "OptOptionRequest.h"
 #include "OptGeneric.h"
 #include "OptVendorData.h"
@@ -77,15 +77,15 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                  // << ", flags=" << ptr->flags
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 
-        SPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
-                                                       ptr->flags,
-                                                       ptr->mac,
-                                                       ptr->maclen,
-                                                       ptr->linkaddr,
-                                                       ptr->linkaddrcount,
-                                                       ptr->globaladdr,
-                                                       ptr->globaladdrcount,
-                                                       ptr->hardwareType));
+        SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name,ptr->id,
+                                                ptr->flags,
+                                                ptr->mac,
+                                                ptr->maclen,
+                                                ptr->linkaddr,
+                                                ptr->linkaddrcount,
+                                                ptr->globaladdr,
+                                                ptr->globaladdrcount,
+                                                ptr->hardwareType));
         this->IfaceLst.append((Ptr*) iface);
         ptr = ptr->next;
     }
@@ -108,7 +108,7 @@ void TSrvIfaceMgr::dump()
 
 
 /**
- * sends data to client. Uses multicast address as source
+ * sends data to client. Uses unicast address as source
  * @param iface interface index
  * @param msg - buffer containing message ready to send
  * @param size - size of message
@@ -155,7 +155,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 
     // send it!
-    return (sock->send(msg,size,addr,port));
+    if (sock->send(msg,size,addr,port) == 0) {
+        return true; // all ok
+    } else {
+        return false;
+    }
 }
 
 // @brief reads messages from all interfaces
@@ -189,7 +193,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         // check message type
         int msgtype = buf[0];
 
-        SPtr<TSrvIfaceIface> ptrIface;
+        SPtr<TIfaceIface> ptrIface;
 
         // get interface
         ptrIface = (Ptr*)getIfaceBySocket(sockid);
@@ -211,7 +215,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         case INFORMATION_REQUEST_MSG:
         case LEASEQUERY_MSG:
         {
-            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+            ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
             if (!ptr->validateReplayDetection() ||
                 !ptr->validateAuthInfo(buf, bufsize)) {
                 Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
@@ -247,9 +251,10 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     }
 }
 
+#if 0
 bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
                               SPtr<TSrvOptInterfaceID> interfaceID) {
-    SPtr<TSrvIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
+    SPtr<TIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
     if (!under) {
         Log(Crit) << "Unable to setup " << name << "/" << ifindex
                   << " relay: underlaying interface with id=" << underIfindex
@@ -286,21 +291,21 @@ bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
 
     return true;
 }
+#endif
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
-                                                SPtr<TIPv6Addr> peer,
-                                                char * buf, int bufsize) {
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
+                                            SPtr<TIPv6Addr> peer,
+                                            char * buf, int bufsize) {
 
     SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
     SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TSrvOptInterfaceID> interfaceIDTbl[HOP_COUNT_LIMIT];
     int hopTbl[HOP_COUNT_LIMIT];
-    List(TOptGeneric) echoListTbl[HOP_COUNT_LIMIT];
-    SPtr<TSrvIfaceIface> relayIface;
+    TOptList echoListTbl[HOP_COUNT_LIMIT];
     int relays=0; // number of nested RELAY_FORW messages
     SPtr<TOptVendorData> remoteID = 0;
     SPtr<TOptOptionRequest> echo = 0;
-    SPtr<TOptGeneric> gen = 0;
+    SPtr<TOpt> gen = 0;
+    int ifindex = -1;
 
     char * relay_buf = buf;
     int relay_bufsize = bufsize;
@@ -315,8 +320,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
             return 0;
         }
 
-        SPtr<TSrvOptInterfaceID> ptrIfaceID;
-        ptrIfaceID = 0;
+        SPtr<TSrvOptInterfaceID> ptrIfaceID = 0;
 
         char type = buf[0];
         if (type!=RELAY_FORW_MSG)
@@ -339,6 +343,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
             buf += sizeof(uint16_t);
             bufsize -= sizeof(uint16_t);
 
+            gen = 0;
+
             if (len > bufsize) {
                 Log(Warning) << "Truncated option " << code << ": " << bufsize
                              << " bytes remaining, but length is " << len
@@ -354,6 +360,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
                     return 0;
                 }
                 ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
+                gen = (Ptr*)ptrIfaceID;
                 optIfaceIDCnt++;
                 break;
             case OPTION_RELAY_MSG:
@@ -362,30 +369,35 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
                 optRelayCnt++;
                 break;
             case OPTION_REMOTE_ID:
-                remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
+                gen = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
                 break;
             case OPTION_ERO:
                 Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
-                echo = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
+                gen = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
                 break;
             default:
                 gen = new TOptGeneric(code, buf, len, 0);
-                echoListTbl[relays].append(gen);
 
+            }
+            if (gen) {
+                echoListTbl[relays].push_back(gen);
             }
             buf     += len;
             bufsize -= len;
         }
 
+#if 0
         // remember options to be echoed
         echoListTbl[relays].first();
         while (gen = echoListTbl[relays].get()) {
             if (!echo) {
-                Log(Warning) << "Invalid option (" << gen->getOptType() << ") in RELAY_FORW message was ignored." << LogEnd;
+                Log(Warning) << "Invalid option (" << gen->getOptType()
+                             << ") in RELAY_FORW message was ignored." << LogEnd;
                 echoListTbl[relays].del();
             } else {
                 if (!echo->isOption(gen->getOptType())) {
-                    Log(Warning) << "Invalid option (" << gen->getOptType() << ") in RELAY_FORW message was ignored." << LogEnd;
+                    Log(Warning) << "Invalid option (" << gen->getOptType()
+                                 << ") in RELAY_FORW message was ignored." << LogEnd;
                     echoListTbl[relays].del();
                 } else {
                     Log(Info) << "Option " << gen->getOptType() << " will be echoed back." << LogEnd;
@@ -393,78 +405,84 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
             }
 
         }
-
+#endif
 
         // remember those links
         linkAddrTbl[relays] = linkAddr;
         peerAddrTbl[relays] = peerAddr;
-        interfaceIDTbl[relays] = ptrIfaceID;
         hopTbl[relays] = hopCount;
         relays++;
 
         if (relays> HOP_COUNT_LIMIT) {
-            Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT << " times. Message dropped." << LogEnd;
+            Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT
+                       << " times. Message dropped." << LogEnd;
             return 0;
         }
 
         if (optRelayCnt!=1) {
-            Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was expected. Message dropped." << LogEnd;
+            Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was "
+                       << "expected. Message dropped." << LogEnd;
             return 0;
         }
         if (optIfaceIDCnt>1) {
             Log(Error) << "More than one (" << optIfaceIDCnt
-                       << ") interface-ID options received, but at most 1 was expected. Message dropped." << LogEnd;
+                       << ") interface-ID options received, but at most 1 was expected. "
+                       << "Message dropped." << LogEnd;
             return 0;
         }
 
-        Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain() << ", peer=" << peerAddr->getPlain();
+        Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
+                  << ", peer=" << peerAddr->getPlain();
 
         bool guessMode = SrvCfgMgr().guessMode();
 
+        // First try to find a relay based on the interface-id option
         if (ptrIfaceID) {
-            // find relay interface based on the interface-id option
             Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
-            relayIface = ptrIface->getRelayByInterfaceID(ptrIfaceID);
-            if (!relayIface) {
-                if (!guessMode) {
-                    Log(Error) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getPlain() << " defined on the "
-                               << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+            ifindex = SrvCfgMgr().getRelayByInterfaceID(ptrIfaceID);
+            if ( (ifindex == -1) && !guessMode) {
+                    Log(Warning) << "Unable to find relay interface with interfaceID="
+                                 << ptrIfaceID->getPlain() << " defined on the "
+                                 << physicalIface->getFullName() << " interface." << LogEnd;
                     return 0;
-                }
             }
         }
-        else {
-            // find relay interface based on the link address
-            Log(Cont) << ", interfaceID option missing." << LogEnd;
-            Log(Warning) << "InterfaceID option missing, trying to find proper interface using link address: "
-                         << linkAddr->getPlain() << " (expect troubles)."<< LogEnd;
-            relayIface = ptrIface->getRelayByLinkAddr(linkAddr);
-            if (!relayIface) {
-                Log(Error) << "Unable to find relay interface using link address: " << linkAddr->getPlain() << LogEnd;
-                if (!guessMode) {
-                  return 0;
-                }
-            }
-        }
-        if (!relayIface && guessMode) {
-            relayIface = ptrIface->getAnyRelay();
-            if (!relayIface) {
-                Log(Error) << "Guess-mode: Unable to find any relays on " << ptrIface->getFullName() << LogEnd;
+
+        // then try to find a relay based on the link address
+        if (ifindex == -1) {
+            Log(Cont) << ", no interface-id option." << LogEnd;
+            ifindex = SrvCfgMgr().getRelayByLinkAddr(linkAddr);
+            if ( (ifindex == -1) && !guessMode) {
+                Log(Warning) << "Unable to find relay interface using link address: "
+                             << linkAddr->getPlain() << LogEnd;
                 return 0;
             }
-            interfaceIDTbl[relays] = -1;
-            Log(Notice) << "Guess-mode: Relayed interface guessed as " << relayIface->getFullName() << LogEnd;
+        }
+
+        // the last hope - use guess-mode to get any relay
+        if ((ifindex == -1) && guessMode) {
+            ifindex = SrvCfgMgr().getAnyRelay();
+            if (ifindex == -1) {
+                Log(Error) << "Guess-mode: Unable to find any relays for packet received on "
+                           << physicalIface->getFullName() << LogEnd;
+                return 0;
+            }
+            SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
+            Log(Notice) << "Guess-mode: Relayed interface guessed as "
+                        << cfgIface->getFullName() << LogEnd;
         }
 
         // now switch to relay interface
-        ptrIface = relayIface;
         buf = relay_buf;
         bufsize = relay_bufsize;
     }
 
-    SPtr<TSrvMsg> msg = this->decodeMsg(ptrIface, peer, relay_buf, relay_bufsize);
+    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
+    if (!msg) {
+        return 0;
+    }
     for (int i=0; i<relays; i++) {
-        msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], interfaceIDTbl[i], echoListTbl[i]);
+        msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
     }
     if (remoteID) {
         Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()
@@ -478,31 +496,33 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
     return (Ptr*)msg;
  }
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
-                                             SPtr<TIPv6Addr> peer,
-                                             char * buf, int bufsize) {
-    int ifaceid = ptrIface->getID();
-    if (bufsize < 4) // 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
+                                      SPtr<TIPv6Addr> peer,
+                                      char * buf, int bufsize) {
+    if (bufsize < 4) {// 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
+        Log(Warning) << "Truncated message received (len " << bufsize
+                     << ", at least 4 is required)." << LogEnd;
         return 0;
+    }
     switch (buf[0]) {
     case SOLICIT_MSG:
-              return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
     case REQUEST_MSG:
-              return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
     case CONFIRM_MSG:
-              return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+        return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
     case RENEW_MSG:
-              return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+        return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
     case REBIND_MSG:
-              return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+        return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
     case RELEASE_MSG:
-              return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
     case DECLINE_MSG:
-              return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
     case INFORMATION_REQUEST_MSG:
-              return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
-              return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
         return 0; //NULL;;
@@ -527,8 +547,8 @@ void TSrvIfaceMgr::redetectIfaces() {
     while (ptr!=NULL) {
         iface = getIfaceByID(ptr->id);
         if (iface && (ptr->flags!=iface->getFlags())) {
-            Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex <<iface->getFlags()
-                        << ", new=" << ptr->flags << ")." << dec << LogEnd;
+            Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old="
+                        << hex <<iface->getFlags() << ", new=" << ptr->flags << ")." << dec << LogEnd;
             iface->updateState(ptr);
         }
         ptr = ptr->next;
@@ -713,7 +733,7 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
     // add info about relays
     SPtr<TSrvMsg> reply = (Ptr*)answer;
 
-    const vector<TSrvMsg::RelayInfo> relayInfo = reply->getRelayInfo();
+    const vector<TSrvMsg::RelayInfo> relayInfo = reply->RelayInfo_;
 
     stringstream relaysNum;
     relaysNum << relayInfo.size();
@@ -729,6 +749,8 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
 
         params->addParam(peer.str(), relay->PeerAddr_->getPlain());
         params->addParam(link.str(), relay->LinkAddr_->getPlain());
+
+        cnt++;
     }
 
     TIfaceMgr::notifyScripts(scriptName, question, answer);
@@ -736,7 +758,7 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
 
 ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;
-    SPtr<TSrvIfaceIface> ptr;
+    SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
     while ( ptr= (Ptr*) x.IfaceLst.get() ) {
         strum << *ptr;

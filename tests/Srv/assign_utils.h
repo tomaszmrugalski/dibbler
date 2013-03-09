@@ -11,6 +11,8 @@
 #include "SrvMsgInfRequest.h"
 #include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
+#include <string>
+#include <unistd.h>
 
 namespace test {
     class NakedSrvIfaceMgr: public TSrvIfaceMgr {
@@ -48,7 +50,8 @@ namespace test {
 
     class NakedSrvTransMgr: public TSrvTransMgr {
     public:
-        NakedSrvTransMgr(const std::string& xmlFile): TSrvTransMgr(xmlFile) {
+        NakedSrvTransMgr(const std::string& xmlFile, int port)
+            :TSrvTransMgr(xmlFile, port) {
             TSrvTransMgr::Instance = this;
         }
         List(TSrvMsg)& getMsgLst() { return MsgLst; }
@@ -83,6 +86,8 @@ namespace test {
             pd_iaid_ = 789;
             pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
         }
+
+	void setIface(const std::string& name);
 
         SPtr<TSrvMsgSolicit> createSolicit() {
 
@@ -151,12 +156,18 @@ namespace test {
                         SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1,
                         uint32_t t2, uint32_t pref, uint32_t valid, uint8_t prefixLen);
 
-        ~ServerTest() {
-            delete transmgr_;
-            delete cfgmgr_;
-            delete addrmgr_;
-            delete ifacemgr_;
-        }
+        void addRelayInfo(const std::string& linkAddr, const std::string& peerAddr,
+                          uint8_t hopCount, const TOptList& echoList);
+
+        void sendHex(const std::string& src_addr, uint16_t src_port,
+                     const std::string& dst_addr, uint16_t dst_port,
+                     const std::string& iface_name,
+                     const std::string& hex_data);
+
+        void clearRelayInfo();
+        void setRelayInfo(SPtr<TSrvMsg> msg);
+
+        ~ServerTest();
 
         NakedSrvIfaceMgr * ifacemgr_;
         NakedSrvCfgMgr * cfgmgr_;
@@ -175,6 +186,9 @@ namespace test {
         uint32_t ia_iaid_;
         uint32_t ta_iaid_;
         uint32_t pd_iaid_;
+
+        // Relay info
+        std::vector<TSrvMsg::RelayInfo> relayInfo_;
     };
 
 } // namespace test

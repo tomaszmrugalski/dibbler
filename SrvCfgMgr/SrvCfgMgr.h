@@ -43,6 +43,7 @@ public:
     void firstIface();
     SPtr<TSrvCfgIface> getIface();
     SPtr<TSrvCfgIface> getIfaceByID(int iface);
+    SPtr<TSrvCfgIface> getIfaceByName(const std::string& name);
     long countIface();
     void addIface(SPtr<TSrvCfgIface> iface);
     void makeInactiveIface(int ifindex, bool inactive);
@@ -119,6 +120,11 @@ public:
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
+
+    // Used to find specific relay
+    int getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
+    int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
+    int getAnyRelay();
 
     // used to be private, but we need access in tests
 protected:

@@ -50,7 +50,8 @@ using namespace std;
  * @param transID
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-    :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0)
+  :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0),
+   forceMsgType_(0)
 {
 }
 
@@ -359,33 +360,47 @@ unsigned long TSrvMsg::getTimeout() {
 void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
                            SPtr<TIPv6Addr> peerAddr,
                            int hop,
-                           SPtr<TSrvOptInterfaceID> interfaceID,
-                           List(TOptGeneric) echolist) {
+                           const TOptList&  echolist) {
     RelayInfo info;
     info.LinkAddr_ = linkAddr;
     info.PeerAddr_ = peerAddr;
-    info.InterfaceID_ = interfaceID;
     info.Hop_      = hop;
     info.EchoList_ = echolist;
     info.Len_      = 0; /// @todo: what about this?
     RelayInfo_.push_back(info);
 }
 
-int TSrvMsg::getRelayCount() {
-    return RelayInfo_.size();
-}
-
-void TSrvMsg::send()
+void TSrvMsg::send(int dstPort /* = 0 */)
 {
     static char buf[2048];
     int offset = 0;
     int port;
 
     SPtr<TOptGeneric> gen;
-    SPtr<TSrvIfaceIface> ptrIface;
-    SPtr<TSrvIfaceIface> under;
+    SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> under;
     ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
-    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getName() << "/" << this->Iface
+    if (!ptrIface) {
+        SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(this->Iface);
+        if (!cfgIface) {
+            Log(Error) << "Can't send message: interface with ifindex=" << this->Iface
+                       << " not found." << LogEnd;
+            return;
+        }
+        if (cfgIface->getRelayID()==-1) {
+            Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
+                       << " is invalid relay." << LogEnd;
+            return;
+        }
+        ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
+        if (!ptrIface) {
+            Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
+                       << " has invalid physical interface defined (ifindex="
+                       << cfgIface->getRelayID() << "." << LogEnd;
+            return;
+        }
+    }
+    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getFullName()
                 << hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SPtr<TOpt> ptrOpt;
     this->firstOption();
@@ -403,22 +418,25 @@ void TSrvMsg::send()
             return;
         }
 
-
         size_t len = getSize();
         RelayInfo_.back().Len_ = len;
 
-
-
         for (int i = RelayInfo_.size() - 1; i > 0; i--) {
+
+            SPtr<TOpt> interface_id = TOpt::getOption(RelayInfo_[i].EchoList_, OPTION_INTERFACE_ID);
             // 38 = 34 bytes (relay header) + 4 bytes (relay-msg option header)
             RelayInfo_[i-1].Len_ = RelayInfo_[i].Len_ + 38;
-            if (RelayInfo_[i].InterfaceID_ && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
-                RelayInfo_[i-1].Len_ += RelayInfo_[i].InterfaceID_->getSize();
+            if (interface_id && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
+                RelayInfo_[i-1].Len_ += interface_id->getSize();
 
-                RelayInfo_[i].EchoList_.first();
-                while (gen = RelayInfo_[i].EchoList_.get()) {
-                    RelayInfo_[i-1].Len_ += gen->getSize();
+                for (TOptList::iterator it = RelayInfo_[i].EchoList_.begin();
+                     it != RelayInfo_[i].EchoList_.end(); ++it) {
+                    RelayInfo_[i-1].Len_ += (*it)->getSize();
                 }
+                //RelayInfo_[i].EchoList_.first();
+                //while (gen = RelayInfo_[i].EchoList_.get()) {
+                //    RelayInfo_[i-1].Len_ += gen->getSize();
+                //}
 
             }
 
@@ -444,21 +462,17 @@ void TSrvMsg::send()
         // recursive storeSelf
         offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
 
-        // check if there are underlaying interfaces
-        for (unsigned int i=0; i < RelayInfo_.size(); i++) {
-            under = ptrIface->getUnderlaying();
-            if (!under) {
-                Log(Error) << "Sending message on the " << ptrIface->getFullName()
-                           << " failed: No underlaying interface found." << LogEnd;
-                return;
-            }
-            ptrIface = under;
-        }
-        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset << "(relay headers) data on the "
+        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset
+                   << "(relay headers) data on the "
                    << ptrIface->getFullName() << " interface." << LogEnd;
     } else {
         offset += this->storeSelf(buf+offset);
     }
+
+    if (dstPort) {
+        port = dstPort;
+    }
+
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
 }
 
@@ -697,17 +711,19 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
     if (relayDepth == RelayInfo_.size()) {
         return storeSelf(buf);
     }
-    buf[offset++] = RELAY_REPL_MSG;
+    buf[offset++] = forceMsgType_?forceMsgType_:RELAY_REPL_MSG;
     buf[offset++] = RelayInfo_[relayDepth].Hop_;
     RelayInfo_[relayDepth].LinkAddr_->storeSelf(buf+offset);
     RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf+offset+16);
     offset += 32;
 
+    SPtr<TOpt> interfaceid = TOpt::getOption(RelayInfo_[relayDepth].EchoList_, OPTION_INTERFACE_ID);
+
     if (order == SRV_IFACE_ID_ORDER_BEFORE)
     {
-        if (RelayInfo_[relayDepth].InterfaceID_) {
-            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
-            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
+        if (interfaceid) {
+            interfaceid->storeSelf(buf+offset);
+            offset += interfaceid->getSize();
         }
     }
 
@@ -720,12 +736,35 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
 
     if (order == SRV_IFACE_ID_ORDER_AFTER)
     {
-        if (RelayInfo_[relayDepth].InterfaceID_) {
-            RelayInfo_[relayDepth].InterfaceID_->storeSelf(buf+offset);
-            offset += RelayInfo_[relayDepth].InterfaceID_->getSize();
+        if (interfaceid) {
+            interfaceid->storeSelf(buf+offset);
+            offset += interfaceid->getSize();
         }
     }
 
+    SPtr<TOpt> echo;
+    for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
+         it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
+        if ((*it)->getOptType() == OPTION_ERO) {
+            echo = *it;
+        }
+    }
+
+    if (echo) {
+        SPtr<TOptOptionRequest> ero = (Ptr*) echo;
+
+        for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
+             it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
+            if (ero->isOption((*it)->getOptType())) {
+                    Log(Debug) << "Echoing back option " << (*it)->getOptType() << ", length "
+                               << (*it)->getSize() << LogEnd;
+                    (*it)->storeSelf(buf+offset);
+                    offset += (*it)->getSize();
+            }
+        }
+    }
+
+#if 0
     SPtr<TOptGeneric> gen;
     RelayInfo_[relayDepth].EchoList_.first();
     while (gen = RelayInfo_[relayDepth].EchoList_.get()) {
@@ -734,6 +773,7 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
         gen->storeSelf(buf+offset);
         offset += gen->getSize();
     }
+#endif
 
     return offset;
 }

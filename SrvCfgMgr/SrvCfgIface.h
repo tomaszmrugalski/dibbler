@@ -20,6 +20,7 @@ class TSrvCfgIface;
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
@@ -65,6 +66,11 @@ public:
     bool addClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool supportPrefixDelegation() const;
+
+    // subnet management
+    void addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length);
+    void addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max);
+    bool addrInSubnet(SPtr<TIPv6Addr> addr);
 
     // other
     SPtr<TIPv6Addr> getUnicast();
@@ -145,10 +151,13 @@ private:
     // --- Prefix Delegation ---
     List(TSrvCfgPD) SrvCfgPDLst_;
 
+    // --- subnets ---
+    std::vector<THostRange> Subnets_;
+
     // --- relay ---
     bool Relay_;
     std::string RelayName_;     // name of the underlaying physical interface (or other relay)
-    int RelayID_;          // ifindex
+    int RelayID_;          // ifindex (-1 means this is not a relay)
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_; // value of interface-id option (optional)
 
     // --- option: FQDN ---

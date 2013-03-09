@@ -22,7 +22,7 @@ THostRange::THostRange( SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrr)
     /// @todo: prefix length could be calculated automatically here
 }
 
-bool THostRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
+bool THostRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr) const
 {
     if (isAddrRange_)
     {
@@ -33,13 +33,16 @@ bool THostRange::in(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr)
     }
     else
     {
-        if (*duid<=*DUIDL_) return false;
-        if (*DUIDR_<=*duid) return false;
+        if (!duid)
+            return false;
+        if (*duid <= *DUIDL_) return false;
+        if (*DUIDR_ <= *duid) return false;
+        return true;
     }
-    return true;
+    return false; // should not happen
 }
 
-bool THostRange::in(SPtr<TIPv6Addr> addr)
+bool THostRange::in(SPtr<TIPv6Addr> addr) const
 {
     if (isAddrRange_)
     {
@@ -52,7 +55,7 @@ bool THostRange::in(SPtr<TIPv6Addr> addr)
         return false;
 }
 
-bool THostRange::in(SPtr<TDUID> duid)
+bool THostRange::in(SPtr<TDUID> duid) const
 {
     if (isAddrRange_)
         return false;

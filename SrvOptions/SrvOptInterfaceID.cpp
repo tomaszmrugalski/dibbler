@@ -36,6 +36,7 @@ bool TSrvOptInterfaceID::operator==(const TSrvOptInterfaceID &other) const
     return false;
 }
 
+/// @todo: not endian-safe!
 TSrvOptInterfaceID::TSrvOptInterfaceID(int id, TMsg * parent)
     :TOptGeneric(OPTION_INTERFACE_ID, (char*)&id, sizeof(int), parent)
 {
@@ -43,7 +44,7 @@ TSrvOptInterfaceID::TSrvOptInterfaceID(int id, TMsg * parent)
     memmove(Data, &tmp, sizeof(int));
 }
 
-TSrvOptInterfaceID::TSrvOptInterfaceID( char * buf,  int n, TMsg* parent)
+TSrvOptInterfaceID::TSrvOptInterfaceID(const char * buf,  int n, TMsg* parent)
     :TOptGeneric(OPTION_INTERFACE_ID, buf,n, parent) {
 }
 

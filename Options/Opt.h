@@ -18,6 +18,9 @@
 #include "DUID.h"
 
 class TMsg;
+class TOpt;
+
+typedef std::list< SPtr<TOpt> > TOptList;
 
 class TOpt
 {
@@ -92,6 +95,8 @@ class TOpt
                              std::string place = "option" // "option" or "message"
                              );
 
+    static SPtr<TOpt> getOption(const TOptList& list, uint16_t opt_type);
+
  protected:
     char* storeHeader(char* buf);
     char* storeSubOpt(char* buf);
@@ -103,7 +108,5 @@ class TOpt
     SPtr<TDUID> DUID;
     bool Valid;
 };
-
-typedef std::list< SPtr<TOpt> > TOptList;
 
 #endif

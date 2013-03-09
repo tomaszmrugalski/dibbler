@@ -42,8 +42,8 @@ using namespace std;
 
 TSrvTransMgr * TSrvTransMgr::Instance = 0;
 
-TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
-: XmlFile(xmlFile), IsDone(false)
+TSrvTransMgr::TSrvTransMgr(const std::string xmlFile, int port)
+    : XmlFile(xmlFile), IsDone(false), port_(port)
 {
     // TransMgr is certainly not done yet. We're just getting started
 
@@ -51,7 +51,7 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile)
     SPtr<TSrvCfgIface> confIface;
     SrvCfgMgr().firstIface();
     while (confIface = SrvCfgMgr().getIface()) {
-        if (!this->openSocket(confIface)) {
+        if (!this->openSocket(confIface, port)) {
             this->IsDone = true;
             break;
         }
@@ -168,25 +168,31 @@ int TSrvTransMgr::checkReconfigures() {
 /*
  * opens proper (multicast or unicast) socket on interface
  */
-bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
+bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
 
-    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(confIface->getID());
+    int ifindex = -1;
+    if (confIface->isRelay()) {
+      ifindex = confIface->getRelayID();
+    } else {
+      ifindex = confIface->getID();
+    }
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(ifindex);
     SPtr<TIPv6Addr> unicast = confIface->getUnicast();
+    if (!iface) {
+        Log(Crit) << "Unable to find interface with ifindex=" << ifindex << LogEnd;
+        return false;
+    }
 
     if (confIface->isRelay()) {
-        while (iface->getUnderlaying()) {
-            iface = iface->getUnderlaying();
-        }
-        if (!iface->countSocket())
-            Log(Notice) << "Relay init: Creating socket on the underlaying interface: " << iface->getName()
-                        << "/" << iface->getID() << "." << LogEnd;
+        Log(Info) << "Relay init: Creating socket on the underlaying interface: "
+		  << iface->getFullName() << "." << LogEnd;
     }
 
     if (unicast) {
         /* unicast */
-        Log(Notice) << "Creating unicast (" << *unicast << ") socket on " << confIface->getName()
-                    << "/" << confIface->getID() << " interface." << LogEnd;
-        if (!iface->addSocket( unicast, DHCPSERVER_PORT, true, false)) {
+        Log(Notice) << "Creating unicast (" << *unicast << ") socket on "
+		    << confIface->getFullName() << " interface." << LogEnd;
+        if (!iface->addSocket(unicast, port, true, false)) {
             Log(Crit) << "Proper socket creation failed." << LogEnd;
             return false;
         }
@@ -200,16 +206,16 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     }
 
     SPtr<TIPv6Addr> ipAddr(new TIPv6Addr(srvAddr));
-    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on " << confIface->getName()
-                << "/" << confIface->getID() << " (" << iface->getName() << "/"
-                << iface->getID() << ") interface." << LogEnd;
+    Log(Notice) << "Creating multicast (" << ipAddr->getPlain() << ") socket on "
+                << confIface->getFullName() << " (" << iface->getFullName()
+                << ") interface." << LogEnd;
     if (iface->getSocketByAddr(ipAddr)) {
         Log(Notice) << "Address " << ipAddr->getPlain() << " is already bound on the "
                     << iface->getName() << "." << LogEnd;
         return true;
     }
 
-    if (!iface->addSocket(ipAddr, DHCPSERVER_PORT, true, false)) {
+    if (!iface->addSocket(ipAddr, port, true, false)) {
         Log(Crit) << "Proper socket creation failed." << LogEnd;
         return false;
     }
@@ -228,7 +234,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
     } else {
         Log(Notice) << "Creating link-local (" << llAddr->getPlain() << ") socket on " << iface->getFullName()
                     << " interface." << LogEnd;
-        if (!iface->addSocket(llAddr, DHCPSERVER_PORT, true, false)) {
+        if (!iface->addSocket(llAddr, port, true, false)) {
             Log(Crit) << "Failed to create link-local socket on " << iface->getFullName() << " interface." << LogEnd;
             return false;
         }
@@ -434,7 +440,7 @@ void TSrvTransMgr::doDuties()
         SPtr<TSrvCfgIface> x;
         x = SrvCfgMgr().checkInactiveIfaces();
         if (x)
-            openSocket(x);
+            openSocket(x, port_);
     }
 
 }
@@ -584,10 +590,10 @@ TSrvTransMgr::~TSrvTransMgr() {
     Log(Debug) << "SrvTransMgr cleanup." << LogEnd;
 }
 
-void TSrvTransMgr::instanceCreate(const std::string& config)
+void TSrvTransMgr::instanceCreate(const std::string& config, int port)
 {
   if (!Instance)
-    Instance = new TSrvTransMgr(config);
+      Instance = new TSrvTransMgr(config, port);
   else
     Log(Crit) << "Attempt to create another Transmission Manager. One instance already present!" << LogEnd;
 }

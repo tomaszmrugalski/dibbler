@@ -4,9 +4,20 @@
 
 Note: This is a scratchpad. It just happens to be available with the rest of the code.
 
+Subnet support:
+- rcv: clean up SrvIfaceMgr::decodeRelayForw()
+- remove getUnderlaying(), getOverlaying() (WTF???)
+- snd: Fix TSrvMsg::send() (sending responses)
+- remove adding relays to IfaceMgr (WTF is that???)
+- move TSrvIfaceIface::getRelayByInterface() -> TSrvIfaceMgr
+- SrvCfgMgr wrong subnet print format to server-CfgMgr.xml
+- TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> -> SPtr<TSrvCfgIface>, ...)
+  (or even better -> int ifindex,...)
+- Implement tests in tests/Srv/ for SrvIfaceMgr::decodeRelayForw()
+
 Important:
 - Implement 8 step lease assignment algorithm (done for IA_NA, todo for IA_PD)
-- Implement support for fixed leases: (see dibbler-devel-06-arch 6.6.2)  
+- Implement support for fixed leases: (see dibbler-devel-06-arch 6.6.2)
 
 - Srv: Implement access control for PD
 
@@ -22,8 +33,8 @@ Refactor:
 - rename TSrvOptTA to TSrvOptIA_TA
 
 MUST-FIX before 0.8.3:
-- once exceptions are read, remove corresponding addrs from cache. Otherwise cached client may get an address
-  that is reserved for someone else.
+- once exceptions are read, remove corresponding addrs from cache. Otherwise cached
+  client may get an address that is reserved for someone else.
 
 tentative plans for 0.9.0:
 - DNS Updates: UDP support [DONE]
@@ -61,12 +72,13 @@ tentative plans for 0.9.0:
 - CLI: AUTH: set ClntCfgIface->getKeyGenerationState() somewhere
 - SRV: PD: prefixes are not removed from db if valid goes to 0.
 - CLI: PD: radvd.conf is invalid if there were more than one prefix added to the same interface
-- CLI: Implement client side prefix delegation hints. It must be possible to define, what prefix(es) client
-       will send as hints.
-- SRV: Prefixes stored in server's AddrMgr for too long (i.e. after its valid lifetime has expired) should be
-       removed from the server's database (see SrvAddrMgr::doDuties())
-- CLI: When server is not configured to support PD and client requests PD, server sends PD with status code
-  set to NOADDRSAVAIL (that is ok). However, client should complain about it (and maybe try to do something with it). 
+- CLI: Implement client side prefix delegation hints. It must be possible to define,
+       what prefix(es) client will send as hints.
+- SRV: Prefixes stored in server's AddrMgr for too long (i.e. after its valid lifetime
+       has expired) should be removed from the server's database (see SrvAddrMgr::doDuties())
+- CLI: When server is not configured to support PD and client requests PD,
+       server sends PD with status code set to NOADDRSAVAIL (that is ok). However,
+       client should complain about it (and maybe try to do something with it).
   Right now it prints information that "PD set successfully."
 - ALL: Migrate SPtr -> SPtr, TIPv6Addr -> TAddr
 - ALL: Make TAddrAddr a derived class from TAddr
@@ -179,7 +191,7 @@ New tasks should be added to the TODO list. After task is implemented, it should
 - CLI: Elapsed time is not recalculated when SOLICIT is resent
 - SRV/REL: Support InterfaceID option with length other than 4
 - Feature: Add support for admin configured options both on server and client as well.
-- Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client, 
+- Fix (easy): run unicast server, run client, cli gets single addr, restart server, restart client,
   srv will send NoAddrsAvail.
 - CLI: Linux: prefixes should be moved to Port-linux.
 - DOC: Describe dumping XML files, option files
@@ -197,7 +209,7 @@ New tasks should be added to the TODO list. After task is implemented, it should
  ------
  See http://klub.com.pl/bugzilla/
 
-  DRAFTS & RFCs 
+  DRAFTS & RFCs
  ---------------
 Netboot: https://datatracker.ietf.org/doc/draft-ietf-dhc-dhcpv6-opt-netboot/
 DS-Lite tunnel: https://datatracker.ietf.org/doc/draft-ietf-softwire-ds-lite-tunnel-option/
@@ -210,7 +222,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 class TClntParsIAOpt : public TClntParsAddrOpt
 class TClntParsAddrOpt
 
-ClntCfgMgr 
+ClntCfgMgr
 ClntCfgIface
 ClntCfgIA
 ClntCfgTA
