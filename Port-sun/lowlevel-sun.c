@@ -562,7 +562,7 @@ char * error_message() {
  */
 void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
 {
-    printf("Link change monitoring is not supported yet on MacOS or BSD. Sorry.\n");
+    printf("Link change monitoring is not supported yet on Solaris. Sorry.\n");
     return;
 }
 
@@ -573,4 +573,11 @@ void link_state_change_init(volatile struct link_state_notify_t * monitored_link
 void link_state_change_cleanup()
 {
     return;
+}
+
+
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement this for Solaris
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }

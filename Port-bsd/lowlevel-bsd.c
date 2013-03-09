@@ -585,3 +585,10 @@ void link_state_change_cleanup()
 {
     return;
 }
+
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement this for BSD
+    /// see "/usr/sbin/ndp -a -n"
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+}

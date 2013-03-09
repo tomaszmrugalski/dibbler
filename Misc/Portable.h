@@ -275,6 +275,22 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern int sock_del(int fd);
     extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
     extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
+
+    /// @brief gets MAC address from the specified IPv6 address
+    ///
+    /// This is called immediately after we received message from that address,
+    /// so the neighbor cache is guaranteed to have entry for it. This is highly
+    /// os specific
+    ///
+    /// @param iface_name network interface name
+    /// @param ifindex network interface index
+    /// @param v6addr text represenation of the IPv6 address
+    /// @param mac pointer to MAC buffer (length specified in mac_len)
+    /// @param mac_len specifies MAC buffer length. Must be set so number of bytes set by the function
+    ///
+    /// @return 0 if successful, negative values if there are errors
+    extern int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                                 char* mac, int* mac_len);
     
     /* pack/unpack address */
     extern void print_packed(char addr[]);

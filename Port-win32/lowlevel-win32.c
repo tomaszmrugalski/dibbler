@@ -658,7 +658,12 @@ void link_state_change_cleanup()
 int execute(const char *filename, const char * argv[], const char *env[])
 {
     intptr_t i;
-	i=_spawnvpe(_P_WAIT, filename, argv, env);
+    i=_spawnvpe(_P_WAIT, filename, argv, env);
+    return i;
+}
 
-	return i;
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement MAC reading for Windows
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }

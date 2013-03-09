@@ -53,6 +53,7 @@
   - Cli/Srv: FQDN, Vendor options are now passed to script correctly
   - Cli: IAID is now parsed properly in PD definitions in client-AddrMgr.xml
   - Cli: Silent prefix expiration (T1>valid lifetime) is now supported properly
+  - Srv: Skeleton functions for logging MAC address added
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

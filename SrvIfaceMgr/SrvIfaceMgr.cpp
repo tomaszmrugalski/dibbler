@@ -179,60 +179,53 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
-    if (sockid>0) {
-        if (bufsize<4) {
-            if (bufsize == 1 && buf[0] == CONTROL_MSG) {
-                Log(Debug) << "Control message received." << LogEnd;
-                return 0;
-            }
-            Log(Warning) << "Received message is too short (" << bufsize
-                         << ") bytes, at least 4 are required." << LogEnd;
-            return 0; //NULL
+    if (sockid <= 0) {
+        return 0;
+    }
+
+    SPtr<TSrvMsg> ptr;
+
+    if (bufsize<4) {
+        if (bufsize == 1 && buf[0] == CONTROL_MSG) {
+            Log(Debug) << "Control message received." << LogEnd;
+            return 0;
         }
+        Log(Warning) << "Received message is too short (" << bufsize
+                     << ") bytes, at least 4 are required." << LogEnd;
+        return 0; //NULL
+    }
 
-        // check message type
-        int msgtype = buf[0];
+    // check message type
+    int msgtype = buf[0];
 
-        SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
 
-        // get interface
-        ptrIface = (Ptr*)getIfaceBySocket(sockid);
+    // get interface
+    ptrIface = (Ptr*)getIfaceBySocket(sockid);
 
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
+    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+               << ")." << LogEnd;
 
-        // create specific message object
-        SPtr<TSrvMsg> ptr;
-        switch (msgtype) {
-        case SOLICIT_MSG:
-        case REQUEST_MSG:
-        case CONFIRM_MSG:
-        case RENEW_MSG:
-        case REBIND_MSG:
-        case RELEASE_MSG:
-        case DECLINE_MSG:
-        case INFORMATION_REQUEST_MSG:
-        case LEASEQUERY_MSG:
+    // create specific message object
+    switch (msgtype) {
+    case SOLICIT_MSG:
+    case REQUEST_MSG:
+    case CONFIRM_MSG:
+    case RENEW_MSG:
+    case REBIND_MSG:
+    case RELEASE_MSG:
+    case DECLINE_MSG:
+    case INFORMATION_REQUEST_MSG:
+    case LEASEQUERY_MSG:
         {
             ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                return 0;
-            }
-            return ptr;
+            break;
         }
         case RELAY_FORW_MSG:
         {
             ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-            if (!ptr)
-                return 0;
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                return 0;
-            }
+            break;
         }
         return ptr;
         case ADVERTISE_MSG:
@@ -245,10 +238,34 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         default:
             Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
             return 0; //NULL
-        }
-    } else {
-        return 0; //NULL
     }
+
+    if (!ptr)
+        return 0;
+
+    if (!ptr->validateReplayDetection() ||
+        !ptr->validateAuthInfo(buf, bufsize)) {
+        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+        return 0;
+    }
+
+    /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
+
+    char mac[20]; // maximum mac address for Infiniband is 20 bytes
+    int mac_len = sizeof(mac);
+
+    if (get_mac_from_ipv6(ptrIface->getName(), ptrIface->getID(),
+                          peer->getPlain(), mac, &mac_len) == 0) {
+        /// @todo: Store MAC address in the message, so it could be logged later or added
+        ///        to the database
+
+        TDUID tmp(mac, mac_len); // packed
+        Log(Debug) << "Received message from IPv6 address " << peer->getPlain()
+                   << ", mac=" << tmp.getPlain()
+                   << " on interface " << ptrIface->getFullName() << LogEnd;
+    }
+
+    return ptr;
 }
 
 #if 0
