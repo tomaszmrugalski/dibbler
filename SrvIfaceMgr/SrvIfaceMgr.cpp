@@ -128,16 +128,30 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 
     // find this socket
     SPtr<TIfaceSocket> sock;
+    SPtr<TIfaceSocket> backup;
     ptrIface->firstSocket();
     while (sock = ptrIface->getSocket()) {
+        if (!backup) {
+            backup = sock;
+        }
         if (sock->multicast())
             continue; // don't send anything via multicast sockets
+        if (!addr->linkLocal() && sock->getAddr()->linkLocal())
+            continue; // we need socket bound to global address if dst is global addr
+        if (addr->linkLocal() && !sock->getAddr()->linkLocal())
+            continue; // lets' not use global address as source is dst is link-local
         break;
     }
-    if (!sock) {
-        Log(Error) << "Send failed: interface " << ptrIface->getName()
-                   << "/" << iface << " has no open sockets." << LogEnd;
+    if (!sock && !backup) {
+        Log(Error) << "Send failed: interface " << ptrIface->getFullName()
+                   << " has no suitable open sockets." << LogEnd;
         return false;
+    }
+    if (!sock) {
+        Log(Warning) << "No preferred socket found for transmission to "
+                     << addr->getPlain() << " on interface " << ptrIface->getFullName()
+                     << ". Using backup socket " << backup->getFD() << LogEnd;
+        sock = backup;
     }
 
     // send it!
@@ -162,15 +176,14 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
     if (sockid>0) {
-
         if (bufsize<4) {
             if (bufsize == 1 && buf[0] == CONTROL_MSG) {
                 Log(Debug) << "Control message received." << LogEnd;
                 return 0;
             }
             Log(Warning) << "Received message is too short (" << bufsize
-                         << ") bytes, at least 4 bytes are required." << LogEnd;
-            return 0; // NULL
+                         << ") bytes, at least 4 are required." << LogEnd;
+            return 0; //NULL
         }
 
         // check message type
@@ -320,9 +333,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
         // options: only INTERFACE-ID and RELAY_MSG are allowed
         while (bufsize>=4) {
             unsigned short code = readUint16(buf);
-            buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+            buf += sizeof(uint16_t);
+            bufsize -= sizeof(uint16_t);
             int len = readUint16(buf);
-            buf += sizeof(uint16_t); bufsize -= sizeof(uint16_t);
+            buf += sizeof(uint16_t);
+            bufsize -= sizeof(uint16_t);
 
             if (len > bufsize) {
                 Log(Warning) << "Truncated option " << code << ": " << bufsize
@@ -333,7 +348,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
 
             switch (code) {
             case OPTION_INTERFACE_ID:
-                if (bufsize<4) {
+                if (bufsize < 1) {
                     Log(Warning) << "Truncated INTERFACE_ID option (length: " << bufsize
                                  << ") in RELAY_FORW message. Message dropped." << LogEnd;
                     return 0;
@@ -467,7 +482,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
                                              SPtr<TIPv6Addr> peer,
                                              char * buf, int bufsize) {
     int ifaceid = ptrIface->getID();
-    if (bufsize<4)
+    if (bufsize < 4) // 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
         return 0;
     switch (buf[0]) {
     case SOLICIT_MSG:

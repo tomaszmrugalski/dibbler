@@ -299,7 +299,7 @@ typedef
 #define	IA_	283
 #define	TA_	284
 #define	IAID_	285
-#define	ADDRESS_	286
+#define	ADDRESS_KEYWORD_	286
 #define	NAME_	287
 #define	IPV6ADDR_	288
 #define	WORKDIR_	289
@@ -342,10 +342,10 @@ typedef
 #define	REMOTE_AUTOCONF_	326
 #define	AFTR_	327
 #define	ROUTING_	328
-#define	ADDRESS_LIST_	329
+#define	ADDRESS_LIST_KEYWORD_	329
 #define	STRING_KEYWORD_	330
 #define	DUID_KEYWORD_	331
-#define	REQUEST_	332
+#define	HEX_KEYWORD_	332
 #define	RECONFIGURE_	333
 
 
@@ -423,7 +423,7 @@ static const int PREFERRED_SERVERS_;
 static const int IA_;
 static const int TA_;
 static const int IAID_;
-static const int ADDRESS_;
+static const int ADDRESS_KEYWORD_;
 static const int NAME_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
@@ -466,10 +466,10 @@ static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
 static const int ROUTING_;
-static const int ADDRESS_LIST_;
+static const int ADDRESS_LIST_KEYWORD_;
 static const int STRING_KEYWORD_;
 static const int DUID_KEYWORD_;
-static const int REQUEST_;
+static const int HEX_KEYWORD_;
 static const int RECONFIGURE_;
 
 
@@ -507,7 +507,7 @@ static const int RECONFIGURE_;
 	,IA_=283
 	,TA_=284
 	,IAID_=285
-	,ADDRESS_=286
+	,ADDRESS_KEYWORD_=286
 	,NAME_=287
 	,IPV6ADDR_=288
 	,WORKDIR_=289
@@ -550,10 +550,10 @@ static const int RECONFIGURE_;
 	,REMOTE_AUTOCONF_=326
 	,AFTR_=327
 	,ROUTING_=328
-	,ADDRESS_LIST_=329
+	,ADDRESS_LIST_KEYWORD_=329
 	,STRING_KEYWORD_=330
 	,DUID_KEYWORD_=331
-	,REQUEST_=332
+	,HEX_KEYWORD_=332
 	,RECONFIGURE_=333
 
 
