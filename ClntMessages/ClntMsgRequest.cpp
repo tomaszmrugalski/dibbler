@@ -178,7 +178,6 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
     appendElapsedOption();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
     this->IsDone = false;
     this->send();
 }

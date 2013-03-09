@@ -22,7 +22,7 @@
 class TNotifyScriptParams;
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
-    :pkt(0), NotifyScripts(NULL)
+    :NotifyScripts(NULL)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -34,7 +34,7 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
-    :pkt(0), NotifyScripts(NULL)
+    :NotifyScripts(NULL)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
@@ -54,7 +54,7 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
     TransID = transID;
     IsDone = false;
     MsgType = msgType;
-    pkt = NULL;
+    //pkt = NULL;
     DigestType = DIGEST_NONE; /* by default digest is none */
     AuthInfoPtr = NULL;
     AuthInfoKey = NULL;

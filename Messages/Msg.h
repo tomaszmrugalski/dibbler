@@ -96,7 +96,9 @@ class TMsg
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
     
     bool IsDone; // Is this transaction done?
-    char * pkt;  // buffer where this packet will be build
+
+    // @todo: remove this
+    // char * pkt;  // buffer where this packet will be build
     int Iface;   // interface from/to which message was received/should be sent
     SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 

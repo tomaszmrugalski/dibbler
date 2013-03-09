@@ -57,7 +57,6 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     MRT_ = 0;
     send();
     return true;

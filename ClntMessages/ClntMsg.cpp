@@ -328,9 +328,6 @@ TClntMsg::TClntMsg(int iface,
 }
 
 TClntMsg::~TClntMsg() {
-    if (pkt)
-	delete [] pkt;
-    pkt = 0;
 }
 
 void TClntMsg::setDefaults()
@@ -364,8 +361,7 @@ unsigned long TClntMsg::getTimeout()
 
 void TClntMsg::send()
 {
-    if (!pkt)
-	pkt = new char[getSize()];
+    char* pkt = new char[getSize()];
 
     srand(now());
     if (!RC)
@@ -382,12 +378,13 @@ void TClntMsg::send()
 
     RC++;
 
-    this->storeSelf(this->pkt);
+    this->storeSelf(pkt);
 
     SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(Iface);
     if (!ptrIface) {
         Log(Error) << "Unable to find interface with ifindex=" << Iface
                    << ". Message not sent." << LogEnd;
+        delete [] pkt;
         return;
     }
     if (PeerAddr) {
@@ -412,6 +409,7 @@ void TClntMsg::send()
 	ClntIfaceMgr().sendMulticast(Iface, pkt, getSize());
     }
     LastTimeStamp = now();
+    delete [] pkt;
 }
 
 void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {

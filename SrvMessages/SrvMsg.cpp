@@ -372,7 +372,7 @@ void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
 
 void TSrvMsg::send(int dstPort /* = 0 */)
 {
-    static char buf[2048];
+    char* buf = new char[getSize() < 2048? 2048:getSize()];
     int offset = 0;
     int port;
 
@@ -385,11 +385,13 @@ void TSrvMsg::send(int dstPort /* = 0 */)
         if (!cfgIface) {
             Log(Error) << "Can't send message: interface with ifindex=" << this->Iface
                        << " not found." << LogEnd;
+            delete [] buf;
             return;
         }
         if (cfgIface->getRelayID()==-1) {
             Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
                        << " is invalid relay." << LogEnd;
+            delete [] buf;
             return;
         }
         ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
@@ -397,6 +399,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
             Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
                        << " has invalid physical interface defined (ifindex="
                        << cfgIface->getRelayID() << "." << LogEnd;
+            delete [] buf;
             return;
         }
     }
@@ -415,6 +418,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
             Log(Error) << "Unable to send message. Got " << RelayInfo_.size()
                        << " relay entries (" << HOP_COUNT_LIMIT
                        << " is allowed maximum." << LogEnd;
+            delete [] buf;
             return;
         }
 
@@ -474,6 +478,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     }
 
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+    delete [] buf;
 }
 
 SPtr<TDUID> TSrvMsg::getClientDUID() {

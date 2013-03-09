@@ -24,24 +24,23 @@
 #include "OptReconfigureMsg.h"
 
 TOptReconfigureMsg::TOptReconfigureMsg(int msgType, TMsg* parent)
-    :TOpt(OPTION_RECONF_MSG, parent)
+    :TOpt(OPTION_RECONF_MSG, parent), MsgType_(msgType)
 {
-    this->MSG_Type=msgType;
 }
 
 TOptReconfigureMsg::TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent)
     :TOpt(OPTION_RECONF_MSG, parent)
 {
-    if ((unsigned int)bufsize<1) {
+    if ((unsigned int)bufsize != 1) {
         Valid = false;
         return;
     }
-    this->MSG_Type = (unsigned char)(buf[0]);
-    if(MSG_Type!=5 /*renew, as defined in RFC3315 */
-       && MSG_Type!=11 /*inf-request, as defined in RFC3315 */
-       && MSG_Type!=6 /* rebind, as defined in draft-ietf-dhc-dhcpv6-reconfigure-rebind-08 */) {
+    MsgType_ = (unsigned char)(buf[0]);
+    if( (MsgType_ != 5) &&  // renew, as defined in RFC3315
+        (MsgType_ != 11) && // inf-request, as defined in RFC3315
+        (MsgType_ != 6) )  { //rebind, as defined in draft-ietf-dhc-dhcpv6-reconfigure-rebind-08
         Log(Warning) << "Invalid content of reconfigure option. Message type "
-                     << (int)MSG_Type << " not valid (only 5,7 and 11 are)." << LogEnd;
+                     << (int)MsgType_ << " not valid (only 5,7 and 11 are)." << LogEnd;
         Valid = false;
         return;
     }
@@ -58,13 +57,13 @@ char * TOptReconfigureMsg::storeSelf( char* buf)
     buf+=2;
     *(short*)buf = htons(1); // length
     buf+=2;
-    *buf = (char)this->MSG_Type;
+    *buf = (char)MsgType_;
     return buf+1;
 }
 
 bool TOptReconfigureMsg::isValid()
 {
-    if ( MSG_Type==RENEW_MSG || MSG_Type==INFORMATION_REQUEST_MSG || MSG_Type==REBIND_MSG )
+    if ( MsgType_==RENEW_MSG || MsgType_==INFORMATION_REQUEST_MSG || MsgType_==REBIND_MSG )
         return true;
     return false;
 }

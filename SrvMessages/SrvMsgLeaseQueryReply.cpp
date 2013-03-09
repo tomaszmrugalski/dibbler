@@ -93,7 +93,6 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     Options.push_back((Ptr*)serverID);
 
     // allocate buffer
-    pkt = new char[getSize()];
     this->send();
 
     return true;

@@ -20,11 +20,11 @@ class TOptReconfigureMsg : public TOpt
     TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent);
     size_t getSize();
 
-    char * storeSelf(char* buf);
+    char* storeSelf(char* buf);
     bool doDuties() { return true; }
     bool isValid();
   protected:
-    int MSG_Type;
+    uint8_t MsgType_;
 };
 
 #endif

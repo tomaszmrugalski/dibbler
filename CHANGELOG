@@ -12,6 +12,7 @@
     after expiration (bug #264)
   - Srv: info about second and following relays are now passed to the
     script properly
+  - Reconfigure support (by Grzegorz Pluto)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
@@ -53,8 +54,6 @@
   - Cli/Srv: FQDN, Vendor options are now passed to script correctly
   - Cli: IAID is now parsed properly in PD definitions in client-AddrMgr.xml
   - Cli: Silent prefix expiration (T1>valid lifetime) is now supported properly
-
-  - Many changes related to Reconfigure support (in progress)
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

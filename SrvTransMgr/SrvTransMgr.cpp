@@ -82,7 +82,7 @@ int TSrvTransMgr::checkReconfigures() {
     SrvAddrMgr().firstClient();
     unsigned long IAID;
 
-    Log(Info) << "Checking if clients need RECONFIGURE." << LogEnd;
+    Log(Debug) << "Checking which clients need RECONFIGURE." << LogEnd;
     
     while (cli = SrvAddrMgr().getClient() ) 
     {
@@ -94,8 +94,6 @@ int TSrvTransMgr::checkReconfigures() {
         {
             IAID=ia->getIAID();	
             iface=ia->getIface();
-            //?????????
-            //SPtr<TIfaceIface>  ptrIface = SrvIfaceMgr().getIfaceByID(2);
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
             SPtr<TIPv6Addr> unicast=ia->getSrvAddr();
             SPtr<TAddrAddr> adr;
@@ -127,9 +125,7 @@ int TSrvTransMgr::checkReconfigures() {
         while ( (pd = cli->getPD()) && check ) 
         {
             IAID=pd->getIAID();
-            //Log(Crit) << "pd........." << *pd << LogEnd;
             iface=pd->getIface();
-            //Log(Crit) << "iface........." << iface << LogEnd;
             SPtr<TAddrPrefix> prefix;
             SPtr<TIPv6Addr> addra;
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
@@ -140,15 +136,12 @@ int TSrvTransMgr::checkReconfigures() {
                 PD=true;
                 if(ClientInPool1(prefix->get(),iface,PD))
                 {
-                    //Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure PD (iaid=" << ia->getIAID() << LogEnd;
                     Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure PD (iaid=" << pd->getIAID() << ")." << LogEnd;
                 }
                 else
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << "uses outdated info. Sending RECONFIGURE." << LogEnd;
-                    //Log(Crit) << "wrong_PD" << LogEnd;
-                    /// @todo: RECONFIGURE for PD must be implemented
                     sendReconfigure(unicast, prefix->get(), iface, 1, ptrDUID);
                     clients++;
                     check=false;

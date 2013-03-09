@@ -22,38 +22,22 @@
 
 TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
                                        SPtr<TIPv6Addr> ia ,int msgType,
-                                       SPtr<TDUID> ptrDUID)
+                                       SPtr<TDUID> client_duid)
     :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0 )
 {
-    ClientDUID=ptrDUID;
-
-    // status code is not necessary in Reconfigure
-    //appendStatusCode();
+    ClientDUID=client_duid;
 
     //appendAuthenticationOption(ClientDUID);
-    // append serverID, preference and possibly unicast
-    //appendMandatoryOptions(ORO);
-    
-    //if client requested parameters and policy doesn't forbid from answering
-    //appendRequestedOptions(ClientDUID, clientAddr, iface, ORO);
 
     // include our DUID (Server ID)
-    SPtr<TOptDUID> ptrSrvID;
-    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(),this);
-    Options.push_back((Ptr*)ptrSrvID);
+    Options.push_back(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(),this));
 
     // include his DUID (Client ID)
-    SPtr<TOptDUID> clientDuid = new TOptDUID(OPTION_CLIENTID, ptrDUID, this);
-    Options.push_back( (Ptr*)clientDuid);
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, client_duid, this));
 
     // include Reconfigure Message Options
     Options.push_back(new TOptReconfigureMsg(RENEW_MSG, this) );
 
-    // SPtr<TSrvOptReconfigureMsg> ptrSrvReconf;
-    // ptrSrvReconf = new TSrvOptReconfigureMsg(5,this);
-    // Options.push_back((Ptr*)ptrSrvReconf);
-
-    pkt = new char[this->getSize()];
     send();
     return;
 }

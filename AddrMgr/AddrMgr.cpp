@@ -620,7 +620,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
         if (strstr(buf,"<duid")) {
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
@@ -693,7 +694,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
             if (strstr(buf,"unicast")) {
                 x = strstr(buf,"=")+2;
-                x = strstr(x," ")-1;
+                if (x)
+                    x = strstr(x," ")-1;
                 if (x)
                     *x = 0; // remove trailing xml tag
                 unicast = new TIPv6Addr(strstr(buf,"=")+2, true);
@@ -769,7 +771,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"duid")) {
             //char * x;
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
@@ -837,7 +840,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"<duid")) {
 	    //char * x;
 	    x = strstr(buf,">")+1;
-	    x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
 	    if (x)
 		*x = 0; // remove trailing xml tag
 	    duid = new TDUID(strstr(buf,">")+1);
@@ -858,13 +862,12 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 		continue; // malformed line, ignore it
 	    *end = 0;
 	    SPtr<TIPv6Addr> dns = new TIPv6Addr(beg, true);
-	    // Log(Debug) << "#### Parsed DNS addr=" << *dns << LogEnd;
 	    if (ia)
 		ia->setFQDNDnsServer(dns);
 	    continue;
 	}
 	if (strstr(buf, "<fqdn ")) {
-	    // TODO: parse DUID
+	    /// @todo parse DUID
 	    char * beg = strstr(buf, "duid=\"") + 6;
 	    if (!beg)
 		continue; // malformed line: "<fqdn" tag missing >

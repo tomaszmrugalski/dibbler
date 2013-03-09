@@ -83,5 +83,8 @@
   - Tao Cui <Cuit(at)ihep(dot)ac(dot)cn>
     2013-01: interface-id shorter than 4 bytes are now handled ok
 
+  - Grzegorz Pluto
+    200?-2012: reconfigure support
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

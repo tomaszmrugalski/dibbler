@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.h,v 1.16 2008-08-29 00:07:28 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -40,7 +38,6 @@ public:
     
 private:
     TClntIfaceMgr(const std::string& xmlFile); // this is singleton
-    //List(TClntMsg) Transactions;
     
 public:
     static void instanceCreate(const std::string& xmlFile);
@@ -53,7 +50,6 @@ public:
     bool sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr);
     
     bool sendMulticast(int iface, char *msg, int msgsize);
-void sendrenew();
     
     SPtr<TClntMsg> select(unsigned int timeout);
 
@@ -83,7 +79,7 @@ void sendrenew();
 
     std::string XmlFile;
 
-    static TClntIfaceMgr * Instance;
+    static TClntIfaceMgr* Instance;
 };
 
 #endif 

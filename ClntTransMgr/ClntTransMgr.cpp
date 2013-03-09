@@ -638,8 +638,7 @@ void TClntTransMgr::handleReconfigure(SPtr<TClntMsg> reconfMsg) {
         return;
     }
 
-    Log(Notice) << "Received RECONFIGURE" << LogEnd;
-    // if(ptr->check()) // this was checked already before handleReconfigure was called
+    /// @todo: check authentication here
 
     /// @todo: server may tell client to send, RENEW, REBIND or INF-REQUEST
     Log(Notice) << "Received RECONFIGURE, sending RENEW." << LogEnd;
@@ -772,10 +771,7 @@ void TClntTransMgr::sendRenew()
 	 
     Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
     SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(iaLst, pdLst);
-    /// @todo: remove those ugly comments
-    Log(Info)<<"!!!!!!!!!!!!!!!!!!!!!!!Przed " << Transactions.count() << LogEnd;
     Transactions.append(ptrRenew);
-    Log(Info)<<"++++++++++++++++++++PO " << Transactions.count() << LogEnd;
 }
 
 

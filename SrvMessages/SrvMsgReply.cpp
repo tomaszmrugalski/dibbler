@@ -51,7 +51,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     // appendStatusCode();
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     this->MRT_ = 31;
     IsDone = false;
     this->send();
@@ -270,7 +269,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 31;
     this->send();
@@ -339,7 +337,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     appendRequestedOptions(ClientDUID, rebind->getAddr(),rebind->getIface(), ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 0;
     this->send();
@@ -523,7 +520,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
     NotifyScripts = notifyParams;
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 46;
     this->send();
@@ -591,7 +587,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     appendRequestedOptions(ClientDUID,renew->getAddr(),renew->getIface(), ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 0;
     this->send();
@@ -617,7 +612,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 330;
     this->send();
@@ -644,7 +638,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     SPtr<TIPv6Addr> ptrAddr;
     MRT_ = 330;
@@ -700,7 +693,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 330;
     send();
