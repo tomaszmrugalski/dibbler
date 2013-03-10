@@ -926,6 +926,18 @@ extern int listen_tcp (int fd,int connectionNumber ) {
     }
 }
 
+extern int getsOpt(int fd, int level, int optname, char *optval, int *optlen) {
+
+    socklen_t len = sizeof(int);
+
+    if (getsockopt(fd, level, optname,optval,len) ) {
+        sprintf(Message, "Getsockopt function failed");
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 //extern int accept_tcp (int fd,char * addr, struct socketStruct) {
 
 //    int fd_new;
