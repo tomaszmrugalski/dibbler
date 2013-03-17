@@ -18,168 +18,161 @@
 using namespace std;
 
 TDUID::TDUID()
-    :DUID(NULL), Plain(""), len(0)
+    :DUID_(NULL), Len_(0), Plain_("")
 {
 }
 
 // packed
-TDUID::TDUID(const char* DUID,int DUIDlen)
+TDUID::TDUID(const char* duid,int len)
 {
-    this->DUID = 0;
-
-    if ((DUID)&&(DUIDlen)) {
-        this->DUID=new char[DUIDlen];
-        memcpy(this->DUID,DUID,DUIDlen);
-        this->len=DUIDlen;
-		this->packedToPlain();
+    if (duid && len) {
+        DUID_ = new char[len];
+        Len_ = len;
+        memcpy(DUID_, duid, len);
+        packedToPlain();
     } else {
-		this->DUID=NULL;
-		this->len=0;
-		this->Plain="";
+        DUID_ = NULL;
+        Len_ = 0;
+        Plain_ = "";
     }
-}
-
-void TDUID::packedToPlain() {
-	ostringstream tmp;
-	for(int i=0; i<this->len; i++) {
-		if (i)
-			tmp << ":";
-		tmp << setfill('0') << setw(2) << hex << (unsigned short)((unsigned char) this->DUID[i]);
-	}
-	tmp << dec;
-	this->Plain = tmp.str();
-}
-
-void TDUID::plainToPacked() {
-    int DUIDlen = Plain.length();
-    char * tmp = new char[DUIDlen>>1];
-    unsigned char digit;
-    int i=0, j=0;
-    bool twonibbles = false;
-    while (i<DUIDlen)
-    {
-	if (Plain[i]==':') {
-	    i++;
-	}
-	digit = Plain[i];
-	if (isalpha(digit))
-	    digit=toupper(digit)-'A'+10;
-	else
-	    digit-='0';
-	tmp[j]<<=4;
-	tmp[j]|=digit;
-	i++;
-	if (twonibbles) {
-	    twonibbles = false;
-	    j++;
-	} else 
-	    twonibbles = true;
-    }
-
-    DUID = new char[j];
-    memmove(DUID, tmp, j);
-    delete [] tmp;
-    this->len = j;
 }
 
 // plain
-TDUID::TDUID(const char* Plain)
+TDUID::TDUID(const char* text)
 {
-    if (!Plain) {
-	this->DUID=NULL;
-	this->len=0;
-	return;
+    if (!text) {
+        DUID_ = NULL;
+        Len_ = 0;
+        Plain_ = string("");
+        return;
+    }
+    Plain_ = string(text);
+    plainToPacked();
+    packedToPlain();
+}
+
+void TDUID::packedToPlain() {
+    ostringstream tmp;
+    for(unsigned i = 0; i < Len_; i++) {
+        if (i)
+            tmp << ":";
+        tmp << setfill('0') << setw(2) << hex
+            << (unsigned short)((unsigned char) DUID_[i]);
+    }
+    tmp << dec;
+    Plain_ = tmp.str();
+}
+
+void TDUID::plainToPacked() {
+    int textLen = Plain_.length();
+    char * tmp = new char[textLen>>1];
+    unsigned char digit;
+    int i=0, j=0;
+    bool twonibbles = false;
+    while (i < textLen)
+    {
+        if (Plain_[i]==':') {
+            i++;
+        }
+        digit = Plain_[i];
+        if (isalpha(digit))
+            digit=toupper(digit)-'A'+10;
+        else
+            digit-='0';
+        tmp[j]<<=4;
+        tmp[j]|=digit;
+        i++;
+        if (twonibbles) {
+            twonibbles = false;
+            j++;
+        } else
+            twonibbles = true;
     }
 
-    this->Plain = Plain;
-
-    plainToPacked();
+    DUID_ = new char[j];
+    memmove(DUID_, tmp, j);
+    delete [] tmp;
+    Len_ = j;
 }
 
 TDUID::~TDUID() {
-    if (this->len)
-	delete [] this->DUID;
+    if (Len_ && DUID_)
+        delete [] DUID_;
 }
 
-TDUID::TDUID(const TDUID &duid) {
-    this->DUID=new char[duid.len];
-    memcpy(this->DUID,duid.DUID,duid.len);
-    this->len=duid.len;
-    this->Plain = duid.Plain;
+TDUID::TDUID(const TDUID &other) {
+    DUID_ = new char[other.Len_];
+    memcpy(DUID_, other.DUID_, other.Len_);
+    Len_ = other.Len_;
+    Plain_ = other.Plain_;
 }
 
-TDUID& TDUID::operator=(const TDUID &duid) {
-    if (this==&duid)
+TDUID& TDUID::operator=(const TDUID &other) {
+    if (this == &other)
         return *this;
-    
-    if(this->DUID)
-        delete this->DUID;
-    
-    this->DUID=new char [duid.len];
-    memcpy(this->DUID,duid.DUID,duid.len);
-    this->len=duid.len;
-    this->Plain=duid.Plain;
-    
+
+    if(DUID_)
+        delete DUID_;
+
+    DUID_ = new char [other.Len_];
+    memcpy(DUID_, other.DUID_, other.Len_);
+    Len_ = other.Len_;
+    Plain_ = other.Plain_;
+
     return *this;
 }
 
-bool TDUID::operator==(const TDUID &duid) {
-    if (this->len!=duid.len)
+bool TDUID::operator==(const TDUID &other) {
+    if (Len_ != other.Len_)
         return false;
     else
-        return !memcmp(this->DUID,duid.DUID,this->len);
+        return !memcmp(DUID_, other.DUID_, Len_);
 }
 
-bool TDUID::operator<=(const TDUID &duid) {
-    int minLen=this->len<duid.len?this->len:duid.len;
-    int maxLen=this->len>=duid.len?this->len:duid.len;
-    
-    bool retVal=false;
-    
-    const char *longer; //,*shorter;	
-    if (this->len<duid.len)
-        longer=duid.DUID;
-    else
-    {
-        longer=this->DUID;
-        retVal=true;
-    };
-    
+bool TDUID::operator<=(const TDUID &other) {
+
+    size_t minLen = Len_;
+    if (other.Len_ < minLen)
+        minLen = other.Len_;
+
     //if they are not equal check if longer has only zeros at the begining
-    for (int i=0;i<(maxLen-minLen);i++)
-        if (longer[i])
-            return retVal;
-    //if they are equal sizes or longer has at the beginning only zeroes
-    for (int i=minLen-1;i>=0;i--)
-        if(this->DUID[this->len-i]!=duid.DUID[duid.len-i])
-        {
-            if(this->DUID[this->len-i]>duid.DUID[duid.len-i]) {
-                return true; //right is smaller
-            } else {
-                if(this->DUID[this->len-i]<duid.DUID[duid.len-i])
-                    return false;	//left is smaller
-	    }
-        };
-    return false;//left is equal to right
+    bool eq = true;
+    for (unsigned i=0; i<minLen; i++) {
+        if (DUID_[i] == other.DUID_[i]) {
+            continue;
+        }
+        eq = false;
+        if (DUID_[i] > other.DUID_[i])
+            return false;
+    }
+
+    // first minLen bytes are equal or this is smaller than the other
+    if (!eq)
+        return true;
+    return (other.Len_ > Len_);
 }
 
-int TDUID::getLen() {
-    return this->len;
+size_t TDUID::getLen() const {
+    return Len_;
 }
 
-const string TDUID::getPlain() {
-    return this->Plain;
+const string TDUID::getPlain() const {
+    return Plain_;
+}
+
+const char* TDUID::get() const {
+    return DUID_;
 }
 
 char * TDUID::storeSelf(char* buf) {
-    memcpy(buf,DUID,len);
-    return buf+len;
+    memcpy(buf, DUID_, Len_);
+    return buf + Len_;
 }
 
 ostream& operator<<(ostream& out,TDUID&  duid) {
-    if ( (duid.DUID && duid.len) ) {
-	out << "<duid length=\"" << duid.len << "\">"
-	    << duid.Plain << "</duid>" << std::endl;
+    if ( (duid.DUID_ && duid.Len_) ) {
+        out << "<duid length=\"" << duid.Len_ << "\">"
+            << duid.Plain_ << "</duid>" << std::endl;
     } else {
         out << "<duid length=\"0\"></duid>" << std::endl;
     }
