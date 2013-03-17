@@ -51,7 +51,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 TESTS = $(am__EXEEXT_1)
-@HAVE_GTEST_TRUE@am__append_1 = CfgMgr_tests
+@HAVE_GTEST_TRUE@am__append_1 = Misc_tests
 noinst_PROGRAMS = $(am__EXEEXT_2)
 subdir = Misc/tests
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -67,23 +67,25 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/dibbler-config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_GTEST_TRUE@am__EXEEXT_1 = CfgMgr_tests$(EXEEXT)
+@HAVE_GTEST_TRUE@am__EXEEXT_1 = Misc_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__CfgMgr_tests_SOURCES_DIST = run_tests.cc IPv6Addr_unittest.cc
-@HAVE_GTEST_TRUE@am_CfgMgr_tests_OBJECTS = run_tests.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	IPv6Addr_unittest.$(OBJEXT)
-CfgMgr_tests_OBJECTS = $(am_CfgMgr_tests_OBJECTS)
+am__Misc_tests_SOURCES_DIST = run_tests.cc IPv6Addr_unittest.cc \
+	DUID_unittest.cc
+@HAVE_GTEST_TRUE@am_Misc_tests_OBJECTS = run_tests.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	IPv6Addr_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	DUID_unittest.$(OBJEXT)
+Misc_tests_OBJECTS = $(am_Misc_tests_OBJECTS)
 am__DEPENDENCIES_1 =
-@HAVE_GTEST_TRUE@CfgMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@HAVE_GTEST_TRUE@Misc_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-CfgMgr_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+Misc_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(CfgMgr_tests_LDFLAGS) $(LDFLAGS) -o $@
+	$(CXXFLAGS) $(Misc_tests_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -118,8 +120,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(CfgMgr_tests_SOURCES)
-DIST_SOURCES = $(am__CfgMgr_tests_SOURCES_DIST)
+SOURCES = $(Misc_tests_SOURCES)
+DIST_SOURCES = $(am__Misc_tests_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -484,10 +486,10 @@ top_srcdir = @top_srcdir@
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr \
 	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
-@HAVE_GTEST_TRUE@CfgMgr_tests_SOURCES = run_tests.cc \
-@HAVE_GTEST_TRUE@	IPv6Addr_unittest.cc
-@HAVE_GTEST_TRUE@CfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
-@HAVE_GTEST_TRUE@CfgMgr_tests_LDADD = $(GTEST_LDADD) \
+@HAVE_GTEST_TRUE@Misc_tests_SOURCES = run_tests.cc \
+@HAVE_GTEST_TRUE@	IPv6Addr_unittest.cc DUID_unittest.cc
+@HAVE_GTEST_TRUE@Misc_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@Misc_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
 all: all-am
 
@@ -532,9 +534,9 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-CfgMgr_tests$(EXEEXT): $(CfgMgr_tests_OBJECTS) $(CfgMgr_tests_DEPENDENCIES) $(EXTRA_CfgMgr_tests_DEPENDENCIES) 
-	@rm -f CfgMgr_tests$(EXEEXT)
-	$(AM_V_CXXLD)$(CfgMgr_tests_LINK) $(CfgMgr_tests_OBJECTS) $(CfgMgr_tests_LDADD) $(LIBS)
+Misc_tests$(EXEEXT): $(Misc_tests_OBJECTS) $(Misc_tests_DEPENDENCIES) $(EXTRA_Misc_tests_DEPENDENCIES) 
+	@rm -f Misc_tests$(EXEEXT)
+	$(AM_V_CXXLD)$(Misc_tests_LINK) $(Misc_tests_OBJECTS) $(Misc_tests_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -542,6 +544,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DUID_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IPv6Addr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
@@ -765,9 +768,9 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-CfgMgr_tests.log: CfgMgr_tests$(EXEEXT)
-	@p='CfgMgr_tests$(EXEEXT)'; \
-	b='CfgMgr_tests'; \
+Misc_tests.log: Misc_tests$(EXEEXT)
+	@p='Misc_tests$(EXEEXT)'; \
+	b='Misc_tests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
