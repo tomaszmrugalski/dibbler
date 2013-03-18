@@ -70,12 +70,15 @@ uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
 #ifdef __cplusplus 
 extern "C" {
 #endif
+    uint8_t readUint8(const BUFFER_TYPE* buf);
+    BUFFER_TYPE* writeUint8(BUFFER_TYPE* buf, uint8_t octet);
     uint16_t readUint16(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
     uint32_t readUint32(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
     uint64_t readUint64(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
+    BUFFER_TYPE* writeData(BUFFER_TYPE* buf,  BUFFER_TYPE* data, size_t len);
 #ifdef __cplusplus 
 }
 #endif
