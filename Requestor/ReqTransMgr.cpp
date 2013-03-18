@@ -18,6 +18,7 @@
 #include "Logger.h"
 #include "ReqOpt.h"
 #include "Portable.h"
+#include "hex.h"
 
 using namespace std;
 
@@ -333,15 +334,6 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 
 string ReqTransMgr::BinToString(char * buf, int bufLen)
 {
-    std::ostringstream o;
-    o << setfill('0');
-    for (int i=0; i<bufLen; i++) {
-	o << setw(2) << hex << (unsigned int)buf[i];
-	if (i+1!=bufLen) {
-	    o << ":";
-	}
-    }
-
-    return o.str();
+    return (hexToText((uint8_t*)buf, bufLen, true));
 }
 

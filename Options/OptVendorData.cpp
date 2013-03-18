@@ -14,6 +14,7 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "hex.h"
 
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
@@ -84,21 +85,16 @@ int TOptVendorData::getVendor()
 
 char * TOptVendorData::getVendorData()
 {
-    return this->VendorData;
+    return VendorData;
 }
 
 std::string TOptVendorData::getVendorDataPlain()
 {
-    std::ostringstream tmp;
-    tmp << "0x";
-    for (int i=0; i<this->VendorDataLen; i++) {
-	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];
-    }
-    return tmp.str();
+    return hexToText((uint8_t*)&VendorData[0], VendorDataLen);
 }
 
 int TOptVendorData::getVendorDataLen()
 {
-    return this->VendorDataLen;
+    return VendorDataLen;
 }
 

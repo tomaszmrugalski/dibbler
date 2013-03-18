@@ -14,6 +14,7 @@
 #include <sstream>
 #include "DHCPConst.h"
 #include "OptGeneric.h"
+#include "hex.h"
 
 using namespace std;
 
@@ -50,23 +51,7 @@ char * TOptGeneric::storeSelf(char* buf) {
 
 std::string TOptGeneric::getPlain()
 {
-    stringstream plain;
-    stringstream hex;
-    bool printable = true;
-    for (int i=0;i<DataLen; ++i)
-    {
-	if (!isalpha(Data[i]) && Data[i]!=32/* spc */) {
-	    printable = false;
-	}
-	plain << Data[i];
-	hex << std::hex << setfill('0') << setw(2) << (unsigned int) Data[i];
-	if ((i<DataLen-1))
-	    hex << ":";
-    }
-    if (printable)
-	return plain.str();
-    else
-	return hex.str();
+    return hexToText((uint8_t*)(Data), DataLen, false);
 }
 
 bool TOptGeneric::isValid()
