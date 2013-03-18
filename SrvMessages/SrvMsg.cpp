@@ -1061,19 +1061,25 @@ bool TSrvMsg::validateReplayDetection() {
         return true;
     }
 
-    uint64_t received = getReplayDetection();
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth) {
+        // there's no auth option. We can't protect against replays
+        return true;
+    }
+
+    uint64_t received = auth->getReplayDetection();
     uint64_t last_received = client->getReplayDetectionRcvd();
 
     if (last_received < received) {
-	Log(Debug) << "Auth: Replay detection field should be greater than "
+        Log(Debug) << "Auth: Replay detection field should be greater than "
                    << last_received << " and it actually is ("
                    << received << ")" << LogEnd;
-	client->setReplayDetectionRcvd(received);
-	return true;
+        client->setReplayDetectionRcvd(received);
+        return true;
     } else {
-	Log(Warning) << "Auth: Replayed message detected: previously received: "
+        Log(Warning) << "Auth: Replayed message detected: previously received: "
                      << last_received << ", now received " << received << LogEnd;
-	return false;
+        return false;
     }
 
     return true; // not really needed

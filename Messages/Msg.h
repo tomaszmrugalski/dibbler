@@ -33,9 +33,9 @@ class TMsg
 
     // used to create TMsg object based on received char[] data
     TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
-    
+
     virtual int getSize();
-    
+
     // transmit (or retransmit)
 
     virtual unsigned long getTimeout();
@@ -51,7 +51,7 @@ class TMsg
     void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
 
     virtual SPtr<TOpt> getOption();
-    
+
     long getType();
     long getTransID();
     TOptList & getOptLst();
@@ -72,8 +72,6 @@ class TMsg
     void setAAASPI(uint32_t val);
     uint32_t getSPI();
     void setSPI(uint32_t val);
-    uint64_t getReplayDetection();
-    void setReplayDetection(uint64_t val);
     void setKeyGenNonce(char *value, unsigned len);
     char* getKeyGenNonce();
     unsigned getKeyGenNonceLen();
@@ -91,10 +89,10 @@ class TMsg
 
     TOptList Options;
     TOptList::iterator NextOpt; // to be removed together with firstOption() and getOption();
-    void setAttribs(int iface, SPtr<TIPv6Addr> addr, 
-		    int msgType, long transID);
+    void setAttribs(int iface, SPtr<TIPv6Addr> addr,
+                    int msgType, long transID);
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
-    
+
     bool IsDone; // Is this transaction done?
 
     int Iface;   // interface from/to which message was received/should be sent

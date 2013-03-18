@@ -291,23 +291,6 @@ uint32_t TMsg::getSPI() {
     return SPI;
 }
 
-void TMsg::setReplayDetection(uint64_t value)
-{
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
-    if (!auth) {
-        return;
-    }
-    auth->setReplayDetection(value);
-}
-
-uint64_t TMsg::getReplayDetection() {
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
-    if (!auth) {
-        return 0;
-    }
-    return auth->getReplayDetection();
-}
-
 void TMsg::setKeyGenNonce(char *value, unsigned len)
 {
     if (len) {

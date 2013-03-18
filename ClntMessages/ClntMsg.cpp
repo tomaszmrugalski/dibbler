@@ -1173,7 +1173,13 @@ bool TClntMsg::validateReplayDetection() {
 	return false;
     }
 
-    uint64_t received = getReplayDetection();
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth) {
+        // there's no auth option. We can't protect against replays
+        return true;
+    }
+
+    uint64_t received = auth->getReplayDetection();
     uint64_t last_received = client->getReplayDetectionRcvd();
 
     if (last_received < received) {
