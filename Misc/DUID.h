@@ -11,8 +11,7 @@
 class TDUID;
 #ifndef DUID_H_
 #define DUID_H_
-#include <iostream>
-#include <iomanip>
+#include <vector>
 #include <string>
 
 class TDUID
@@ -21,7 +20,7 @@ class TDUID
  public:
     TDUID(); // @todo: remove this
     TDUID(const char* DUID,int DUIDlen); // packed
-    TDUID(const char* Plain); // plain
+    TDUID(const char* text); // plain
     TDUID(const TDUID &duid);
     TDUID& operator=(const TDUID& duid);
     bool operator==(const TDUID &duid);
@@ -34,10 +33,7 @@ class TDUID
     ~TDUID();
 
 private:
-    void packedToPlain();
-    void plainToPacked();
-    char* DUID_;
-    size_t Len_;
+    std::vector<uint8_t> DUID_;
     std::string Plain_;
 };
 
