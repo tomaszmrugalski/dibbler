@@ -248,8 +248,8 @@ enum AuthProtocols {
 };
 
 enum AuthReplay {
-    AUTH_REPLAY_NONE,
-    AUTH_REPLAY_MONOTONIC
+    AUTH_REPLAY_NONE = 0,
+    AUTH_REPLAY_MONOTONIC = 1
 };
 
 // AUTH_ALGORITHM values for protocol type None (0)
