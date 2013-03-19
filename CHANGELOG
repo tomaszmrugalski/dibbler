@@ -6,6 +6,8 @@
     (patch by Tao Cui)
   - Srv: info about second and following relays are now passed to the
     script properly
+  - Rel: Unknown message types are now relayed (as a forward compatibility
+    feature)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
