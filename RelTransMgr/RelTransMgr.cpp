@@ -314,7 +314,6 @@ TRelTransMgr& TRelTransMgr::instance()
     return *Instance;
 }
 
-
 std::ostream & operator<<(std::ostream &s, TRelTransMgr &x)
 {
     s << "<TRelTransMgr>" << std::endl;

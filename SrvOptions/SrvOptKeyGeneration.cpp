@@ -44,7 +44,7 @@ TSrvOptKeyGeneration::TSrvOptKeyGeneration(TSrvMsg* parent)
 
     setLifetime(SrvCfgMgr().getAuthLifetime());
     
-    setAlgorithmId(parent->DigestType);
+    setAlgorithmId(parent->digestType_);
 
 
     unsigned kgnlen = SrvCfgMgr().getAuthKeyGenNonceLen();

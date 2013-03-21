@@ -13,6 +13,7 @@ class TAddrClient;
 #ifndef ADDRCLIENT_H
 #define ADDRCLIENT_H
 
+#include <vector>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "AddrIA.h"
@@ -64,8 +65,17 @@ public:
     void setReplayDetectionRcvd(uint64_t val);
     uint64_t getNextReplayDetectionSent();
 
+    void generateReconfKey();
+
     unsigned long getLastTimestamp();
-    
+
+    /// @brief 128 bits of pure randomness used in reconfigure process
+    ///
+    /// Reconfigure Key nonce is set be the server and the stored by the client.
+    /// It is later used to check if the reconfigure message came from the same
+    /// server that initially provided the configuration.
+    std::vector<uint8_t> ReconfKey_;
+
 private:
     List(TAddrIA) IAsLst;
     List(TAddrIA) TALst;
@@ -79,4 +89,4 @@ private:
 
 
 
-#endif 
+#endif

@@ -18,25 +18,40 @@
 #include "Opt.h"
 #include "SrvOptIA_PD.h"
 #include "OptReconfigureMsg.h"
+#include "OptAuthentication.h"
 #include "Logger.h"
+#include "hex.h"
 
 TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
-                                       SPtr<TIPv6Addr> ia ,int msgType,
-                                       SPtr<TDUID> client_duid)
-    :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0 )
+                                       int msgType, SPtr<TDUID> clientDuid)
+    :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0/*trans-id*/)
 {
-    ClientDUID=client_duid;
 
-    //appendAuthenticationOption(ClientDUID);
+    // include our DUID (server-id)
+    Options.push_back(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
 
-    // include our DUID (Server ID)
-    Options.push_back(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(),this));
+    // include his DUID (client-id)
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, clientDuid, this));
 
-    // include his DUID (Client ID)
-    Options.push_back(new TOptDUID(OPTION_CLIENTID, client_duid, this));
+    // include Reconfigure Message
+    Options.push_back(new TOptReconfigureMsg(msgType, this) );
 
-    // include Reconfigure Message Options
-    Options.push_back(new TOptReconfigureMsg(RENEW_MSG, this) );
+    // insert authentication option
+    Options.push_back(new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
+                                             AUTH_REPLAY_NONE, this));
+
+    SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
+    if (cli && cli->ReconfKey_.size() > 0) {
+        setAuthInfoKey((char*)&cli->ReconfKey_[0]);
+        Log(Debug) << "#### Auth: Setting reconfigure-key to " 
+                   << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
+    }
+
+    SPtr<TOptAuthentication> auth = (Ptr*) getOption(OPTION_AUTH);
+    if (auth->getProto() == AUTH_PROTO_RECONFIGURE_KEY) {
+        // let's find out what's reconfigure key for this message is
+    }
+
 
     send();
     return;

@@ -59,7 +59,7 @@ class TSrvTransMgr
 
     int checkReconfigures();
 
-    bool sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia, int iface,
+    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
                          int msgType, SPtr<TDUID> ptrDUID);
 
     bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);

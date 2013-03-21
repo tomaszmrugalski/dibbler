@@ -612,9 +612,14 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
+    SPtr<TOpt> reconfAccept = request->getOption(OPTION_RECONF_ACCEPT);
+    if (reconfAccept) {
+        appendReconfigureKey();
+    }
+
     IsDone = false;
     MRT_ = 330;
-    this->send();
+    send();
 }
 
 /// @brief ctor used for generating REPLY message as SOLICIT response (in rapid-commit mode)

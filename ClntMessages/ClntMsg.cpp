@@ -204,7 +204,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
             auth_offset = buf + pos;
             auth_len = length;
 	    if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
-		this->DigestType = ClntCfgMgr().getDigest();
+		digestType_ = ClntCfgMgr().getDigest();
 	    }
             ptr = new TOptAuthentication(buf+pos, length, this);
 	    break;
@@ -350,7 +350,7 @@ void TClntMsg::setDefaults()
     MRD = 0;
 
 #ifndef MOD_DISABLE_AUTH
-    DigestType = ClntCfgMgr().getDigest();
+    digestType_ = ClntCfgMgr().getDigest();
     AuthKeys = ClntCfgMgr().AuthKeys;
 #endif
     KeyGenNonce = NULL;
@@ -456,7 +456,7 @@ void TClntMsg::appendAuthenticationOption()
 #ifndef MOD_DISABLE_AUTH
     uint8_t algorithm = 0; // algorithm is protocol specific
 
-    DigestType = DIGEST_NONE;
+    digestType_ = DIGEST_NONE;
 
     ClntAddrMgr().firstClient();
     SPtr<TAddrClient> client = ClntAddrMgr().getClient();
@@ -476,7 +476,7 @@ void TClntMsg::appendAuthenticationOption()
         break;
     }
     case AUTH_PROTO_DIBBLER: { // Mechanism proposed by Kowalczuk
-        DigestType = ClntCfgMgr().getDigest();
+        digestType_ = ClntCfgMgr().getDigest();
         algorithm = static_cast<uint8_t>(ClntCfgMgr().getDigest());
         if (client && client->getSPI())
             this->setSPI(client->getSPI());

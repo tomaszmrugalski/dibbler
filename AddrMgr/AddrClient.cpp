@@ -13,6 +13,7 @@
 #include <limits.h>
 #include "AddrClient.h"
 #include "Logger.h"
+#include "hex.h"
 
 using namespace std;
 
@@ -77,7 +78,7 @@ void TAddrClient::addIA(SPtr<TAddrIA> ia) {
     if (getIA(ia->getIAID()))
     {
         Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
-	      return;
+              return;
     }
     IAsLst.append(ia);
 }
@@ -202,17 +203,17 @@ unsigned long TAddrClient::getT1Timeout() {
     IAsLst.first();
     while ( ptr = IAsLst.get() ) {
         if (ptr->getState()==STATE_CONFIGURED) {
-	    if (ts > ptr->getT1Timeout())
-		ts = ptr->getT1Timeout();
-	}else if (ptr->getState()==STATE_NOTCONFIGURED){
-	    ts = 0;
-	}
+            if (ts > ptr->getT1Timeout())
+                ts = ptr->getT1Timeout();
+        }else if (ptr->getState()==STATE_NOTCONFIGURED){
+            ts = 0;
+        }
     }
 
     PDLst.first();
     while ( ptr = PDLst.get() ) {
-	if (ptr->getState()!=STATE_CONFIGURED)
-	    continue;
+        if (ptr->getState()!=STATE_CONFIGURED)
+            continue;
         if (ts > ptr->getT1Timeout())
             ts = ptr->getT1Timeout();
     }
@@ -233,8 +234,8 @@ unsigned long TAddrClient::getT2Timeout() {
 
     PDLst.first();
     while ( ptr = PDLst.get() ) {
-	if (ptr->getState()!=STATE_CONFIGURED)
-	    continue;
+        if (ptr->getState()!=STATE_CONFIGURED)
+            continue;
         if (ts > ptr->getT2Timeout())
             ts = ptr->getT2Timeout();
     }
@@ -256,8 +257,8 @@ unsigned long TAddrClient::getPrefTimeout() {
 
     PDLst.first();
     while ( ptr = PDLst.get() ) {
-	if (ptr->getState()!=STATE_CONFIGURED)
-	    continue;
+        if (ptr->getState()!=STATE_CONFIGURED)
+            continue;
         if (ts > ptr->getPrefTimeout())
             ts = ptr->getPrefTimeout();
     }
@@ -307,7 +308,7 @@ unsigned long TAddrClient::getLastTimestamp() {
         if (ts > ptr->getTimestamp())
             ts = ptr->getTimestamp();
     }
-    
+
     return ts;
 }
 
@@ -335,17 +336,31 @@ uint64_t TAddrClient::getNextReplayDetectionSent() {
     return ++ReplayDetectionSent;
 }
 
+void TAddrClient::generateReconfKey() {
+    ReconfKey_.resize(16);
+
+    // @todo: put some better randomness here
+    for (int i = 0; i < 16; i++) {
+        ReconfKey_[i] = random()%256;
+    }
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-std::ostream & operator<<(std::ostream & strum, TAddrClient &x) 
+std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
 {
     if (x.DUID->getLen()==1)
-	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
+        strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
     strum << "  <AddrClient>" << endl;
     if (x.DUID->getLen())
-	strum << "    " << *x.DUID;
+        strum << "    " << *x.DUID;
+
+    // reconfigure-key
+    strum << "  <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
+          << hexToText(&x.ReconfKey_[0], x.ReconfKey_.size(), false)
+          << "</ReconfigureKey>" << endl;
 
     strum << "    <!-- " << x.IAsLst.count() << " IA(s) -->" << endl;
     SPtr<TAddrIA> ptr;
@@ -368,6 +383,6 @@ std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
 
     strum << "  </AddrClient>" << endl;
     if (x.DUID->getLen()==1)
-	strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
+        strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
     return strum;
 }

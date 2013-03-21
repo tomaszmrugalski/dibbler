@@ -79,7 +79,7 @@ string TClntMsgAdvertise::getInfo()
     keyGen = (Ptr*) getOption(OPTION_KEYGEN);
     if (keyGen) {
 	tmp << ", keygen (AlgorithmId=" << keyGen->getAlgorithmId() << ")";
-	DigestType = (DigestTypes)keyGen->getAlgorithmId();
+	digestType_ = (DigestTypes)keyGen->getAlgorithmId();
     } else {
 	tmp << ", no auth info";
     }

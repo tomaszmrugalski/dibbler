@@ -26,6 +26,9 @@ class TOpt
 {
   public:
 
+    /// length of a DHCPv6 option header
+    const static size_t OPTION6_HDR_LEN = 4;
+
     /* this is required to specify, what is the format of expected options.
        This cannot be class field or method, because there is no object
        to hold that information. Option object is created when requested

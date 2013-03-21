@@ -170,7 +170,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 #ifndef MOD_DISABLE_AUTH
         case OPTION_AAAAUTH:
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                this->DigestType = DIGEST_HMAC_SHA1;
+                digestType_ = DIGEST_HMAC_SHA1;
                 ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
             }
             break;
@@ -179,7 +179,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             break;
         case OPTION_AUTH:
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                this->DigestType = SrvCfgMgr().getDigest();
+                digestType_ = SrvCfgMgr().getDigest();
 
                 ptr = new TOptAuthentication(buf+pos, length, this);
                 SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
@@ -215,7 +215,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 
 void TSrvMsg::setDefaults() {
 #ifndef MOD_DISABLE_AUTH
-    DigestType = SrvCfgMgr().getDigest();
+    digestType_ = SrvCfgMgr().getDigest();
     AuthKeys = SrvCfgMgr().AuthKeys;
 #endif
 
@@ -274,6 +274,7 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         case OPTION_UNICAST:
         case OPTION_RELAY_MSG:
         case OPTION_INTERFACE_ID:
+        case OPTION_RECONF_MSG :
         case OPTION_STATUS_CODE : {
             Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. Client is not supposed to send it. Option ignored." << LogEnd;
             break;
@@ -281,10 +282,11 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
         // options not yet supported
         case OPTION_USER_CLASS :
-        case OPTION_VENDOR_CLASS:
-        case OPTION_RECONF_MSG :
-        case OPTION_RECONF_ACCEPT: {
+        case OPTION_VENDOR_CLASS: {
             Log(Debug) << "Option " << opt->getOptType() << " is not supported." << LogEnd;
+            break;
+        }
+        case OPTION_RECONF_ACCEPT: {
             break;
         }
 
@@ -509,6 +511,50 @@ void TSrvMsg::processIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt)
     Options.push_back(optPD);
 }
 
+void TSrvMsg::appendReconfigureKey() {
+
+    // Let's see if we have a key for this particular client
+    SPtr<TAddrClient> client = SrvAddrMgr().getClient(ClientDUID);
+    if (!client) {
+        return; // something is wrong (or this is solicit)
+    }
+
+    // are we using something better than reconfigure key already?
+    if (getOption(OPTION_AUTH)) {
+        // yes, there's auth option included already. Let's not use RECONFIGURE_KEY then
+        return;
+    }
+
+    SPtr<TOptAuthentication> auth = new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
+                                                           AUTH_REPLAY_NONE, this);
+    switch (MsgType) {
+    case REPLY_MSG: {
+        // If there is no reconfigure key nonce generated
+        client->generateReconfKey();
+        // insert reconfigure nonce
+        vector<uint8_t> key(0, 17);
+        key[0] = 1; // reconfigure key (see RFC3315, 21.5.1)
+        memcpy(&key[1], &client->ReconfKey_[0], 16);
+        auth->setPayload(key);
+        break;
+    }
+    case RECONFIGURE_MSG: {
+        // insert hash-key
+        vector<uint8_t> key(0, 17);
+        key[0] = 2; // HMAC-MD5 (see RFC3315, 21.5.1)
+        auth->setPayload(key);
+        break;
+    }
+    default: {
+        // don't include reconfigure-key in any other message type
+        return;
+    }
+
+    }
+
+    Options.push_back((Ptr*)auth);
+}
+
 void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN) {
     /// @todo: Make this method also usable for RELEASE message
     string hint = requestFQDN->getFQDN();
@@ -516,14 +562,14 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
 
     bool doRealUpdate = false;
     if (clientMsg->getType() == REQUEST_MSG ||
-	clientMsg->getType() == RELEASE_MSG) {
-	doRealUpdate = true;
+        clientMsg->getType() == RELEASE_MSG) {
+        doRealUpdate = true;
     }
 
     SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
     if (!clntAssignedAddr) {
         clntAssignedAddr = PeerAddr; // it's better than nothing. Put it in FQDN option,
-	// doRealUpdate = false; // but do not do the actual update
+        // doRealUpdate = false; // but do not do the actual update
     }
 
     optFQDN = addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, doRealUpdate);
@@ -620,22 +666,22 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
         }
         ptrAddrIA->firstAddr();
         SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
-	if (!addr) {
-	    Log(Warning) << "Client does not have any address(es) assigned." << LogEnd;
-	    return 0;
-	}
+        if (!addr) {
+            Log(Warning) << "Client does not have any address(es) assigned." << LogEnd;
+            return 0;
+        }
 
         // regardless of the result, store the info
         ptrAddrIA->setFQDN(fqdn);
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
-	if (doRealUpdate) {
-	    Log(Notice) << "FQDN: About to perform DNS Update: IP="
-			<< addr->get()->getPlain() << " and FQDN=" << fqdnName << LogEnd;
-	    SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
-	} else {
-	    Log(Debug) << "FQDN: Skipping DNS Update." << LogEnd;
-	}
+        if (doRealUpdate) {
+            Log(Notice) << "FQDN: About to perform DNS Update: IP="
+                        << addr->get()->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+            SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
+        } else {
+            Log(Debug) << "FQDN: Skipping DNS Update." << LogEnd;
+        }
     } else {
         Log(Debug) << "Server configuration does NOT allow DNS updates for " << clntDuid->getPlain() << LogEnd;
         optFQDN->setNFlag(true);
@@ -805,24 +851,26 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
         return;
     }
 
-    DigestType = SrvCfgMgr().getDigest();
-    if (DigestType == DIGEST_NONE) {
+    digestType_ = SrvCfgMgr().getDigest();
+    if (digestType_ == DIGEST_NONE) {
         return;
     }
 
-    Log(Debug) << "Auth: Setting DigestType to: " << this->DigestType << LogEnd;
+    Log(Debug) << "Auth: Setting DigestType to: " << digestType_ << LogEnd;
 
     if (!getOption(OPTION_AUTH)) {
         SPtr<TAddrClient> client = SrvAddrMgr().getClient(duid);
         if (client && !client->getSPI() && this->getSPI())
             client->setSPI(this->getSPI());
 
+        SPtr<TOptAuthentication> auth = new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
+                                                               SrvCfgMgr().getAuthAlgorithm(),
+                                                               SrvCfgMgr().getAuthReplay(),
+                                                               this);
         if (client)
-            setReplayDetection(client->getNextReplayDetectionSent());
-        Options.push_back(new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
-                                                 SrvCfgMgr().getAuthAlgorithm(),
-                                                 SrvCfgMgr().getAuthReplay(),
-                                                 this));
+            auth->setReplayDetection(client->getNextReplayDetectionSent());
+
+        Options.push_back((Ptr*)auth);
     }
 #endif
 }
@@ -1130,11 +1178,11 @@ void TSrvMsg::appendStatusCode()
 void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
     int opt = ptrOpt->getOptType();
 
-	// RECONF_ACCEPT is the last standard option defined in RFC3315
-	// All other options are considered extensions
-	if (opt> OPTION_RECONF_ACCEPT && !ORO->isOption(opt) && !getOption(opt)) {
+    // RECONF_ACCEPT is the last standard option defined in RFC3315
+    // All other options are considered extensions
+    if (opt > OPTION_RECONF_ACCEPT && !ORO->isOption(opt) && !getOption(opt)) {
         ORO->addOption(opt);
-	}
+    }
 }
 
 /**

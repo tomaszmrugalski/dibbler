@@ -62,6 +62,7 @@ class TMsg
     bool isDone(bool done);
 
     // auth stuff below
+    void calculateDigests(char* buffer,  size_t len);
     void setAuthInfoPtr(char* ptr); /// @todo: remove this
     int setAuthInfoKey();
     void setAuthInfoKey(char *ptr);
@@ -75,7 +76,7 @@ class TMsg
     void setKeyGenNonce(char *value, unsigned len);
     char* getKeyGenNonce();
     unsigned getKeyGenNonceLen();
-    enum DigestTypes DigestType;
+    DigestTypes digestType_;
     SPtr<KeyList> AuthKeys;
 
     // notify scripts stuff

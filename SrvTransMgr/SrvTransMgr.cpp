@@ -70,7 +70,6 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile, int port)
 /// is sent to clients that currently hold those addresses.
 ///
 /// @return number of clients that were reconfigured
-///
 int TSrvTransMgr::checkReconfigures() {
 
     int clients = 0; // how many client did we reconfigure?
@@ -86,6 +85,7 @@ int TSrvTransMgr::checkReconfigures() {
     
     while (cli = SrvAddrMgr().getClient() ) 
     {
+        /// @todo clean up this shit
         check=true;
         ptrDUID=cli->getDUID();
         SPtr<TAddrIA> ia;
@@ -110,7 +110,7 @@ int TSrvTransMgr::checkReconfigures() {
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << "uses outdated info. Sending RECONFIGURE." << LogEnd;
-                    sendReconfigure(unicast, adr->get(), iface, 1, ptrDUID);
+                    sendReconfigure(unicast, iface, RENEW_MSG, ptrDUID);
                     clients++;
                     if (SrvAddrMgr().delClntAddr(cli->getDUID(), ia->getIAID(), adr->get(),false)) {
                         Log(Debug) << "Outdated " << *adr->get() << " address deleted." << LogEnd;
@@ -142,7 +142,7 @@ int TSrvTransMgr::checkReconfigures() {
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << "uses outdated info. Sending RECONFIGURE." << LogEnd;
-                    sendReconfigure(unicast, prefix->get(), iface, 1, ptrDUID);
+                    sendReconfigure(unicast, iface, RENEW_MSG, ptrDUID);
                     clients++;
                     check=false;
                     if(SrvAddrMgr().delPrefix(ptrDUID, IAID, prefix->get(),true)) {
@@ -648,11 +648,11 @@ bool TSrvTransMgr::ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD) {
    }
 }
 
-bool TSrvTransMgr::sendReconfigure(SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia,
-                                   int iface, int msgType, SPtr<TDUID> ptrDUID)
+bool TSrvTransMgr::sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
+                                   int msgType, SPtr<TDUID> ptrDUID)
 {
     SPtr<TSrvMsg> reconfigure;
-    reconfigure = new TSrvMsgReconfigure(iface, addr, ia, msgType, ptrDUID);
+    reconfigure = new TSrvMsgReconfigure(iface, addr, msgType, ptrDUID);
     //reconfigure->send(); // not needed (message will send itself in constructor)
     return true;
 }

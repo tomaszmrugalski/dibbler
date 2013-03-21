@@ -17,8 +17,8 @@ class TSrvMsgReconfigure : public TSrvMsg
 {
   public:
     // creates object based on a buffer
-    TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> addr, SPtr<TIPv6Addr> ia,
-                       int msgType, SPtr<TDUID> ptrDUID);
+    TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
+                       int msgType, SPtr<TDUID> clientDuid);
 
     bool check();
     void doDuties();
