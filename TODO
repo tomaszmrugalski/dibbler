@@ -21,7 +21,7 @@ Refactor:
 - remove many SrvOpt and ClntOpt classes
 - rename TSrvOptTA to TSrvOptIA_TA
 
-MUST-FIX before 0.8.3:
+MUST-FIX before 0.9.0:
 - once exceptions are read, remove corresponding addrs from cache. Otherwise cached client may get an address
   that is reserved for someone else.
 
