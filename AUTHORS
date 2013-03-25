@@ -83,5 +83,8 @@
   - Tao Cui <Cuit(at)ihep(dot)ac(dot)cn>
     2013-01: interface-id shorter than 4 bytes are now handled ok
 
+  - Jean-Jacques Sarton <jj(dot)sarton(at)web(dot)de>
+    2013-03: Patch for double free in file read error handling
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

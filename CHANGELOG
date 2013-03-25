@@ -10,6 +10,8 @@
     bound to global addresses
   - Server now properly calculates number of available addresses and prefixes
     after expiration (bug #264)
+  - Cli: fix for a double free in error handing (if file read failed).
+    Thanks to Jean-Jacques Sarton for reporting and providing patch (bug #266)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
