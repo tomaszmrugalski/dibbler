@@ -167,7 +167,7 @@ void TDHCPClient::run()
             SPtr<TIfaceIface> ptrIface;
             ptrIface = ClntIfaceMgr().getIfaceByID(iface);
             Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName()
-                      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID()
+                      << "/" << iface	<< hex << ",trans-id=0x" << msg->getTransID()
                       << dec << ", " << msg->countOption() << " opts:";
             SPtr<TOpt> ptrOpt;
             msg->firstOption();

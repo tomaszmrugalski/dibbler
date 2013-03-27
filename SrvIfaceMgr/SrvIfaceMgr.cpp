@@ -179,60 +179,53 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
-    if (sockid>0) {
-        if (bufsize<4) {
-            if (bufsize == 1 && buf[0] == CONTROL_MSG) {
-                Log(Debug) << "Control message received." << LogEnd;
-                return 0;
-            }
-            Log(Warning) << "Received message is too short (" << bufsize
-                         << ") bytes, at least 4 are required." << LogEnd;
-            return 0; //NULL
+    if (sockid <= 0) {
+        return 0;
+    }
+
+    SPtr<TSrvMsg> ptr;
+
+    if (bufsize<4) {
+        if (bufsize == 1 && buf[0] == CONTROL_MSG) {
+            Log(Debug) << "Control message received." << LogEnd;
+            return 0;
         }
+        Log(Warning) << "Received message is too short (" << bufsize
+                     << ") bytes, at least 4 are required." << LogEnd;
+        return 0; //NULL
+    }
 
-        // check message type
-        int msgtype = buf[0];
+    // check message type
+    int msgtype = buf[0];
 
-        SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> ptrIface;
 
-        // get interface
-        ptrIface = (Ptr*)getIfaceBySocket(sockid);
+    // get interface
+    ptrIface = (Ptr*)getIfaceBySocket(sockid);
 
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
+    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+               << ")." << LogEnd;
 
-        // create specific message object
-        SPtr<TSrvMsg> ptr;
-        switch (msgtype) {
-        case SOLICIT_MSG:
-        case REQUEST_MSG:
-        case CONFIRM_MSG:
-        case RENEW_MSG:
-        case REBIND_MSG:
-        case RELEASE_MSG:
-        case DECLINE_MSG:
-        case INFORMATION_REQUEST_MSG:
-        case LEASEQUERY_MSG:
+    // create specific message object
+    switch (msgtype) {
+    case SOLICIT_MSG:
+    case REQUEST_MSG:
+    case CONFIRM_MSG:
+    case RENEW_MSG:
+    case REBIND_MSG:
+    case RELEASE_MSG:
+    case DECLINE_MSG:
+    case INFORMATION_REQUEST_MSG:
+    case LEASEQUERY_MSG:
         {
             ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                return 0;
-            }
-            return ptr;
+            break;
         }
         case RELAY_FORW_MSG:
         {
             ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-            if (!ptr)
-                return 0;
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                return 0;
-            }
+            break;
         }
         return ptr;
         case ADVERTISE_MSG:
@@ -245,10 +238,34 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         default:
             Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
             return 0; //NULL
-        }
-    } else {
-        return 0; //NULL
     }
+
+    if (!ptr)
+        return 0;
+
+    if (!ptr->validateReplayDetection() ||
+        !ptr->validateAuthInfo(buf, bufsize)) {
+        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+        return 0;
+    }
+
+    /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
+
+    char mac[20]; // maximum mac address for Infiniband is 20 bytes
+    int mac_len = sizeof(mac);
+
+    if (get_mac_from_ipv6(ptrIface->getName(), ptrIface->getID(),
+                          peer->getPlain(), mac, &mac_len) == 0) {
+        /// @todo: Store MAC address in the message, so it could be logged later or added
+        ///        to the database
+
+        TDUID tmp(mac, mac_len); // packed
+        Log(Debug) << "Received message from IPv6 address " << peer->getPlain()
+                   << ", mac=" << tmp.getPlain()
+                   << " on interface " << ptrIface->getFullName() << LogEnd;
+    }
+
+    return ptr;
 }
 
 #if 0
@@ -313,6 +330,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     for (int j=0;j<HOP_COUNT_LIMIT; j++)
         echoListTbl[j].clear();
 
+    string how_found = "";
+
+
     while (bufsize>0 && buf[0]==RELAY_FORW_MSG) {
         /* decode RELAY_FORW message */
         if (bufsize < 34) {
@@ -321,6 +341,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         }
 
         SPtr<TSrvOptInterfaceID> ptrIfaceID = 0;
+
+	how_found = "";
 
         char type = buf[0];
         if (type!=RELAY_FORW_MSG)
@@ -426,7 +448,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         }
         if (optIfaceIDCnt>1) {
             Log(Error) << "More than one (" << optIfaceIDCnt
-                       << ") interface-ID options received, but at most 1 was expected. "
+                       << ") interface-ID options received, but exactly 1 was expected. "
                        << "Message dropped." << LogEnd;
             return 0;
         }
@@ -434,47 +456,58 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
                   << ", peer=" << peerAddr->getPlain();
 
+	// --- selectSubnet() starts here ---
+
         bool guessMode = SrvCfgMgr().guessMode();
 
         // First try to find a relay based on the interface-id option
         if (ptrIfaceID) {
             Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
             ifindex = SrvCfgMgr().getRelayByInterfaceID(ptrIfaceID);
-            if ( (ifindex == -1) && !guessMode) {
-                    Log(Warning) << "Unable to find relay interface with interfaceID="
-                                 << ptrIfaceID->getPlain() << " defined on the "
-                                 << physicalIface->getFullName() << " interface." << LogEnd;
-                    return 0;
-            }
-        }
+            if (ifindex == -1) {
+		Log(Debug) << "Unable to find relay interface with interfaceID="
+			   << ptrIfaceID->getPlain() << " defined on the "
+			   << physicalIface->getFullName() << " interface." << LogEnd;
+            } else {
+		how_found = "using interface-id=" + ptrIfaceID->getPlain();
+	    }
+        } else {
+            Log(Cont) << ", no interface-id option." << LogEnd;
+	}
 
         // then try to find a relay based on the link address
         if (ifindex == -1) {
-            Log(Cont) << ", no interface-id option." << LogEnd;
             ifindex = SrvCfgMgr().getRelayByLinkAddr(linkAddr);
-            if ( (ifindex == -1) && !guessMode) {
-                Log(Warning) << "Unable to find relay interface using link address: "
-                             << linkAddr->getPlain() << LogEnd;
-                return 0;
+	    if (ifindex == -1) {
+                Log(Info) << "Unable to find relay interface using link address: "
+			  << linkAddr->getPlain() << LogEnd;
+	    } else {
+		how_found = string("using link-addr=") + linkAddr->getPlain();
             }
         }
 
         // the last hope - use guess-mode to get any relay
         if ((ifindex == -1) && guessMode) {
             ifindex = SrvCfgMgr().getAnyRelay();
-            if (ifindex == -1) {
-                Log(Error) << "Guess-mode: Unable to find any relays for packet received on "
-                           << physicalIface->getFullName() << LogEnd;
-                return 0;
+            if (ifindex != -1) {
+		how_found = "using guess-mode";
             }
-            SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
-            Log(Notice) << "Guess-mode: Relayed interface guessed as "
-                        << cfgIface->getFullName() << LogEnd;
         }
+
+	// --- selectSubnet() ends here ---
 
         // now switch to relay interface
         buf = relay_buf;
         bufsize = relay_bufsize;
+    }
+
+    if (ifindex == -1) {
+	Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
+	return 0;
+    } else {
+	SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
+	Log(Notice) << "Found relay " << cfgIface->getFullName()
+		    << " by " << how_found << LogEnd;
     }
 
     SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
@@ -484,6 +517,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     for (int i=0; i<relays; i++) {
         msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
     }
+    msg->setPhysicalIface(physicalIface->getID());
+
     if (remoteID) {
         Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()
                    << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;

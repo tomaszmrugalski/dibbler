@@ -86,5 +86,8 @@
   - Grzegorz Pluto
     200?-2012: reconfigure support
 
+  - Jean-Jacques Sarton <jj(dot)sarton(at)web(dot)de>
+    2013-03: Patch for double free in file read error handling
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

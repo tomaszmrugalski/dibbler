@@ -525,7 +525,6 @@ void TClntIfaceIface::delString(const char * filename, const char * str) {
 
     while (!feof(f)) {
         if (!fgets(buf,511,f)) {
-            fclose(f);
             break;
         }
         if ( !found && (strlen(buf)==len) && !strncmp(str,buf,len) ) {

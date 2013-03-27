@@ -90,26 +90,37 @@ void TDHCPServer::run()
 	if (!msg) 
 	    continue;
 	silent = false;
-	int iface = msg->getIface();
-	SPtr<TIfaceIface> ptrIface;
-	ptrIface = SrvIfaceMgr().getIfaceByID(iface);
-        if (!ptrIface) {
-            Log(Error) << "Received data over unknown interface: ifindex=" << iface << LogEnd;
+	SPtr<TIfaceIface>  physicalIface = SrvIfaceMgr().getIfaceByID(msg->getPhysicalIface());
+	SPtr<TSrvCfgIface> logicalIface = SrvCfgMgr().getIfaceByID(msg->getIface());
+        if (!physicalIface) {
+            Log(Error) << "Received data over unknown physical interface: ifindex="
+		       << msg->getPhysicalIface() << LogEnd;
             continue;
         }
-	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
-		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
-		    << dec << ", " << msg->countOption() << " opts:";
+	if (!logicalIface) {
+	    Log(Error) << "Received data over unknown logical interface: ifindex="
+		       << msg->getIface() << LogEnd;
+	    continue;
+	}
+	Log(Notice) << "Received " << msg->getName() << " on " << physicalIface->getFullName()
+		    << hex << ", trans-id=0x" << msg->getTransID() << dec
+		    << ", " << msg->countOption() << " opts:";
 	SPtr<TOpt> ptrOpt;
 	msg->firstOption();
 	while (ptrOpt = msg->getOption() )
 	    Log(Cont) << " " << ptrOpt->getOptType();
-	Log(Cont) << ", " << msg->RelayInfo_.size() << " relay(s)." << LogEnd;
+	if (msg->RelayInfo_.size()) {
+	    Log(Cont) << " (" << logicalIface->getFullName() << ", "
+		      << msg->RelayInfo_.size() << " relay(s)." << LogEnd;
+	} else {
+	    Log(Cont) << " (non-relayed)" << LogEnd;
+	}
+
 	if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
 					 (msg->getType()!=RELAY_FORW_MSG))) {
 	    Log(Warning) 
-		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
-		<< LogEnd;
+		<< "Stateful configuration message received while running in "
+		<< "the stateless mode. Message ignored." << LogEnd;
 	    continue;
 	} 
 	SrvTransMgr().relayMsg(msg);

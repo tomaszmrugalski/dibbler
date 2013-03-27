@@ -95,8 +95,8 @@ class TMsg
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
 
     bool IsDone; // Is this transaction done?
-
-    int Iface;   // interface from/to which message was received/should be sent
+    int Iface;   // logical interface (for direct messages it equals PhysicalIface
+                 // for relayed messages Iface points to relayX, PhysicalInterface to ethX
     SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 
     // auth stuff below

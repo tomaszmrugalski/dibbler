@@ -12,6 +12,13 @@
     after expiration (bug #264)
   - Srv: info about second and following relays are now passed to the
     script properly
+  - Cli: fix for a double free in error handing (if file read failed).
+    Thanks to Jean-Jacques Sarton for reporting and providing patch (bug #266)
+  - client.vendor-class.en and client.vendor-class.data expressions are now
+    supported (but not tested yet)
+  - Srv: Relay support refactored. Unknown options are now handled better
+    and any development related to relays will be easier
+  - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
   - Reconfigure support (by Grzegorz Pluto)
 
 0.8.3 [2013-01-20]
@@ -54,6 +61,7 @@
   - Cli/Srv: FQDN, Vendor options are now passed to script correctly
   - Cli: IAID is now parsed properly in PD definitions in client-AddrMgr.xml
   - Cli: Silent prefix expiration (T1>valid lifetime) is now supported properly
+  - Srv: Skeleton functions for logging MAC address added
 
 0.8.2 [2012-02-29]
   - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,

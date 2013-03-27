@@ -223,7 +223,7 @@ SPtr<TIPv6Addr> TMsg::getAddr() {
 }
 
 int TMsg::getIface() {
-    return this->Iface;
+    return Iface;
 }
 
 bool TMsg::isDone() {

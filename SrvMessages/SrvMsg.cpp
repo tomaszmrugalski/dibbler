@@ -51,7 +51,7 @@ using namespace std;
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
   :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0),
-   forceMsgType_(0)
+   forceMsgType_(0), physicalIface_(iface)
 {
 }
 
@@ -66,7 +66,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
                  char* buf, int bufSize)
-    :TMsg(iface, addr, buf, bufSize)
+    :TMsg(iface, addr, buf, bufSize), forceMsgType_(0), physicalIface_(iface)
 {
     setDefaults();
 
@@ -1195,4 +1195,18 @@ void TSrvMsg::getORO(SPtr<TMsg> msg)
     ORO = (Ptr*)msg->getOption(OPTION_ORO);
     if (!ORO)
         ORO = new TOptOptionRequest(OPTION_ORO, this);
+}
+
+/// @brief sets physical interface index
+///
+/// This may be different than Iface_ for relayed messages
+void TSrvMsg::setPhysicalIface(int iface) {
+    physicalIface_ = iface;
+}
+
+/// @brief returns physical interface index
+///
+/// This may be different than Iface_ for relayed messages
+int TSrvMsg::getPhysicalIface() const {
+    return physicalIface_;
 }
