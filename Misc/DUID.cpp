@@ -8,6 +8,7 @@
  *
  */
 
+#include <string.h>
 #include "hex.h"
 #include "DUID.h"
 #include "Logger.h"
