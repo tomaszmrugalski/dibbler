@@ -84,7 +84,7 @@ void TDHCPRelay::run()
 	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
 		    << "/" << iface;
 	if (msg->getType()!=RELAY_FORW_MSG && msg->getType()!=RELAY_REPL_MSG)
-	    Log(Cont) << hex << ",TransID=0x" << msg->getTransID() << dec;
+	    Log(Cont) << hex << ",trans-id=0x" << msg->getTransID() << dec;
 	Log(Cont) << ", " << msg->countOption() << " opts:";
 	SPtr<TOpt> ptrOpt;
 	msg->firstOption();

@@ -97,6 +97,10 @@ public:
     /// being returned and then used past them message lifetime
     std::vector<RelayInfo> RelayInfo_;
 
+    void setPhysicalIface(int iface);
+    int  getPhysicalIface() const;
+
+
 protected:
     void setDefaults();
     SPtr<TOptOptionRequest> ORO;
@@ -131,9 +135,11 @@ protected:
     SPtr<TOptVendorData> RemoteID; // this MAY be set, if message was recevied via relay
                                    // AND relay appended RemoteID
 
-    /// @brief used in tests only. If non-zero, send message type is set to that 
-    /// type
+    /// used in tests only. If non-zero, send message type is set to that type
     uint8_t forceMsgType_;
+
+    /// physical interface from/to which message was received/should be sent
+    int physicalIface_;
 };
 
 #endif

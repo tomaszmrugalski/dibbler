@@ -14,6 +14,8 @@ Subnet support:
 - TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> -> SPtr<TSrvCfgIface>, ...)
   (or even better -> int ifindex,...)
 - Implement tests in tests/Srv/ for SrvIfaceMgr::decodeRelayForw()
+- modify send() to use SrvMsg::getPhysicalInterface()
+- remove the need to specify physical underlying interfaces in config
 
 Important:
 - Implement 8 step lease assignment algorithm (done for IA_NA, todo for IA_PD)
