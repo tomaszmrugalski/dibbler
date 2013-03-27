@@ -12,6 +12,10 @@
     after expiration (bug #264)
   - Srv: info about second and following relays are now passed to the
     script properly
+  - Cli: fix for a double free in error handing (if file read failed).
+    Thanks to Jean-Jacques Sarton for reporting and providing patch (bug #266)
+  - client.vendor-class.en and client.vendor-class.data expressions are now
+    supported (but not tested yet)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

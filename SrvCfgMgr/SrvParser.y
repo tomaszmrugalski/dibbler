@@ -1629,6 +1629,14 @@ Expr
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
 }
+| CLIENT_VENDOR_CLASS_EN_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_ENTERPRISE_NUM));
+}
+| CLIENT_VENDOR_CLASS_DATA_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_DATA));
+}
 | STRING_
 {
     // Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
