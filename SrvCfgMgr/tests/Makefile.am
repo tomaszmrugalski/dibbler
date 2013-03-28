@@ -25,6 +25,7 @@ TESTS += SrvCfgMgr_tests
 
 SrvCfgMgr_tests_SOURCES = run_tests.cpp
 SrvCfgMgr_tests_SOURCES += SrvCfgMgr_unittest.cc
+SrvCfgMgr_tests_SOURCES += expressions_unittest.cc
 
 SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 
