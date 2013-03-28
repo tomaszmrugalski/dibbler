@@ -92,9 +92,10 @@ am_libOptions_a_OBJECTS = libOptions_a-OptAAAAuthentication.$(OBJEXT) \
 	libOptions_a-OptDomainLst.$(OBJEXT) \
 	libOptions_a-OptTA.$(OBJEXT) \
 	libOptions_a-OptUserClass.$(OBJEXT) \
-	libOptions_a-OptVendorData.$(OBJEXT) \
+	libOptions_a-OptVendorClass.$(OBJEXT) \
 	libOptions_a-OptVendorSpecInfo.$(OBJEXT) \
-	libOptions_a-OptRtPrefix.$(OBJEXT)
+	libOptions_a-OptRtPrefix.$(OBJEXT) \
+	libOptions_a-OptVendorData.$(OBJEXT)
 libOptions_a_OBJECTS = $(am_libOptions_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -366,8 +367,9 @@ libOptions_a_SOURCES = OptAAAAuthentication.cpp OptAAAAuthentication.h \
 	OptOptionRequest.h OptStatusCode.cpp OptStatusCode.h \
 	OptString.cpp OptString.h OptDomainLst.cpp OptDomainLst.h \
 	OptTA.cpp OptTA.h OptUserClass.cpp OptUserClass.h \
-	OptVendorData.cpp OptVendorData.h OptVendorSpecInfo.cpp \
-	OptVendorSpecInfo.h OptRtPrefix.cpp OptRtPrefix.h
+	OptVendorClass.cpp OptVendorClass.h OptVendorSpecInfo.cpp \
+	OptVendorSpecInfo.h OptRtPrefix.cpp OptRtPrefix.h \
+	OptVendorData.cpp OptVendorData.h
 all: all-recursive
 
 .SUFFIXES:
@@ -438,6 +440,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptString.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptTA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptUserClass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptVendorClass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptVendorData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptVendorSpecInfo.Po@am__quote@
 
@@ -756,19 +759,19 @@ libOptions_a-OptUserClass.obj: OptUserClass.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptUserClass.obj `if test -f 'OptUserClass.cpp'; then $(CYGPATH_W) 'OptUserClass.cpp'; else $(CYGPATH_W) '$(srcdir)/OptUserClass.cpp'; fi`
 
-libOptions_a-OptVendorData.o: OptVendorData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorData.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorData.Tpo -c -o libOptions_a-OptVendorData.o `test -f 'OptVendorData.cpp' || echo '$(srcdir)/'`OptVendorData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorData.Tpo $(DEPDIR)/libOptions_a-OptVendorData.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorData.cpp' object='libOptions_a-OptVendorData.o' libtool=no @AMDEPBACKSLASH@
+libOptions_a-OptVendorClass.o: OptVendorClass.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorClass.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorClass.Tpo -c -o libOptions_a-OptVendorClass.o `test -f 'OptVendorClass.cpp' || echo '$(srcdir)/'`OptVendorClass.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorClass.Tpo $(DEPDIR)/libOptions_a-OptVendorClass.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorClass.cpp' object='libOptions_a-OptVendorClass.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorData.o `test -f 'OptVendorData.cpp' || echo '$(srcdir)/'`OptVendorData.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorClass.o `test -f 'OptVendorClass.cpp' || echo '$(srcdir)/'`OptVendorClass.cpp
 
-libOptions_a-OptVendorData.obj: OptVendorData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorData.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorData.Tpo -c -o libOptions_a-OptVendorData.obj `if test -f 'OptVendorData.cpp'; then $(CYGPATH_W) 'OptVendorData.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorData.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorData.Tpo $(DEPDIR)/libOptions_a-OptVendorData.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorData.cpp' object='libOptions_a-OptVendorData.obj' libtool=no @AMDEPBACKSLASH@
+libOptions_a-OptVendorClass.obj: OptVendorClass.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorClass.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorClass.Tpo -c -o libOptions_a-OptVendorClass.obj `if test -f 'OptVendorClass.cpp'; then $(CYGPATH_W) 'OptVendorClass.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorClass.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorClass.Tpo $(DEPDIR)/libOptions_a-OptVendorClass.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorClass.cpp' object='libOptions_a-OptVendorClass.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorData.obj `if test -f 'OptVendorData.cpp'; then $(CYGPATH_W) 'OptVendorData.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorData.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorClass.obj `if test -f 'OptVendorClass.cpp'; then $(CYGPATH_W) 'OptVendorClass.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorClass.cpp'; fi`
 
 libOptions_a-OptVendorSpecInfo.o: OptVendorSpecInfo.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorSpecInfo.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorSpecInfo.Tpo -c -o libOptions_a-OptVendorSpecInfo.o `test -f 'OptVendorSpecInfo.cpp' || echo '$(srcdir)/'`OptVendorSpecInfo.cpp
@@ -797,6 +800,20 @@ libOptions_a-OptRtPrefix.obj: OptRtPrefix.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptRtPrefix.cpp' object='libOptions_a-OptRtPrefix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptRtPrefix.obj `if test -f 'OptRtPrefix.cpp'; then $(CYGPATH_W) 'OptRtPrefix.cpp'; else $(CYGPATH_W) '$(srcdir)/OptRtPrefix.cpp'; fi`
+
+libOptions_a-OptVendorData.o: OptVendorData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorData.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorData.Tpo -c -o libOptions_a-OptVendorData.o `test -f 'OptVendorData.cpp' || echo '$(srcdir)/'`OptVendorData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorData.Tpo $(DEPDIR)/libOptions_a-OptVendorData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorData.cpp' object='libOptions_a-OptVendorData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorData.o `test -f 'OptVendorData.cpp' || echo '$(srcdir)/'`OptVendorData.cpp
+
+libOptions_a-OptVendorData.obj: OptVendorData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorData.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorData.Tpo -c -o libOptions_a-OptVendorData.obj `if test -f 'OptVendorData.cpp'; then $(CYGPATH_W) 'OptVendorData.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptVendorData.Tpo $(DEPDIR)/libOptions_a-OptVendorData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptVendorData.cpp' object='libOptions_a-OptVendorData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptVendorData.obj `if test -f 'OptVendorData.cpp'; then $(CYGPATH_W) 'OptVendorData.cpp'; else $(CYGPATH_W) '$(srcdir)/OptVendorData.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
