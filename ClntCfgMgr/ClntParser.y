@@ -1079,10 +1079,10 @@ VendorSpecOption
 ;
 
 VendorSpecList
-: Number                     { VendorSpec.append( new TOptVendorSpecInfo($1,0,0,0,0) ); }
-| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo($1,$3,0,0,0) ); }
-| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo($3,0,0,0,0) ); }
-| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo($3,$5,0,0,0) ); }
+: Number                     { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,0,0,0,0) ); }
+| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,$3,0,0,0) ); }
+| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,0,0,0,0) ); }
+| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,$5,0,0,0) ); }
 ;
 
 DsLiteTunnelOption

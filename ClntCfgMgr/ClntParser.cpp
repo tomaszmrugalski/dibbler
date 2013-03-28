@@ -2594,19 +2594,19 @@ case 205:
     break;}
 case 206:
 #line 1082 "ClntParser.y"
-{ VendorSpec.append( new TOptVendorSpecInfo(yyvsp[0].ival,0,0,0,0) ); ;
+{ VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 207:
 #line 1083 "ClntParser.y"
-{ VendorSpec.append( new TOptVendorSpecInfo(yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
+{ VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 208:
 #line 1084 "ClntParser.y"
-{ VendorSpec.append( new TOptVendorSpecInfo(yyvsp[0].ival,0,0,0,0) ); ;
+{ VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 209:
 #line 1085 "ClntParser.y"
-{ VendorSpec.append( new TOptVendorSpecInfo(yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
+{ VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 210:
 #line 1090 "ClntParser.y"

@@ -94,9 +94,11 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
                 char * buf = new char[len+1];
                 buf[len]=0;
                 vendorspec->storeSelf(buf);
-                vendor_spec_data = string(buf);
+
                 // @todo: This may not work... it is probably better
                 // to convert buf to hex
+                vendor_spec_data = string(buf);
+
                 delete [] buf;
                 break;
             }

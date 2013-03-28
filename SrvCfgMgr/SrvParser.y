@@ -624,13 +624,15 @@ VendorSpecList
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
 	       << $3 << ", valuelen=" << $5.length << LogEnd;
 
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($1, $3, $5.duid, $5.length, 0), false);
+    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
+								    $5.duid, $5.length, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
 	       << $5 << ", valuelen=" << $7.length << LogEnd;
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($3, $5, $7.duid, $7.length, 0), false);
+    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
+								    $7.duid, $7.length, 0), false);
 }
 ;
 

@@ -5,16 +5,15 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelOptRemoteID.h,v 1.2 2008-08-29 00:07:33 thomson Exp $
  */
 
 class TRelOptRemoteID;
 #ifndef RELOPTREMOTEID_H
 #define RELOPTREMOTEID_H
 
-#include "OptVendorSpecInfo.h"
+#include "OptVendorData.h"
 
-class TRelOptRemoteID : public TOptVendorSpecInfo
+class TRelOptRemoteID : public TOptVendorData
 {
 public:
     TRelOptRemoteID(int enterprise, char * data, int dataLen, TMsg* parent);
