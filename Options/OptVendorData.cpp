@@ -21,7 +21,7 @@
 
 using namespace std;
 
-TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
+TOptVendorData::TOptVendorData(int type, const char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
     if (n<4) {

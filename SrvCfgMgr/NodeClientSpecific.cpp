@@ -12,6 +12,7 @@
 #include "SrvMsg.h"
 #include "DHCPConst.h"
 #include "OptVendorData.h"
+#include "OptVendorClass.h"
 #include <sstream>
 
 using namespace std;
@@ -75,14 +76,12 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
         CurrentMsg = msg;
 
         SPtr<TOpt> ptrOpt;
-        SPtr<TOpt> ptrOpt2;
 
         stringstream convert;
         msg->firstOption();
 
         SPtr<TOptVendorSpecInfo> vendorspec;
-        SPtr<TOptVendorData> vendorclass;
-        //SPtr<TSrvOptVendorSpec> vendorclass;
+        SPtr<TOptVendorClass> vendorclass;
 
         while (ptrOpt = msg->getOption())	{
             switch (ptrOpt->getOptType()) {
@@ -103,10 +102,19 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
             }
 
             case OPTION_VENDOR_CLASS:
-                vendorclass =  (Ptr*) ptrOpt2;
-                convert<< vendorclass->getVendor();
-                convert>>vendor_class_num;
-                vendor_class_data = vendorclass->getVendorData();
+                vendorclass = (Ptr*) ptrOpt;
+                convert << vendorclass->Enterprise_id_;
+                convert >> vendor_class_num;
+
+		vendor_class_data = "";
+		for (std::vector<TOptUserClass::UserClassData>::const_iterator data = 
+		     vendorclass->userClassData_.begin();
+                     data != vendorclass->userClassData_.end(); ++data) {
+		    vendor_class_data += std::string(
+			reinterpret_cast<const char*>(&data->opaqueData_[0]),
+			data->opaqueData_.size());
+		}
+
                 break;
 
             } // switch

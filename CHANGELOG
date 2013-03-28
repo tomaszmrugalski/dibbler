@@ -19,6 +19,7 @@
   - Srv: Relay support refactored. Unknown options are now handled better
     and any development related to relays will be easier
   - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
+  - Classes for USER_CLASS and VENDOR_CLASS options implemented.
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

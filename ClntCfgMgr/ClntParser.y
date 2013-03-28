@@ -14,7 +14,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
 #include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
