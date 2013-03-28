@@ -13,6 +13,7 @@ class TDUID;
 #define DUID_H_
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 class TDUID
 {
