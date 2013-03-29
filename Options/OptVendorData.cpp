@@ -22,6 +22,14 @@
 
 using namespace std;
 
+TOptVendorData::TOptVendorData(int type, int enterprise, char * data, int dataLen, TMsg* parent) 
+    :TOpt(type, parent) {
+    Vendor = enterprise;
+    VendorData = new char[dataLen];
+    memcpy(VendorData, data, dataLen);
+    VendorDataLen = dataLen;
+}
+
 TOptVendorData::TOptVendorData(int type, const char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {

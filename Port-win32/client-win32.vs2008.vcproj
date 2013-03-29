@@ -602,18 +602,6 @@
 					RelativePath="..\ClntOptions\ClntOptTimeZone.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptUserClass.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorClass.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorSpec.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="ClntMessages"
@@ -712,6 +700,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\FQDN.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\hex.cpp"
 					>
 				</File>
 				<File

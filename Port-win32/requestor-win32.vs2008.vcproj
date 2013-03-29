@@ -398,6 +398,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\hex.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Misc\IPv6Addr.cpp"
 					>
 				</File>

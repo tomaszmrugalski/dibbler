@@ -513,6 +513,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\hex.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.cpp"
 					>
 				</File>
@@ -595,6 +599,10 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptInteger4.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorData.h"
 					>
 				</File>
 			</Filter>
