@@ -233,6 +233,7 @@ int stop(const char * pidfile) {
 
     if (!ptrace_failed) {
 	cout << "Waiting for signalled process termination... " << flush;
+        ptrace(PTRACE_CONT, pid, NULL, SIGTERM);
 	do {
 	    if (-1 == waitpid(pid, &p_status, 0)) {
 		saved_errno = errno;
