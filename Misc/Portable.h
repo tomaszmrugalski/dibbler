@@ -155,6 +155,10 @@ struct link_state_notify_t
 #define SRVLOG_FILE        "dibbler-server.log"
 #define RELLOG_FILE        "dibbler-relay.log"
 #define NULLFILE           "nul"
+
+/* specifies if client should remove any other DNS information when configuring
+   DNS information for the first time. This applies to WIN32 only. */
+#define WIN32_FLUSH_OTHER_DNS_INFO true
 #endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)

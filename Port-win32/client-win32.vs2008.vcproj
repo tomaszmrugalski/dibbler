@@ -1710,15 +1710,15 @@
 			</Filter>
 		</Filter>
 		<File
+			RelativePath="..\AUTHORS"
+			>
+		</File>
+		<File
 			RelativePath="..\Changelog"
 			>
 		</File>
 		<File
 			RelativePath=".\client-win32.vs2003.rc"
-			>
-		</File>
-		<File
-			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File

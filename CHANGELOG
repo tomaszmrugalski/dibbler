@@ -21,6 +21,7 @@
   - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
   - Classes for USER_CLASS and VENDOR_CLASS options implemented.
   - Linux: stop command fix (bug #268)
+  - Win32: DNS configuration is now flushed during the first DNS configuration
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

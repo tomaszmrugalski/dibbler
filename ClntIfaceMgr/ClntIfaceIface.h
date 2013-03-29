@@ -69,6 +69,12 @@ class TClntIfaceIface: public TIfaceIface {
     unsigned int LifetimeTimeout;
     unsigned int LifetimeTimestamp;
 
+    /// @brief specifies if the DNS configuration should be wiped out during
+    ///        first configuration
+    ///
+    /// Controlled with WIN32_FLUSH_OTHER_DNS_INFO in Misc/Portable.h
+    bool DnsConfigured;
+
 };
 
 #endif

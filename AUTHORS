@@ -87,5 +87,8 @@
     2013-03: Patch for double free in file read error handling
     2013-03: Patch for stop command not working on Linux
 
+  - Vaclav Michalek <vaclav(dot)michalek(at)upol(dot)cz>
+    2013-03: Various WIN32 fixes
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
