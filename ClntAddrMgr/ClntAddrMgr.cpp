@@ -150,7 +150,8 @@ void TClntAddrMgr::doDuties()
 	    }
 	}
 
-	if ( (ptrIA->getState() == STATE_CONFIGURED) && !ptrIA->countAddr()) {
+	if ( ((ptrIA->getState() == STATE_CONFIGURED) || (ptrIA->getState() == STATE_CONFIRMME))
+		 && !ptrIA->countAddr()) {
 	    ptrIA->setState(STATE_NOTCONFIGURED);
 	}
     }
