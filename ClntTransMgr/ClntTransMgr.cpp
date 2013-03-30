@@ -54,7 +54,7 @@ TClntTransMgr &TClntTransMgr::instance()
 }
 
 TClntTransMgr::TClntTransMgr(const std::string& config)
-  :IsDone(true), Shutdown(true)
+  :IsDone(true), Shutdown(true), CtrlIface_(-1)
 {
     // should we set REUSE option during binding sockets?
 #ifdef MOD_CLNT_BIND_REUSE
@@ -187,11 +187,10 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
     }
 
     if (llAddr) {
-            char buf[48];
-            inet_ntop6(llAddr,buf);
-            // Log(Info) << "Socket bound to " << buf << "/port=" << DHCPCLIENT_PORT << LogEnd;
-            this->ctrlIface = realIface->getID();
-            strncpy(this->ctrlAddr,buf,48);
+        char buf[48];
+        inet_ntop6(llAddr,buf);
+        CtrlIface_ = realIface->getID();
+        strncpy(CtrlAddr_, buf, 48);
     } 
 
     return true;
@@ -392,6 +391,10 @@ void TClntTransMgr::doDuties()
         SPtr<TClntCfgIface> x;
         x = ClntCfgMgr().checkInactiveIfaces();
         if (x) {
+            if (!populateAddrMgr(x)) {
+                Log(Error)<< "Call to populateAddrMgr() ended with error"
+                          << " Following operation may be unstable!" << LogEnd;
+            }
             if (!openSockets(x)) {
                 Log(Crit) << "Attempt to bind activates interfaces failed."
                           << " Following operation may be unstable!" << LogEnd;
@@ -1166,11 +1169,11 @@ bool TClntTransMgr::isDone()
 }
 
 char* TClntTransMgr::getCtrlAddr() {
-        return this->ctrlAddr;
+    return CtrlAddr_;
 }
 
 int  TClntTransMgr::getCtrlIface() {
-        return this->ctrlIface;
+    return CtrlIface_;
 }
 
 TClntTransMgr::~TClntTransMgr() {

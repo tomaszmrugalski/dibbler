@@ -112,8 +112,8 @@ class TClntTransMgr
 
     bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
 
-    int ctrlIface;
-    char ctrlAddr[48];
+    int CtrlIface_;
+    char CtrlAddr_[48];
 
     List(TMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
 

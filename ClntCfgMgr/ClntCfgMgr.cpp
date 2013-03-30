@@ -25,6 +25,7 @@ using namespace std;
 #include "ClntIfaceMgr.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntParser.h"
+#include "hex.h"
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;
 
@@ -144,7 +145,7 @@ bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
  *
  * @param parser
  *
- * @return
+ * @return true if ok, false if interface definitions are incorrect
  */
 bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     int cfgIfaceCnt;
@@ -167,7 +168,12 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             }
 
             if (!ifaceIface) {
-                Log(Error) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID()
+                if (inactiveMode()) {
+                    Log(Info) << "Interface " << cfgIface->getFullName()
+                              << " is not currently available (that's ok, inactive-mode enabled)." << LogEnd;
+                    continue;
+                }
+                Log(Error) << "Interface " << cfgIface->getFullName()
                            << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
                            << LogEnd;
                 return false;
@@ -193,14 +199,14 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             // setup default prefix length (used when IPv6 address is added to the interface)
             ifaceIface->setPrefixLength(cfgIface->getOnLinkPrefixLength());
 
-            if (!ifaceIface->countLLAddress()) {
-                if (this->inactiveMode()) {
+            if (!ifaceIface->flagUp() || !ifaceIface->countLLAddress()) {
+                if (inactiveMode()) {
                     Log(Notice) << "Interface " << ifaceIface->getFullName()
                                 << " is not operational yet (does not have "
-                                << "link-local address), skipping it for now." << LogEnd;
+                                << "link-local address or is down), skipping it for now." << LogEnd;
                     addIface(cfgIface);
                     makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
-                    return true;
+                    continue;
                 }
 
                 Log(Crit) << "Interface " << ifaceIface->getFullName()
@@ -225,19 +231,19 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                                 << "is not ready), skipping it for now." << LogEnd;
                     addIface(cfgIface);
                     makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
-                    return true;
+                    continue;
                 }
 
                 Log(Crit) << "Interface " << ifaceIface->getFullName()
                           << " has tentative link-local address (and inactive-mode is disabled)." << LogEnd;
                 return false;
-
             }
 
-            this->addIface(cfgIface);
-            Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID()
-                                  << " configuation has been loaded." << LogEnd;
+            addIface(cfgIface);
+            Log(Info) << "Interface " << cfgIface->getFullName()
+                      << " configuation has been loaded." << LogEnd;
         }
+        return countIfaces() || (inactiveMode() && inactiveIfacesCnt());
     } else {
         // user didn't specified any interfaces in config file, so
         // we'll try to configure each interface we could find
@@ -252,19 +258,21 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
         ClntIfaceMgr().firstIface();
         while ( ifaceIface = ClntIfaceMgr().getIface() ) {
             // for each interface present in the system...
-            if (!ifaceIface->flagUp()) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName() << " is down, ignoring." << LogEnd;
-                continue;
-            }
-            if (!ifaceIface->flagRunning()) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " has flag RUNNING not set, ignoring." << LogEnd;
-                continue;
-            }
-            if (!ifaceIface->flagMulticast()) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " is not multicast capable, ignoring." << LogEnd;
-                continue;
+            if (!inactiveMode()) {
+                if (!ifaceIface->flagUp()) {
+                    Log(Notice) << "Interface " << ifaceIface->getFullName() << " is down, ignoring." << LogEnd;
+                    continue;
+                }
+                if (!ifaceIface->flagRunning()) {
+                    Log(Notice) << "Interface " << ifaceIface->getFullName()
+                                << " has flag RUNNING not set, ignoring." << LogEnd;
+                    continue;
+                }
+                if (!ifaceIface->flagMulticast()) {
+                    Log(Notice) << "Interface " << ifaceIface->getFullName()
+                                << " is not multicast capable, ignoring." << LogEnd;
+                    continue;
+                }
             }
             if ( !(ifaceIface->getMacLen() > 5) ) {
                 Log(Notice) << "Interface " << ifaceIface->getFullName()
@@ -272,8 +280,21 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                             << " (6 or more required), ignoring." << LogEnd;
                 continue;
             }
-            ifaceIface->firstLLAddress();
-            if (!ifaceIface->getLLAddress()) {
+
+            // ignore disabled Teredo pseudo-interface on Win (and other similar useless junk)
+            const static unsigned char zeros[] = {0,0,0,0,0,0,0,0};
+            const static unsigned char ones[] = {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff};
+            if ( (ifaceIface->getMacLen()<=8) &&
+                 (!memcmp(zeros, ifaceIface->getMac(), min(8,ifaceIface->getMacLen())) ||
+                  !memcmp(ones, ifaceIface->getMac(), min(8,ifaceIface->getMacLen()))) ) {
+                Log(Notice) << "Interface " << ifaceIface->getFullName()
+                            << " has invalid MAC address "
+                            << hexToText((uint8_t*)ifaceIface->getMac(), ifaceIface->getMacLen(), true)
+                            << ", ignoring." << LogEnd;
+                continue;
+            }
+
+            if (!ifaceIface->countLLAddress()) {
                 Log(Notice) << "Interface " << ifaceIface->getFullName()
                             << " has no link-local address, ignoring. "
                             << "(Disconnected? Not associated? No-link?)" << LogEnd;
@@ -297,10 +318,17 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             cfgIface->setOptions(parser->ParserOptStack.getLast());
 
             // ... which is added to ClntCfgMgr
-            this->addIface(cfgIface);
+            addIface(cfgIface);
 
-            Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID()
+            Log(Info) << "Interface " << cfgIface->getFullName()
                       << " has been added." << LogEnd;
+
+            if (inactiveMode() && !ifaceIface->flagRunning() ) {
+                makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+                Log(Notice) << "Interface " << ifaceIface->getFullName()
+                            << " is not operational yet"
+                            << " (not running), made inactive." << LogEnd;
+            }
             cnt ++;
         }
         if (!cnt) {

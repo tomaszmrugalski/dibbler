@@ -168,9 +168,18 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     fds = *TIfaceSocket::getFDS();
 
     int maxFD;
-    //maxFD = FD_SETSIZE;
     maxFD = TIfaceSocket::getMaxFD() + 1;
 
+    // no sockets to listen  on... hopefully this is just inactive mode,
+    // not an error
+    if (maxFD < 2) {
+#ifdef WIN32
+        Sleep(time*1000); // Windows sleep is specified in milliseconds
+#else
+        sleep(time); // Posix sleep is specified in seconds
+#endif
+        return 0;
+    }
     result = ::select(maxFD,&fds,NULL, NULL, &czas);
 
     // something received
@@ -472,8 +481,6 @@ void TIfaceMgr::closeSockets() {
         }
     }
 }
-
-
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
