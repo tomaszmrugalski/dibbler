@@ -965,9 +965,9 @@ static const short yyrline[] = { 0,
    797,   815,   832,   836,   840,   844,   851,   852,   856,   857,
    860,   861,   868,   874,   878,   887,   892,   895,   904,   910,
    913,   922,   926,   936,   942,   945,   954,   959,   962,   971,
-   975,   982,   997,  1003,  1006,  1015,  1021,  1024,  1033,  1037,
-  1048,  1052,  1062,  1069,  1074,  1082,  1083,  1084,  1085,  1089,
-  1096,  1103,  1112,  1117,  1123,  1130,  1136,  1143,  1149
+   980,   987,  1002,  1008,  1011,  1020,  1026,  1029,  1038,  1042,
+  1053,  1057,  1067,  1074,  1079,  1087,  1088,  1089,  1090,  1094,
+  1101,  1108,  1117,  1122,  1128,  1135,  1141,  1148,  1154
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
@@ -2487,17 +2487,22 @@ case 189:
 case 190:
 #line 972 "ClntParser.y"
 {
-    ParserOptStack.getLast()->setFQDN(string(""));
+	char hostname[255];
+	if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
+	    ParserOptStack.getLast()->setFQDN(string(hostname));
+	} else {
+	    ParserOptStack.getLast()->setFQDN(string(""));
+	}
 ;
     break;}
 case 191:
-#line 976 "ClntParser.y"
+#line 981 "ClntParser.y"
 {
     ParserOptStack.getLast()->setFQDN(yyvsp[0].strval);
 ;
     break;}
 case 192:
-#line 983 "ClntParser.y"
+#line 988 "ClntParser.y"
 {
     if (yyvsp[0].ival!=0 && yyvsp[0].ival!=1) {
 	Log(Crit) << "Invalid FQDN S bit value: " << yyvsp[0].ival << ", expected 0 or 1." << LogEnd;
@@ -2509,7 +2514,7 @@ case 192:
 ;
     break;}
 case 193:
-#line 998 "ClntParser.y"
+#line 1003 "ClntParser.y"
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -2517,19 +2522,19 @@ case 193:
 ;
     break;}
 case 194:
-#line 1003 "ClntParser.y"
+#line 1008 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 195:
-#line 1006 "ClntParser.y"
+#line 1011 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISServerLst(&PresentAddrLst);
 ;
     break;}
 case 196:
-#line 1016 "ClntParser.y"
+#line 1021 "ClntParser.y"
 {
     PresentAddrLst.clear();
 //    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr()));
@@ -2537,85 +2542,85 @@ case 196:
 ;
     break;}
 case 197:
-#line 1021 "ClntParser.y"
+#line 1026 "ClntParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 198:
-#line 1024 "ClntParser.y"
+#line 1029 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISPServerLst(&PresentAddrLst);
 ;
     break;}
 case 199:
-#line 1034 "ClntParser.y"
+#line 1039 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISDomain("");
 ;
     break;}
 case 200:
-#line 1038 "ClntParser.y"
+#line 1043 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISDomain(yyvsp[0].strval);
 ;
     break;}
 case 201:
-#line 1049 "ClntParser.y"
+#line 1054 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain("");
 ;
     break;}
 case 202:
-#line 1053 "ClntParser.y"
+#line 1058 "ClntParser.y"
 {
     ParserOptStack.getLast()->setNISPDomain(yyvsp[0].strval);
 ;
     break;}
 case 203:
-#line 1063 "ClntParser.y"
+#line 1068 "ClntParser.y"
 {
     ParserOptStack.getLast()->setLifetime();
 ;
     break;}
 case 204:
-#line 1070 "ClntParser.y"
+#line 1075 "ClntParser.y"
 {
     Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     ParserOptStack.getLast()->setVendorSpec();
 ;
     break;}
 case 205:
-#line 1075 "ClntParser.y"
+#line 1080 "ClntParser.y"
 {
     ParserOptStack.getLast()->setVendorSpec();
     Log(Debug) << "VendorSpec defined (multiple times)." << LogEnd;
 ;
     break;}
 case 206:
-#line 1082 "ClntParser.y"
+#line 1087 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 207:
-#line 1083 "ClntParser.y"
+#line 1088 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 208:
-#line 1084 "ClntParser.y"
+#line 1089 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 209:
-#line 1085 "ClntParser.y"
+#line 1090 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 210:
-#line 1090 "ClntParser.y"
+#line 1095 "ClntParser.y"
 {
     ClntCfgIfaceLst.getLast()->addExtraOption(OPTION_AFTR_NAME, TOpt::Layout_String, false);
 ;
     break;}
 case 211:
-#line 1097 "ClntParser.y"
+#line 1102 "ClntParser.y"
 {
     // option 123 hex 0x1234abcd
     SPtr<TOpt> opt = new TOptGeneric(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0);
@@ -2624,7 +2629,7 @@ case 211:
 ;
     break;}
 case 212:
-#line 1104 "ClntParser.y"
+#line 1109 "ClntParser.y"
 {
     // option 123 address 2001:db8::1
     SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[0].addrval));
@@ -2635,14 +2640,14 @@ case 212:
 ;
     break;}
 case 213:
-#line 1113 "ClntParser.y"
+#line 1118 "ClntParser.y"
 {
     // option 123 address-list 2001:db8::1,2001:db8::cafe
     PresentAddrLst.clear();
 ;
     break;}
 case 214:
-#line 1117 "ClntParser.y"
+#line 1122 "ClntParser.y"
 {
     SPtr<TOpt> opt = new TOptAddrLst(yyvsp[-3].ival, PresentAddrLst, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_AddrLst, true);
@@ -2651,7 +2656,7 @@ case 214:
 ;
     break;}
 case 215:
-#line 1124 "ClntParser.y"
+#line 1129 "ClntParser.y"
 {
     // option 123 string "foobar"
     SPtr<TOpt> opt = new TOptString(yyvsp[-2].ival, string(yyvsp[0].strval), 0);
@@ -2660,7 +2665,7 @@ case 215:
 ;
     break;}
 case 216:
-#line 1131 "ClntParser.y"
+#line 1136 "ClntParser.y"
 {
     // just request option 123 and interpret responses as hex
     Log(Debug) << "Will request option " << yyvsp[-1].ival << " and iterpret response as hex." << LogEnd;
@@ -2668,7 +2673,7 @@ case 216:
 ;
     break;}
 case 217:
-#line 1137 "ClntParser.y"
+#line 1142 "ClntParser.y"
 {
     // just request this option and expect OptAddr layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival 
@@ -2677,7 +2682,7 @@ case 217:
 ;
     break;}
 case 218:
-#line 1144 "ClntParser.y"
+#line 1149 "ClntParser.y"
 {
     // just request this option and expect OptString layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival << " and interpret response as a string." << LogEnd;
@@ -2685,7 +2690,7 @@ case 218:
 ;
     break;}
 case 219:
-#line 1150 "ClntParser.y"
+#line 1155 "ClntParser.y"
 {
     // just request this option and expect OptAddrLst layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival
@@ -2897,7 +2902,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1039 "../bison++/bison.cc"
-#line 1157 "ClntParser.y"
+#line 1162 "ClntParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,7 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
     this->NTPServerLst.clear();
     this->Timezone = "";
 
-    DnsConfigured = ! WIN32_FLUSH_OTHER_DNS_INFO;
+    DnsConfigured = ! FLUSH_OTHER_CONFIGURED_DNS_SERVERS;
 
     unlink(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME);
     unlink(WORKDIR"/"OPTION_DOMAINS_FILENAME);
