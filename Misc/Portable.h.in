@@ -155,6 +155,9 @@ struct link_state_notify_t
 #define SRVLOG_FILE        "dibbler-server.log"
 #define RELLOG_FILE        "dibbler-relay.log"
 #define NULLFILE           "nul"
+/* specifies if client should remove any configured DNS servers when configuring
+   DNS servers for the first time. This makes sense on WIN32 only. */
+#define FLUSH_OTHER_CONFIGURED_DNS_SERVERS true
 #endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)
@@ -180,6 +183,9 @@ struct link_state_notify_t
 #define TIMEZONE_FILE      "/etc/localtime"
 #define TIMEZONES_DIR      "/usr/share/zoneinfo"
 
+/* specifies if client should remove any configured DNS servers when configuring
+   DNS servers for the first time. This makes sense on WIN32 only. */
+#define FLUSH_OTHER_CONFIGURED_DNS_SERVERS false
 #endif
 
 /* --- options --- */
@@ -344,6 +350,14 @@ unsigned long pref, unsigned long valid, int prefixLength);
     uint32_t getAAASPIfromFile();
 
     int execute(const char *filename, const char * argv[], const char *env[]);
+
+    /** @brief returns host name of this host
+     *
+     * @param hostname buffer (hostname will be stored here)
+     * @param hostname_len length of the buffer
+     * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+     */
+    int get_hostname(char* hostname, int hostname_len);
     
 #ifdef __cplusplus
 }

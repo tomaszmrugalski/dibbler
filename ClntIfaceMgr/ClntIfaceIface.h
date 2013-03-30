@@ -72,7 +72,7 @@ class TClntIfaceIface: public TIfaceIface {
     /// @brief specifies if the DNS configuration should be wiped out during
     ///        first configuration
     ///
-    /// Controlled with WIN32_FLUSH_OTHER_DNS_INFO in Misc/Portable.h
+    /// Controlled with FLUSH_OTHER_CONFIGURED_DNS_SERVERS in Misc/Portable.h
     bool DnsConfigured;
 
 };
