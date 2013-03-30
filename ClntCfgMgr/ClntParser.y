@@ -970,7 +970,12 @@ SIPDomainOption
 FQDNOption
 :OPTION_ FQDN_
 {
-    ParserOptStack.getLast()->setFQDN(string(""));
+	char hostname[255];
+	if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
+	    ParserOptStack.getLast()->setFQDN(string(hostname));
+	} else {
+	    ParserOptStack.getLast()->setFQDN(string(""));
+	}
 }
 |OPTION_ FQDN_ STRING_
 {

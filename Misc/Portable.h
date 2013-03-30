@@ -348,6 +348,15 @@ unsigned long pref, unsigned long valid, int prefixLength);
     uint32_t getAAASPIfromFile();
 
     int execute(const char *filename, const char * argv[], const char *env[]);
+
+
+    /** @brief returns host name of this host
+     *
+     * @param hostname buffer (hostname will be stored here)
+     * @param hostname_len length of the buffer
+     * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+     */
+    int get_hostname(char* hostname, int hostname_len);
     
 #ifdef __cplusplus
 }

@@ -26,6 +26,7 @@
   - Win32: DNS configuration is now flushed during the first DNS configuration
   - Win32: Client no longer crashes when expired addresses is used with confirm
     support enabled
+  - Cli: "option fqdn" now contains hostname by default (bug #267)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

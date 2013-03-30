@@ -248,6 +248,14 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
         dnsList.clear();
         parser->ParserOptStack.getLast()->setDNSServerLst(&dnsList);
 
+        // Try to add a hostname
+        char hostname[255];
+        if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
+            parser->ParserOptStack.getLast()->setFQDN(string(hostname));
+	    } else {
+            parser->ParserOptStack.getLast()->setFQDN(string(""));
+        }
+
         int cnt = 0;
         ClntIfaceMgr().firstIface();
         while ( ifaceIface = ClntIfaceMgr().getIface() ) {
