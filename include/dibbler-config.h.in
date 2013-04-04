@@ -280,6 +280,9 @@
    #define below would cause a syntax error. */
 #undef _UINT8_T
 
+/* Are we _special_? */
+#undef __APPLE_USE_RFC_3542
+
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus

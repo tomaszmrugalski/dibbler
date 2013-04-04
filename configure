@@ -3319,6 +3319,21 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
+system=`uname -s`
+s_version=`uname -r`
+case $system in
+    Darwin)
+	    case $s_version in
+            12*)
+
+$as_echo "#define __APPLE_USE_RFC_3542 1" >>confdefs.h
+
+                NEED_RFC_3542=yes
+            ;;
+        esac
+    ;;
+esac
+
 # Check whether --enable-silent-rules was given.
 if test "${enable_silent_rules+set}" = set; then :
   enableval=$enable_silent_rules;
@@ -17061,7 +17076,7 @@ rm -f conftest*
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking which port is appropriate for this system" >&5
 $as_echo_n "checking which port is appropriate for this system... " >&6; }
-  system=`uname -s`
+# system=`uname -s`
   case $system in
     Linux)
       ARCH="LINUX"
@@ -17074,6 +17089,9 @@ $as_echo_n "checking which port is appropriate for this system... " >&6; }
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=""
+      if test $NEED_RFC_3542 == yes; then
+        PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
+      fi
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
@@ -20246,6 +20264,7 @@ fi
 
 echo
 echo "Selected OS port              : $PORT_SUBDIR"
+echo "Actual OS                     : $system $s_version"
 echo "Debug                         : $debug"
 echo "Electric fence                : $efence"
 echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
