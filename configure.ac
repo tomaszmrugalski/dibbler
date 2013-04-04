@@ -14,6 +14,20 @@ AM_MAINTAINER_MODE([disable])
 # Poslib stuff
 AC_LANG_CPLUSPLUS
 
+dnl -- Check for Max OS x and define __APPLE_USE_RFC3542 if version needs
+system=`uname -s`
+s_version=`uname -r`
+case $system in
+    Darwin)
+	    case $s_version in
+            12*)
+                AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
+                NEED_RFC_3542=yes
+            ;;
+        esac
+    ;;
+esac
+
 dnl change this to [no] to have verbose build system
 dnl make V=0 and make V=1 will do the trick
 AM_SILENT_RULES([no])
@@ -201,7 +215,7 @@ dnl ---------------------------------------------
 dnl Detect OS (will be used to select proper port
 dnl ---------------------------------------------
   AC_MSG_CHECKING(which port is appropriate for this system)
-  system=`uname -s`
+# system=`uname -s`
   case $system in
     Linux)
       ARCH="LINUX"
@@ -214,6 +228,9 @@ dnl ---------------------------------------------
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=""
+      if test $NEED_RFC_3542 == yes; then
+        PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
+      fi
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
@@ -546,6 +563,7 @@ dnl Print out configured parameters
 dnl ----------------------------------------
 echo
 echo "Selected OS port              : $PORT_SUBDIR"
+echo "Actual OS                     : $system $s_version"
 echo "Debug                         : $debug"
 echo "Electric fence                : $efence"
 echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"
