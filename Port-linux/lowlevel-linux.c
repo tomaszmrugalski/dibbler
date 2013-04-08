@@ -233,11 +233,15 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 	    /* printf("flags:%d : ",ifa->ifa_flags); */
 
 	    pos = cnt*16;
-	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            buf = (char*) malloc( pos + 16);
+            if (pos > 0) {
+                memcpy(buf, tmpbuf, pos); /* copy old addrs */
+            }
 	    memcpy(buf+pos,addr,16); /* copy new addr */
-	    
-	    free(tmpbuf);
+
+            if (pos > 0) {
+                free(tmpbuf);
+            }
 	    tmpbuf = buf;
 	    cnt++;
 	}
@@ -276,10 +280,13 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 
 	    pos = cnt*16;
 	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            if (pos > 0) {
+                memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            }
 	    memcpy(buf+pos,addr,16); /* copy new addr */
-	    
-	    free(tmpbuf);
+	    if (pos > 0) {
+                free(tmpbuf);
+            }
 	    tmpbuf = buf;
 	    cnt++;
 	}
