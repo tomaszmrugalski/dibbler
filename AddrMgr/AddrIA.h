@@ -49,7 +49,7 @@ class TAddrIA
     unsigned long getIAID();
 
     //---Iface---
-    int getIface();
+    int getIfindex();
 
     //---Server's DUID---
     void setDUID(SPtr<TDUID> duid);
@@ -123,7 +123,7 @@ private:
     SPtr<TIPv6Addr> SrvAddr;
 
     // Iface ID
-    int Iface;
+    int Ifindex_;
 
     SPtr<TIPv6Addr> fqdnDnsServer; // DNS Updates was performed to that server
     SPtr<TFQDN> fqdn;              // this FQDN object was used to perform update

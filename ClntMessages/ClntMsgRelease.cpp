@@ -85,7 +85,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
         Options.push_back(new TClntOptIA_NA(x,this));
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
-        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIface());
+        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIfindex());
         x->firstAddr();
         while (ptrAddr = x->getAddr()) {
             ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());

@@ -39,7 +39,7 @@ TAddrIA::TAddrIA(int iface, TIAType type, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid
 		 unsigned long t1, unsigned long t2,unsigned long id)
     :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
      Tentative(TENTATIVE_UNKNOWN), Timestamp(now()), 
-     Unicast(false), Iface(iface), Type(type)
+     Unicast(false), Ifindex_(iface), Type(type)
 {
     this->setDUID(duid);
     if (addr)
@@ -62,9 +62,9 @@ void TAddrIA::reset()
     setState(STATE_NOTCONFIGURED);
 }
 
-int TAddrIA::getIface()
+int TAddrIA::getIfindex()
 {
-    return this->Iface;
+    return Ifindex_;
 }
 
 void TAddrIA::setT1(unsigned long T1)
@@ -437,7 +437,7 @@ enum ETentative TAddrIA::getTentative()
         if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
         {
 
-            switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
+            switch (is_addr_tentative(NULL, Ifindex_, ptrAddr->get()->getPlain()) ) 
             {
 	    case LOWLEVEL_TENTATIVE_YES:  
 		ptrAddr->setTentative(TENTATIVE_YES);
@@ -566,7 +566,7 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
 
     strum << " IAID=\"" << x.IAID << "\""
 	  << " state=\"" << StateToString(x.State) 
-	  << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
+	  << "\" iface=\"" << x.Ifindex_ << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 

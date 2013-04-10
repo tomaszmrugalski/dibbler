@@ -110,7 +110,7 @@ void TClntMsgConfirm::addrsAccepted() {
     }
     ClntAddrMgr().firstIA();
         SPtr<TIfaceIface> ptrIface;
-        ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
+        ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
         ptrIA->firstAddr();
         ptrAddrAddr = ptrIA->getAddr();
         ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),ptrAddrAddr->getValid(),ptrIface->getPrefixLength());
@@ -131,7 +131,7 @@ void TClntMsgConfirm::addrsRejected() {
 
         // release all addrs
         SPtr<TIfaceIface> ptrIface;
-        ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
+        ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
         if (!ptrIface) {
             Log(Crit) << "We have addresses assigned to non-existing interface."
                 "Help! Somebody stole an interface!" << LogEnd;

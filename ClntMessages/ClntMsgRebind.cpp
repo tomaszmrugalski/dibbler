@@ -288,9 +288,9 @@ void TClntMsgRebind::releaseIA(int IAID)
     while(ptrAddr=ptrAddrIA->getAddr())
     {
         //remove outdated address from interface
-	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrAddrIA->getIface());
+	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrAddrIA->getIfindex());
 	if (!ptrIface) {
-	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIface() << LogEnd;
+	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIfindex() << LogEnd;
 	    continue;
 	}
 	ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
