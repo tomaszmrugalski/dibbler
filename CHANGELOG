@@ -20,6 +20,16 @@
     and any development related to relays will be easier
   - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
   - Reconfigure support (by Grzegorz Pluto)
+  - Classes for USER_CLASS and VENDOR_CLASS options implemented.
+  - Linux: stop command fix (bug #268)
+  - Win32: dibbler waits for netsh.exe execution completion, because netsh.exe
+    does not seem to be reentrant
+  - Win32: DNS configuration is now flushed during the first DNS configuration
+  - Win32: Client no longer crashes when expired addresses is used with confirm
+    support enabled
+  - Cli: "option fqdn" now contains hostname by default (bug #267)
+  - Compilation fix for Mac OS X 10.8.0 (bug #277), patch by Michael Thorsager
+  - Linux: cosmetic low-level Linux improvements (bug #276)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

@@ -480,7 +480,7 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     
     sprintf(arg5,"\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
     if (i == 0) {
         return LOWLEVEL_NO_ERROR;
     } else {
@@ -499,8 +499,11 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     char arg6[256]; // address=...
     intptr_t i;
     sprintf(arg5,"\"%s\"", ifname);
-    sprintf(arg6,"address=%s", addrPlain);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
+    if (addrPlain)
+		sprintf(arg6,"address=%s", addrPlain);
+	else
+		sprintf(arg6,"all");
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
     if (i == 0) {
         return LOWLEVEL_NO_ERROR;
@@ -606,7 +609,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     sprintf(arg8,"validlifetime=%d", valid);
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
 
     if (i==-1) {
         /// @todo: some better error support
@@ -635,7 +638,7 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     
     sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg6,"interface=\"%s\"", ifname);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
 
     if (i==-1) {
         /// @todo: some better error support
@@ -666,4 +669,27 @@ int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                       char* mac, int* mac_len) {
     /// @todo: Implement MAC reading for Windows
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+}
+
+/** @brief returns host name of this host
+ *
+ * @param hostname buffer (hostname will be stored here)
+ * @param hostname_len length of the buffer
+ * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+ */
+int get_hostname(char* hostname, int hostname_len) {
+    DWORD nsize = hostname_len - 1;
+
+    memset(hostname,0, hostname_len);
+#ifdef _MSC_VER
+    /* shouldn't it be ComputerNameDnsFullyQualified, rather than
+       ComputerNameDnsHostname? */
+    if (GetComputerNameExA(ComputerNameDnsHostname, hostname, &nsize))
+#else
+    if (GetComputerName(hostname, &nsize))
+#endif
+    {
+        return LOWLEVEL_NO_ERROR;
+    }
+    return LOWLEVEL_ERROR_UNSPEC;
 }

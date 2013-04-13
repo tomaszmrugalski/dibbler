@@ -403,10 +403,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvIfaceMgr\SrvIfaceIface.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvIfaceMgr\SrvIfaceMgr.cpp"
 					>
 				</File>
@@ -504,6 +500,10 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorClass.cpp"
 					>
 				</File>
 				<File
@@ -668,6 +668,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\FQDN.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\hex.cpp"
 					>
 				</File>
 				<File

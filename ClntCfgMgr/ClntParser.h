@@ -27,7 +27,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
 #include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
@@ -90,7 +89,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     yynerrs = 0;                                                            \
     yychar = 0;
 
-#line 89 "ClntParser.y"
+#line 88 "ClntParser.y"
 typedef union
 {
     int ival;

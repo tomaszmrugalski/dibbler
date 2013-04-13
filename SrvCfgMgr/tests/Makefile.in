@@ -70,9 +70,11 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_GTEST_TRUE@am__EXEEXT_1 = SrvCfgMgr_tests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
-am__SrvCfgMgr_tests_SOURCES_DIST = run_tests.cpp SrvCfgMgr_unittest.cc
+am__SrvCfgMgr_tests_SOURCES_DIST = run_tests.cpp SrvCfgMgr_unittest.cc \
+	expressions_unittest.cc
 @HAVE_GTEST_TRUE@am_SrvCfgMgr_tests_OBJECTS = run_tests.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	expressions_unittest.$(OBJEXT)
 SrvCfgMgr_tests_OBJECTS = $(am_SrvCfgMgr_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -505,7 +507,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/Misc $(GTEST_INCLUDES) -Wno-long-long \
 	-Wno-variadic-macros
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_SOURCES = run_tests.cpp \
-@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.cc
+@HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.cc expressions_unittest.cc
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
@@ -577,6 +579,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SrvCfgMgr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expressions_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:

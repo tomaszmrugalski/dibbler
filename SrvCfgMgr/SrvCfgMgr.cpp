@@ -1058,7 +1058,7 @@ void TSrvCfgMgr::setCounters()
         SPtr<TAddrIA> ia;
         client->firstIA();
         while ( ia=client->getIA() ) {
-            iface = getIfaceByID(ia->getIface());
+            iface = getIfaceByID(ia->getIfindex());
             if (!iface)
                 continue;
 
@@ -1073,7 +1073,7 @@ void TSrvCfgMgr::setCounters()
         // prefixes
         client->firstPD();
         while (ia = client->getPD() ) {
-            iface = getIfaceByID(ia->getIface());
+            iface = getIfaceByID(ia->getIfindex());
             if (!iface)
                 continue;
             SPtr<TAddrPrefix> prefix;

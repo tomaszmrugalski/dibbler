@@ -93,7 +93,7 @@ int TSrvTransMgr::checkReconfigures() {
         while ( (ia = cli->getIA()) && check) 
         {
             IAID=ia->getIAID();	
-            iface=ia->getIface();
+            iface=ia->getIfindex();
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
             SPtr<TIPv6Addr> unicast=ia->getSrvAddr();
             SPtr<TAddrAddr> adr;
@@ -125,7 +125,7 @@ int TSrvTransMgr::checkReconfigures() {
         while ( (pd = cli->getPD()) && check ) 
         {
             IAID=pd->getIAID();
-            iface=pd->getIface();
+            iface=pd->getIfindex();
             SPtr<TAddrPrefix> prefix;
             SPtr<TIPv6Addr> addra;
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
@@ -447,10 +447,10 @@ void TSrvTransMgr::doDuties()
 void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
                                     TAddrIA::TIAType type) {
     stringstream tmp;
-    tmp << exp.ia->getIface();
+    tmp << exp.ia->getIfindex();
     params.addParam("IFINDEX", tmp.str());
 
-    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(exp.ia->getIface());
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(exp.ia->getIfindex());
     if (iface)
         params.addParam("IFACE", iface->getName());
 
@@ -497,7 +497,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
 	SPtr<TIPv6Addr> dnsAddr = addr->ia->getFQDNDnsServer();
 	SPtr<TFQDN> fqdn = addr->ia->getFQDN();
         if (dnsAddr && fqdn) {
-	    SrvIfaceMgr().delFQDN(addr->ia->getIface(), dnsAddr,
+	    SrvIfaceMgr().delFQDN(addr->ia->getIfindex(), dnsAddr,
 				  addr->addr, fqdn->getName());
 	    /// @todo: remove this FQDN from the list of used names
         }
@@ -506,7 +506,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                                  addr->ia->getIAID(),
                                  addr->addr, false);
 
-        SrvCfgMgr().delClntAddr(addr->ia->getIface(), addr->addr);
+        SrvCfgMgr().delClntAddr(addr->ia->getIfindex(), addr->addr);
 
         TNotifyScriptParams params;
         notifyExpireInfo(params, *addr, TAddrIA::TYPE_IA);
@@ -542,7 +542,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                                prefix->ia->getIAID(),
                                prefix->addr, false);
 
-        SrvCfgMgr().decrPrefixCount(prefix->ia->getIface(), prefix->addr);
+        SrvCfgMgr().decrPrefixCount(prefix->ia->getIfindex(), prefix->addr);
 
         TNotifyScriptParams params;
         notifyExpireInfo(params, *prefix, TAddrIA::TYPE_PD);

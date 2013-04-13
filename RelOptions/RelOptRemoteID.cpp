@@ -5,19 +5,18 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: RelOptRemoteID.cpp,v 1.2 2008-08-29 00:07:33 thomson Exp $
- *
  */
 
 #include "RelOptRemoteID.h"
+#include "DHCPConst.h"
 
 TRelOptRemoteID::TRelOptRemoteID( char * buf,  int n, TMsg* parent)
-    :TOptVendorSpecInfo(OPTION_REMOTE_ID, buf,n, parent)
+    :TOptVendorData(OPTION_REMOTE_ID, buf,n, parent)
 {
 }
 
 TRelOptRemoteID::TRelOptRemoteID(int enterprise, char * data, int dataLen, TMsg* parent)
-    :TOptVendorSpecInfo(OPTION_REMOTE_ID, enterprise, data, dataLen, parent)
+    :TOptVendorData(OPTION_REMOTE_ID, enterprise, data, dataLen, parent)
 {
 }
 

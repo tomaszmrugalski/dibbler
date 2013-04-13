@@ -87,10 +87,7 @@ am_libClntOptions_a_OBJECTS =  \
 	libClntOptions_a-ClntOptPreference.$(OBJEXT) \
 	libClntOptions_a-ClntOptStatusCode.$(OBJEXT) \
 	libClntOptions_a-ClntOptTA.$(OBJEXT) \
-	libClntOptions_a-ClntOptTimeZone.$(OBJEXT) \
-	libClntOptions_a-ClntOptUserClass.$(OBJEXT) \
-	libClntOptions_a-ClntOptVendorClass.$(OBJEXT) \
-	libClntOptions_a-ClntOptVendorSpec.$(OBJEXT)
+	libClntOptions_a-ClntOptTimeZone.$(OBJEXT)
 libClntOptions_a_OBJECTS = $(am_libClntOptions_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -332,9 +329,7 @@ libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp \
 	ClntOptOptionRequest.cpp ClntOptOptionRequest.h \
 	ClntOptPreference.cpp ClntOptPreference.h \
 	ClntOptStatusCode.cpp ClntOptStatusCode.h ClntOptTA.cpp \
-	ClntOptTA.h ClntOptTimeZone.cpp ClntOptTimeZone.h \
-	ClntOptUserClass.cpp ClntOptUserClass.h ClntOptVendorClass.cpp \
-	ClntOptVendorClass.h ClntOptVendorSpec.cpp ClntOptVendorSpec.h
+	ClntOptTA.h ClntOptTimeZone.cpp ClntOptTimeZone.h
 all: all-am
 
 .SUFFIXES:
@@ -398,9 +393,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptStatusCode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptTA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptTimeZone.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptUserClass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -633,48 +625,6 @@ libClntOptions_a-ClntOptTimeZone.obj: ClntOptTimeZone.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptTimeZone.obj `if test -f 'ClntOptTimeZone.cpp'; then $(CYGPATH_W) 'ClntOptTimeZone.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptTimeZone.cpp'; fi`
 
-libClntOptions_a-ClntOptUserClass.o: ClntOptUserClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptUserClass.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Tpo -c -o libClntOptions_a-ClntOptUserClass.o `test -f 'ClntOptUserClass.cpp' || echo '$(srcdir)/'`ClntOptUserClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Tpo $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptUserClass.cpp' object='libClntOptions_a-ClntOptUserClass.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptUserClass.o `test -f 'ClntOptUserClass.cpp' || echo '$(srcdir)/'`ClntOptUserClass.cpp
-
-libClntOptions_a-ClntOptUserClass.obj: ClntOptUserClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptUserClass.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Tpo -c -o libClntOptions_a-ClntOptUserClass.obj `if test -f 'ClntOptUserClass.cpp'; then $(CYGPATH_W) 'ClntOptUserClass.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptUserClass.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Tpo $(DEPDIR)/libClntOptions_a-ClntOptUserClass.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptUserClass.cpp' object='libClntOptions_a-ClntOptUserClass.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptUserClass.obj `if test -f 'ClntOptUserClass.cpp'; then $(CYGPATH_W) 'ClntOptUserClass.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptUserClass.cpp'; fi`
-
-libClntOptions_a-ClntOptVendorClass.o: ClntOptVendorClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptVendorClass.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Tpo -c -o libClntOptions_a-ClntOptVendorClass.o `test -f 'ClntOptVendorClass.cpp' || echo '$(srcdir)/'`ClntOptVendorClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Tpo $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptVendorClass.cpp' object='libClntOptions_a-ClntOptVendorClass.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptVendorClass.o `test -f 'ClntOptVendorClass.cpp' || echo '$(srcdir)/'`ClntOptVendorClass.cpp
-
-libClntOptions_a-ClntOptVendorClass.obj: ClntOptVendorClass.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptVendorClass.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Tpo -c -o libClntOptions_a-ClntOptVendorClass.obj `if test -f 'ClntOptVendorClass.cpp'; then $(CYGPATH_W) 'ClntOptVendorClass.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptVendorClass.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Tpo $(DEPDIR)/libClntOptions_a-ClntOptVendorClass.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptVendorClass.cpp' object='libClntOptions_a-ClntOptVendorClass.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptVendorClass.obj `if test -f 'ClntOptVendorClass.cpp'; then $(CYGPATH_W) 'ClntOptVendorClass.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptVendorClass.cpp'; fi`
-
-libClntOptions_a-ClntOptVendorSpec.o: ClntOptVendorSpec.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptVendorSpec.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Tpo -c -o libClntOptions_a-ClntOptVendorSpec.o `test -f 'ClntOptVendorSpec.cpp' || echo '$(srcdir)/'`ClntOptVendorSpec.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Tpo $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptVendorSpec.cpp' object='libClntOptions_a-ClntOptVendorSpec.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptVendorSpec.o `test -f 'ClntOptVendorSpec.cpp' || echo '$(srcdir)/'`ClntOptVendorSpec.cpp
-
-libClntOptions_a-ClntOptVendorSpec.obj: ClntOptVendorSpec.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptVendorSpec.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Tpo -c -o libClntOptions_a-ClntOptVendorSpec.obj `if test -f 'ClntOptVendorSpec.cpp'; then $(CYGPATH_W) 'ClntOptVendorSpec.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptVendorSpec.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Tpo $(DEPDIR)/libClntOptions_a-ClntOptVendorSpec.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptVendorSpec.cpp' object='libClntOptions_a-ClntOptVendorSpec.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptVendorSpec.obj `if test -f 'ClntOptVendorSpec.cpp'; then $(CYGPATH_W) 'ClntOptVendorSpec.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptVendorSpec.cpp'; fi`
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -884,6 +834,9 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
 
+#libClntOptions_a_SOURCES += ClntOptUserClass.cpp ClntOptUserClass.h
+#libClntOptions_a_SOURCES += ClntOptVendorClass.cpp ClntOptVendorClass.h
+#libClntOptions_a_SOURCES += ClntOptVendorSpec.cpp ClntOptVendorSpec.h
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

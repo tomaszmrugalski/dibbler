@@ -44,11 +44,11 @@ TOptAAAAuthentication::TOptAAAAuthentication( char * &buf,  int &n, TMsg* parent
 
     Parent->setAuthInfoPtr(buf);
 
-    PrintHex("Auth: received digest: ", buf, AAA_AUTH_INFO_LEN);
+    PrintHex("Auth: received digest: ", (uint8_t*)buf, AAA_AUTH_INFO_LEN);
     
     buf+=n; n = 0;
 
-    PrintHex("Auth:received AAA-SPI: ", (char *)&AAASPI_, sizeof(AAASPI_));
+    PrintHex("Auth:received AAA-SPI: ", (uint8_t*)&AAASPI_, sizeof(AAASPI_));
 
     Parent->setAuthInfoKey();
 

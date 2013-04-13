@@ -44,7 +44,7 @@ TOptKeyGeneration::TOptKeyGeneration( char * &buf,  int &n, TMsg* parent)
 
     Parent->setKeyGenNonce(buf, n);
 
-    PrintHex("KeyGenNonce: ", buf, n);
+    PrintHex("KeyGenNonce: ", (uint8_t*)buf, n);
 
     buf+=n;
     n = 0;

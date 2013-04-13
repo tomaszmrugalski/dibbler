@@ -73,14 +73,20 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__Opt_tests_SOURCES_DIST = run_tests.cpp Opt_unittest.cc \
 	OptAddr_unittest.cc OptAuthentication_unittest.cc \
 	OptIAAddress_unittest.cc OptRtPrefix_unittest.cc \
-	OptDomainLst_unittest.cc
+	OptDomainLst_unittest.cc OptUserClass_unittest.cc \
+	OptVendorClass_unittest.cc OptVendorSpecInfo_unittest.cc \
+	OptVendorData_unittest.cc
 @HAVE_GTEST_TRUE@am_Opt_tests_OBJECTS = run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	Opt_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptAddr_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptAuthentication_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptRtPrefix_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	OptDomainLst_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	OptDomainLst_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptUserClass_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptVendorClass_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptVendorSpecInfo_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptVendorData_unittest.$(OBJEXT)
 Opt_tests_OBJECTS = $(am_Opt_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Opt_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -500,7 +506,11 @@ AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@	OptAuthentication_unittest.cc \
 @HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc \
 @HAVE_GTEST_TRUE@	OptRtPrefix_unittest.cc \
-@HAVE_GTEST_TRUE@	OptDomainLst_unittest.cc
+@HAVE_GTEST_TRUE@	OptDomainLst_unittest.cc \
+@HAVE_GTEST_TRUE@	OptUserClass_unittest.cc \
+@HAVE_GTEST_TRUE@	OptVendorClass_unittest.cc \
+@HAVE_GTEST_TRUE@	OptVendorSpecInfo_unittest.cc \
+@HAVE_GTEST_TRUE@	OptVendorData_unittest.cc
 @HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Opt_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
@@ -565,6 +575,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptDomainLst_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptIAAddress_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptRtPrefix_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptUserClass_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptVendorClass_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptVendorData_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptVendorSpecInfo_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Opt_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 

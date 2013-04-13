@@ -525,7 +525,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         msg->setRemoteID(remoteID);
         remoteID = 0;
         remoteID = msg->getRemoteID();
-        PrintHex("RemoteID:", remoteID->getVendorData(), remoteID->getVendorDataLen());
+        PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
     return (Ptr*)msg;

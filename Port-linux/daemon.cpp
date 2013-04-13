@@ -215,6 +215,16 @@ int stop(const char * pidfile) {
 	return -1;
     }
 
+    /* simply sending kill is not enough, because it will return immediately after
+       sending signal and this (sending) process would terminate shortly after.
+       this means that the following commands will create race condition:
+       dibbler-server stop
+       dibbler-server start
+
+       Unfortunately, this is a common case in various scripts.
+
+       Therefore we need those ptrace calls (or something similar) to wait
+       till the process to be terminated really dies, before we finish. */
     ptrace_failed = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
     if (ptrace_failed) {
 	saved_errno = errno;
@@ -233,6 +243,7 @@ int stop(const char * pidfile) {
 
     if (!ptrace_failed) {
 	cout << "Waiting for signalled process termination... " << flush;
+        ptrace(PTRACE_CONT, pid, NULL, SIGTERM);
 	do {
 	    if (-1 == waitpid(pid, &p_status, 0)) {
 		saved_errno = errno;

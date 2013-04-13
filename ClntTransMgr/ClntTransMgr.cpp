@@ -220,7 +220,7 @@ void TClntTransMgr::removeExpired() {
         while (ptrAddr = ptrIA->getAddr()) {
             if (ptrAddr->getValidTimeout())
                 continue;
-            ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIface());
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
             Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
                          << ptrIface->getFullName()
                          << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
@@ -239,7 +239,7 @@ void TClntTransMgr::removeExpired() {
 	// if there are no more addresses in this IA, declare it freed
 	if (!ptrIA->countAddr()) {
 	    Log(Debug) << "The IA_NA (with IAID=" << ptrIA->getIAID() << ") has expired. " << LogEnd;
-	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIface());
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIfindex());
 	    if (cfgIface) {
 		SPtr<TClntCfgIA> cfgIA = cfgIface->getIA(ptrIA->getIAID());
 		if (cfgIA) {
@@ -263,13 +263,13 @@ void TClntTransMgr::removeExpired() {
         while (ptrPrefix = ptrPD->getPrefix()) {
             if (ptrPrefix->getValidTimeout())
                 continue;
-            ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIface());
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIfindex());
             Log(Warning) << "Prefix " << ptrPrefix->get()->getPlain() << " obtained on the "
                          << ptrIface->getFullName()
                          << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
-	    ClntIfaceMgr().delPrefix(ptrPD->getIface(), ptrPrefix->get(), ptrPrefix->getLength());
+	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength());
 
 	    // Note: Technically, removing address here is not needed, as it will
 	    // be removed in AddrMgr::doDuties() anyway
@@ -282,7 +282,7 @@ void TClntTransMgr::removeExpired() {
 	// if there are no more addresses in this IA, declare it freed
 	if (!ptrPD->countPrefix()) {
 	    Log(Debug) << "The IA_PD (with IAID=" << ptrPD->getIAID() << ") has expired. " << LogEnd;
-	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrPD->getIface());
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrPD->getIfindex());
 	    if (cfgIface) {
 		SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(ptrPD->getIAID());
 		if (cfgPD) {
@@ -309,11 +309,11 @@ void TClntTransMgr::checkDB()
     ClntAddrMgr().doDuties();
     ClntAddrMgr().firstIA();
     while ( ptrIA = ClntAddrMgr().getIA()) {
-        iface = ClntCfgMgr().getIface( ptrIA->getIface() );
+        iface = ClntCfgMgr().getIface( ptrIA->getIfindex() );
         if (!iface) {
             Log(Warning) << "IA (iaid=" << ptrIA->getIAID() 
                          << ") loaded from old file, but currently there is no iface with ifindex="
-                                 << ptrIA->getIface();
+                                 << ptrIA->getIfindex();
             // IA with non-existent iface, purge iface
             ptrIA->firstAddr();
             while (ptrAddr = ptrIA->getAddr())
@@ -478,7 +478,7 @@ void TClntTransMgr::shutdown()
         // find similar IAs 
         while (ptrNextIA = ClntAddrMgr().getIA()) {
             if ((*(ptrFirstIA->getDUID())==*(ptrNextIA->getDUID())) &&
-                (ptrFirstIA->getIface() == ptrNextIA->getIface() ) ) 
+                (ptrFirstIA->getIfindex() == ptrNextIA->getIfindex() ) ) 
             {
                 // IA serviced via this same server, add it do the list
                 releasedIAs.append(ptrNextIA);
@@ -486,9 +486,9 @@ void TClntTransMgr::shutdown()
                 // delete addressess from IfaceMgr
                 SPtr<TAddrAddr> ptrAddr;
                 SPtr<TIfaceIface> ptrIface;
-                ptrIface = ClntIfaceMgr().getIfaceByID(ptrNextIA->getIface());
+                ptrIface = ClntIfaceMgr().getIfaceByID(ptrNextIA->getIfindex());
                 if (!ptrIface) {
-                            Log(Error) << "Unable to find " << ptrNextIA->getIface()
+                            Log(Error) << "Unable to find " << ptrNextIA->getIfindex()
                                << " interface while releasing address." << LogEnd;
                     break;
                 }
@@ -503,7 +503,7 @@ void TClntTransMgr::shutdown()
         if (releasedIAs.count()) { 
                 // check if there are TA to release
                 releasedIAs.first();
-                iface = ClntCfgMgr().getIface(releasedIAs.get()->getIface());
+                iface = ClntCfgMgr().getIface(releasedIAs.get()->getIfindex());
                 if (iface && iface->countTA()) {
                     iface->firstTA();
                     SPtr<TClntCfgTA> cfgTA = iface->getTA();
@@ -790,15 +790,15 @@ void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAd
     if (IALst.count()) {
             IALst.first();
             ptrIA = IALst.get();
-            iface = ptrIA->getIface();
+            iface = ptrIA->getIfindex();
             addr  = ptrIA->getSrvAddr();
     } else if (pdLst.count()) {
             pdLst.first();
             ptrIA = pdLst.get();
-            iface = ptrIA->getIface();
+            iface = ptrIA->getIfindex();
             addr  = ptrIA->getSrvAddr();
     } else if (ta) {
-            iface = ta->getIface();
+            iface = ta->getIfindex();
             addr  = ta->getSrvAddr();
     } else {
             Log(Error) << "Unable to send RELEASE message. No IA, PD or TA defined." << LogEnd;
@@ -932,7 +932,7 @@ void TClntTransMgr::checkConfirm()
             {
                 if (ptrIA->getState()!=STATE_CONFIRMME)	
                     continue;
-                if (ptrIA->getIface()==iface->getID())
+                if (ptrIA->getIfindex()==iface->getID())
                 {
                     IALst.append(ptrIA);
                     ptrIA->setState(STATE_INPROCESS);
@@ -1044,7 +1044,7 @@ void TClntTransMgr::checkRenew()
             continue;
         }
 
-        if ( (ia->getIface() == iaPattern->getIface()) &&
+        if ( (ia->getIfindex() == iaPattern->getIfindex()) &&
              (ia->getDUID()  == iaPattern->getDUID()) )
         {
                 iaLst.append(ia);
@@ -1067,7 +1067,7 @@ void TClntTransMgr::checkRenew()
             continue;
         }
 
-        if ( (ia->getIface() == iaPattern->getIface()) &&
+        if ( (ia->getIfindex() == iaPattern->getIfindex()) &&
              (ia->getDUID()  == iaPattern->getDUID()) )
         {
                 pdLst.append(ia);
@@ -1121,11 +1121,11 @@ void TClntTransMgr::checkDecline()
             }
             //Here should be send decline for all tentative addresses in IAs
             SPtr<TClntMsgDecline> decline = 
-                new TClntMsgDecline(firstIA->getIface(), 0, declineIALst);
+                new TClntMsgDecline(firstIA->getIfindex(), 0, declineIALst);
             Transactions.append( (Ptr*) decline);
 
             // decline sent, now remove those addrs from IfaceMgr
-            SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(firstIA->getIface());
+            SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(firstIA->getIfindex());
             SPtr<TDUID> duid;
 
             declineIALst.first();
@@ -1154,7 +1154,7 @@ void TClntTransMgr::checkDecline()
 
             // create REQUEST message
             SPtr<TClntMsgRequest> request;
-            request = new TClntMsgRequest(declineIALst, duid, firstIA->getIface() );
+            request = new TClntMsgRequest(declineIALst, duid, firstIA->getIfindex() );
             Transactions.append( (Ptr*) request);
 
 	    // state of certain IAs has changed. Let's log it.
@@ -1196,7 +1196,7 @@ void TClntTransMgr::checkRequest()
         }
 
         // if we have found one IA, following ones must be on the same interface
-        if ( ifaceID && (ia->getIface()!=ifaceID) ) {
+        if ( ifaceID && (ia->getIfindex()!=ifaceID) ) {
             continue;
         }
 
@@ -1212,7 +1212,7 @@ void TClntTransMgr::checkRequest()
         requestIALst.append(ia);
         ia->setState(STATE_INPROCESS);
         duid = ia->getDUID();
-        ifaceID = ia->getIface();
+        ifaceID = ia->getIfindex();
     }
 
     if (requestIALst.count()) {

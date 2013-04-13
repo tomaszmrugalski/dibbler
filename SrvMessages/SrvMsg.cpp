@@ -26,6 +26,8 @@
 #include "SrvOptFQDN.h"
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
+#include "OptUserClass.h"
+#include "OptVendorClass.h"
 
 
 #ifndef MOD_DISABLE_AUTH
@@ -123,7 +125,8 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
             break;
         case OPTION_ELAPSED_TIME:
-            ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf+pos, length, this);
+            ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN,
+				  buf+pos, length, this);
             break;
         case OPTION_UNICAST:
             ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
@@ -154,7 +157,9 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             ptr = new TSrvOptFQDN(buf+pos, length, this);
             break;
         case OPTION_INFORMATION_REFRESH_TIME:
-            ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf+pos, length, this);
+            ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
+				  OPTION_INFORMATION_REFRESH_TIME_LEN,
+				  buf+pos, length, this);
             break;
         case OPTION_IA_TA:
             ptr = new TSrvOptTA(buf+pos, length, this);
@@ -195,9 +200,15 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
         case OPTION_VENDOR_OPTS:
             ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
             break;
-        case OPTION_RECONF_ACCEPT:
+	case OPTION_RECONF_ACCEPT:
+	    ptr = new TOptEmpty(code, buf+pos, length, this);
+	    break;
         case OPTION_USER_CLASS:
+	    ptr = new TOptUserClass(code, buf+pos, length, this);
+	    break;
         case OPTION_VENDOR_CLASS:
+	    ptr = new TOptVendorClass(code, buf+pos, length, this);
+	    break;
         case OPTION_RECONF_MSG:
         case OPTION_RELAY_MSG:
         default:
@@ -280,16 +291,10 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
             break;
         }
 
-        // options not yet supported
-        case OPTION_USER_CLASS :
-        case OPTION_VENDOR_CLASS: {
-            Log(Debug) << "Option " << opt->getOptType() << " is not supported." << LogEnd;
-            break;
-        }
         case OPTION_RECONF_ACCEPT: {
+            /// @todo: remember that client supports reconfigure
             break;
         }
-
         default: {
             handleDefaultOption(opt);
             break;

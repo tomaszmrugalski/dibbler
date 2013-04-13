@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 #include "hex.h"
+#include "Logger.h"
 
 std::vector<uint8_t> textToHex(std::string buf) {
     // if it starts with 0x, just ignore that prefix

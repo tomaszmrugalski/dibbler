@@ -82,7 +82,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         if (Parent->getType() != ADVERTISE_MSG)
             Parent->setAuthInfoKey(Parent->AuthKeys->Get(Parent->getSPI()));
 
-        PrintHex("Received digest: ", buf, AuthInfoLen_);
+        PrintHex("Received digest: ", (uint8_t*)buf, AuthInfoLen_);
     }
     }
 

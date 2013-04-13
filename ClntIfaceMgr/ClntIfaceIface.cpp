@@ -33,6 +33,8 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
     this->NTPServerLst.clear();
     this->Timezone = "";
 
+    DnsConfigured = ! FLUSH_OTHER_CONFIGURED_DNS_SERVERS;
+
     unlink(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME);
     unlink(WORKDIR"/"OPTION_DOMAINS_FILENAME);
     unlink(WORKDIR"/"OPTION_NTP_SERVERS_FILENAME);
@@ -61,6 +63,17 @@ unsigned int TClntIfaceIface::getTimeout() {
 
 bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
                                       List(TIPv6Addr) addrs) {
+
+#ifdef WIN32
+    //remove all dns records before the first configuration
+    if (!DnsConfigured) {
+        Log(Notice) << "Removing all DNS servers on interface "
+                    << getFullName() << " (not configured yet)." << LogEnd;
+        dns_del(this->getName(), this->getID(), NULL);
+        DnsConfigured = true;
+    }
+#endif
+
     // remove old addresses
     SPtr<TIPv6Addr> old, addr;
     this->DNSServerLst.first();

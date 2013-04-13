@@ -12,7 +12,6 @@
 #include <iostream>
 #include <iomanip>
 #include "ClntParsIfaceOpt.h"
-#include "ClntOptVendorSpec.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
 

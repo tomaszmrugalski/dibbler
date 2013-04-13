@@ -21,6 +21,10 @@ Opt_tests_SOURCES += OptAuthentication_unittest.cc
 Opt_tests_SOURCES += OptIAAddress_unittest.cc
 Opt_tests_SOURCES += OptRtPrefix_unittest.cc
 Opt_tests_SOURCES += OptDomainLst_unittest.cc
+Opt_tests_SOURCES += OptUserClass_unittest.cc
+Opt_tests_SOURCES += OptVendorClass_unittest.cc
+Opt_tests_SOURCES += OptVendorSpecInfo_unittest.cc
+Opt_tests_SOURCES += OptVendorData_unittest.cc
 
 Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

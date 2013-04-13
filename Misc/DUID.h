@@ -11,9 +11,9 @@
 class TDUID;
 #ifndef DUID_H_
 #define DUID_H_
-#include <stdint.h>
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 class TDUID
 {

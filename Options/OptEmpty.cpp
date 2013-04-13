@@ -13,6 +13,9 @@
 
 TOptEmpty::TOptEmpty(int code, const char * buf,  int n, TMsg* parent)
     :TOpt(code, parent) {
+    if (n) {
+	Valid = false;
+    }
 }
 
 TOptEmpty::TOptEmpty(int code, TMsg* parent)

@@ -55,3 +55,18 @@ int execute(const char *filename, const char * argv[], const char *env[])
             return LOWLEVEL_ERROR_UNSPEC;
     }
 }
+
+/** @brief returns host name of this host
+ *
+ * @param hostname buffer (hostname will be stored here)
+ * @param hostname_len length of the buffer
+ * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+ */
+int get_hostname(char* hostname, int hostname_len) {
+    int status = gethostname(hostname, hostname_len);
+    if (status == 0) {
+        return LOWLEVEL_NO_ERROR;
+    } else {
+        return LOWLEVEL_ERROR_UNSPEC;
+    }
+}

@@ -38,7 +38,7 @@ TSrvOptKeyGeneration::TSrvOptKeyGeneration(TSrvMsg* parent)
 	    
 	} while (Parent->AuthKeys->Get(spi));
 	
-        PrintHex("Auth:generated SPI: ", (char*)&spi, 4);
+        PrintHex("Auth:generated SPI: ", (uint8_t*)&spi, 4);
         Parent->setSPI(spi);
     }
 

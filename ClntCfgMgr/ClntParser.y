@@ -14,7 +14,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
 #include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
@@ -1008,7 +1007,12 @@ SIPDomainOption
 FQDNOption
 :OPTION_ FQDN_
 {
-    ParserOptStack.getLast()->setFQDN(string(""));
+	char hostname[255];
+	if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
+	    ParserOptStack.getLast()->setFQDN(string(hostname));
+	} else {
+	    ParserOptStack.getLast()->setFQDN(string(""));
+	}
 }
 |OPTION_ FQDN_ STRING_
 {
@@ -1117,10 +1121,10 @@ VendorSpecOption
 ;
 
 VendorSpecList
-: Number                     { VendorSpec.append( new TOptVendorSpecInfo($1,0,0,0,0) ); }
-| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo($1,$3,0,0,0) ); }
-| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo($3,0,0,0,0) ); }
-| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo($3,$5,0,0,0) ); }
+: Number                     { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,0,0,0,0) ); }
+| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,$3,0,0,0) ); }
+| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,0,0,0,0) ); }
+| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,$5,0,0,0) ); }
 ;
 
 DsLiteTunnelOption
