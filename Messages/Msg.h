@@ -14,13 +14,15 @@ class TMsg;
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <list>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "Opt.h"
-#include "KeyList.h"
+#include "Key.h"
+//#include "KeyList.h"
 #include "ScriptParams.h"
 
 // Hey! It's grampa of all messages
@@ -61,23 +63,28 @@ class TMsg
     bool isDone();
     bool isDone(bool done);
 
-    // auth stuff below
+    // useful auth stuff below
     void calculateDigests(char* buffer,  size_t len);
-    void setAuthInfoPtr(char* ptr); /// @todo: remove this
-    int setAuthInfoKey();
-    void setAuthInfoKey(char *ptr);
-    char * getAuthInfoKey();
-    bool validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst);
+    void setAuthDigestPtr(char* ptr, unsigned len); /// @todo: remove from here (and move to AUTH option)
+    bool loadAuthKey();
+    void setAuthKey(const TKey& key);
+    TKey getAuthKey();
+
     bool validateAuthInfo(char *buf, int bufSize);
-    uint32_t getAAASPI();
-    void setAAASPI(uint32_t val);
+    bool validateAuthInfo(char *buf, int bufSize, const std::vector<DigestTypes>& authLst);
     uint32_t getSPI();
     void setSPI(uint32_t val);
+    DigestTypes DigestType_;
+
+    // unknown (junk?) stuff below
+#if AUTH_CRAP
+    uint32_t getAAASPI();
+    void setAAASPI(uint32_t val);
     void setKeyGenNonce(char *value, unsigned len);
     char* getKeyGenNonce();
     unsigned getKeyGenNonceLen();
-    DigestTypes digestType_;
     SPtr<KeyList> AuthKeys;
+#endif
 
     // notify scripts stuff
     void* getNotifyScriptParams();
@@ -96,16 +103,26 @@ class TMsg
 
     bool IsDone; // Is this transaction done?
     int Iface;   // logical interface (for direct messages it equals PhysicalIface
-                 // for relayed messages Iface points to relayX, PhysicalInterface to ethX
+                 // for relayed messages Iface points to relayX, PhysicalInterface to ethX)
     SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 
-    // auth stuff below
-    char* AuthInfoPtr; // pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
-    char* AuthInfoKey; // pointer to key used do calculate Authentication information
-    uint32_t SPI; // SPI sent by server in OPTION_KEYGEN
+    // useful auth stuff below
+    uint32_t SPI_; // Key identifier
+
+    char* AuthDigestPtr_;    // Digest (pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
+    unsigned AuthDigestLen_; // Length of the digest
+
+    TKey AuthKey_; // Auth Key
+
+    // char* AuthKeyPtr_;      // Key pointer to key used do calculate Authentication information
+    // unsigned AuthKeyLen_;    // length of the key
+
+#if AUTH_CRAP
+    // unknown (junk?) auth stuff below
     uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
     char *KeyGenNonce;
     unsigned KeyGenNonceLen;
+#endif
 
     // a pointer to NotifyScriptParams structure (if defined)
     TNotifyScriptParams* NotifyScripts;

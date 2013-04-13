@@ -38,7 +38,7 @@
 #include "ClntOptLifetime.h"
 
 #ifndef MOD_DISABLE_AUTH
-#include "ClntOptAAAAuthentication.h"
+#include "OptAAAAuthentication.h"
 #include "ClntOptKeyGeneration.h"
 #include "OptAuthentication.h"
 #endif
@@ -197,14 +197,16 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	case OPTION_AAAAUTH:
 	    Log(Warning) << "Client is not supposed to receive OPTION_AAAAUTH, ignoring." << LogEnd;
 	    break;
+#ifdef AUTH_CRAP
 	case OPTION_KEYGEN:
 	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
 	    break;
+#endif
 	case OPTION_AUTH:
             auth_offset = buf + pos;
             auth_len = length;
 	    if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
-		digestType_ = ClntCfgMgr().getDigest();
+		DigestType_ = ClntCfgMgr().getDigest();
 	    }
             ptr = new TOptAuthentication(buf+pos, length, this);
 	    break;
@@ -350,11 +352,14 @@ void TClntMsg::setDefaults()
     MRD = 0;
 
 #ifndef MOD_DISABLE_AUTH
-    digestType_ = ClntCfgMgr().getDigest();
-    AuthKeys = ClntCfgMgr().AuthKeys;
+    DigestType_ = ClntCfgMgr().getDigest();
 #endif
+
+#ifdef AUTH_CRAP
+    AuthKeys = ClntCfgMgr().AuthKeys;
     KeyGenNonce = NULL;
     KeyGenNonceLen = 0;
+#endif
 
     /// @todo: This should be moved to TMsg
     PeerAddr = 0;
@@ -420,9 +425,12 @@ void TClntMsg::send()
 }
 
 void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {
+#ifdef AUTH_CRAP
     AAASPI = q->getAAASPI();
-    SPI = q->getSPI();
-    AuthInfoKey = q->getAuthInfoKey();
+#endif
+
+    SPI_ = q->SPI_;
+    AuthKey_ = q->AuthKey_;
 }
 
 void TClntMsg::setIface(int iface) {
@@ -456,7 +464,7 @@ void TClntMsg::appendAuthenticationOption()
 #ifndef MOD_DISABLE_AUTH
     uint8_t algorithm = 0; // algorithm is protocol specific
 
-    digestType_ = DIGEST_NONE;
+    DigestType_ = DIGEST_NONE;
 
     ClntAddrMgr().firstClient();
     SPtr<TAddrClient> client = ClntAddrMgr().getClient();
@@ -476,10 +484,9 @@ void TClntMsg::appendAuthenticationOption()
         break;
     }
     case AUTH_PROTO_DIBBLER: { // Mechanism proposed by Kowalczuk
-        digestType_ = ClntCfgMgr().getDigest();
-        algorithm = static_cast<uint8_t>(ClntCfgMgr().getDigest());
-        if (client && client->getSPI())
-            this->setSPI(client->getSPI());
+        DigestType_ = ClntCfgMgr().getDigest();
+        algorithm = static_cast<uint8_t>(DigestType_);
+        setSPI(ClntCfgMgr().getSPI());
         break;
     }
     default: {
@@ -488,12 +495,13 @@ void TClntMsg::appendAuthenticationOption()
     }
     }
 
-    SPtr<TOptAuthentication> auth = new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
-                                                           algorithm,
-                                                           ClntCfgMgr().getAuthReplay(), this);
+    SPtr<TOptAuthentication> auth = 
+        new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
+                               algorithm,
+                               ClntCfgMgr().getAuthReplay(), this);
     // replay detection
-    if (client && ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
-        auth->setReplayDetection(client->getNextReplayDetectionSent());
+    if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
+        auth->setReplayDetection(ClntAddrMgr().getNextReplayDetectionValue());
     }
     // otherwise replay value is zero
 #endif
@@ -729,34 +737,24 @@ void TClntMsg::appendRequestedOptions() {
     }
 
 #ifndef MOD_DISABLE_AUTH
-    if ((ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER)
-        && (MsgType == SOLICIT_MSG)) {
+    if (ClntCfgMgr().getAuthProtocol() != AUTH_PROTO_NONE) {
+        if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
+            setSPI(ClntCfgMgr().getSPI());
+            Options.push_back(new TOptAAAAuthentication(getSPI(), this));
+        }
 
-        // --- option: AAAAUTH ---
-        Options.push_back(new TClntOptAAAAuthentication(this));
+        // --- option: AUTH ---
+        Options.push_back(new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
+                                                 ClntCfgMgr().getAuthAlgorithm(),
+                                                 ClntCfgMgr().getAuthReplay(),
+                                                 this));
 
         // request KeyGeneration
         optORO->addOption(OPTION_KEYGEN);
+
         // request Authentication
         optORO->addOption(OPTION_AUTH);
     }
-
-#if 0
-    } else {
-	/*
-	    // --- option: AUTH ---
-	    if (ClntCfgMgr().getAuthEnabled() && ClntCfgMgr().getDigest()!=DIGEST_NONE) {
-		    Log(Debug) << "Authentication enabled, adding AUTH option." << LogEnd;
-		    ClntAddrMgr->firstClient();
-		    SPtr<TAddrClient> client = ClntAddrMgr->getClient();
-		    if (client && client->getSPI())
-			this->setSPI(client->getSPI());
-		    Options.push_back(new TClntOptAuthentication(this));
-		    client->setSPI(this->getSPI());
-	    }
-	    */
-    }
-#endif // if 0
 #endif // MOD_DISABLE_AUTH
 
 #ifdef MOD_REMOTE_AUTOCONF

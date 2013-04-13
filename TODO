@@ -4,6 +4,8 @@
 
 Note: This is a scratchpad. It just happens to be available with the rest of the code.
 
+- must include *.l *.y files in dist
+
 Subnet support:
 - rcv: clean up SrvIfaceMgr::decodeRelayForw()
 - remove getUnderlaying(), getOverlaying() (WTF???)

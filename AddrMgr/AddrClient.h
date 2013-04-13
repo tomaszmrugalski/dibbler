@@ -63,7 +63,6 @@ public:
     void setSPI(uint32_t val);
     uint64_t getReplayDetectionRcvd();
     void setReplayDetectionRcvd(uint64_t val);
-    uint64_t getNextReplayDetectionSent();
 
     void generateReconfKey();
 
@@ -80,11 +79,10 @@ private:
     List(TAddrIA) IAsLst;
     List(TAddrIA) TALst;
     List(TAddrIA) PDLst;
-    SPtr<TDUID> DUID;
+    SPtr<TDUID> DUID_;
 
-    uint32_t SPI;
-    uint64_t ReplayDetectionRcvd;
-    uint64_t ReplayDetectionSent;
+    uint32_t SPI_;
+    uint64_t ReplayDetectionRcvd_;
 };
 
 

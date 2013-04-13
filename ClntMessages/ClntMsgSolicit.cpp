@@ -36,7 +36,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 				 SPtr<TClntCfgTA> ta,
 				 List(TClntCfgPD) pdLst, 
 				 bool rapid, bool remoteAutoconf)
-    :TClntMsg(iface,addr,SOLICIT_MSG)
+    :TClntMsg(iface, addr, SOLICIT_MSG)
 {
     IRT=SOL_TIMEOUT;
     MRT=SOL_MAX_RT;
@@ -107,6 +107,8 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     // append options specified in the config file
     if (!remoteAutoconf)
 	appendRequestedOptions();
+
+    appendAuthenticationOption();
     
     IsDone = false;
     send();

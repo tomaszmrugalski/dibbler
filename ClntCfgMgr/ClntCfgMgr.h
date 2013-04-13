@@ -85,8 +85,10 @@ class TClntCfgMgr : public TCfgMgr
 
 #ifndef MOD_DISABLE_AUTH
     // Authorization
-    uint32_t getAAASPI();
-    List(DigestTypes) getAuthAcceptMethods();
+    uint32_t getSPI();
+    void setAuthAcceptMethods(const std::vector<DigestTypes>& methods);
+    const std::vector<DigestTypes>& getAuthAcceptMethods();
+
     SPtr<KeyList> AuthKeys;
 #endif
 
@@ -119,10 +121,10 @@ private:
     bool UseConfirm;
     bool Reconfigure;
 
-    DigestTypes Digest;
+    DigestTypes Digest_;
 #ifndef MOD_DISABLE_AUTH
-    List(DigestTypes) AuthAcceptMethods; // used in auth protocol dibbler
-    uint32_t AAASPI;                     // used in auth protocol dibbler
+    std::vector<DigestTypes> AuthAcceptMethods_; // used in auth protocol dibbler
+    uint32_t SPI_;                     // used in auth protocol dibbler
 #endif
 
 #ifdef MOD_REMOTE_AUTOCONF

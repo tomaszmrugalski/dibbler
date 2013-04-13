@@ -14,6 +14,8 @@
 #include "DHCPConst.h"
 #include "Portable.h"
 
+typedef std::vector<uint8_t> TKey;
+
 class TSIGKey {
 public:
     TSIGKey(const std::string& name);

@@ -343,6 +343,7 @@ SPtr<TSIGKey> TCfgMgr::getKey() {
 }
 
 void TCfgMgr::setAuthProtocol(AuthProtocols proto) {
+    printf("#### setting auth protocol to %d\n", proto);
     AuthProtocol_ = proto;
 }
 
@@ -364,4 +365,12 @@ AuthReplay TCfgMgr::getAuthReplay() {
 
 uint8_t TCfgMgr::getAuthAlgorithm() {
     return AuthAlgorithm_;
+}
+
+void TCfgMgr::setAuthDropUnauthenticated(bool drop) {
+    AuthDropUnauthenticated_ = drop;
+}
+
+bool TCfgMgr::getAuthDropUnauthenticated() {
+    return AuthDropUnauthenticated_;
 }

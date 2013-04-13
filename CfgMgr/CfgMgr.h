@@ -63,6 +63,8 @@ class TCfgMgr
     AuthProtocols getAuthProtocol();
     AuthReplay getAuthReplay();
     uint8_t getAuthAlgorithm();
+    void setAuthDropUnauthenticated(bool drop);
+    bool getAuthDropUnauthenticated();
 #endif
 
  protected:
@@ -85,6 +87,8 @@ class TCfgMgr
     AuthProtocols AuthProtocol_;
     uint8_t AuthAlgorithm_;
     AuthReplay AuthReplay_;
+
+    bool AuthDropUnauthenticated_;
 #endif
 
     // for TSIG in DDNS

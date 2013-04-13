@@ -5,8 +5,8 @@ libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/ClntIfaceM
 libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntCfgMgr -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/ClntAddrMgr
 libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
 
-libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp ClntOptAAAAuthentication.h 
-libClntOptions_a_SOURCES += ClntOptAddrParams.cpp ClntOptAddrParams.h 
+#libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp ClntOptAAAAuthentication.h 
+libClntOptions_a_SOURCES = ClntOptAddrParams.cpp ClntOptAddrParams.h 
 #libClntOptions_a_SOURCES += ClntOptAuthentication.cpp ClntOptAuthentication.h
 #libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
 #libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 

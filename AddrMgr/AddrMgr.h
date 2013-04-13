@@ -104,6 +104,8 @@ class TAddrMgr
     SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);
 #endif
 
+    uint64_t getNextReplayDetectionValue();
+
 protected:
     virtual void print(std::ostream & out) = 0;
     bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
@@ -120,6 +122,8 @@ protected:
     std::string XmlFile;
 
     bool DeleteEmptyClient; // should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
+
+    uint64_t ReplayDetectionValue_;
 };
 
 #endif

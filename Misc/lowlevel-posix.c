@@ -70,3 +70,21 @@ int get_hostname(char* hostname, int hostname_len) {
         return LOWLEVEL_ERROR_UNSPEC;
     }
 }
+
+uint32_t getAAASPIfromFile() {
+    uint32_t ret;
+    FILE *file;
+
+    file = fopen(CLNT_AAASPI_FILE, "r");
+    if (!file) {
+        return 0;
+    }
+
+    if (fscanf(file, "%10x", &ret) <= 0) {
+        fclose(file);
+        ret = 0;
+    }
+    fclose(file);
+
+    return ret;
+}

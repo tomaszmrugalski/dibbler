@@ -10,6 +10,8 @@
  *
  */
 
+#ifdef AUTH_CRAP
+
 #ifndef OPTKEYGENERATION_H
 #define OPTKEYGENERATION_H
 
@@ -38,3 +40,5 @@ private:
 };
 
 #endif 
+
+#endif

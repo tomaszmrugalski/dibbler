@@ -24,7 +24,9 @@
 
 using namespace std;
 
-TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
+TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile)
+    :ReplayDetectionValue_(0) {
+
     this->IsDone = false;
     this->XmlFile = xmlFile;
 
@@ -558,6 +560,12 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
                       << " second(s) old." << LogEnd;
             continue;
         }
+        if (strstr(buf,"<replayDetection>")) {
+            stringstream tmp(strstr(buf,"<replayDetection>") + 17);
+            tmp >> ReplayDetectionValue_;
+            Log(Debug) << "Auth: Replay detection value loaded " << ReplayDetectionValue_ << LogEnd;
+            continue;
+        }
         if (AddrMgrTag && strstr(buf,"<AddrClient")) {
 	    clnt = parseAddrClient(xmlFile, f);
 	    if (clnt) {
@@ -1050,6 +1058,11 @@ TAddrMgr::~TAddrMgr() {
 
 }
 
+uint64_t TAddrMgr::getNextReplayDetectionValue() {
+    return ++ReplayDetectionValue_;
+}
+
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -1057,6 +1070,7 @@ TAddrMgr::~TAddrMgr() {
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
     strum << "  <timestamp>" << now() << "</timestamp>" << endl;
+    strum << "  <replayDetection>" << x.ReplayDetectionValue_ << "</replayDetection>" << endl;
     x.print(strum);
 
     SPtr<TAddrClient> ptr;

@@ -558,7 +558,6 @@ SPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
 bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 {
     SPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
-    Digest         = opt->getDigest();
     LogLevel       = logger::getLogLevel();
     LogName        = logger::getLogName();
     AnonInfRequest = opt->getAnonInfRequest();
@@ -570,18 +569,18 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
-      DUIDType = parser->DUIDType;
-      //Log(Debug) << "DUID type set to " << parser->DUIDType << "." << LogEnd;
-      DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
-      DUIDEnterpriseID     = parser->DUIDEnterpriseID;
+        DUIDType = parser->DUIDType;
+        DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
+        DUIDEnterpriseID     = parser->DUIDEnterpriseID;
     }
 
 #ifndef MOD_DISABLE_AUTH
     if (getAuthProtocol() == AUTH_PROTO_DIBBLER) {
-        AuthAcceptMethods = opt->getAuthAcceptMethods();
-        AAASPI = getAAASPIfromFile();
-    } else {
-        AuthAcceptMethods.clear();
+        SPI_ = getAAASPIfromFile();
+        if (SPI_) {
+            Log(Debug) << "Auth: Read SPI=" << hex << SPI_ << dec
+                       << " from a AAA-SPI file." << LogEnd;
+        }
     }
 #endif
 
@@ -602,14 +601,14 @@ bool TClntCfgMgr::getRemoteAutoconf() {
 void TClntCfgMgr::setDigest(DigestTypes type)
 {
     if (type >= DIGEST_INVALID)
-        Digest = DIGEST_NONE;
+        Digest_ = DIGEST_NONE;
     else
-        Digest = type;
+        Digest_ = type;
 }
 
 DigestTypes TClntCfgMgr::getDigest()
 {
-    return Digest;
+    return Digest_;
 }
 
 bool TClntCfgMgr::isDone() {
@@ -689,15 +688,32 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
 }
 
 #ifndef MOD_DISABLE_AUTH
-uint32_t TClntCfgMgr::getAAASPI() {
-    return AAASPI;
+uint32_t TClntCfgMgr::getSPI() {
+    return SPI_;
 }
 
-List(DigestTypes) TClntCfgMgr::getAuthAcceptMethods()
-{
-    return AuthAcceptMethods;
+void TClntCfgMgr::setAuthAcceptMethods(const std::vector<DigestTypes>& methods) {
+    AuthAcceptMethods_ = methods;
+    if (!methods.empty()) {
+        /// @todo: print out those methods
+        Log(Debug) << "AUTH: " << methods.size() << " method(s) accepted:";
+
+        for (unsigned i = 0; i < methods.size(); ++i) {
+            Log(Cont) << " " << getDigestName(methods[i]);
+            if (i==0) {
+                Log(Cont) << "(default)";
+            }
+        }
+        Log(Cont) << LogEnd;
+
+        // Use the first method as the default one
+        Digest_ = methods[0];
+    }
 }
 
+const std::vector<DigestTypes>& TClntCfgMgr::getAuthAcceptMethods() {
+    return AuthAcceptMethods_;
+}
 #endif
 
 bool TClntCfgMgr::getFQDNFlagS()

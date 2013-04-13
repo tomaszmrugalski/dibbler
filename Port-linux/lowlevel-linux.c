@@ -648,30 +648,6 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     return tentative;
 }
 
-uint32_t getAAASPIfromFile() {
-    char filename[1024];
-    struct stat st;
-    uint32_t ret;
-    FILE *file;
-
-    strcpy(filename, "/var/lib/dibbler/AAA/AAA-SPI");
-
-    if (stat(filename, &st))
-        return 0;
-
-    file = fopen(filename, "r");
-    if (!file)
-        return 0;
-
-    if (fscanf(file, "%10x", &ret) <= 0) {
-        /// @todo: print an error here
-        ret = 0;
-    }
-    fclose(file);
-
-    return ret;
-}
-
 char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];

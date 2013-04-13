@@ -18,10 +18,7 @@
 #include "Msg.h"
 #include "Portable.h"
 
-// in AAAAUTH we always use HMAC-SHA1 
-#define AAA_AUTH_INFO_LEN 20
-
-TOptAAAAuthentication::TOptAAAAuthentication( char * &buf,  int &n, TMsg* parent)
+TOptAAAAuthentication::TOptAAAAuthentication(char* buf, int n, TMsg* parent)
     :TOpt(OPTION_AAAAUTH, parent)
 {
     if (n<4) {
@@ -29,69 +26,44 @@ TOptAAAAuthentication::TOptAAAAuthentication( char * &buf,  int &n, TMsg* parent
         n = 0;
         return;
     }
-    setAAASPI(readUint32(buf));
-    Parent->setAAASPI(readUint32(buf));
+    uint32_t spi = readUint32(buf);
+    setAAASPI(spi);
+    if (parent) {
+        parent->setSPI(spi);
+        parent->loadAuthKey();
+    }
     buf += sizeof(uint32_t); n -= sizeof(uint32_t);
 
-    if (n != AAA_AUTH_INFO_LEN)
-    {
-	Log(Warning) << "Auth: Malformed AAAAUTH option received: length="
-                     << n << ", expected " << AAA_AUTH_INFO_LEN << LogEnd;
-        buf += n;
-        n = 0;
-        return;
-    }
-
-    Parent->setAuthInfoPtr(buf);
-
-    PrintHex("Auth: received digest: ", (uint8_t*)buf, AAA_AUTH_INFO_LEN);
-    
-    buf+=n; n = 0;
-
-    PrintHex("Auth:received AAA-SPI: ", (uint8_t*)&AAASPI_, sizeof(AAASPI_));
-
-    Parent->setAuthInfoKey();
+    Log(Debug) << "Auth: received AAA-SPI: " << std::hex << AAASPI_ << std::dec << LogEnd;
 
     Valid = true;
 }
 
-TOptAAAAuthentication::TOptAAAAuthentication(TMsg* parent)
-    :TOpt(OPTION_AAAAUTH, parent) {
-    Valid = true;
+TOptAAAAuthentication::TOptAAAAuthentication(uint32_t spi, TMsg* parent)
+    :TOpt(OPTION_AAAAUTH, parent), AAASPI_(spi) {
 }
-
 
  void TOptAAAAuthentication::setAAASPI( uint32_t value)
 {
-	AAASPI_ = value;
+    AAASPI_ = value;
 }
 
 uint32_t TOptAAAAuthentication::getAAASPI() {
-	return AAASPI_;
+    return AAASPI_;
 }
 
 size_t TOptAAAAuthentication::getSize() {
-	return 8 + AAA_AUTH_INFO_LEN;
+    return OPTION6_HDR_LEN + 4;
 }
 
 char * TOptAAAAuthentication::storeSelf(char* buf) {
-    if (!Parent) {
-        Log(Error) << "Attempted to send orphaned AAA Auth option." << LogEnd;
-        return buf;
-    }
     buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize() - 4);
+    buf = writeUint16(buf, getSize() - OPTION6_HDR_LEN);
     buf = writeUint32(buf, AAASPI_);
 
-    memset(buf, 0, AAA_AUTH_INFO_LEN);
-
-    Parent->setAuthInfoPtr(buf);
-    Parent->setAAASPI(AAASPI_);
-
-    /// @todo is this neccesary? AuthInfoKey will be different later anyway
-    Parent->setAuthInfoKey();
-
-    buf += AAA_AUTH_INFO_LEN;
-
     return buf;
+}
+
+bool TOptAAAAuthentication::doDuties() {
+    return true;
 }

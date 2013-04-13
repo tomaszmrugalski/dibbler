@@ -31,7 +31,7 @@
 
 
 #ifndef MOD_DISABLE_AUTH
-#include "SrvOptAAAAuthentication.h"
+#include "OptAAAAuthentication.h"
 #include "SrvOptKeyGeneration.h"
 #include "OptAuthentication.h"
 #endif
@@ -175,8 +175,8 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 #ifndef MOD_DISABLE_AUTH
         case OPTION_AAAAUTH:
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                digestType_ = DIGEST_HMAC_SHA1;
-                ptr = new TSrvOptAAAAuthentication(buf+pos, length, this);
+                DigestType_ = DIGEST_HMAC_SHA1;
+                ptr = new TOptAAAAuthentication(buf+pos, length, this);
             }
             break;
         case OPTION_KEYGEN:
@@ -184,14 +184,14 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             break;
         case OPTION_AUTH:
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                digestType_ = SrvCfgMgr().getDigest();
+                DigestType_ = SrvCfgMgr().getDigest();
 
                 ptr = new TOptAuthentication(buf+pos, length, this);
                 SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
                 if (optDUID) {
                     SPtr<TAddrClient> client = SrvAddrMgr().getClient(optDUID->getDUID());
                     if (client)
-                        client->setSPI(SPI);
+                        client->setSPI(SPI_);
                 }
             }
             break;
@@ -226,8 +226,8 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 
 void TSrvMsg::setDefaults() {
 #ifndef MOD_DISABLE_AUTH
-    digestType_ = SrvCfgMgr().getDigest();
-    AuthKeys = SrvCfgMgr().AuthKeys;
+    DigestType_ = SrvCfgMgr().getDigest();
+    // AuthKeys = SrvCfgMgr().AuthKeys;
 #endif
 
     FirstTimeStamp_ = now();
@@ -837,9 +837,11 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
 
 void TSrvMsg::copyAAASPI(SPtr<TSrvMsg> q) {
 #ifndef MOD_DISABLE_AUTH
-    this->AAASPI = q->getAAASPI();
-    this->SPI = q->getSPI();
-    this->AuthInfoKey = q->getAuthInfoKey();
+    //this->AAASPI = q->getAAASPI();
+    SPI_ = q->SPI_;
+    AuthKey_ = q->AuthKey_;
+    DigestType_ = q->DigestType_;
+    
 #endif
 }
 
@@ -856,24 +858,39 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
         return;
     }
 
-    digestType_ = SrvCfgMgr().getDigest();
-    if (digestType_ == DIGEST_NONE) {
+    switch (SrvCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NONE:
         return;
+    case AUTH_PROTO_DELAYED:
+        Log(Warning) << "Auth: delayed-auth protocol not supported yet." << LogEnd;
+        return;
+    case AUTH_PROTO_RECONFIGURE_KEY:
+        break;
+    case AUTH_PROTO_DIBBLER:
+        DigestType_ = SrvCfgMgr().getDigest();
+        if (DigestType_ == DIGEST_NONE) {
+            return;
+        }
+        Log(Debug) << "Auth: Dibbler protocol, setting digest type to "
+                   << getDigestName(DigestType_) << LogEnd;
+
+        SPtr<TAddrClient> client = SrvAddrMgr().getClient(duid);
+        if (client && !client->getSPI() && getSPI())
+            client->setSPI(getSPI());
+
+        if (getSPI() == 0) {
+            Log(Info) << "Auth: no key selected (SPI=0) for this message, will not include AUTH option."
+                      << LogEnd;
+            return;
+        }
     }
 
-    Log(Debug) << "Auth: Setting DigestType to: " << digestType_ << LogEnd;
-
     if (!getOption(OPTION_AUTH)) {
-        SPtr<TAddrClient> client = SrvAddrMgr().getClient(duid);
-        if (client && !client->getSPI() && this->getSPI())
-            client->setSPI(this->getSPI());
-
         SPtr<TOptAuthentication> auth = new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
                                                                SrvCfgMgr().getAuthAlgorithm(),
                                                                SrvCfgMgr().getAuthReplay(),
                                                                this);
-        if (client)
-            auth->setReplayDetection(client->getNextReplayDetectionSent());
+        auth->setReplayDetection(SrvAddrMgr().getNextReplayDetectionValue());
 
         Options.push_back((Ptr*)auth);
     }
@@ -999,6 +1016,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
         }
     }
 
+#ifdef AUTH_CRAP
     // --- option: KEYGEN ---
 #ifndef MOD_DISABLE_AUTH
     if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE )
@@ -1006,6 +1024,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
         SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
         Options.push_back( (Ptr*)optKeyGeneration);
     }
+#endif
 #endif
 
     return newOptionAssigned;

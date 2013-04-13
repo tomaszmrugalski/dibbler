@@ -7,6 +7,8 @@
  *
  */
 
+#ifdef AUTH_CRAP
+
 #ifndef SRVOPTKEYGENERATION_H
 #define SRVOPTKEYGENERATION_H
 
@@ -23,6 +25,8 @@ class TSrvOptKeyGeneration : public TOptKeyGeneration
     TSrvOptKeyGeneration(TSrvMsg* parent);
     bool doDuties();
 };
+
+#endif
 
 #endif
 

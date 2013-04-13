@@ -42,7 +42,7 @@ TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
 
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
     if (cli && cli->ReconfKey_.size() > 0) {
-        setAuthInfoKey((char*)&cli->ReconfKey_[0]);
+        setAuthKey(cli->ReconfKey_);
         Log(Debug) << "#### Auth: Setting reconfigure-key to " 
                    << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
     }

@@ -3,6 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
+#include <vector>
 #include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
@@ -41,10 +42,10 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-List(DigestTypes)   DigestLst;                                              \
+vector<DigestTypes> DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(THostID) PresentStationLst;                                         \
+List(THostID) PresentStationLst;                                            \
 List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;                                         \
@@ -561,20 +562,21 @@ AuthAcceptMethods
 {
     DigestLst.clear();
 } DigestList {
-    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst);
+    CfgMgr->setAuthAcceptMethods(DigestLst);
+    DigestLst.clear();
 }
 
 AuthProtocol
 : AUTH_PROTOCOL_ STRING_ {
-    if (strcasecmp($2,"none")) {
+    if (!strcasecmp($2,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
-    } else if (strcasecmp($2, "delayed")) {
+    } else if (!strcasecmp($2, "delayed")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
-    } else if (strcasecmp($2, "reconfigure-key")) {
+    } else if (!strcasecmp($2, "reconfigure-key")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
-    } else if (strcasecmp($2, "dibbler")) {
+    } else if (!strcasecmp($2, "dibbler")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
     } else {
         Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
@@ -602,18 +604,20 @@ AuthReplay
 };
 
 
+
+
 DigestList
 : Digest
 | DigestList ',' Digest
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA1_   { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA224_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA256_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA384_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA512_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
+: DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.push_back(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.push_back(DIGEST_HMAC_SHA512); }
 ;
 
 AnonInfRequest

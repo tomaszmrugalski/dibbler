@@ -8,6 +8,8 @@
  *
  */
 
+#ifdef AUTH_CRAP
+
 #ifndef MOD_DISABLE_AUTH
 
 #include "SrvOptKeyGeneration.h"
@@ -61,5 +63,7 @@ bool TSrvOptKeyGeneration::doDuties()
 {
     return false;
 }
+
+#endif
 
 #endif

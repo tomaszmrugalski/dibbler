@@ -18,12 +18,13 @@
 class TOptAAAAuthentication : public TOpt
 {
 public:
-    TOptAAAAuthentication(char * &buf,  int &n,TMsg* parent);
-    TOptAAAAuthentication(TMsg* parent);
+    TOptAAAAuthentication(char * buf, int n, TMsg* parent);
+    TOptAAAAuthentication(uint32_t spi, TMsg* parent);
     void setAAASPI(uint32_t value);
     uint32_t getAAASPI();
     size_t getSize();
     char * storeSelf(char* buf);
+    bool doDuties();
 
 private:
     uint32_t AAASPI_;

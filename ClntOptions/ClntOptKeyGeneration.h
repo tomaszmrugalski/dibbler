@@ -14,6 +14,7 @@
  *
  */
 
+#ifdef AUTH_CRAP
 #ifndef CLNTKEYGENERATION_H_HEADER_INCLUDED
 #define CLNTKEYGENERATION_H_HEADER_INCLUDED
 
@@ -30,3 +31,4 @@ class TClntOptKeyGeneration : public TOptKeyGeneration
 
 
 #endif /* KEYGENERATION_H_HEADER_INCLUDED */
+#endif

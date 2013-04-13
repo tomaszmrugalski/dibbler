@@ -74,6 +74,7 @@ string TClntMsgAdvertise::getInfo()
         tmp << ", no preference option, assumed 0";
     }
 
+#ifdef AUTH_CRAP
 #ifndef MOD_DISABLE_AUTH
     SPtr<TClntOptKeyGeneration> keyGen;
     keyGen = (Ptr*) getOption(OPTION_KEYGEN);
@@ -83,6 +84,7 @@ string TClntMsgAdvertise::getInfo()
     } else {
 	tmp << ", no auth info";
     }
+#endif
 #endif
     
     return tmp.str();

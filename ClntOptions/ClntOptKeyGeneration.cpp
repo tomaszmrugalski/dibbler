@@ -13,6 +13,8 @@
  *
  *
  */
+
+#ifdef AUTH_CRAP
 #include "ClntOptKeyGeneration.h"
 #include "ClntMsg.h"
 #include "Logger.h"
@@ -31,3 +33,6 @@ bool TClntOptKeyGeneration::doDuties()
 
     return true;
 }
+
+#endif
+

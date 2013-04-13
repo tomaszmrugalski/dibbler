@@ -26,15 +26,12 @@ using namespace std;
  * @param duid Client DUID
  *
  */
-TAddrClient::TAddrClient(SPtr<TDUID> duid) {
-    this->DUID=duid;
-    this->SPI = 0;
-    this->ReplayDetectionRcvd = 0;
-    this->ReplayDetectionSent = 1;
+TAddrClient::TAddrClient(SPtr<TDUID> duid)
+    :DUID_(duid), SPI_(0), ReplayDetectionRcvd_(0) {
 }
 
 SPtr<TDUID> TAddrClient::getDUID() {
-    return this->DUID;
+    return DUID_;
 }
 
 // --- IA ------------------------------------------------------------
@@ -317,23 +314,19 @@ unsigned long TAddrClient::getLastTimestamp() {
 // --------------------------------------------------------------------
 
 uint32_t TAddrClient::getSPI() {
-    return this->SPI;
+    return SPI_;
 }
 
 void TAddrClient::setSPI(uint32_t val) {
-    SPI = val;
+    SPI_ = val;
 }
 
 uint64_t TAddrClient::getReplayDetectionRcvd() {
-    return this->ReplayDetectionRcvd;
+    return ReplayDetectionRcvd_;
 }
 
 void TAddrClient::setReplayDetectionRcvd(uint64_t val) {
-    ReplayDetectionRcvd = val;
-}
-
-uint64_t TAddrClient::getNextReplayDetectionSent() {
-    return ++ReplayDetectionSent;
+    ReplayDetectionRcvd_ = val;
 }
 
 void TAddrClient::generateReconfKey() {
@@ -351,11 +344,11 @@ void TAddrClient::generateReconfKey() {
 
 std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
 {
-    if (x.DUID->getLen()==1)
-        strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
     strum << "  <AddrClient>" << endl;
-    if (x.DUID->getLen())
-        strum << "    " << *x.DUID;
+    if (x.DUID_->getLen())
+        strum << "    " << *x.DUID_;
+    if (x.DUID_->getLen()==1)
+        strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
 
     // reconfigure-key
     strum << "  <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
@@ -380,9 +373,6 @@ std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
     while (ptr = x.PDLst.get() ) {
         strum << *ptr;
     }
-
     strum << "  </AddrClient>" << endl;
-    if (x.DUID->getLen()==1)
-        strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
     return strum;
 }

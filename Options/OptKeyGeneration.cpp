@@ -8,6 +8,8 @@
  *
  */
 
+#ifdef AUTH_CRAP
+
 #include <stdlib.h>
 #include "OptKeyGeneration.h"
 #include "DHCPConst.h"
@@ -103,3 +105,5 @@ TOptKeyGeneration::~TOptKeyGeneration()
 //    if (KeyGenNonceLen)
 //        delete [] KeyGenNonce;
 }
+
+#endif 

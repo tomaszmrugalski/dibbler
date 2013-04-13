@@ -243,11 +243,24 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     if (!ptr)
         return 0;
 
-    if (!ptr->validateReplayDetection() ||
-        !ptr->validateAuthInfo(buf, bufsize)) {
+    if (!ptr->validateReplayDetection()) {
+        Log(Warning) << "Auth: message replay detection failed, message dropped" << LogEnd;
+        return 0;
+    }
+
+    if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
+        Log(Warning) << "Auth: authorization is mandatory, but incoming message"
+                     << " does not have AUTH, KEYGEN or AAAAUTH options. Message dropped" << LogEnd;
+        return 0;
+    }
+
+    /// @todo: implement client message validation
+#if 0
+    if (!ptr->validateAuthInfo(buf, bufsize)) {
         Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
         return 0;
     }
+#endif
 
     /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 

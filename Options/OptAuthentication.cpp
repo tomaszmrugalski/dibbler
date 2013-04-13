@@ -71,18 +71,14 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         buf += sizeof(uint32_t);
         buflen -= sizeof(uint32_t);
 
-        AuthInfoLen_ = getDigestSize(parent->digestType_);
+        AuthInfoLen_ = getDigestSize(parent->DigestType_);
         if (buflen != AuthInfoLen_){
             Valid = false;
             return;
         }
 
-        Parent->setAuthInfoPtr(buf);
-
-        if (Parent->getType() != ADVERTISE_MSG)
-            Parent->setAuthInfoKey(Parent->AuthKeys->Get(Parent->getSPI()));
-
-        PrintHex("Received digest: ", (uint8_t*)buf, AuthInfoLen_);
+        Parent->setAuthDigestPtr(buf, AuthInfoLen_);
+        PrintHex("Auth: Received digest: ", (uint8_t*)buf, AuthInfoLen_);
     }
     }
 
@@ -94,7 +90,7 @@ TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
     :TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0),
     authDataPtr_(NULL) {
     if (parent) {
-        AuthInfoLen_ = getDigestSize(parent->digestType_);
+        AuthInfoLen_ = getDigestSize(parent->DigestType_);
     } else {
         AuthInfoLen_ = 0;
     }
@@ -105,7 +101,13 @@ void TOptAuthentication::setRDM(AuthReplay value) {
 }
 
 size_t TOptAuthentication::getSize() {
-    return TOpt::OPTION6_HDR_LEN + OPT_AUTH_FIXED_SIZE + AuthInfoLen_;
+    size_t tmp = TOpt::OPTION6_HDR_LEN + OPT_AUTH_FIXED_SIZE + AuthInfoLen_;
+    switch (proto_) {
+    default:
+        return tmp;
+    case AUTH_PROTO_DIBBLER:
+        return tmp + sizeof(uint32_t); // +4 bytes for SPI
+    }
 }
 
 bool TOpt::doDuties() {
@@ -134,26 +136,14 @@ char* TOptAuthentication::storeSelf(char* buf) {
     }
 
     case AUTH_PROTO_DIBBLER: {
-        AuthInfoLen_ = getDigestSize(Parent->digestType_);
+        AuthInfoLen_ = getDigestSize(Parent->DigestType_);
 
-        // move this to the TMsg
-        uint32_t spi = Parent->getSPI();
-        uint32_t aaaspi = Parent->getAAASPI();
+        // write SPI first
+        buf = writeUint32(buf, Parent->getSPI());
 
-        buf = writeUint32(buf, spi);
+        // Reserve space for the digest
+        Parent->setAuthDigestPtr(buf, AuthInfoLen_);
         memset(buf, 0, AuthInfoLen_);
-
-        Parent->setAuthInfoPtr(buf);
-
-        Parent->setAuthInfoKey(Parent->AuthKeys->Get(spi));
-
-        // check if we should calculate the key
-        if (Parent->getAuthInfoKey() == NULL && Parent->getType() == REQUEST_MSG) {
-            Parent->setAuthInfoKey();
-            if (spi && aaaspi)
-                Parent->AuthKeys->Add(spi, aaaspi, Parent->getAuthInfoKey());
-        }
-
         buf += AuthInfoLen_;
     }
     }

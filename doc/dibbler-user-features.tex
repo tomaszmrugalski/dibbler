@@ -1333,6 +1333,31 @@ authentication. For detailed description of possible options see
 See section \ref{example-client-auth} for example client configuration
 and \ref{example-server-auth} for server configuration.
 
+TODO:
+
+New authentication framework:
+
+# Client.conf:
+
+# This specifies authentication protocol:
+# allowed values: none, reconfigure-key, delayed-auth, dibbler
+auth-protocol dibbler
+
+# client will accept following digests from the server
+# The first method on the list specifies the default digest type
+# that is used in AUTH in SOLICIT (and following messages) if
+# the server do not override the method.
+auth-accept-methods digest-hmac-md5, digest-hmac-sha1
+
+
+# server.conf
+
+auth-protocol dibbler
+auth-method digest-hmac-sha256
+
+# Todo: better to specify as auth-failed-fate: accept, log, drop
+auth-drop-unathenticated 0 or 1
+
 \subsection{Exceptions: per client configuration}
 \label{feature-exceptions}
 All configuration parameters (except FQDN) are the same for all
