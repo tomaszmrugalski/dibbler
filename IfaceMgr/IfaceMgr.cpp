@@ -172,7 +172,8 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     // no sockets to listen  on... hopefully this is just inactive mode,
     // not an error
-    if (TIfaceSocket::getCount()) {
+    if (!TIfaceSocket::getCount()) {
+        Log(Debug) << "No sockets open. Sleeping for " << time << " seconds." << LogEnd;
 #ifdef WIN32
         Sleep(time*1000); // Windows sleep is specified in milliseconds
 #else
