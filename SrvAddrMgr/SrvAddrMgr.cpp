@@ -446,7 +446,7 @@ void TSrvAddrMgr::getAddrsCount(SPtr< List(TSrvCfgAddrClass) > classes,
             ptrIA->firstAddr();
             while(ptrAddr=ptrIA->getAddr())
             {
-                if(ptrIA->getIface()==iface)
+                if(ptrIA->getIfindex() == iface)
                 {
                     SPtr<TSrvCfgAddrClass> ptrClass;
                     classes->first();

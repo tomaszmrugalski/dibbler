@@ -28,6 +28,10 @@
     support enabled
   - Cli: "option fqdn" now contains hostname by default (bug #267)
   - Win32: Client inactive-mode improvements (patch by Vaclav Michalek)
+  - Compilation fix for Mac OS X 10.8.0 (bug #277), patch by Michael Thorsager
+  - Linux: cosmetic low-level Linux improvements (bug #276)
+  - FQDN option improvements (fully qualified, hostname only and empty options)
+    are now supported
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

@@ -35,6 +35,11 @@ bool TClntOptFQDN::doDuties() {
     }
 	
     string reason = "trying to set FQDN.";
+    if (!Parent) {
+        Log(Error) << "Unable to set FQDN: option parent not set." << LogEnd;
+        return false;
+    }
+
     int ifindex = this->Parent->getIface();
     SPtr<TIPv6Addr> addr = this->Parent->getAddr();
     

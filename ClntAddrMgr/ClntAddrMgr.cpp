@@ -207,7 +207,7 @@ void TClntAddrMgr::setIA2Confirm(volatile link_state_notify_t * changedLinks)
     while(ptrIA = this->getIA()){
 
 	bool found = false;
-	int ifindex = ptrIA->getIface(); // interface index of this IA
+	int ifindex = ptrIA->getIfindex(); // interface index of this IA
 
 	// is this index on the list of interfaces to be confirmed?
 	for (int i=0; i < MAX_LINK_STATE_CHANGES_AT_ONCE; i++)
