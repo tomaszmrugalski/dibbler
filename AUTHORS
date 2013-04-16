@@ -90,6 +90,7 @@
   - Vaclav Michalek <vaclav(dot)michalek(at)upol(dot)cz>
     2013-03: Various WIN32 fixes
     2013-03: gethostname for WIN32
+    2013-04: OptFQDN improvements
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
