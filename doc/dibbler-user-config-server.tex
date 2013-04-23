@@ -284,11 +284,15 @@ is absent.
 %%% TODO bulk-leasequery-timeout
 
 \item[guess-mode] -- (scope: global, type: present or missing,
-  default: missing). When this option is enabled, server will not pay
-  close attention to the interface-id option in relayed messages. If
-  interface-id has a value other than specified in server.conf or even
-  when there is no interface-id option at all, it will use first relay
-  defined.
+  default: missing). Server tries to match incoming relayed messages
+  based on interface-id first. If that fails, it tries to match based
+  on linkaddr field in the RELAY-FORW message (see \emph{subnet}
+  keyword definition). Normally, when both of those match attempts
+  fail, the server will drop the packet. When guess-mode option is
+  enabled, server will will use first relay defined. It may save the
+  day, if you have only one relay in your network, but it will almost
+  certainly do a wrong thing if you have more than one. This is as
+  its name states: just a guess. Use with caution!
 
 \item[script] -- (scope: global). Takes one string parameter that
   specifies name of a script that will be called every time something
@@ -309,6 +313,14 @@ retried over TCP. See Section \ref{feature-dns-update}.
 that specifies timeout in milliseconds. Defines how long client should
 wait for DNS server response during DNS Update before declaring
 update a failure. See Section \ref{feature-dns-update}.
+
+\item[subnet] -- (scope: interface). This definition must be followed
+by a IPv6 address followed by slash followed prefix length
+(e.g. 2001:db8::/32). It defines all IPv6 addresses that are valid on
+a given interface. It is used mainly for matching relayed traffic and
+responding to confirm messages. Server will not use that whole range
+to assign addresses. That is specified with \emph{class}, \emph{ta-class}
+or \emph{pd-class}.
 
 \item[class] -- (scope: interface). This definition must be followed by
 curly braces and creates a new address class scope. See
@@ -865,7 +877,22 @@ and information about DNS servers. Also see section
 Note that although eth1 interface is mentioned in the configuration file,
 direct traffic from clients located on the eth1 interface will not be
 supported. In this example, eth1 is used only to support requests
-relayed from remote link identified with interface-id value 5020.
+relayed from remote link identified with interface-id value
+``relay1:en1''. That value is what relay inserts into its packets. I
+may sometimes not be configurable on hardware relays, so the best
+approach is to configure your server to match whatever the relay
+inserts there.
+
+Server will try to match incoming packet based on exact match of
+interface-id value. If that fails, there is another method. Relay sets
+linkaddr field and server may find a match based on that
+information. For this mechanism to work, the admin must provide
+information about valid subnet available on specified link. Note the
+different between subnet definition (all possible addresses that are
+valid for a given link) and class definition (the actual dynamic range
+of addresses that is governed by the DHCPv6 server). Subnet
+specification is currently optional, but much encouraged.
+
 Of course it is possible to support both local and remote traffic. In
 such case, normal eth1 definition should be present in the server
 configuration file. Also note that real (physical) interfaces should
@@ -875,15 +902,56 @@ be specified before logical ones.
 # server.conf
 iface relay1 {
   relay eth1
+
+  // This relay1 actually represents a network that the 
+  // physical device relays packets from. The relay device should
+  // have a global address assigned on its client-facing interface.
+  // That address should belong to this subnet.
+  subnet 2001:db8:1111::/48
+
+  // There are 3 ways of specifying interface-id content
+
+  // Way 1: As a text string
+  interface-id "relay1:en1"
+
+  // Way 2: As unsigned integer coded on 32 bits
   // interface-id 5020
-  // interface-id "some interface name"
+
+  // Way 3: As a hex string
   interface-id 0x427531264361332f3000001018680f980000
 
   class {
-    pool 2000::1-2000::ff
+    pool 2001:db8:1111::1-2001:db8:1111::ff
   }
-  option dns-server 2000::100,2000::101
+  option dns-server 2001:db8::100,2001:db8::101
 }
+
+iface relay2 {
+  relay eth1
+
+  // This relay1 actually represents a network that the 
+  // physical device relays packets from. The relay device should
+  // have a global address assigned on its client-facing interface.
+  // That address should belong to this subnet.
+  subnet 2001:db8:2222::/48
+
+  // There are 3 ways of specifying interface-id content
+
+  // Way 1: As a text string
+  interface-id "relay1:en2"
+
+  // Way 2: As unsigned integer coded on 32 bits
+  // interface-id 5020
+
+  // Way 3: As a hex string
+  interface-id 0x427531264361332f3000001018680f980000
+
+  class {
+    pool 2001:db8:2222::1-2001:db8:2222::ff
+  }
+  option dns-server 2001:db8::100,2001:db8::101
+}
+
 \end{lstlisting}
 
 \subsubsection{Example 9: Cascade 2 relays}

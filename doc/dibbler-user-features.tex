@@ -115,14 +115,31 @@ encapsulated. Also each message forwarded from server to a client is
 decapsulated. Therefore additional server configuration is required to
 deal with encapsulated (i.e. relayed) traffic.
 
-To avoid confusion during reference to a specific link (i.e. eth0 on
-the relay may be different link than eth0 on the server), each link
-must be referred to using its unique interface-id. It is essential to
-use the same indentifier in the relay
-configuration as well as in the server, so both will refer to the same
-link using the same number. See section \ref{example-server-relay1} for
-example how to configure server and section \ref{example-relay-1} for
-corresponding relay configuration.
+There are 2 ways in which server can select apropriate set of
+addresses, prefixes and other configuration options. The first one is
+based on addresses. Relay that forwards packets from client-facing
+interface (e.g. eth0) must set link-addr field in RELAY-FORW message
+to an address that identifies that link. Please note that this is NOT
+a link-local address, it is typically a global address that identifies
+a link. Server can select appropriate set of parameters if the
+``subnet'' clause is defined. This recent addition was added after
+0.8.3 release and will be included in 0.8.4. 
+
+The second way to refer to a specific link (i.e. eth0 on the relay may
+be different link than eth0 on the server), each link is referred to
+using its unique interface-id. It is essential to use the same
+indentifier in the relay configuration as well as in the server, so
+both will refer to the same link using the same number. See
+section \ref{example-server-relay1} for example how to configure
+server and section \ref{example-relay-1} for corresponding relay
+configuration.
+
+It is essential to understand that the ``iface relayX'' in the
+configuration represents a link accessible via a relay, not the relay
+itself. These are not the same. One obvious example is a relay thay
+has 2 customer facing interfaces and one for relaying data to the
+server. This requires two separate ``iface relayX'' defintions in the
+server.conf file.
 
 \begin{figure}[ht]
 \begin{center}
