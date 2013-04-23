@@ -43,15 +43,17 @@ TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
     if (cli && cli->ReconfKey_.size() > 0) {
         setAuthKey(cli->ReconfKey_);
-        Log(Debug) << "#### Auth: Setting reconfigure-key to " 
+        Log(Debug) << "Auth: Setting reconfigure-key to "
                    << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
+    } else {
+        Log(Warning) << "Auth: No reconfigure-key specified for client. Sending"
+                     << " without key, client will likely to ignore this update." << LogEnd;
     }
 
     SPtr<TOptAuthentication> auth = (Ptr*) getOption(OPTION_AUTH);
     if (auth->getProto() == AUTH_PROTO_RECONFIGURE_KEY) {
         // let's find out what's reconfigure key for this message is
     }
-
 
     send();
     return;

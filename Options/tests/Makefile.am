@@ -30,8 +30,8 @@ Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 
 Opt_tests_LDADD = $(GTEST_LDADD)
 Opt_tests_LDADD += $(top_builddir)/Options/libOptions.a
-Opt_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 Opt_tests_LDADD += $(top_builddir)/Messages/libMessages.a
+Opt_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 Opt_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 
 endif

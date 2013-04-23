@@ -142,7 +142,8 @@ bool TCfgMgr::loadDUID(const std::string& duidFile)
     f.open(duidFile.c_str());
     if ( !(f.is_open())  ) {
         // unable to open DUID file
-        Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
+        Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID."
+                    << LogEnd;
                 return false;
     }
 
@@ -152,7 +153,8 @@ bool TCfgMgr::loadDUID(const std::string& duidFile)
 
         this->DUID = new TDUID(s.c_str());
 
-        Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from " << duidFile << " file." << LogEnd;
+        Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from "
+                   << duidFile << " file." << LogEnd;
 
         int duidLen = s.length();
     int duidLen2 = DUID->getLen();
@@ -211,12 +213,12 @@ bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
             continue;
         }
         if ( !memcmp(realIface->getMac(),buf,realIface->getMacLen()) ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: MAC is all zero. " << LogEnd;
           continue;
         }
         if ( !realIface->flagUp() ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: Interface is down." << LogEnd;
           continue;
         }
@@ -228,11 +230,13 @@ bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
         if ( this->generateDUID(filename, realIface->getMac(),
                                 realIface->getMacLen(), realIface->getHardwareType())) {
         if (this->DUIDType!=DUID_TYPE_EN)
-              Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+              Log(Notice) << "DUID creation: generated using " << realIface->getFullName()
+                          << " interface." << LogEnd;
         Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
         return true;
         } else {
-            Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
+            Log(Crit) << "DUID creation: generation attempt based on "
+                      << realIface->getFullName() << " interface failed." << LogEnd;
             return false;
         }
     }
@@ -285,8 +289,8 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
             DUID[i+4]=mac[i];
         break;
     case DUID_TYPE_EN:
-        Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber << ", Enterprise ID=" <<
-            DUIDEnterpriseID->getPlain() << LogEnd;
+        Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber
+                   << ", Enterprise ID=" << DUIDEnterpriseID->getPlain() << LogEnd;
         duidType="Enterprise Number (duid-en)";
         DUIDlen = 6 + DUIDEnterpriseID->getLen();
         DUID = new char[DUIDlen];
@@ -299,7 +303,8 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
         return false;
     }
 
-    Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long " << duidType << " DUID." << LogEnd;
+    Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long "
+                << duidType << " DUID." << LogEnd;
     this->DUID=new TDUID(DUID,DUIDlen);
     delete [] DUID;
     f << this->DUID->getPlain();
@@ -343,7 +348,7 @@ SPtr<TSIGKey> TCfgMgr::getKey() {
 }
 
 void TCfgMgr::setAuthProtocol(AuthProtocols proto) {
-    printf("#### setting auth protocol to %d\n", proto);
+    Log(Debug) << "Auth: setting auth protocol to " << proto << LogEnd;
     AuthProtocol_ = proto;
 }
 

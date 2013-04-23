@@ -81,7 +81,6 @@ uint32_t getAAASPIfromFile() {
     }
 
     if (fscanf(file, "%10x", &ret) <= 0) {
-        fclose(file);
         ret = 0;
     }
     fclose(file);

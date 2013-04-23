@@ -561,8 +561,9 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     LogLevel       = logger::getLogLevel();
     LogName        = logger::getLogName();
     AnonInfRequest = opt->getAnonInfRequest();
-    InsistMode     = opt->getInsistMode();   // should the client insist on receiving all options
-                                                   // i.e. sending INF-REQUEST if REQUEST did not grant required opts
+    InsistMode     = opt->getInsistMode();// should the client insist on receiving
+                                          // all options i.e. sending INF-REQUEST
+                                          // if REQUEST did not grant required opts
     InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
     FQDNFlagS      = opt->getFQDNFlagS();
     UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
@@ -579,8 +580,22 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
         SPI_ = getAAASPIfromFile();
         if (SPI_) {
             Log(Debug) << "Auth: Read SPI=" << hex << SPI_ << dec
-                       << " from a AAA-SPI file." << LogEnd;
+                       << " from a AAA-SPI file:" << CLNT_AAASPI_FILE << LogEnd;
+        } else {
+            Log(Crit) << "Auth: Dibbler protocol configured, but unable to read AAA-SPI file:"
+                      << CLNT_AAASPI_FILE << LogEnd;
+            return false;
         }
+
+        // now let's try to load specified key
+        unsigned len = 0;
+        char * ptr = getAAAKey(SPI_, &len);
+        if (len == 0) {
+            Log(Crit) << "Auth: Failed to load AAA key from file "
+                      << getAAAKeyFilename(SPI_) << LogEnd;
+            return false;
+        }
+        free(ptr); // we don't really need the key yet.
     }
 #endif
 
