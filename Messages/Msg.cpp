@@ -8,6 +8,7 @@
  * released under GNU GPL v2 only licence
  */
 
+#include <string.h>
 #include <stdlib.h>
 #include <cmath>
 #include "Portable.h"
@@ -21,8 +22,6 @@
 #include "hmac-sha-md5.h"
 
 class TNotifyScriptParams;
-
-
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
     :NotifyScripts(NULL)

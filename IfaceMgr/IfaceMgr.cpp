@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 #include <errno.h>
 #include "Portable.h"
 #include "IfaceMgr.h"

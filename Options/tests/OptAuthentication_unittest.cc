@@ -27,10 +27,6 @@ TEST(OptAuthTest, constructor) {
     EXPECT_EQ(15u, opt->getSize());
     EXPECT_EQ(ptr, buf + 15);
     EXPECT_TRUE(0 == memcmp(buf, expData, 15));
-
 }
-
-
-
 
 }

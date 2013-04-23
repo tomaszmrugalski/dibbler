@@ -6,8 +6,9 @@
  * released under GNU GPL v2 licence
  */
 
-#include "Portable.h"
+#include <string.h>
 #include <stdlib.h>
+#include "Portable.h"
 #include "OptAuthentication.h"
 #include "DHCPConst.h"
 #include "Portable.h"
@@ -154,7 +155,6 @@ char* TOptAuthentication::storeSelf(char* buf) {
 AuthProtocols TOptAuthentication::getProto() const {
     return proto_;
 }
-
 
 void TOptAuthentication::setReplayDetection(uint64_t value) {
     replay_ = value;

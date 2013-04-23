@@ -105,8 +105,8 @@ dibbler_relay_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/RelOptions -lRelOptions
 dibbler_relay_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_relay_LDADD += -L$(top_builddir)/poslib -lPoslib
-dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/Messages -lMessages
+dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_relay_LDADD += -L$(top_builddir)/Misc -lMisc
 

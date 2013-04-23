@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <limits.h>
+#include <stdlib.h>
 #include "AddrClient.h"
 #include "Logger.h"
 #include "hex.h"

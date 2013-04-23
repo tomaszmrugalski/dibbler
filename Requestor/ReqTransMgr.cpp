@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <sstream>
 #include "SocketIPv6.h"
 #include "ReqTransMgr.h"

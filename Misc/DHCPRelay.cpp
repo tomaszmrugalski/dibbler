@@ -8,6 +8,7 @@
  *
  */
       
+#include <stdlib.h>
 #include "DHCPRelay.h"
 #include "Logger.h"
 #include "Portable.h"
