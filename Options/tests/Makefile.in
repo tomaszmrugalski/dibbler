@@ -91,8 +91,8 @@ Opt_tests_OBJECTS = $(am_Opt_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Opt_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Messages/libMessages.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -514,8 +514,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Opt_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
-@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Messages/libMessages.a \
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 all: all-am
 
