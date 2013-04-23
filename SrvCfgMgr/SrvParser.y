@@ -586,6 +586,7 @@ AuthMethods
     DigestLst.clear();
 } DigestList {
     CfgMgr->setAuthDigests(DigestLst);
+    CfgMgr->setAuthDropUnauthenticated(true);
     DigestLst.clear();
 }
 

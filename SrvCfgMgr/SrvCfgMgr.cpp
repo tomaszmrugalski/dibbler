@@ -907,6 +907,8 @@ bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 }
 
 #ifndef MOD_DISABLE_AUTH
+
+/// @todo move this to CfgMgr and unify with TClntCfgMgr::setAuthAcceptMethods
 void TSrvCfgMgr::setAuthDigests(const DigestTypesLst& types) {
   DigestTypesLst_ = types;
 }

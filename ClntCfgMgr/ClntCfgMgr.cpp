@@ -707,10 +707,10 @@ uint32_t TClntCfgMgr::getSPI() {
     return SPI_;
 }
 
+/// @todo move this to CfgMgr and unify with TSrvCfgMgr::setAuthDigests
 void TClntCfgMgr::setAuthAcceptMethods(const std::vector<DigestTypes>& methods) {
     AuthAcceptMethods_ = methods;
     if (!methods.empty()) {
-        /// @todo: print out those methods
         Log(Debug) << "AUTH: " << methods.size() << " method(s) accepted:";
 
         for (unsigned i = 0; i < methods.size(); ++i) {
