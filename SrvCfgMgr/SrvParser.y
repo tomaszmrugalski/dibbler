@@ -59,6 +59,7 @@ List(Node) NodeClientClassLst;             /* Node list */                      
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
 SPtr<TSIGKey> CurrentKey;                                                            \
+DigestTypesLst DigestLst;                                                            \
 List(THostRange) PresentRangeLst;                                                    \
 List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
@@ -121,7 +122,7 @@ virtual ~SrvParser();
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
-%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_, AUTH_LIFETIME_, AUTH_KEY_LEN_
 %token AUTH_DROP_UNAUTH_
 %token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
@@ -180,7 +181,7 @@ GlobalOption
 | AuthProtocol
 | AuthAlgorithm
 | AuthReplay
-| AuthMethod
+| AuthMethods
 | AuthLifetime
 | AuthKeyGenNonceLen
 | AuthDropUnauthenticated
@@ -579,16 +580,30 @@ AuthReplay
     }
 };
 
-AuthMethod
-: AUTH_METHOD_ DIGEST_NONE_        { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
-| AUTH_METHOD_ DIGEST_PLAIN_       { ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); }
-| AUTH_METHOD_ DIGEST_HMAC_MD5_    { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA1_   { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA224_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA224); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA256_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA256); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA384_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA384); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA512_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA512); }
+AuthMethods
+: AUTH_METHODS_
+{
+    DigestLst.clear();
+} DigestList {
+    CfgMgr->setAuthDigests(DigestLst);
+    DigestLst.clear();
+}
+
+DigestList
+: Digest
+| DigestList ',' Digest
 ;
+
+Digest
+: DIGEST_PLAIN_       { DigestLst.push_back(DIGEST_PLAIN); }
+| DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.push_back(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.push_back(DIGEST_HMAC_SHA512); }
+;
+
 
 AuthDropUnauthenticated
 : AUTH_DROP_UNAUTH_ Number {

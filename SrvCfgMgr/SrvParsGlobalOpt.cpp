@@ -20,9 +20,6 @@ TSrvParsGlobalOpt::TSrvParsGlobalOpt(void)
      AuthLifetime_(DHCPV6_INFINITY), AuthKeyLen_(16),
      InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE)
 {
-
-
-    DigestLst_.clear();
 }
 
 TSrvParsGlobalOpt::~TSrvParsGlobalOpt(void) {
@@ -58,18 +55,6 @@ void TSrvParsGlobalOpt::setCacheSize(int bytes) {
 
 int  TSrvParsGlobalOpt::getCacheSize() const {
     return CacheSize_;
-}
-
-void TSrvParsGlobalOpt::addDigest(DigestTypes x) {
-    SPtr<DigestTypes> dt = new DigestTypes;
-    *dt = x;
-
-    DigestLst_.append(dt);
-    Log(Debug) << "Auth: New digest type " << getDigestName(x) << " added." << LogEnd;
-}
-
-List(DigestTypes) TSrvParsGlobalOpt::getDigest() const {
-    return DigestLst_;
 }
 
 void TSrvParsGlobalOpt::setInterfaceIDOrder(ESrvIfaceIdOrder order) {

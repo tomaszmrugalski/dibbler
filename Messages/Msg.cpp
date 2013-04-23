@@ -190,7 +190,8 @@ void TMsg::calculateDigests(char* buffer, size_t len) {
             default:
                 break;
             }
-            PrintHex("Auth: Sending digest: ", (uint8_t*)AuthDigestPtr_, getDigestSize(UsedDigestType));
+            PrintHex(std::string("Auth: Sending digest ") + getDigestName(UsedDigestType) +" : ",
+				 (uint8_t*)AuthDigestPtr_, getDigestSize(UsedDigestType));
         }
     }
     }
@@ -352,22 +353,17 @@ unsigned TMsg::getKeyGenNonceLen() {
 }
 #endif
 
-bool TMsg::validateAuthInfo(char *buf, int bufSize) {
-    std::vector<DigestTypes> lst;
-    return validateAuthInfo(buf, bufSize, lst);
-}
-
-bool TMsg::validateAuthInfo(char *buf, int bufSize, const std::vector<DigestTypes>& authLst) {
+bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& acceptedDigestTypes) {
     bool is_ok = false;
     bool dt_in_list = false;
     
     //empty list means that any digest type is accepted
-    if (authLst.empty()) {
+    if (acceptedDigestTypes.empty()) {
         dt_in_list = true;
     } else {
         // check if the digest is allowed AUTH list
-        for (unsigned i = 0; i < authLst.size(); ++i) {
-            if (authLst[i] == DigestType_) {
+        for (unsigned i = 0; i < acceptedDigestTypes.size(); ++i) {
+            if (acceptedDigestTypes[i] == DigestType_) {
                 dt_in_list = true;
                 break;
             }
@@ -437,9 +433,10 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const std::vector<DigestType
         delete [] goodAuthInfo;
 
         if (is_ok)
-            Log(Info) << "Authentication Information correct." << LogEnd;
-        else
-            Log(Error) << "Authentication Information incorrect." << LogEnd;
+            Log(Info) << "Auth: Digest correct." << LogEnd;
+        else {
+            Log(Warning) << "Auth: Digest incorrect." << LogEnd;
+	}
 #endif
     } else {
       Log(Error) << "Auth: Digest mode set to " << DigestType_

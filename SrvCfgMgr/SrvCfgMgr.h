@@ -110,7 +110,8 @@ public:
     SPtr<KeyList> AuthKeys;
     unsigned int getAuthLifetime();
     unsigned int getAuthKeyGenNonceLen();
-    List(DigestTypes) getDigestLst();
+    void setAuthDigests(const DigestTypesLst& digests);
+    DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
 #endif
 
@@ -154,7 +155,7 @@ protected:
 #ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;
     unsigned int AuthKeyGenNonceLen;
-    List(DigestTypes) DigestLst;
+    DigestTypesLst DigestTypesLst_;
 #endif
 
     // DDNS address

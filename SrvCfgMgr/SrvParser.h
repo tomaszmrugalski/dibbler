@@ -65,6 +65,7 @@ List(Node) NodeClientClassLst;             /* Node list */                      
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
 SPtr<TSIGKey> CurrentKey;                                                            \
+DigestTypesLst DigestLst;                                                            \
 List(THostRange) PresentRangeLst;                                                    \
 List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
@@ -95,7 +96,7 @@ virtual ~SrvParser();
                      yychar = 0;                                        \
                      PDPrefix = 0;
 
-#line 94 "SrvParser.y"
+#line 95 "SrvParser.y"
 typedef union
 {
     unsigned int ival;
@@ -341,7 +342,7 @@ typedef
 #define	AUTH_PROTOCOL_	319
 #define	AUTH_ALGORITHM_	320
 #define	AUTH_REPLAY_	321
-#define	AUTH_METHOD_	322
+#define	AUTH_METHODS_	322
 #define	AUTH_LIFETIME_	323
 #define	AUTH_KEY_LEN_	324
 #define	AUTH_DROP_UNAUTH_	325
@@ -498,7 +499,7 @@ static const int AFTR_;
 static const int AUTH_PROTOCOL_;
 static const int AUTH_ALGORITHM_;
 static const int AUTH_REPLAY_;
-static const int AUTH_METHOD_;
+static const int AUTH_METHODS_;
 static const int AUTH_LIFETIME_;
 static const int AUTH_KEY_LEN_;
 static const int AUTH_DROP_UNAUTH_;
@@ -615,7 +616,7 @@ static const int DUID_;
 	,AUTH_PROTOCOL_=319
 	,AUTH_ALGORITHM_=320
 	,AUTH_REPLAY_=321
-	,AUTH_METHOD_=322
+	,AUTH_METHODS_=322
 	,AUTH_LIFETIME_=323
 	,AUTH_KEY_LEN_=324
 	,AUTH_DROP_UNAUTH_=325

@@ -487,6 +487,19 @@ void TClntMsg::appendAuthenticationOption()
         DigestType_ = ClntCfgMgr().getDigest();
         algorithm = static_cast<uint8_t>(DigestType_);
         setSPI(ClntCfgMgr().getSPI());
+
+        Options.push_back(new TOptAAAAuthentication(getSPI(), this));
+
+        SPtr<TClntOptOptionRequest> optORO = (Ptr*) getOption(OPTION_ORO);
+
+        if (optORO) {
+          // request KeyGeneration
+          optORO->addOption(OPTION_KEYGEN);
+
+          // request Authentication
+          optORO->addOption(OPTION_AUTH);
+        }
+
         break;
     }
     default: {
@@ -495,7 +508,7 @@ void TClntMsg::appendAuthenticationOption()
     }
     }
 
-    SPtr<TOptAuthentication> auth = 
+    SPtr<TOptAuthentication> auth =
         new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
                                algorithm,
                                ClntCfgMgr().getAuthReplay(), this);
@@ -503,6 +516,9 @@ void TClntMsg::appendAuthenticationOption()
     if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
         auth->setReplayDetection(ClntAddrMgr().getNextReplayDetectionValue());
     }
+
+    addOption((Ptr*)auth);
+
     // otherwise replay value is zero
 #endif
 }
@@ -735,27 +751,6 @@ void TClntMsg::appendRequestedOptions() {
 		Options.push_back( (*gen)->Option );
 	}
     }
-
-#ifndef MOD_DISABLE_AUTH
-    if (ClntCfgMgr().getAuthProtocol() != AUTH_PROTO_NONE) {
-        if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
-            setSPI(ClntCfgMgr().getSPI());
-            Options.push_back(new TOptAAAAuthentication(getSPI(), this));
-        }
-
-        // --- option: AUTH ---
-        Options.push_back(new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
-                                                 ClntCfgMgr().getAuthAlgorithm(),
-                                                 ClntCfgMgr().getAuthReplay(),
-                                                 this));
-
-        // request KeyGeneration
-        optORO->addOption(OPTION_KEYGEN);
-
-        // request Authentication
-        optORO->addOption(OPTION_AUTH);
-    }
-#endif // MOD_DISABLE_AUTH
 
 #ifdef MOD_REMOTE_AUTOCONF
     if (ClntCfgMgr().getRemoteAutoconf())

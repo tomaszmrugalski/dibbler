@@ -134,7 +134,7 @@ bulk-leasequery-timeout   { return SrvParser::BULKLQ_TIMEOUT_; }
 auth-protocol       { return SrvParser::AUTH_PROTOCOL_; }
 auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
 auth-replay         { return SrvParser::AUTH_REPLAY_;}
-auth-method         { return SrvParser::AUTH_METHOD_; }
+auth-methods        { return SrvParser::AUTH_METHODS_; }
 auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
 auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
 auth-drop-unauthenticated { return SrvParser::AUTH_DROP_UNAUTH_; }

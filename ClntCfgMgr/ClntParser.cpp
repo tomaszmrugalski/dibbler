@@ -138,7 +138,7 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-vector<DigestTypes> DigestLst;                                              \
+DigestTypesLst      DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 List(THostID) PresentStationLst;                                            \
@@ -446,7 +446,7 @@ typedef
 #define	DUID_TYPE_LLT_	307
 #define	DUID_TYPE_LL_	308
 #define	DUID_TYPE_EN_	309
-#define	AUTH_ACCEPT_METHODS_	310
+#define	AUTH_METHODS_	310
 #define	AUTH_PROTOCOL_	311
 #define	AUTH_ALGORITHM_	312
 #define	AUTH_REPLAY_	313
@@ -573,7 +573,7 @@ static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
 static const int DUID_TYPE_EN_;
-static const int AUTH_ACCEPT_METHODS_;
+static const int AUTH_METHODS_;
 static const int AUTH_PROTOCOL_;
 static const int AUTH_ALGORITHM_;
 static const int AUTH_REPLAY_;
@@ -659,7 +659,7 @@ enum YY_ClntParser_ENUM_TOKEN { YY_ClntParser_NULL_TOKEN=0
 	,DUID_TYPE_LLT_=307
 	,DUID_TYPE_LL_=308
 	,DUID_TYPE_EN_=309
-	,AUTH_ACCEPT_METHODS_=310
+	,AUTH_METHODS_=310
 	,AUTH_PROTOCOL_=311
 	,AUTH_ALGORITHM_=312
 	,AUTH_REPLAY_=313
@@ -773,7 +773,7 @@ const int YY_ClntParser_CLASS::DUID_TYPE_=306;
 const int YY_ClntParser_CLASS::DUID_TYPE_LLT_=307;
 const int YY_ClntParser_CLASS::DUID_TYPE_LL_=308;
 const int YY_ClntParser_CLASS::DUID_TYPE_EN_=309;
-const int YY_ClntParser_CLASS::AUTH_ACCEPT_METHODS_=310;
+const int YY_ClntParser_CLASS::AUTH_METHODS_=310;
 const int YY_ClntParser_CLASS::AUTH_PROTOCOL_=311;
 const int YY_ClntParser_CLASS::AUTH_ALGORITHM_=312;
 const int YY_ClntParser_CLASS::AUTH_REPLAY_=313;
@@ -991,7 +991,7 @@ static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
 "OPTION_","SCRIPT_","LOGNAME_","LOGLEVEL_","LOGMODE_","LOGCOLORS_","STRING_",
 "HEXNUMBER_","INTNUMBER_","DUID_","STRICT_RFC_NO_ROUTING_","SKIP_CONFIRM_","PD_",
 "PREFIX_","DOWNLINK_PREFIX_IFACES_","DUID_TYPE_","DUID_TYPE_LLT_","DUID_TYPE_LL_",
-"DUID_TYPE_EN_","AUTH_ACCEPT_METHODS_","AUTH_PROTOCOL_","AUTH_ALGORITHM_","AUTH_REPLAY_",
+"DUID_TYPE_EN_","AUTH_METHODS_","AUTH_PROTOCOL_","AUTH_ALGORITHM_","AUTH_REPLAY_",
 "DIGEST_NONE_","DIGEST_PLAIN_","DIGEST_HMAC_MD5_","DIGEST_HMAC_SHA1_","DIGEST_HMAC_SHA224_",
 "DIGEST_HMAC_SHA256_","DIGEST_HMAC_SHA384_","DIGEST_HMAC_SHA512_","STATELESS_",
 "ANON_INF_REQUEST_","INSIST_MODE_","INACTIVE_MODE_","EXPERIMENTAL_","ADDR_PARAMS_",

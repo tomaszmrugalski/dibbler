@@ -32,8 +32,6 @@ public:
     bool getStateless() const;
     void setCacheSize(int bytes);
     int  getCacheSize() const;
-    void addDigest(DigestTypes x);
-    List(DigestTypes) getDigest() const;
     bool getExperimental() const; // is experimental stuff allowed?
     void setExperimental(bool exper);
     void setInterfaceIDOrder(ESrvIfaceIdOrder order);
@@ -57,7 +55,6 @@ private:
     int    CacheSize_;
     unsigned int AuthLifetime_;
     unsigned int AuthKeyLen_;
-    List(DigestTypes) DigestLst_;
     ESrvIfaceIdOrder InterfaceIDOrder_;
 };
 #endif

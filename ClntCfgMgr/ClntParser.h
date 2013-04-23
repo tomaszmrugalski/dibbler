@@ -48,7 +48,7 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-vector<DigestTypes> DigestLst;                                              \
+DigestTypesLst      DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
 List(THostID) PresentStationLst;                                            \
@@ -323,7 +323,7 @@ typedef
 #define	DUID_TYPE_LLT_	307
 #define	DUID_TYPE_LL_	308
 #define	DUID_TYPE_EN_	309
-#define	AUTH_ACCEPT_METHODS_	310
+#define	AUTH_METHODS_	310
 #define	AUTH_PROTOCOL_	311
 #define	AUTH_ALGORITHM_	312
 #define	AUTH_REPLAY_	313
@@ -449,7 +449,7 @@ static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
 static const int DUID_TYPE_EN_;
-static const int AUTH_ACCEPT_METHODS_;
+static const int AUTH_METHODS_;
 static const int AUTH_PROTOCOL_;
 static const int AUTH_ALGORITHM_;
 static const int AUTH_REPLAY_;
@@ -535,7 +535,7 @@ static const int RECONFIGURE_;
 	,DUID_TYPE_LLT_=307
 	,DUID_TYPE_LL_=308
 	,DUID_TYPE_EN_=309
-	,AUTH_ACCEPT_METHODS_=310
+	,AUTH_METHODS_=310
 	,AUTH_PROTOCOL_=311
 	,AUTH_ALGORITHM_=312
 	,AUTH_REPLAY_=313

@@ -248,19 +248,19 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         return 0;
     }
 
+    bool authOk = ptr->validateAuthInfo(buf, bufsize, SrvCfgMgr().getAuthDigests());
+
     if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
         Log(Warning) << "Auth: authorization is mandatory, but incoming message"
-                     << " does not have AUTH, KEYGEN or AAAAUTH options. Message dropped" << LogEnd;
+                     << " does not have AUTH, KEYGEN or AAAAUTH options. Message dropped." << LogEnd;
         return 0;
     }
 
-    /// @todo: implement client message validation
-#if 0
-    if (!ptr->validateAuthInfo(buf, bufsize)) {
-        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-        return 0;
+    if (SrvCfgMgr().getAuthDropUnauthenticated() && !authOk) {
+      Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
+		   << " Message dropped." << LogEnd;
+      return 0;
     }
-#endif
 
     /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 

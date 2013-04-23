@@ -12,6 +12,8 @@
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
 
+#include <vector>
+
 #define ALL_DHCP_RELAY_AGENTS_AND_SERVERS  "ff02::1:2"
 #define ALL_DHCP_SERVERS                   "ff05::1:3"
 
@@ -279,6 +281,8 @@ enum DigestTypes {
     //this must be last, increase it if necessary
     DIGEST_INVALID = 8
 };
+
+typedef std::vector<DigestTypes> DigestTypesLst;
 
 unsigned getDigestSize(enum DigestTypes type);
 char *getDigestName(enum DigestTypes type);

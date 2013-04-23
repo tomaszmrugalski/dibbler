@@ -111,7 +111,7 @@ vendor-spec           { return ClntParser::VENDOR_SPEC_; }
 anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
 insist-mode           { return ClntParser::INSIST_MODE_; }
 inactive-mode         { return ClntParser::INACTIVE_MODE_; }
-auth-accept-methods   { return ClntParser::AUTH_ACCEPT_METHODS_; }
+auth-methods          { return ClntParser::AUTH_METHODS_; }
 auth-protocol         { return ClntParser::AUTH_PROTOCOL_; }
 auth-algorithm        { return ClntParser::AUTH_ALGORITHM_; }
 auth-replay           { return ClntParser::AUTH_REPLAY_; }

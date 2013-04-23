@@ -150,7 +150,6 @@ bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
     this->GuessMode        = opt->getGuessMode();
 
 #ifndef MOD_DISABLE_AUTH
-    this->DigestLst        = opt->getDigest();
     this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
     this->AuthLifetime = opt->getAuthLifetime();
 #endif
@@ -908,21 +907,19 @@ bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 }
 
 #ifndef MOD_DISABLE_AUTH
-List(DigestTypes) TSrvCfgMgr::getDigestLst() {
-    return this->DigestLst;
+void TSrvCfgMgr::setAuthDigests(const DigestTypesLst& types) {
+  DigestTypesLst_ = types;
+}
+
+DigestTypesLst TSrvCfgMgr::getAuthDigests() {
+    return DigestTypesLst_;
 }
 
 enum DigestTypes TSrvCfgMgr::getDigest() {
-    SPtr<DigestTypes> dt;
-
-    if (0 == DigestLst.count())
+    if (DigestTypesLst_.empty())
         return DIGEST_NONE;
 
-    dt = DigestLst.getFirst();
-    if (!dt || *dt >= DIGEST_INVALID)
-        return DIGEST_NONE;
-
-    return *dt;
+    return DigestTypesLst_[0];
 }
 
 unsigned int TSrvCfgMgr::getAuthLifetime()
@@ -970,23 +967,11 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "</InterfaceIDOrder>" << endl;
 
 #ifndef MOD_DISABLE_AUTH
-    out << "  <auth count=\"" << x.DigestLst.count() << "\">";
-    x.DigestLst.first();
-    SPtr<DigestTypes> dig;
-    while (dig=x.DigestLst.get()) {
-        switch (*dig) {
-        case DIGEST_NONE:
-            out << "digest-none ";
-            break;
-        case DIGEST_HMAC_SHA1:
-            out << "digest-hmac-sha1";
-            break;
-        default:
-            break;
-        }
-        out << "X";
+    out << "  <auth count=\"" << x.DigestTypesLst_.size() << "\">";
+    for (DigestTypesLst::const_iterator dig = x.DigestTypesLst_.begin();
+	 dig != x.DigestTypesLst_.end(); ++dig) {
+      out << getDigestName(*dig) << " ";
     }
-
     out << "</auth>" << endl;
 #endif
 

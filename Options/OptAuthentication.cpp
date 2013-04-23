@@ -68,18 +68,29 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     }
 
     case AUTH_PROTO_DIBBLER: {
+        if (algo_ >= DIGEST_INVALID) {
+            Log(Warning) << "Unsupported digest type: " << algo_ << ", max supported "
+	                 << " type is " << DIGEST_INVALID - 1 << LogEnd;
+            Valid = false;
+            return;
+        }
+	Parent->DigestType_ = static_cast<DigestTypes>(algo_);
+
         Parent->setSPI(readUint32(buf));
         buf += sizeof(uint32_t);
         buflen -= sizeof(uint32_t);
 
         AuthInfoLen_ = getDigestSize(parent->DigestType_);
         if (buflen != AuthInfoLen_){
+            Log(Warning) << "Auth: Invalid digest size for digest type " << algo_
+	 	       << ", expected len=" << AuthInfoLen_ << ", received " << buflen << LogEnd;
             Valid = false;
             return;
         }
 
         Parent->setAuthDigestPtr(buf, AuthInfoLen_);
-        PrintHex("Auth: Received digest: ", (uint8_t*)buf, AuthInfoLen_);
+        PrintHex(std::string("Auth: Received digest ") + getDigestName(parent->DigestType_) + ": ",
+		 (uint8_t*)buf, AuthInfoLen_);
     }
     }
 
