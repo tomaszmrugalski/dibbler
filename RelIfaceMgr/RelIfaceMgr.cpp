@@ -95,52 +95,56 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
     // read data
     sockid = TIfaceMgr::select(timeout, data, dataLen, peer);
-    if (sockid>0) {
-	if (dataLen<4) {
-	    Log(Warning) << "Received message is truncated (" << dataLen << " bytes)." << LogEnd;
-	    return 0; //NULL
-	}
-	
-	// check message type
-	int msgtype = data[0];
+    if (sockid < 0) {
+        Log(Warning) << "Socket read error: " << sockid << LogEnd;
+        return 0;
+    }
 
-        if (msgtype > LEASEQUERY_REPLY_MSG) {
-            Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
-            return 0;
-        }
-	SPtr<TMsg> ptr;
-	SPtr<TIfaceIface> iface;
-	SPtr<TIfaceSocket> sock;
+    if (dataLen<4) {
+        Log(Warning) << "Received message is truncated (" << dataLen << " bytes)." << LogEnd;
+        return 0; //NULL
+    }
 
-	// get interface
-	iface = this->getIfaceBySocket(sockid);
+    // check message type
+    int msgtype = data[0];
 
-	sock = iface->getSocketByFD(sockid);
+    if (msgtype > LEASEQUERY_REPLY_MSG) {
+        Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
+        return 0;
+    }
+    SPtr<TMsg> ptr;
+    SPtr<TIfaceIface> iface;
+    SPtr<TIfaceSocket> sock;
 
-	Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/" 
-		   << iface->getID() << " interface (socket=" << sockid << ", addr=" << peer->getPlain() 
-		   << ", port=" << sock->getPort() << ")." << LogEnd;
-	
-	if (sock->getPort()!=DHCPSERVER_PORT) {
-	    Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
-	    return 0;
-	}
+    // get interface
+    iface = this->getIfaceBySocket(sockid);
 
-	return this->decodeMsg(iface, peer, data, dataLen);
-    } 
+    sock = iface->getSocketByFD(sockid);
+
+    Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/"
+               << iface->getID() << " interface (socket=" << sockid << ", addr="
+               << peer->getPlain() << ", port=" << sock->getPort() << ")." << LogEnd;
+
+    if (sock->getPort()!=DHCPSERVER_PORT) {
+        Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
+        return 0;
+    }
+
+    return decodeMsg(iface, peer, data, dataLen);
+    }
     return 0;
 }
 
-SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface, 
-						SPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface,
+						SPtr<TIPv6Addr> peer,
 						char * data, int dataLen) {
     int ifindex = iface->getID();
     SPtr<TRelMsg> msg = new TRelMsgRelayForw(ifindex, peer, data, dataLen);
     return msg;
 }
 
-SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface, 
-					      SPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface,
+					      SPtr<TIPv6Addr> peer,
 					      char * buf, int bufsize) {
     int ifindex = iface->getID();
     return new TRelMsgGeneric(ifindex, peer, buf, bufsize);

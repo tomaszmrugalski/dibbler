@@ -32,6 +32,8 @@
   - Linux: cosmetic low-level Linux improvements (bug #276)
   - FQDN option improvements (fully qualified, hostname only and empty options)
     are now supported
+  - Daemon mode should now be able to read sockets properly (bug #275)
+    (patch by Jean-Jacques Sarton)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD
