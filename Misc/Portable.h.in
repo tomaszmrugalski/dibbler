@@ -178,6 +178,7 @@ struct link_state_notify_t
 #define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
+#define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
 #define NULLFILE           "/dev/null"
 
 /* those defines were initially used on Linux only, but hopefully 
