@@ -89,10 +89,13 @@
   - Jean-Jacques Sarton <jj(dot)sarton(at)web(dot)de>
     2013-03: Patch for double free in file read error handling
     2013-03: Patch for stop command not working on Linux
+    2013-04: Patch for socket descriptor == 0 in daemon mode
 
   - Vaclav Michalek <vaclav(dot)michalek(at)upol(dot)cz>
     2013-03: Various WIN32 fixes
     2013-03: gethostname for WIN32
+    2013-03: Inactive-mode for Win32
+    2013-04: OptFQDN improvements
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

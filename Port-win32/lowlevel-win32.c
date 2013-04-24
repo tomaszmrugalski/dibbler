@@ -678,17 +678,8 @@ int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
  * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
  */
 int get_hostname(char* hostname, int hostname_len) {
-    DWORD nsize = hostname_len - 1;
-
     memset(hostname,0, hostname_len);
-#ifdef _MSC_VER
-    /* shouldn't it be ComputerNameDnsFullyQualified, rather than
-       ComputerNameDnsHostname? */
-    if (GetComputerNameExA(ComputerNameDnsHostname, hostname, &nsize))
-#else
-    if (GetComputerName(hostname, &nsize))
-#endif
-    {
+    if (GetComputerNameExA(ComputerNameDnsFullyQualified, hostname, &hostname_len)) {
         return LOWLEVEL_NO_ERROR;
     }
     return LOWLEVEL_ERROR_UNSPEC;

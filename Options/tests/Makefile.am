@@ -19,6 +19,7 @@ Opt_tests_SOURCES += Opt_unittest.cc
 Opt_tests_SOURCES += OptAddr_unittest.cc
 Opt_tests_SOURCES += OptAuthentication_unittest.cc
 Opt_tests_SOURCES += OptIAAddress_unittest.cc
+Opt_tests_SOURCES += OptFQDN_unittest.cc
 Opt_tests_SOURCES += OptRtPrefix_unittest.cc
 Opt_tests_SOURCES += OptDomainLst_unittest.cc
 Opt_tests_SOURCES += OptUserClass_unittest.cc

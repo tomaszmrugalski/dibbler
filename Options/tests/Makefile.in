@@ -73,6 +73,7 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__Opt_tests_SOURCES_DIST = run_tests.cpp Opt_unittest.cc \
 	OptAddr_unittest.cc OptAuthentication_unittest.cc \
 	OptIAAddress_unittest.cc OptRtPrefix_unittest.cc \
+	OptFQDN_unittest.cc OptRtPrefix_unittest.cc \
 	OptDomainLst_unittest.cc OptUserClass_unittest.cc \
 	OptVendorClass_unittest.cc OptVendorSpecInfo_unittest.cc \
 	OptVendorData_unittest.cc
@@ -81,6 +82,7 @@ am__Opt_tests_SOURCES_DIST = run_tests.cpp Opt_unittest.cc \
 @HAVE_GTEST_TRUE@	OptAddr_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptAuthentication_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptIAAddress_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	OptFQDN_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptRtPrefix_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptDomainLst_unittest.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	OptUserClass_unittest.$(OBJEXT) \
@@ -506,6 +508,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@	OptAuthentication_unittest.cc \
 @HAVE_GTEST_TRUE@	OptIAAddress_unittest.cc \
 @HAVE_GTEST_TRUE@	OptRtPrefix_unittest.cc \
+@HAVE_GTEST_TRUE@	OptFQDN_unittest.cc \
 @HAVE_GTEST_TRUE@	OptDomainLst_unittest.cc \
 @HAVE_GTEST_TRUE@	OptUserClass_unittest.cc \
 @HAVE_GTEST_TRUE@	OptVendorClass_unittest.cc \
@@ -573,6 +576,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptAddr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptAuthentication_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptDomainLst_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptFQDN_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptIAAddress_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptRtPrefix_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptUserClass_unittest.Po@am__quote@

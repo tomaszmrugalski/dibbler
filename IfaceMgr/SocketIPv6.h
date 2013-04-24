@@ -40,6 +40,7 @@ class TIfaceSocket {
     int recv(char * buf,SPtr<TIPv6Addr> addr);
     
     // ---get info---
+    inline static int getCount() { return Count; }
     int getFD();
     int getPort();
     int getIfaceID();

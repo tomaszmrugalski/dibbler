@@ -146,7 +146,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
  * @param bufsize buffer size
  * @param peer informations about sender
  *
- * @return socket descriptor (or 0)
+ * @return socket descriptor (or negative values for errors)
  */
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer) {
@@ -169,22 +169,32 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     fds = *TIfaceSocket::getFDS();
 
     int maxFD;
-    //maxFD = FD_SETSIZE;
     maxFD = TIfaceSocket::getMaxFD() + 1;
 
+    // no sockets to listen  on... hopefully this is just inactive mode,
+    // not an error
+    if (!TIfaceSocket::getCount()) {
+        Log(Debug) << "No sockets open. Sleeping for " << time << " seconds." << LogEnd;
+#ifdef WIN32
+        Sleep(time*1000); // Windows sleep is specified in milliseconds
+#else
+        sleep(time); // Posix sleep is specified in seconds
+#endif
+        return 0;
+    }
     result = ::select(maxFD,&fds,NULL, NULL, &czas);
 
     // something received
 
     if (result==0) { // timeout, nothing received
         bufsize = 0;
-        return 0;
+        return -1;
     }
     if (result<0) {
         char buf[512];
         strncpy(buf, strerror(errno),512);
         Log(Debug) << "Failed to read sockets (select() returned " << result << "), error=" << buf << LogEnd;
-        return 0;
+        return -1;
     }
 
     SPtr<TIfaceIface> iface;
@@ -203,7 +213,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     if (!found) {
         Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
-        return 0;
+        return -1;
     }
 
     char myPlainAddr[48];   // my plain address
@@ -234,7 +244,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             Log(Debug) << "Received data on address " << myPlainAddr << ", expected "
                    << *sock->getAddr() << ", message ignored." << LogEnd;
             bufsize = 0;
-            return 0;
+            return -1;
     }
 #endif
 
@@ -473,8 +483,6 @@ void TIfaceMgr::closeSockets() {
         }
     }
 }
-
-
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

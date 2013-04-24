@@ -100,6 +100,11 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
+
+    if (ClntTransMgr().getCtrlIface() < 0) {
+        return; // no interfaces configured yet
+    }
+
     SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(ClntTransMgr().getCtrlIface());
     Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
         << "/" << iface->getID() << " (addr=" << ClntTransMgr().getCtrlAddr() << ")." << LogEnd;
