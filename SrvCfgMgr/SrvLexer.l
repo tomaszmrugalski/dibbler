@@ -137,7 +137,7 @@ auth-replay         { return SrvParser::AUTH_REPLAY_;}
 auth-methods        { return SrvParser::AUTH_METHODS_; }
 auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
 auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
-auth-drop-unauthenticated { return SrvParser::AUTH_DROP_UNAUTH_; }
+auth-required       { return SrvParser::AUTH_DROP_UNAUTH_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-plain        { return SrvParser::DIGEST_PLAIN_; }
 digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }

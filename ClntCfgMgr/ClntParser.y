@@ -612,7 +612,9 @@ DigestList
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+: DIGEST_NONE_        { DigestLst.push_back(DIGEST_NONE); }
+| DIGEST_PLAIN_       { DigestLst.push_back(DIGEST_PLAIN); }
+| DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
 | DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
 | DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
 | DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
