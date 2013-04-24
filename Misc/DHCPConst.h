@@ -156,13 +156,6 @@
 // draft-ietf-softwire-ds-lite-tunnel-option-10, approved by IESG
 #define OPTION_AFTR_NAME        64
 
-// The following option numbers are not yet standardized and
-// won't interoperate with other implementations
-// option formats taken from:
-// draft-ram-dhc-dhcpv6-aakey-01.txt
-#define OPTION_AAAAUTH              240
-#define OPTION_KEYGEN               241
-
 // draft-ietf-mif-dhcpv6-route-option-04
 #define OPTION_NEXT_HOP         242
 #define OPTION_RTPREFIX         243

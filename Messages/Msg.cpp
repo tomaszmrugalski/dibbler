@@ -60,12 +60,6 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
     AuthDigestPtr_ = NULL;
     AuthDigestLen_ = 0;
     SPI_ = 0;
-
-#if AUTH_CRAP
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
-    AAASPI = 0;
-#endif
 }
 
 int TMsg::getSize()
@@ -265,53 +259,6 @@ bool TMsg::loadAuthKey() {
     free(ptr);
 
     return (len>0);
-    
-#ifdef AUTH_CRAP
-    //  key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
-
-    char *KeyGenNonce_ClientID;
-    char * AAAkey;
-    uint32_t AAAkeyLen;
-
-    if (!KeyGenNonce)
-        KeyGenNonceLen = 16;
-
-    /// @todo set proper size of Client ID (DUID?) (here and in hmac_sha())
-    KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
-
-    AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
-    std::string fname = getAAAKeyFilename(AAASPI);
-
-    // error, no file?
-    if (!AAAkey) {
-        Log(Error) << "Auth: Unable to load key file for SPI " << std::hex << AAASPI <<": " << fname 
-                   << " not found." << std::dec << LogEnd;
-        AuthKeyPtr_ = NULL;
-        delete [] KeyGenNonce_ClientID;
-        return -1;
-    }
-    Log(Debug) << "Auth: AAA-key loaded from file " << fname << "." << LogEnd;
-
-    PrintHex("Auth: AAA-key: ", (uint8_t*)AAAkey, AAAkeyLen);
-
-    memset(KeyGenNonce_ClientID, 0, KeyGenNonceLen+128);
-    if (KeyGenNonce)
-        memcpy(KeyGenNonce_ClientID, KeyGenNonce, KeyGenNonceLen);
-
-    /// @todo fill also with ClientID (DUID?)
-
-    PrintHex("Auth: Infokey: using KeyGenNonce+CliendID: ", (uint8_t*)KeyGenNonce_ClientID, KeyGenNonceLen+128);
-
-    Log(Debug) << "Auth: AAAKeyLen: " << AAAkeyLen << ", KeyGenNonceLen: " << KeyGenNonceLen << LogEnd;
-    AuthKeyPtr_ = new char[AUTHKEYLEN];
-    hmac_sha(KeyGenNonce_ClientID, KeyGenNonceLen+128, AAAkey, AAAkeyLen, (char *)AuthKeyPtr_, 1);
-
-    PrintHex("Auth: AuthKeyPtr_ (calculated): ", (uint8_t*)AuthKeyPtr_, AUTHKEYLEN);
-
-    delete [] KeyGenNonce_ClientID;
-#endif
-
-    return 0;
 }
 
 TKey TMsg::getAuthKey() {
@@ -326,34 +273,8 @@ uint32_t TMsg::getSPI() {
     return SPI_;
 }
 
-#ifdef AUTH_CRAP
-void TMsg::setAAASPI(uint32_t val) {
-    AAASPI = val;
-}
-
-uint32_t TMsg::getAAASPI() {
-    return AAASPI;
-}
-
-void TMsg::setKeyGenNonce(char *value, unsigned len)
-{
-    if (len) {
-    	KeyGenNonce = new char[len];
-        memcpy(KeyGenNonce, value, len);
-        KeyGenNonceLen = len;
-    }
-}
-
-char *TMsg::getKeyGenNonce() {
-    return KeyGenNonce;
-}
-
-unsigned TMsg::getKeyGenNonceLen() {
-    return KeyGenNonceLen;
-}
-#endif
-
-bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& acceptedDigestTypes) {
+bool TMsg::validateAuthInfo(char *buf, int bufSize,
+                            const DigestTypesLst& acceptedDigestTypes) {
     bool is_ok = false;
     bool dt_in_list = false;
     
@@ -374,7 +295,8 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& accept
         if (DigestType_ == DIGEST_NONE)
             Log(Error) << "Authentication option is required." << LogEnd;
         else
-            Log(Error) << "Authentication method " << getDigestName(DigestType_) << " not accepted." << LogEnd;
+            Log(Error) << "Authentication method " << getDigestName(DigestType_)
+                       << " not accepted." << LogEnd;
         return false;
     }
 
@@ -384,7 +306,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& accept
 #ifndef MOD_DISABLE_AUTH
 
         if (AuthKey_.empty() && !loadAuthKey()) {
-            Log(Debug) << "Auth: No AuthKey was set. This could mean bad SPI or no AAA-SPI file." << LogEnd;
+            Log(Debug) << "Auth: Failed to load key with SPI=" << SPI_ << LogEnd;
             return false;
         }
 
@@ -396,8 +318,8 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& accept
         memset(AuthDigestPtr_, 0, AuthInfoLen);
 
         switch (DigestType_) {
-                // [s] change the key to something that make sense
                 case DIGEST_PLAIN:
+                    /// @todo: load plain text from a file
                     memcpy(goodAuthInfo, "This is 32-byte plain testkey...", 32);
                     break;
                 case DIGEST_HMAC_MD5:
@@ -424,7 +346,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& accept
         if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, AuthInfoLen))
             is_ok = true;
 
-        Log(Debug) << "Auth:Checking using digest method: " 
+        Log(Debug) << "Auth:Checking using digest method: "
                    << getDigestName(DigestType_) << LogEnd;
         PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, AuthInfoLen);
         PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, AuthInfoLen);

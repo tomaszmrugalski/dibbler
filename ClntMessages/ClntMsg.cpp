@@ -36,12 +36,7 @@
 #include "ClntOptFQDN.h"
 #include "OptAddrLst.h"
 #include "ClntOptLifetime.h"
-
-#ifndef MOD_DISABLE_AUTH
-#include "OptAAAAuthentication.h"
-#include "ClntOptKeyGeneration.h"
 #include "OptAuthentication.h"
-#endif
 
 #include "Logger.h"
 
@@ -194,14 +189,6 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    break;
 	}
 #ifndef MOD_DISABLE_AUTH
-	case OPTION_AAAAUTH:
-	    Log(Warning) << "Client is not supposed to receive OPTION_AAAAUTH, ignoring." << LogEnd;
-	    break;
-#ifdef AUTH_CRAP
-	case OPTION_KEYGEN:
-	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
-	    break;
-#endif
 	case OPTION_AUTH:
             auth_offset = buf + pos;
             auth_len = length;
@@ -355,12 +342,6 @@ void TClntMsg::setDefaults()
     DigestType_ = ClntCfgMgr().getDigest();
 #endif
 
-#ifdef AUTH_CRAP
-    AuthKeys = ClntCfgMgr().AuthKeys;
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
-#endif
-
     /// @todo: This should be moved to TMsg
     PeerAddr = 0;
 }
@@ -425,10 +406,6 @@ void TClntMsg::send()
 }
 
 void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {
-#ifdef AUTH_CRAP
-    AAASPI = q->getAAASPI();
-#endif
-
     SPI_ = q->SPI_;
     AuthKey_ = q->AuthKey_;
 }
@@ -488,14 +465,9 @@ void TClntMsg::appendAuthenticationOption()
         algorithm = static_cast<uint8_t>(DigestType_);
         setSPI(ClntCfgMgr().getSPI());
 
-        Options.push_back(new TOptAAAAuthentication(getSPI(), this));
-
         SPtr<TClntOptOptionRequest> optORO = (Ptr*) getOption(OPTION_ORO);
 
         if (optORO) {
-          // request KeyGeneration
-          optORO->addOption(OPTION_KEYGEN);
-
           // request Authentication
           optORO->addOption(OPTION_AUTH);
         }

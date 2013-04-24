@@ -28,13 +28,7 @@
 #include "OptDomainLst.h"
 #include "OptUserClass.h"
 #include "OptVendorClass.h"
-
-
-#ifndef MOD_DISABLE_AUTH
-#include "OptAAAAuthentication.h"
-#include "SrvOptKeyGeneration.h"
 #include "OptAuthentication.h"
-#endif
 
 #include "Logger.h"
 #include "SrvIfaceMgr.h"
@@ -172,21 +166,12 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             break;
             // remaining LQ options are not supported to be received by server
 
-#ifndef MOD_DISABLE_AUTH
-        case OPTION_AAAAUTH:
-            if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                DigestType_ = DIGEST_HMAC_SHA1;
-                ptr = new TOptAAAAuthentication(buf+pos, length, this);
-            }
-            break;
-        case OPTION_KEYGEN:
-            Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring." << LogEnd;
-            break;
         case OPTION_AUTH:
+            ptr = new TOptAuthentication(buf+pos, length, this);
+#ifndef MOD_DISABLE_AUTH
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
                 DigestType_ = SrvCfgMgr().getDigest();
 
-                ptr = new TOptAuthentication(buf+pos, length, this);
                 SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
                 if (optDUID) {
                     SPtr<TAddrClient> client = SrvAddrMgr().getClient(optDUID->getDUID());
@@ -194,8 +179,8 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
                         client->setSPI(SPI_);
                 }
             }
-            break;
 #endif
+            break;
 
         case OPTION_VENDOR_OPTS:
             ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
@@ -276,18 +261,14 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
             break;
         }
 
-        case OPTION_AAAAUTH:
-        {
-            Log(Debug) << "Auth: Option AAAAuthentication received." << LogEnd;
-            break;
-        }
         case OPTION_PREFERENCE:
         case OPTION_UNICAST:
         case OPTION_RELAY_MSG:
         case OPTION_INTERFACE_ID:
         case OPTION_RECONF_MSG :
         case OPTION_STATUS_CODE : {
-            Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. Client is not supposed to send it. Option ignored." << LogEnd;
+            Log(Warning) << "Invalid option (" << opt->getOptType()
+                         << ") received. Client is not supposed to send it. Option ignored." << LogEnd;
             break;
         }
 

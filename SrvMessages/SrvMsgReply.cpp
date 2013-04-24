@@ -679,8 +679,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
             case OPTION_RECONF_MSG  :
             case OPTION_IA_NA       :
             case OPTION_IA_TA       :
-            case OPTION_AAAAUTH     :
-            case OPTION_KEYGEN      :
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:

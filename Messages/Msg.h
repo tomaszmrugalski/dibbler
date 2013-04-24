@@ -75,16 +75,6 @@ class TMsg
     void setSPI(uint32_t val);
     DigestTypes DigestType_;
 
-    // unknown (junk?) stuff below
-#if AUTH_CRAP
-    uint32_t getAAASPI();
-    void setAAASPI(uint32_t val);
-    void setKeyGenNonce(char *value, unsigned len);
-    char* getKeyGenNonce();
-    unsigned getKeyGenNonceLen();
-    SPtr<KeyList> AuthKeys;
-#endif
-
     // notify scripts stuff
     void* getNotifyScriptParams();
 
@@ -105,23 +95,11 @@ class TMsg
                  // for relayed messages Iface points to relayX, PhysicalInterface to ethX)
     SPtr<TIPv6Addr> PeerAddr; // server/client address from/to which message was received/should be sent
 
-    // useful auth stuff below
+    // Auth stuff
     uint32_t SPI_; // Key identifier
-
-    char* AuthDigestPtr_;    // Digest (pointer to Authentication Information field of OPTION AUTH and OPTION AAAAUTH
+    char* AuthDigestPtr_;    // Digest (pointer to Authentication Information field of OPTION AUTH)
     unsigned AuthDigestLen_; // Length of the digest
-
     TKey AuthKey_; // Auth Key
-
-    // char* AuthKeyPtr_;      // Key pointer to key used do calculate Authentication information
-    // unsigned AuthKeyLen_;    // length of the key
-
-#if AUTH_CRAP
-    // unknown (junk?) auth stuff below
-    uint32_t AAASPI; // AAA-SPI sent by client in OPTION_AAAAUTH
-    char *KeyGenNonce;
-    unsigned KeyGenNonceLen;
-#endif
 
     // a pointer to NotifyScriptParams structure (if defined)
     TNotifyScriptParams* NotifyScripts;
