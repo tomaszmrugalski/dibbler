@@ -6,6 +6,8 @@ Note: This is a scratchpad. It just happens to be available with the rest of the
 
 - must include *.l *.y files in dist
 
+- Check if client message retransmissions have proper digests.
+
 Subnet support:
 - rcv: clean up SrvIfaceMgr::decodeRelayForw()
 - remove getUnderlaying(), getOverlaying() (WTF???)
