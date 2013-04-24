@@ -34,6 +34,7 @@
     are now supported
   - Daemon mode should now be able to read sockets properly (bug #275)
     (patch by Jean-Jacques Sarton)
+  - Linux compilation fixes (bug #282)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

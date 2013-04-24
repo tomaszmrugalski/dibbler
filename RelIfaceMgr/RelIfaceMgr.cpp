@@ -131,8 +131,6 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
     }
 
     return decodeMsg(iface, peer, data, dataLen);
-    }
-    return 0;
 }
 
 SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface,
