@@ -80,7 +80,6 @@ am_libSrvOptions_a_OBJECTS =  \
 	libSrvOptions_a-SrvOptIA_PD.$(OBJEXT) \
 	libSrvOptions_a-SrvOptIAPrefix.$(OBJEXT) \
 	libSrvOptions_a-SrvOptInterfaceID.$(OBJEXT) \
-	libSrvOptions_a-SrvOptKeyGeneration.$(OBJEXT) \
 	libSrvOptions_a-SrvOptLQ.$(OBJEXT) \
 	libSrvOptions_a-SrvOptTA.$(OBJEXT)
 libSrvOptions_a_OBJECTS = $(am_libSrvOptions_a_OBJECTS)
@@ -313,6 +312,7 @@ libSrvOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 #libSrvOptions_a_SOURCES += SrvOptDomainName.cpp SrvOptDomainName.h
 #libSrvOptions_a_SOURCES += SrvOptEcho.cpp SrvOptEcho.h
 #libSrvOptions_a_SOURCES += SrvOptElapsed.cpp SrvOptElapsed.h
+#libSrvOptions_a_SOURCES += SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h
 #libSrvOptions_a_SOURCES += SrvOptLifetime.cpp SrvOptLifetime.h
 #libSrvOptions_a_SOURCES += SrvOptNISDomain.cpp SrvOptNISDomain.h
 #libSrvOptions_a_SOURCES += SrvOptNISPDomain.cpp SrvOptNISPDomain.h
@@ -331,8 +331,7 @@ libSrvOptions_a_SOURCES = SrvOptAddrParams.cpp SrvOptAddrParams.h \
 	SrvOptIAAddress.h SrvOptIA_NA.cpp SrvOptIA_NA.h \
 	SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp \
 	SrvOptIAPrefix.h SrvOptInterfaceID.cpp SrvOptInterfaceID.h \
-	SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h SrvOptLQ.cpp \
-	SrvOptLQ.h SrvOptTA.cpp SrvOptTA.h
+	SrvOptLQ.cpp SrvOptLQ.h SrvOptTA.cpp SrvOptTA.h
 all: all-am
 
 .SUFFIXES:
@@ -388,7 +387,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIA_NA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIA_PD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptInterfaceID.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptLQ.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptTA.Po@am__quote@
 
@@ -510,20 +508,6 @@ libSrvOptions_a-SrvOptInterfaceID.obj: SrvOptInterfaceID.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptInterfaceID.cpp' object='libSrvOptions_a-SrvOptInterfaceID.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptInterfaceID.obj `if test -f 'SrvOptInterfaceID.cpp'; then $(CYGPATH_W) 'SrvOptInterfaceID.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptInterfaceID.cpp'; fi`
-
-libSrvOptions_a-SrvOptKeyGeneration.o: SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptKeyGeneration.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo -c -o libSrvOptions_a-SrvOptKeyGeneration.o `test -f 'SrvOptKeyGeneration.cpp' || echo '$(srcdir)/'`SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptKeyGeneration.cpp' object='libSrvOptions_a-SrvOptKeyGeneration.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptKeyGeneration.o `test -f 'SrvOptKeyGeneration.cpp' || echo '$(srcdir)/'`SrvOptKeyGeneration.cpp
-
-libSrvOptions_a-SrvOptKeyGeneration.obj: SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptKeyGeneration.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo -c -o libSrvOptions_a-SrvOptKeyGeneration.obj `if test -f 'SrvOptKeyGeneration.cpp'; then $(CYGPATH_W) 'SrvOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptKeyGeneration.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptKeyGeneration.cpp' object='libSrvOptions_a-SrvOptKeyGeneration.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptKeyGeneration.obj `if test -f 'SrvOptKeyGeneration.cpp'; then $(CYGPATH_W) 'SrvOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptKeyGeneration.cpp'; fi`
 
 libSrvOptions_a-SrvOptLQ.o: SrvOptLQ.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptLQ.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptLQ.Tpo -c -o libSrvOptions_a-SrvOptLQ.o `test -f 'SrvOptLQ.cpp' || echo '$(srcdir)/'`SrvOptLQ.cpp

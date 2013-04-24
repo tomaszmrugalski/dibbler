@@ -80,7 +80,6 @@ am_libClntOptions_a_OBJECTS =  \
 	libClntOptions_a-ClntOptIA_NA.$(OBJEXT) \
 	libClntOptions_a-ClntOptIA_PD.$(OBJEXT) \
 	libClntOptions_a-ClntOptIAPrefix.$(OBJEXT) \
-	libClntOptions_a-ClntOptKeyGeneration.$(OBJEXT) \
 	libClntOptions_a-ClntOptLifetime.$(OBJEXT) \
 	libClntOptions_a-ClntOptOptionRequest.$(OBJEXT) \
 	libClntOptions_a-ClntOptPreference.$(OBJEXT) \
@@ -314,6 +313,7 @@ libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 #libClntOptions_a_SOURCES += ClntOptAuthentication.cpp ClntOptAuthentication.h
 #libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
 #libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 
+#libClntOptions_a_SOURCES += ClntOptKeyGeneration.cpp ClntOptKeyGeneration.h
 #libClntOptions_a_SOURCES += ClntOptNISDomain.cpp ClntOptNISDomain.h
 #libClntOptions_a_SOURCES += ClntOptNISPDomain.cpp ClntOptNISPDomain.h 
 #libClntOptions_a_SOURCES += ClntOptNTPServers.cpp ClntOptNTPServers.h
@@ -324,7 +324,6 @@ libClntOptions_a_SOURCES = ClntOptAddrParams.cpp ClntOptAddrParams.h \
 	ClntOptFQDN.h ClntOptIAAddress.cpp ClntOptIAAddress.h \
 	ClntOptIA_NA.cpp ClntOptIA_NA.h ClntOptIA_PD.cpp \
 	ClntOptIA_PD.h ClntOptIAPrefix.cpp ClntOptIAPrefix.h \
-	ClntOptKeyGeneration.cpp ClntOptKeyGeneration.h \
 	ClntOptLifetime.cpp ClntOptLifetime.h ClntOptOptionRequest.cpp \
 	ClntOptOptionRequest.h ClntOptPreference.cpp \
 	ClntOptPreference.h ClntOptStatusCode.cpp ClntOptStatusCode.h \
@@ -385,7 +384,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIAPrefix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIA_NA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptIA_PD.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptLifetime.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptOptionRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libClntOptions_a-ClntOptPreference.Po@am__quote@
@@ -511,20 +509,6 @@ libClntOptions_a-ClntOptIAPrefix.obj: ClntOptIAPrefix.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptIAPrefix.cpp' object='libClntOptions_a-ClntOptIAPrefix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptIAPrefix.obj `if test -f 'ClntOptIAPrefix.cpp'; then $(CYGPATH_W) 'ClntOptIAPrefix.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptIAPrefix.cpp'; fi`
-
-libClntOptions_a-ClntOptKeyGeneration.o: ClntOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptKeyGeneration.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Tpo -c -o libClntOptions_a-ClntOptKeyGeneration.o `test -f 'ClntOptKeyGeneration.cpp' || echo '$(srcdir)/'`ClntOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Tpo $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptKeyGeneration.cpp' object='libClntOptions_a-ClntOptKeyGeneration.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptKeyGeneration.o `test -f 'ClntOptKeyGeneration.cpp' || echo '$(srcdir)/'`ClntOptKeyGeneration.cpp
-
-libClntOptions_a-ClntOptKeyGeneration.obj: ClntOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptKeyGeneration.obj -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Tpo -c -o libClntOptions_a-ClntOptKeyGeneration.obj `if test -f 'ClntOptKeyGeneration.cpp'; then $(CYGPATH_W) 'ClntOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptKeyGeneration.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Tpo $(DEPDIR)/libClntOptions_a-ClntOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ClntOptKeyGeneration.cpp' object='libClntOptions_a-ClntOptKeyGeneration.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libClntOptions_a-ClntOptKeyGeneration.obj `if test -f 'ClntOptKeyGeneration.cpp'; then $(CYGPATH_W) 'ClntOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/ClntOptKeyGeneration.cpp'; fi`
 
 libClntOptions_a-ClntOptLifetime.o: ClntOptLifetime.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libClntOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libClntOptions_a-ClntOptLifetime.o -MD -MP -MF $(DEPDIR)/libClntOptions_a-ClntOptLifetime.Tpo -c -o libClntOptions_a-ClntOptLifetime.o `test -f 'ClntOptLifetime.cpp' || echo '$(srcdir)/'`ClntOptLifetime.cpp
