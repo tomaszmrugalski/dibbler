@@ -124,14 +124,17 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 
         switch (msgtype) {
         case ADVERTISE_MSG:
-            ptr = new TClntMsgAdvertise(ifaceid,peer,buf,bufsize);
-#ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
-                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
-                    return 0;
-            }
-#endif
-            return ptr;
+            ptr = new TClntMsgAdvertise(ifaceid, peer, buf, bufsize);
+	    break;
+
+        case REPLY_MSG:
+            ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
+	    break;
+
+        case RECONFIGURE_MSG:
+            ptr = new TClntMsgReconfigure(ifaceid, peer, buf, bufsize);
+            break;
+
         case SOLICIT_MSG:
         case REQUEST_MSG:
         case CONFIRM_MSG:
@@ -140,28 +143,23 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELEASE_MSG:
         case DECLINE_MSG:
         case INFORMATION_REQUEST_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; // NULL
-        case REPLY_MSG:
-            ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
-#ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
-                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
-                    return 0;
-            }
-#endif
-            return ptr;
-
-        case RECONFIGURE_MSG:
-            ptr = new TClntMsgReconfigure(ifaceid, peer, buf, bufsize);
-            return ptr;
-        case RELAY_FORW_MSG: // those two msgs should not be visible for client
+        case RELAY_FORW_MSG:
         case RELAY_REPL_MSG:
         default:
             Log(Warning) << "Message type " << msgtype << " is not supposed to "
                          << "be received by client. Check your relay/server configuration." << LogEnd;
             return 0;
         }
+
+#ifndef MOD_DISABLE_AUTH
+	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
+	  Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
+	  return 0;
+	}
+
+	return ptr;
+#endif
+
     } else {
         return 0;
     }

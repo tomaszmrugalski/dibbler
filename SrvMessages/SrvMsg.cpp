@@ -867,6 +867,9 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
     case AUTH_PROTO_RECONFIGURE_KEY:
         break;
     case AUTH_PROTO_DIBBLER:
+
+      /// @todo: server now forces its default algorithm. It should be possible
+      /// for the server to keep using whatever the client chose.
         DigestType_ = SrvCfgMgr().getDigest();
         if (DigestType_ == DIGEST_NONE) {
             return;
@@ -887,7 +890,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 
     if (!getOption(OPTION_AUTH)) {
         SPtr<TOptAuthentication> auth = new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
-                                                               SrvCfgMgr().getAuthAlgorithm(),
+                                                               static_cast<uint8_t>(DigestType_),
                                                                SrvCfgMgr().getAuthReplay(),
                                                                this);
         auth->setReplayDetection(SrvAddrMgr().getNextReplayDetectionValue());

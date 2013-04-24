@@ -55,7 +55,6 @@ void TClntCfgIface::setDefaults() {
     PrefixDelegationState = STATE_DISABLED;
     VendorSpecState = STATE_DISABLED;
     RoutingEnabledState = STATE_DISABLED;
-    AuthenticationState = STATE_DISABLED;
 
     ReqDNSServer = false;
     ReqDomain = false;
@@ -377,9 +376,6 @@ EState TClntCfgIface::getVendorSpecState() {
 EState TClntCfgIface::getKeyGenerationState() {
     return KeyGenerationState;
 }
-EState TClntCfgIface::getAuthenticationState() {
-    return AuthenticationState;
-}
 EState TClntCfgIface::getRoutingEnabledState() {
     return RoutingEnabledState;
 }
@@ -479,10 +475,6 @@ void TClntCfgIface::setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList)
 
 void TClntCfgIface::setKeyGenerationState(EState state) {
     this->KeyGenerationState = state;
-}
-
-void TClntCfgIface::setAuthenticationState(EState state) {
-    this->AuthenticationState = state;
 }
 
 void TClntCfgIface::setOnLinkPrefixLength(int len) {

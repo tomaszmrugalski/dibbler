@@ -197,10 +197,6 @@ public:
     EState getKeyGenerationState();
     void setKeyGenerationState(EState state);
 
-    // --- option: Authentication ---
-    EState getAuthenticationState();
-    void setAuthenticationState(EState state);
-
 private:
     void setDefaults();
     std::string IfaceName;
@@ -246,7 +242,6 @@ private:
     EState PrefixDelegationState;
     EState VendorSpecState;
     EState KeyGenerationState;
-    EState AuthenticationState;
     EState RoutingEnabledState;
 
     /// @todo: Remove those booleans and use State directly

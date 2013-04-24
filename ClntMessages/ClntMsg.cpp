@@ -1118,6 +1118,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 }
 
 bool TClntMsg::checkReceivedAuthOption() {
+  // Note that this method does not verify digests. That is verified elsewhere
+  // see TMsg::validateAuthInfo() from TClntIfaceMgr::select() and from
+  // TSrvIfaceMgr::select()
+  // This method checks additional things.
 
     // If replay detection fails, we don't bother to try anything fancy
     if (!validateReplayDetection()) {
@@ -1130,21 +1134,18 @@ bool TClntMsg::checkReceivedAuthOption() {
     }
     case AUTH_PROTO_DELAYED: {
         /// @todo: implement delayed-auth
-        Log(Error) << "Support for delayed authentication if not implementd yet."
+        Log(Error) << "Support for delayed authentication not implemented yet."
                    << LogEnd;
         return false;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: {
         /// @todo: implement reconfigure-key
-        Log(Error) << "Support for delayed authentication if not implementd yet."
+        Log(Error) << "Support for reconfigure-key not implementd yet."
                    << LogEnd;
         return false;
     } 
     case AUTH_PROTO_DIBBLER: {
-        // this was in ClntOptAuthentication::doDuties()
-        /// @todo: move existing verification here
-        SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(getIface());
-        cfgIface->setAuthenticationState(STATE_CONFIGURED);
+      return true;
     }
     }
 

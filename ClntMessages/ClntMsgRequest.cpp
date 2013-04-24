@@ -118,6 +118,7 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
 	SPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr
 	while ( opt = getOption() ) {
+	  /// @todo: add support for unicast in IA_TA and IA_PD
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;

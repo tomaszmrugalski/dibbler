@@ -383,7 +383,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& accept
     } else if (AuthDigestPtr_) {
 #ifndef MOD_DISABLE_AUTH
 
-        if (AuthKey_.empty()) {
+        if (AuthKey_.empty() && !loadAuthKey()) {
             Log(Debug) << "Auth: No AuthKey was set. This could mean bad SPI or no AAA-SPI file." << LogEnd;
             return false;
         }
@@ -500,7 +500,7 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 
     if (authCnt > 1) {
 	Log(Warning) << "No more that one authentication option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received.";
+		     << " message, but " << authCnt << " received.";
 	status = false;
     }
 

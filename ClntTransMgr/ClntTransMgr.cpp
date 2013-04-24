@@ -734,7 +734,8 @@ void TClntTransMgr::sendRequest(TOptList requestOptions, int iface)
     for (TOptList::iterator opt= requestOptions.begin();
          opt!=requestOptions.end(); ++opt)
     {
-        if (!allowOptInMsg(REQUEST_MSG, (*opt)->getOptType()))
+        if (!allowOptInMsg(REQUEST_MSG, (*opt)->getOptType()) ||
+	    (*opt)->getOptType() == OPTION_AUTH)
             opt = requestOptions.erase(opt);
     }
     SPtr<TClntMsg> ptr = new TClntMsgRequest(requestOptions, iface);
@@ -991,8 +992,6 @@ void TClntTransMgr::checkInfRequest()
                 iface->setNISPDomainState(STATE_NOTCONFIGURED);
             if (iface->getKeyGenerationState() == STATE_CONFIGURED) 
                 iface->setKeyGenerationState(STATE_NOTCONFIGURED);
-            if (iface->getAuthenticationState() == STATE_CONFIGURED) 
-                iface->setAuthenticationState(STATE_NOTCONFIGURED);
         }
 
         if ( (iface->getDNSServerState()     == STATE_NOTCONFIGURED) ||
