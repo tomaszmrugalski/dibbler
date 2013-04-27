@@ -371,7 +371,8 @@ void TClntMsg::send()
 
     if ((MRD != 0) && (RT>MRD))
 	RT = MRD;
-    if (MRD) MRD-=RT;
+    if (MRD) 
+      MRD -= RT;
 
     RC++;
 

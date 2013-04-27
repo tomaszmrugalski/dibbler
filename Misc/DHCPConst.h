@@ -201,10 +201,14 @@ typedef enum {
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY 0xffffffffu
 
-enum ETentative {
-    TENTATIVE_UNKNOWN = -1,
-    TENTATIVE_NO      = 0,
-    TENTATIVE_YES     = 1
+
+/// used for 2 purposes:
+/// is address tentative?
+/// is address valid on link?
+enum EAddrStatus {
+    ADDRSTATUS_UNKNOWN = -1,
+    ADDRSTATUS_NO      = 0,
+    ADDRSTATUS_YES     = 1
 };
 
 enum EState {
@@ -224,6 +228,13 @@ enum EUnknownFQDNMode {
     UNKNOWN_FQDN_ACCEPT = 2,      // accept unknown FQDNs
     UKNNOWN_FQDN_APPEND = 3,      // accept, but append defined domain suffix
     UKNNOWN_FQDN_PROCEDURAL = 4   // generate name procedurally, append defined domain suffix
+};
+
+// defines Identity assotiation type
+enum TIAType {
+    IATYPE_IA, // IA_NA - non-temporary addresses
+    IATYPE_TA, // IA_TA - temporary addresses
+    IATYPE_PD  // IA_PD - prefix delegation
 };
 
 // FQDN option flags

@@ -44,7 +44,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     copyAAASPI((Ptr*)confirm);
     copyRemoteID((Ptr*)confirm);
 
-    handleConfirmOptions( confirm->getOptLst() );
+    if (!handleConfirmOptions( confirm->getOptLst() )) {
+        IsDone = true;
+        return;
+    }
 
     appendMandatoryOptions(ORO);
     appendAuthenticationOption(ClientDUID);
@@ -55,20 +58,22 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     this->send();
 }
 
+
 bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
+
     SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
     if (!cfgIface) {
         Log(Crit) << "Msg received through not configured interface. "
             "Somebody call an exorcist!" << LogEnd;
         IsDone = true;
-        return false;
+        return ADDRSTATUS_UNKNOWN;
     }
 
-    bool OnLink = true;
+    EAddrStatus onLink = ADDRSTATUS_YES;
     int checkCnt = 0;
 
     TOptList::iterator opt = options.begin();
-    while ( (opt!=options.end()) && OnLink ) {
+    while ( (opt!=options.end()) && (onLink==ADDRSTATUS_YES) ) {
 
         switch ( (*opt)->getOptType()) {
         case OPTION_IA_NA: {
@@ -78,19 +83,13 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
             // now we check whether this IA exists in Server Address database or not.
             SPtr<TOpt> opt;
             ia->firstOption();
-            while ((opt = ia->getOption()) && (OnLink) ) {
+            while ((opt = ia->getOption()) && (onLink == ADDRSTATUS_YES) ) {
                 if (opt->getOptType() != OPTION_IAADDR){
                     continue;
                 }
 
                 SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
-                Log(Debug) << "Confirm that address " << optAddr->getAddr()->getPlain() << " is on-link:";
-                if (cfgIface->addrInSubnet(optAddr->getAddr())) {
-                    Log(Cont) << "yes." << LogEnd;
-                } else {
-                    Log(Cont) << "no." << LogEnd;
-                    OnLink = false;
-                }
+                onLink = cfgIface->confirmAddress(IATYPE_IA, optAddr->getAddr());
                 checkCnt++;
             }
             break;
@@ -100,23 +99,33 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 
             SPtr<TOpt> opt;
             ta->firstOption();
-            while (opt = ta->getOption() && (OnLink)) {
+            while (opt = ta->getOption() && (onLink == ADDRSTATUS_YES)) {
                 if (opt->getOptType() != OPTION_IAADDR)
                     continue;
+
                 SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
-                Log(Debug) << "Confirm that address " << optAddr->getAddr()->getPlain() << " is on-link:";
-                if (cfgIface->addrInSubnet(optAddr->getAddr())) {
-                    Log(Cont) << "yes." << LogEnd;
-                } else {
-                    Log(Cont) << "no." << LogEnd;
-                    OnLink = false;
-                }
+                onLink = cfgIface->confirmAddress(IATYPE_TA, optAddr->getAddr());
+                checkCnt++;
+            }
+            break;
+        }
+        case OPTION_IA_PD: {
+            SPtr<TSrvOptIA_PD> ta = (Ptr*) (*opt);
+
+            SPtr<TOpt> opt;
+            ta->firstOption();
+            while (opt = ta->getOption() && (onLink == ADDRSTATUS_YES)) {
+                if (opt->getOptType() != OPTION_IAPREFIX)
+                    continue;
+
+                SPtr<TSrvOptIAPrefix> optPrefix = (Ptr*) opt;
+                onLink = cfgIface->confirmAddress(IATYPE_PD, optPrefix->getPrefix());
                 checkCnt++;
             }
             break;
         }
         default:
-            handleDefaultOption( *opt);
+            handleDefaultOption(*opt);
             break;
         }
         ++opt;
@@ -131,24 +140,37 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         return true;
     }
 
-    if (!OnLink) {
-        // not-on-link
+    switch (onLink) {
+    case ADDRSTATUS_YES: {
+        SPtr <TOptStatusCode> ptrCode =
+            new TOptStatusCode(STATUSCODE_SUCCESS,
+                               "Your addresses are correct for this link! Yay!",
+                               this);
+        Options.push_back( (Ptr*) ptrCode);
+        return true;
+    }
+
+    case ADDRSTATUS_NO: {
         SPtr <TOptStatusCode> ptrCode =
             new TOptStatusCode(STATUSCODE_NOTONLINK,
                                "Sorry, those addresses are not valid for this link.",
                                this);
         Options.push_back( (Ptr*) ptrCode );
         return true;
-    } 
+    }
 
-    // success
-    SPtr <TOptStatusCode> ptrCode =
-        new TOptStatusCode(STATUSCODE_SUCCESS,
-                           "Your addresses are correct for this link! Yay!",
-                           this);
-    Options.push_back( (Ptr*) ptrCode);
+    default:
+    case ADDRSTATUS_UNKNOWN: {
+        Log(Info) << "Address/prefix being confirmed is outside of defined class,"
+                  << " but there is no subnet defined, so can't answer authoratively."
+                  << " Will not send answer." << LogEnd;
+        IsDone = true;
+        return false;
+    }
+    }
 
-    return true;
+    // should never get here
+    return false;
 }
 
 

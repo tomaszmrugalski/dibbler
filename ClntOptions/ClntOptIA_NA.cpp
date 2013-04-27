@@ -68,7 +68,7 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> addrIA, TMsg* parent)
     addrIA->firstAddr();
     while ( ptrAddr = addrIA->getAddr() )
     {
-	if ( !decline || (ptrAddr->getTentative()==TENTATIVE_YES) )
+	if ( !decline || (ptrAddr->getTentative()==ADDRSTATUS_YES) )
 	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(), 
 						    zeroTimes?0:ptrAddr->getValid(),this->Parent) );
     }

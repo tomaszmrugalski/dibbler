@@ -180,7 +180,8 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             }
             break;
         case OPTION_KEYGEN:
-            Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring." << LogEnd;
+            Log(Warning) << "Option OPTION_KEYGEN received by server is invalid, ignoring."
+                         << LogEnd;
             break;
         case OPTION_AUTH:
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
@@ -286,7 +287,8 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         case OPTION_RELAY_MSG:
         case OPTION_INTERFACE_ID:
         case OPTION_STATUS_CODE : {
-            Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. Client is not supposed to send it. Option ignored." << LogEnd;
+            Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. "
+                         << "Client is not supposed to send it. Option ignored." << LogEnd;
             break;
         }
 

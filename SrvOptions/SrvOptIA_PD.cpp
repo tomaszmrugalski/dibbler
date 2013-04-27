@@ -151,7 +151,7 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
     SPtr<TIPv6Addr> cached;
 
     if (hint->getPlain()==string("::") ) {
-        cached = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_PD);
+        cached = SrvAddrMgr().getCachedEntry(ClntDuid, IATYPE_PD);
         if (cached)
             hint = cached;
     }

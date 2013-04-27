@@ -33,7 +33,7 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Valid = valid;
     this->Addr=addr;
     this->Timestamp = now();
-    this->Tentative = TENTATIVE_UNKNOWN;
+    this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = 128;
 
     if (pref>valid) {
@@ -59,7 +59,7 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix) {
     this->Valid = valid;
     this->Addr=addr;
     this->Timestamp = now();
-    this->Tentative = TENTATIVE_UNKNOWN;
+    this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = prefix;
 
     if (pref>valid) {
@@ -139,7 +139,7 @@ void TAddrAddr::setTimestamp(long ts)
     this->Timestamp = ts;
 }
 
-void TAddrAddr::setTentative(enum ETentative state)
+void TAddrAddr::setTentative(enum EAddrStatus state)
 {
     this->Tentative = state;
 }
@@ -160,7 +160,7 @@ void TAddrAddr::setTimestamp()
     this->Timestamp = now();
 }
 
-enum ETentative TAddrAddr::getTentative()
+enum EAddrStatus TAddrAddr::getTentative()
 {
     return Tentative;
 }

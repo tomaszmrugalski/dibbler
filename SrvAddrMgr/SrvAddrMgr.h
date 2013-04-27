@@ -28,7 +28,7 @@ class TSrvAddrMgr : public TAddrMgr
     class TSrvCacheEntry
     {
     public:
-        TAddrIA::TIAType type; // address or prefix
+        TIAType type; // address or prefix
         SPtr<TIPv6Addr> Addr;  // cached address, previously assigned to a client
         SPtr<TDUID>     Duid;  // client's duid
     };
@@ -78,10 +78,10 @@ class TSrvAddrMgr : public TAddrMgr
     SPtr<TIPv6Addr> getFirstAddr(SPtr<TDUID> clntDuid);
 
     // address and prefix caching
-    SPtr<TIPv6Addr> getCachedEntry(SPtr<TDUID> clntDuid, TAddrIA::TIAType type);
-    bool delCachedEntry(SPtr<TIPv6Addr> cachedEntry, TAddrIA::TIAType type);
-    bool delCachedEntry(SPtr<TDUID> clntDuid, TAddrIA::TIAType type);
-    void addCachedEntry(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedEntry, TAddrIA::TIAType type);
+    SPtr<TIPv6Addr> getCachedEntry(SPtr<TDUID> clntDuid, TIAType type);
+    bool delCachedEntry(SPtr<TIPv6Addr> cachedEntry, TIAType type);
+    bool delCachedEntry(SPtr<TDUID> clntDuid, TIAType type);
+    void addCachedEntry(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> cachedEntry, TIAType type);
 
     void setCacheSize(int bytes);
     void dump();

@@ -208,7 +208,7 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 /// @return true, if address was assigned
 bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
     SPtr<TIPv6Addr> candidate;
-    if (candidate = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_IA)) {
+    if (candidate = SrvAddrMgr().getCachedEntry(ClntDuid, IATYPE_IA)) {
         SPtr<TSrvCfgAddrClass> pool = SrvCfgMgr().getClassByAddr(Iface, candidate);
         if (pool) {
 	    Log(Info) << "Cache: Cached address " << *candidate << " found. Welcome back." << LogEnd;
@@ -221,11 +221,11 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
 		return false;
             }
 	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used or reserved." << LogEnd;
-	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
+	    SrvAddrMgr().delCachedEntry(candidate, IATYPE_IA);
             return false;
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *candidate << " found, but it is no longer valid." << LogEnd;
-	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
+	    SrvAddrMgr().delCachedEntry(candidate, IATYPE_IA);
             return false;
 	}// else
     }
