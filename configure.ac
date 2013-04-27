@@ -562,6 +562,7 @@ dnl ----------------------------------------
 dnl Print out configured parameters
 dnl ----------------------------------------
 echo
+echo "Dibbler version               : $PACKAGE_VERSION"
 echo "Selected OS port              : $PORT_SUBDIR"
 echo "Actual OS                     : $system $s_version"
 echo "Debug                         : $debug"
