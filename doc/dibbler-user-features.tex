@@ -1040,7 +1040,7 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsection{Confirm}
+\subsection{CONFIRM message}
 \label{feature-confirm}
 Client detects if previous client instance was not shutdown properly
 (due to power outage, client crash, forceful shutdown or similar
@@ -1050,10 +1050,50 @@ confirm those addresses by using \msg{CONFIRM} message.
 
 If you want to provoke this kind of scenario on purpose, you can run
 dibbler-client normally, then forcefully kill the procss (by sending
-kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
-rerun client before address valid lifetime expires.
+kill -9 signal, or pressing ctrl-backslash under Linux). Make sure
+that you rerun client before address valid lifetime expires.
 
 Currently, client does support only IAs in the \msg{CONFIRM}.
+
+You can force the client to not send CONFIRM message by adding the
+following clause to your \verb+client.conf+:
+
+\begin{lstlisting}
+# Uncomment following line to skip confirm sending
+skip-confirm
+\end{lstlisting}
+
+It is important to understand the meaning of the CONFIRM message. It
+is a question whether specified addresses are topologically valid for
+a given link, not if the server has bindings for them. The server can
+be provided with the information which addresses are valid on a given
+link using \emph{subnet} clause. This directive was introduced in
+Dibbler 0.8.4RC1. See section \ref{example-server-subnet} for server
+configuration examples.
+
+Server will try to respond to CONFIRM messages, even when subnet is
+not defined. In that case it will check if the addresses are within
+configured address pool. If they are, the server will respond with
+success status code. Otherwise it will not respond (as required by
+RFC3315, section 18.2.2). It is important to understand the difference
+between address pool (or class) and subnet. Imagine the case of a
+network that uses 2001:db8::/32 prefix. Out of that prefix only small
+pool (2001:db8::1-2001:db8::ff) was assigned for server
+allocation. Without subnet definition, the server will be able to
+respond to CONFIRM messages only for that small pool. With subnet
+specified in its config file, the server will be able to respond to
+addresses from the whole subnet.
+
+The exact algorithm is as follows. If there is subnet defined, check
+if all addresses and prefixes sent in \msg{CONFIRM} are within that
+subnet. If yes, respond with success status. If any of the servers is
+not within the subnet, respond with NotOnLink status. If there were no
+addresses or prefixes specified, do not respond. If there is not
+subnet defined, check if all addresses and prefixes sent
+in \msg{CONFIRM} are present in respective class, ta-class or pd-class
+ranges. If they are, respond with Success status. If any of them is
+not within the pools, do not respond (because the server does not have
+enough knowledge to authoritatively say that they are not valid).
 
 \subsection{Mobility}
 Client can also be compiled with support for link change detection.
