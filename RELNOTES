@@ -4,8 +4,6 @@
 
  This is a Release Candidate 1 for 0.8.4 release of the Dibbler software.
 
- This is a release with several new features and many bug fixes.
-
  There is no single major new feature, just a lot of bug fixes.
 
  In particular, relay support has been rewritten. It is now possible to select
