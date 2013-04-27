@@ -132,12 +132,8 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
     }
 
     if (!checkCnt) {
-        SPtr <TOptStatusCode> ptrCode =
-            new TOptStatusCode(STATUSCODE_NOTONLINK,
-                               "No addresses checked. Did you send any?",
-                               this);
-        Options.push_back( (Ptr*) ptrCode );
-        return true;
+        Log(Info) << "No addresses or prefixes in CONFIRM. Not sending reply." << LogEnd;
+        return false;
     }
 
     switch (onLink) {
@@ -164,7 +160,6 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         Log(Info) << "Address/prefix being confirmed is outside of defined class,"
                   << " but there is no subnet defined, so can't answer authoratively."
                   << " Will not send answer." << LogEnd;
-        IsDone = true;
         return false;
     }
     }
