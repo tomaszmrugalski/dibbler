@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
-0.8.4 [not released]
+0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
     (patch by Tao Cui)
   - It is now possible to send custom options (hex, string, address or address-list

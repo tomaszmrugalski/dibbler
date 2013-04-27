@@ -1,36 +1,26 @@
 
-  Dibbler 0.8.3 release notes [2013-01-20]
+  Dibbler 0.8.4 Release Candidate 1 release notes [2013-01-20]
  ---------------------------------------------------------
 
- This is a final 0.8.3 release of the Dibbler software.
+ This is a Release Candidate 1 for 0.8.4 release of the Dibbler software.
 
  This is a release with several new features and many bug fixes.
 
- The biggest feature is a rewritten address and prefix allocation engine. Both
- follow the same algorithm now. It is possible to reserve specific address
- and/or prefix for a given host. The host can be referenced by DUID, remote-id
- or link-local address. Both in-pool and out-of-pool reservations are now
- supported.
+ There is no single major new feature, just a lot of bug fixes.
 
- Support for DDNS is now significantly improved. Secure DNS Updates using TSIG
- are now supported. Many, many bugs were fixed and the FQDN handling code is now
- much more robust.
-
- The code now compiles on Solaris 11. It is not yet fully usable, and there are
- outstanding problems with link-layer address detection, but it is better than
- nothing.
-
- Script execution is now improved as well. It is called when receiving stateless
- configuration (after receiving reply to INF-REQUEST) and extra options (like
- FQDN and vendor-specific info) are now properly passed.
+ In particular, relay support has been rewritten. It is now possible to select
+ subnet based on interface-id or value of linkaddr field set by the relay.
+ Client classification has been improved and now can be used to differentiate
+ between 2 or more classes, e.g. docsis3.0 and eRouter in cable networks.
+ Confirm support has been cleaned. Daemon mode no longer has issues when reading
+ from socket descriptor 0.
 
  See CHANGELOG for a complete list of changes.
 
- If you find bugs, please report them on http://klub.com.pl/bugzilla/ or
- send bug report to the directly to the author. Appropriate links are
- on project website: http://klub.com.pl/dhcpv6/. If you need help or
- want to share your thoughts, take a look at one of the
- Dibbler-related mailing lists: dibbler or dibbler-devel.
+ If you find bugs, please report them on http://klub.com.pl/bugzilla/. 
+ Appropriate links are  on project website: http://klub.com.pl/dhcpv6/. If you
+ need help or want to share your thoughts, take a look at one of two Dibbler
+ related mailing lists: dibbler or dibbler-devel.
 
                                Tomek Mrugalski,
                                author
