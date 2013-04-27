@@ -386,48 +386,6 @@ TSrvCfgMgr::~TSrvCfgMgr() {
 }
 
 /**
- * checks if the specified address belongs to the currently supported TA pool
- * (used in CONFIRM message)
- *
- * @param iface
- * @param addr
- *
- * @return
- */
-bool TSrvCfgMgr::isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
-    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
-    if (!ptrIface)
-        return false;
-    ptrIface->firstTA();
-    SPtr<TSrvCfgTA> ta = ptrIface->getTA();
-    if (!ta)
-        return false;
-    return ta->addrInPool(addr);
-}
-
-/**
- * checks if this Addr is already configured in that IA belonging to that client
- * (used in CONFIRM message)
- *
- * @param iface
- * @param addr
- *
- * @return true, if address is supported
- */
-bool TSrvCfgMgr::isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
-    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
-    if (!ptrIface)
-        return false;
-    ptrIface->firstAddrClass();
-    SPtr<TSrvCfgAddrClass> addrClass;
-    while (addrClass = ptrIface->getAddrClass()) {
-        if (addrClass->addrInPool(addr))
-            return true;
-    }
-    return false;
-}
-
-/**
  * returns how many addresses can be assigned to this client?
  * factors used:
  * - iface-max-lease

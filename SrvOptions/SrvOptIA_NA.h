@@ -38,7 +38,6 @@ class TSrvOptIA_NA : public TOptIA_NA
     bool renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing);
     void rebind(SPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
     void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void confirm(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
  private:

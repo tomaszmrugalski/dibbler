@@ -71,6 +71,7 @@ public:
     void addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length);
     void addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max);
     bool addrInSubnet(SPtr<TIPv6Addr> addr);
+    bool subnetDefined();
 
     // other
     SPtr<TIPv6Addr> getUnicast();

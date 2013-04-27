@@ -36,7 +36,7 @@ using namespace std;
 /// @param T1 T1 timer value to be used.
 /// @param T2 T2 timer value to be used.
 /// @param parent Pointer to parent message.
-TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
+TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
 }
 
@@ -370,7 +370,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
     return 0;
 }
 
-// constructor used only in RENEW, REBIND, CONFIRM,DECLINE and RELEASE
+// constructor used only in RENEW, REBIND, DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
                  SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
                  int iface, unsigned long &addrCount, int msgType , TMsg* parent)
@@ -397,9 +397,6 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
         break;
     case RELEASE_MSG:
         this->release(queryOpt, addrCount);
-        break;
-    case CONFIRM_MSG:
-        this->confirm(queryOpt, addrCount);
         break;
     case DECLINE_MSG:
         this->decline(queryOpt, addrCount);
@@ -521,49 +518,6 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
 
 void TSrvOptIA_NA::release(SPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount) {
-}
-
-void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
-                           unsigned long &addrCount)
-{
-    SPtr<TSrvOptIA_NA> ia = queryOpt;
-    SPtr<TOpt> subOpt;
-    bool NotOnLink = false;
-
-    ia->firstOption();
-    while ( subOpt = ia->getOption() ) {
-        if (subOpt->getOptType() != OPTION_IAADDR)
-            continue;
-
-        SPtr<TSrvOptIAAddress> optAddr = (Ptr*)subOpt;
-
-        /// @todo: proper check if the addresses are valid or not should be performed
-        SPtr<TSrvCfgAddrClass> ptrClass;
-        ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, optAddr->getAddr());
-        if (!ptrClass)
-        {
-            NotOnLink = true;
-            break;
-        }
-
-        // set IA Address suboptions and IA
-        optAddr->setPref( ptrClass->getPref(DHCPV6_INFINITY) );
-        optAddr->setValid( ptrClass->getValid(DHCPV6_INFINITY) );
-
-        this->setT1( ptrClass->getT1(DHCPV6_INFINITY) );
-        this->setT2( ptrClass->getT2(DHCPV6_INFINITY) );
-
-        SPtr<TOptIAAddress> myOptAddr;
-        myOptAddr = new TSrvOptIAAddress(optAddr->getAddr(), optAddr->getPref(),
-                                       optAddr->getValid(),this->Parent);
-        SubOptions.append( (Ptr*)myOptAddr );
-    }
-
-
-    if (NotOnLink)
-        SubOptions.append(new TOptStatusCode(STATUSCODE_NOTONLINK,
-                                             "Those addresses are not valid on this link.",this->Parent ));
-
 }
 
 void TSrvOptIA_NA::decline(SPtr<TSrvOptIA_NA> queryOpt,

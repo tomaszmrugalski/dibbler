@@ -47,8 +47,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     handleConfirmOptions( confirm->getOptLst() );
 
     appendMandatoryOptions(ORO);
-    // appendRequestedOptions(ClientDUID, confirm->getAddr(), confirm->getIface(), ORO);
-    // appendStatusCode();
     appendAuthenticationOption(ClientDUID);
 
     pkt = new char[this->getSize()];
@@ -58,17 +56,16 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 }
 
 bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
-    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID( Iface );
-    if (!ptrIface) {
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
+    if (!cfgIface) {
         Log(Crit) << "Msg received through not configured interface. "
             "Somebody call an exorcist!" << LogEnd;
-        this->IsDone = true;
+        IsDone = true;
         return false;
     }
 
     bool OnLink = true;
     int checkCnt = 0;
-    List(TSrvOptIA_NA) validIAs;
 
     TOptList::iterator opt = options.begin();
     while ( (opt!=options.end()) && OnLink ) {
@@ -79,44 +76,39 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
             SPtr<TSrvOptIA_NA> ia = (Ptr*) (*opt);
 
             // now we check whether this IA exists in Server Address database or not.
-
-            SPtr<TOpt> subOpt;
-            unsigned long addrCnt = 0;
+            SPtr<TOpt> opt;
             ia->firstOption();
-            while ( (subOpt = ia->getOption()) && (OnLink) ) {
-                if (subOpt->getOptType() != OPTION_IAADDR){
+            while ((opt = ia->getOption()) && (OnLink) ) {
+                if (opt->getOptType() != OPTION_IAADDR){
                     continue;
                 }
 
-                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
-                Log(Debug) << "CONFIRM message: checking if " << optAddr->getAddr()->getPlain() << " is supported:";
-                if (!SrvCfgMgr().isIAAddrSupported(this->Iface, optAddr->getAddr())) {
+                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+                Log(Debug) << "Confirm that address " << optAddr->getAddr()->getPlain() << " is on-link:";
+                if (cfgIface->addrInSubnet(optAddr->getAddr())) {
+                    Log(Cont) << "yes." << LogEnd;
+                } else {
                     Log(Cont) << "no." << LogEnd;
                     OnLink = false;
-                } else {
-                    Log(Cont) << "yes." << LogEnd;
-                    addrCnt++;
                 }
                 checkCnt++;
-            }
-            if (addrCnt) {
-                SPtr<TSrvOptIA_NA> tempIA = new TSrvOptIA_NA(ia, PeerAddr,
-                                                             ClientDUID, Iface, addrCnt,CONFIRM_MSG, this);
-                validIAs.append(tempIA);
             }
             break;
         }
         case OPTION_IA_TA: {
             SPtr<TSrvOptTA> ta = (Ptr*) (*opt);
-            // now we check whether this IA exists in Server Address database or not.
 
-            SPtr<TOpt> subOpt;
+            SPtr<TOpt> opt;
             ta->firstOption();
-            while (subOpt = ta->getOption() && (OnLink)) {
-                if (subOpt->getOptType() != OPTION_IAADDR)
+            while (opt = ta->getOption() && (OnLink)) {
+                if (opt->getOptType() != OPTION_IAADDR)
                     continue;
-                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) subOpt;
-                if (!SrvCfgMgr().isTAAddrSupported(this->Iface, optAddr->getAddr())) {
+                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+                Log(Debug) << "Confirm that address " << optAddr->getAddr()->getPlain() << " is on-link:";
+                if (cfgIface->addrInSubnet(optAddr->getAddr())) {
+                    Log(Cont) << "yes." << LogEnd;
+                } else {
+                    Log(Cont) << "no." << LogEnd;
                     OnLink = false;
                 }
                 checkCnt++;
@@ -129,14 +121,16 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         }
         ++opt;
     }
+
     if (!checkCnt) {
-        // no check
         SPtr <TOptStatusCode> ptrCode =
             new TOptStatusCode(STATUSCODE_NOTONLINK,
                                "No addresses checked. Did you send any?",
                                this);
         Options.push_back( (Ptr*) ptrCode );
-    } else
+        return true;
+    }
+
     if (!OnLink) {
         // not-on-link
         SPtr <TOptStatusCode> ptrCode =
@@ -144,22 +138,15 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
                                "Sorry, those addresses are not valid for this link.",
                                this);
         Options.push_back( (Ptr*) ptrCode );
-    } else {
-        // success
-        SPtr <TOptStatusCode> ptrCode =
-            new TOptStatusCode(STATUSCODE_SUCCESS,
-                               "Your addresses are correct for this link! Yay!",
-                               this);
-        Options.push_back( (Ptr*) ptrCode);
+        return true;
+    } 
 
-        if(validIAs.count()){
-            SPtr<TSrvOptIA_NA> ia;
-            validIAs.first();
-            while(ia=validIAs.get() ){
-                Options.push_back((Ptr*)ia );
-            }
-        }
-    }
+    // success
+    SPtr <TOptStatusCode> ptrCode =
+        new TOptStatusCode(STATUSCODE_SUCCESS,
+                           "Your addresses are correct for this link! Yay!",
+                           this);
+    Options.push_back( (Ptr*) ptrCode);
 
     return true;
 }

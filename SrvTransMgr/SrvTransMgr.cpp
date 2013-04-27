@@ -168,6 +168,13 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         return;
     }
 
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
+    if (!cfgIface) {
+        Log(Error) << "Received message on unknown interface (ifindex="
+                   << msg->getIface() << LogEnd;
+        return;
+    }
+
     // LEASE ASSIGN STEP 1: Evaluate defined expressions (client classification)
     // Ask NodeClietSpecific to analyse the message
     NodeClientSpecific::analyseMessage(msg);
@@ -201,11 +208,10 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
-        SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
         if (msg->getOption(OPTION_RAPID_COMMIT)) {
-            if (!ptrCfgIface->getRapidCommit()) {
+            if (!cfgIface->getRapidCommit()) {
                 Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
-                          << ptrCfgIface->getName() << " interface." << LogEnd;
+                          << cfgIface->getName() << " interface." << LogEnd;
                 a = new TSrvMsgAdvertise((Ptr*)msg);
             } else {
                 SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
@@ -222,6 +228,11 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         break;
     }
     case CONFIRM_MSG: {
+        if (!cfgIface->subnetDefined()) {
+            Log(Warning) << "No subnet defined for interface " << cfgIface->getFullName()
+                         << ", can't answer CONFIRM" << LogEnd;
+            return;
+        }
         SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
         a = new TSrvMsgReply(nmsg);
         break;

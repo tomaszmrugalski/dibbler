@@ -182,7 +182,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 #endif
         return 0;
     }
-    result = ::select(maxFD,&fds,NULL, NULL, &czas);
+    result = ::select(maxFD, &fds, NULL, NULL, &czas);
 
     // something received
 

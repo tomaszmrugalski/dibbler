@@ -837,6 +837,10 @@ bool TSrvCfgIface::addrInSubnet(SPtr<TIPv6Addr> addr) {
     return false;
 }
 
+bool TSrvCfgIface::subnetDefined() {
+    return !Subnets_.empty();
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
