@@ -158,7 +158,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     // read data
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
+
     if (sockid>0) {
+
         if (bufsize<4) {
             Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
             return 0; //NULL
@@ -176,83 +178,57 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                    << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
                    << ")." << LogEnd;
 
+
         // create specific message object
         SPtr<TSrvMsg> ptr;
         switch (msgtype) {
-        case SOLICIT_MSG:
-        case REQUEST_MSG:
-        case CONFIRM_MSG:
-        case RENEW_MSG:
-        case REBIND_MSG:
-        case RELEASE_MSG:
-        case DECLINE_MSG:
-        case INFORMATION_REQUEST_MSG:
-        case LEASEQUERY_MSG:
-        {
-            ptr = decodeMsg(ptrIface, peer, buf, bufsize,false);
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                return 0;
-            }
-            return ptr;
-        }
-        case RELAY_FORW_MSG:
-        {
-            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-            if (!ptr)
-                return 0;
-            if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
-                Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                return 0;
-            }
-        }
-        return ptr;
-        case ADVERTISE_MSG:
-        case REPLY_MSG:
-        case RECONFIGURE_MSG:
-        case RELAY_REPL_MSG:
-        case LEASEQUERY_REPLY_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; //NULL;
-		case LEASEQUERY_DONE_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        case LEASEQUERY_DATA_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        default:
-            isBulk=buf[3];
-            Log(Debug) << "Checking if received data is Bulk session" << LogEnd;
-            switch (isBulk) {
 
+            case SOLICIT_MSG:
+            case REQUEST_MSG:
+            case CONFIRM_MSG:
+            case RENEW_MSG:
+            case REBIND_MSG:
+            case RELEASE_MSG:
+            case DECLINE_MSG:
+            case INFORMATION_REQUEST_MSG:
             case LEASEQUERY_MSG:
             {
-                Log (Debug) << "Bulk leasequery massage received with code:"<<isBulk << LogEnd;
-                ptr = decodeMsg(ptrIface, peer, buf, bufsize,true);
+                ptr = decodeMsg(ptrIface, peer, buf, bufsize,false);
                 if (!ptr->validateReplayDetection() ||
                     !ptr->validateAuthInfo(buf, bufsize)) {
                     Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
                     return 0;
                 }
                 return ptr;
-
             }
+            case RELAY_FORW_MSG:
+            {
+                ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+                if (!ptr)
+                    return 0;
+                if (!ptr->validateReplayDetection() ||
+                    !ptr->validateAuthInfo(buf, bufsize)) {
+                    Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+                    return 0;
+                }
+            }
+            return ptr;
+            case ADVERTISE_MSG:
+            case REPLY_MSG:
+            case RECONFIGURE_MSG:
+            case RELAY_REPL_MSG:
             case LEASEQUERY_REPLY_MSG:
-               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
-               return 0; //NULL;
+                Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                return 0; //NULL;
             case LEASEQUERY_DONE_MSG:
-               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
-               return 0;
+                Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                return 0;
             case LEASEQUERY_DATA_MSG:
-               Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
-               return 0;
-
+                Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                return 0;
             default:
-                Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
-                return 0; //NULL
-            }
+            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+            return 0;
 
         }
     } else {
@@ -495,28 +471,33 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
     int ifaceid = ptrIface->getID();
     if (bufsize<4)
         return 0;
-    switch (buf[0]) {
-    case SOLICIT_MSG:
-              return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
-    case REQUEST_MSG:
-              return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
-    case CONFIRM_MSG:
-              return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
-    case RENEW_MSG:
-              return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
-    case REBIND_MSG:
-              return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
-    case RELEASE_MSG:
-              return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
-    case DECLINE_MSG:
-              return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
-    case INFORMATION_REQUEST_MSG:
-              return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
-    case LEASEQUERY_MSG:  
-              return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
-    default:
-        Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-        return 0; //NULL;;
+
+    if (!isTcp) {
+        switch (buf[0]) {
+        case SOLICIT_MSG:
+                  return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+        case REQUEST_MSG:
+                  return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+        case CONFIRM_MSG:
+                  return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+        case RENEW_MSG:
+                  return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+        case REBIND_MSG:
+                  return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+        case RELEASE_MSG:
+                  return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+        case DECLINE_MSG:
+                  return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+        case INFORMATION_REQUEST_MSG:
+                  return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+
+        default:
+            Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+            return 0; //NULL;;
+       }
+    } else {
+        if (buf[0] == LEASEQUERY_MSG)
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
     }
 }
 

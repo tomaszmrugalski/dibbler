@@ -29,6 +29,8 @@ typedef struct {
     int  enterpriseNumber;
     int  queryType;
 
+    bool multiplyQuery;
+
 } ReqCfgMgr;
 
 #endif

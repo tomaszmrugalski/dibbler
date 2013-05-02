@@ -66,48 +66,48 @@ void TDHCPServer::run()
 {	
     bool silent = false;
     while ( (!isDone()) && (!SrvTransMgr().isDone()) ) {
-    	if (serviceShutdown)
-	    SrvTransMgr().shutdown();
+        if (serviceShutdown)
+            SrvTransMgr().shutdown();
 	
-	SrvTransMgr().doDuties();
-	unsigned int timeout = SrvTransMgr().getTimeout();
-	if (timeout == 0)        timeout = 1;
-	if (serviceShutdown)     timeout = 0;
-	
-	if (!silent)
-	    Log(Notice) << "Accepting connections. Next event in " << timeout 
-			<< " second(s)." << LogEnd;
-#ifdef WIN32
-	// There's no easy way to break select under Windows, so just don't sleep for too long.
-	if (timeout>5) {
-	    silent = true;
-	    timeout = 5;
-	}
-#endif
-	
-    SPtr<TSrvMsg> msg = SrvIfaceMgr().select(timeout);
-	if (!msg) 
-	    continue;
-	silent = false;
-	int iface = msg->getIface();
-	SPtr<TIfaceIface> ptrIface;
-	ptrIface = SrvIfaceMgr().getIfaceByID(iface);
-	Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName() 
-		    << "/" << iface << hex << ",TransID=0x" << msg->getTransID() 
-            << dec << ", " << msg->countOption() << " opts:";
-	SPtr<TOpt> ptrOpt;
-    msg->firstOption();
-	while (ptrOpt = msg->getOption() )
-	    Log(Cont) << " " << ptrOpt->getOptType();
-	Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
-	if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) &&
-					 (msg->getType()!=RELAY_FORW_MSG))) {
-	    Log(Warning) 
-		<< "Stateful configuration related message received while running in the stateless mode. Message ignored." 
-		<< LogEnd;
-	    continue;
-	} 
-	SrvTransMgr().relayMsg(msg);
+        SrvTransMgr().doDuties();
+        unsigned int timeout = SrvTransMgr().getTimeout();
+        if (timeout == 0)        timeout = 1;
+        if (serviceShutdown)     timeout = 0;
+
+        if (!silent)
+            Log(Notice) << "Accepting connections. Next event in " << timeout
+                << " second(s)." << LogEnd;
+    #ifdef WIN32
+        // There's no easy way to break select under Windows, so just don't sleep for too long.
+        if (timeout>5) {
+            silent = true;
+            timeout = 5;
+        }
+    #endif
+
+        SPtr<TSrvMsg> msg = SrvIfaceMgr().select(timeout);
+        if (!msg)
+            continue;
+        silent = false;
+        int iface = msg->getIface();
+        SPtr<TIfaceIface> ptrIface;
+        ptrIface = SrvIfaceMgr().getIfaceByID(iface);
+        Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName()
+                << "/" << iface << hex << ",TransID=0x" << msg->getTransID()
+                << dec << ", " << msg->countOption() << " opts:";
+        SPtr<TOpt> ptrOpt;
+        msg->firstOption();
+        while (ptrOpt = msg->getOption() )
+            Log(Cont) << " " << ptrOpt->getOptType();
+
+        Log(Cont) << ", " << msg->getRelayCount() << " relay(s)." << LogEnd;
+        if (SrvCfgMgr().stateless() && ( (msg->getType()!=INFORMATION_REQUEST_MSG) && (msg->getType()!=RELAY_FORW_MSG))) {
+            Log(Warning)
+            << "Stateful configuration related message received while running in the stateless mode. Message ignored."
+            << LogEnd;
+            continue;
+        }
+        SrvTransMgr().relayMsg(msg);
     }
     Log(Notice) << "Bye bye." << LogEnd;
 }

@@ -200,85 +200,85 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     q = (Ptr*) msg;
 
     switch(msg->getType()) {
-    case SOLICIT_MSG: {
-        SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
-        if (msg->getOption(OPTION_RAPID_COMMIT)) {
-            if (!ptrCfgIface->getRapidCommit()) {
-                Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
-                          << ptrCfgIface->getName() << " interface." << LogEnd;
-                a = new TSrvMsgAdvertise((Ptr*)msg);
+        case SOLICIT_MSG: {
+            SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
+            if (msg->getOption(OPTION_RAPID_COMMIT)) {
+                if (!ptrCfgIface->getRapidCommit()) {
+                    Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
+                              << ptrCfgIface->getName() << " interface." << LogEnd;
+                    a = new TSrvMsgAdvertise((Ptr*)msg);
+                } else {
+                    SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
+                    a = new TSrvMsgReply(nmsg);
+                }
             } else {
-                SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-                a = new TSrvMsgReply(nmsg);
+                a = new TSrvMsgAdvertise( (Ptr*) msg);
             }
-        } else {
-            a = new TSrvMsgAdvertise( (Ptr*) msg);
+            break;
         }
-        break;
-    }
-    case REQUEST_MSG: {
-        SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case CONFIRM_MSG: {
-        SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case RENEW_MSG: {
-        SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case REBIND_MSG: {
-        SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case DECLINE_MSG: {
-        SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case RELEASE_MSG: {
-        SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case INFORMATION_REQUEST_MSG : {
-        SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
-        break;
-    }
-    case LEASEQUERY_MSG: {
-        int iface = msg->getIface();
-        if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
-            Log(Error) << "LQ: LeaseQuery message received on " << iface
-                       << " interface, but it is not supported there." << LogEnd;
-            return;
+        case REQUEST_MSG: {
+            SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
         }
-        Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        a = new TSrvMsgLeaseQueryReply(lq);
-        break;
-    }
-    case RECONFIGURE_MSG:
-    case ADVERTISE_MSG:
-    case REPLY_MSG:
-    {
-        Log(Warning) << "Invalid message type received: " << msg->getType()
-                     << LogEnd;
-        break;
-    }
-    case RELAY_FORW_MSG: // They should be decapsulated earlier
-    case RELAY_REPL_MSG:
-    default:
-    {
-        Log(Warning)<< "Message type " << msg->getType()
-                    << " not supported." << LogEnd;
-        break;
-    }
+        case CONFIRM_MSG: {
+            SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case RENEW_MSG: {
+            SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case REBIND_MSG: {
+            SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case DECLINE_MSG: {
+            SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case RELEASE_MSG: {
+            SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case INFORMATION_REQUEST_MSG : {
+            SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case LEASEQUERY_MSG: {
+            int iface = msg->getIface();
+            if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
+                Log(Error) << "LQ: LeaseQuery message received on " << iface
+                           << " interface, but it is not supported there." << LogEnd;
+                return;
+            }
+            Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+            SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
+            a = new TSrvMsgLeaseQueryReply(lq);
+            break;
+        }
+        case RECONFIGURE_MSG:
+        case ADVERTISE_MSG:
+        case REPLY_MSG:
+        {
+            Log(Warning) << "Invalid message type received: " << msg->getType()
+                         << LogEnd;
+            break;
+        }
+        case RELAY_FORW_MSG: // They should be decapsulated earlier
+        case RELAY_REPL_MSG:
+        default:
+        {
+            Log(Warning)<< "Message type " << msg->getType()
+                        << " not supported." << LogEnd;
+            break;
+        }
     }
 
     if (a) {

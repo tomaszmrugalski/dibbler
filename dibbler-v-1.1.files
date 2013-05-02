@@ -661,3 +661,5 @@
 /home/damo/Studia/Praca_magisterska/tomaszmrugalski-dibbler-1.1/aclocal.m4
 /home/damo/Studia/Praca_magisterska/tomaszmrugalski-dibbler-1.1/ltmain.sh
 /home/damo/Studia/Praca_magisterska/tomaszmrugalski-dibbler-1.1/README.md
+Options/OptRemoteId.h
+Options/OptRemoteId.cpp
