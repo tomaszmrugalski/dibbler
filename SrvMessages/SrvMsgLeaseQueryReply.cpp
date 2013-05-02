@@ -18,6 +18,7 @@
 #include "SrvOptIAPrefix.h"
 #include "AddrClient.h"
 #include "SrvCfgMgr.h"
+#include "OptRemoteId.h"
 
 using namespace std;
 
@@ -220,8 +221,36 @@ bool TSrvMsgLeaseQueryReply::queryByLinkAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgL
 }
 
 bool TSrvMsgLeaseQueryReply::queryByRemoteID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
-    /// @todo: Implement query by remote-id
-    Log(Error) << "BLQ: Query by Remote-ID not implemented yet." << LogEnd;
+
+    SPtr<TOpt> opt;
+    q->firstOption();
+
+    SPtr<TOptRemoteID> remotePtr = 0;
+    SPtr<TOptRemoteID> remoteId = 0;
+    //SPtr<TIPv6Addr> link = q->getLinkAddr();
+
+    while ( opt = q->getOption() ) {
+        if (opt->getOptType() == OPTION_REMOTE_ID)
+            remotePtr = (Ptr*) opt;
+            remoteId = remotePtr->getRemoteId();
+    }
+    if (!remoteId) {
+        Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required RemoteId suboption missing.", this));
+        return true;
+    }
+
+
+    // search for client using existing RemoteId
+    //TODO: how to return bindings via RemoteId by AddrMgr ?
+    SPtr<TAddrClient> cli = SrvAddrMgr().getClient();
+    if (!cli) {
+        Log(Warning) << "LQ: Assignement for client RemoteId=" << remoteId->getPlain() << " not found." << LogEnd;
+        Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
+        return true;
+    }
+
+    appendClientData(cli);
+    return true;
 
     // algorithm:
     // search thru AddrMgr
@@ -243,8 +272,36 @@ bool TSrvMsgLeaseQueryReply::queryByRemoteID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
 bool TSrvMsgLeaseQueryReply::queryByRelayID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
     /// @todo: Implement query by relay-id
 
-    Log(Error) << "BLQ: Query by Relay-ID not implemented yet." << LogEnd;
-    return false;
+
+    SPtr<TOpt> opt;
+    SPtr<TOptDUID> relayDuidOpt = 0;
+    SPtr<TDUID> duid = 0;
+   // SPtr<TIPv6Addr> link = q->getLinkAddr();
+
+    q->firstOption();
+    while ( opt = q->getOption() ) {
+        if (opt->getOptType() == OPTION_CLIENTID) {
+            relayDuidOpt = (Ptr*) opt;
+            duid = relayDuidOpt->getDUID();
+        }
+    }
+    if (!duid) {
+    Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your relay DUID.", this) );
+    return true;
+    }
+
+    // search for client by duid
+    SPtr<TAddrClient> cli = SrvAddrMgr().getClient( duid );
+
+    if (!cli) {
+        Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
+        Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this Relay DUID found.", this) );
+        return true;
+    }
+
+    appendClientData(cli);
+    return true;
+
 }
 
 

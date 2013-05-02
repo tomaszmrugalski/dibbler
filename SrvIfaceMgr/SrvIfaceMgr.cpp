@@ -281,15 +281,13 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             
         case LEASEQUERY_MSG:
             {
-                Log (Debug) << "Bulk leasequery massage received with code:"<<isBulk << LogEnd;
-                ptr = decodeMsg(ptrIface, peer, buf, bufsize,true);
+                ptr = decodeMsg(ptrIface, peer, buf, bufsize,false);
                 if (!ptr->validateReplayDetection() ||
                     !ptr->validateAuthInfo(buf, bufsize)) {
                     Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
                     return 0;
                 }
                 return ptr;
-                
             }
         case LEASEQUERY_REPLY_MSG:
             Log(Warning) << "Illegal message type " << isBulk << " received over tcp." << LogEnd;
@@ -685,28 +683,53 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
                      << ", at least 4 is required)." << LogEnd;
         return SPtr<TSrvMsg>(); // NULL
     }
-    switch (buf[0]) {
-    case SOLICIT_MSG:
-        return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
-    case REQUEST_MSG:
-        return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
-    case CONFIRM_MSG:
-        return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
-    case RENEW_MSG:
-        return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
-    case REBIND_MSG:
-        return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
-    case RELEASE_MSG:
-        return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
-    case DECLINE_MSG:
-        return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
-    case INFORMATION_REQUEST_MSG:
-        return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
-    case LEASEQUERY_MSG:
-        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
-    default:
-        Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
+    if (!isTcp) {
+        switch (buf[0]) {
+        case SOLICIT_MSG:
+                  return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+        case REQUEST_MSG:
+                  return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+        case CONFIRM_MSG:
+                  return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+        case RENEW_MSG:
+                  return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+        case REBIND_MSG:
+                  return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+        case RELEASE_MSG:
+                  return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+        case DECLINE_MSG:
+                  return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+        case INFORMATION_REQUEST_MSG:
+                  return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+
+        default:
+            Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+            return 0; //NULL;;
+       }
+    } else {
+        switch (buf[0]) {
+        case SOLICIT_MSG:
+            return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+        case REQUEST_MSG:
+            return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+        case CONFIRM_MSG:
+            return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+        case RENEW_MSG:
+            return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+        case REBIND_MSG:
+            return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+        case RELEASE_MSG:
+            return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+        case DECLINE_MSG:
+            return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+        case INFORMATION_REQUEST_MSG:
+            return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+        case LEASEQUERY_MSG:
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, isTcp);
+        default:
+            Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+            return SPtr<TSrvMsg>(); // NULL
+        }
     }
 }
 

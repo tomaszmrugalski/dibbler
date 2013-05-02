@@ -33,18 +33,26 @@ void printHelp()
          << "-duid DUID - query about DUID, e.g. -duid 00:11:22:33:44:55:66:77:88" << endl
 	 << "-bulk ADDR - query about link-address, e.g. -bulk 2000::43" << endl
          << "-timeout 10 - query timeout, specified in seconds" << endl
-         << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl;
+         << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl
+     << "To send bulk multiple query:"<< endl
+     << "- bulk -m ADDR [] CLIENT-ID [] LINK-ADDR [] RELAY-ID [] REMOTE-ID [], e.g. -bulk -m 2000::43 00:11:22:33:44:55:66:77:88 00:11:22:33:88:44:55:66:77"<< endl;
+        //<< "- bulk -m ADDR RE"<< endl;
 }
 
 bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 {
     char * addr    = 0;
     char * duid    = 0;
+    char * linkAddr =0;
     char * bulk    = 0;
     char * iface   = 0;
     char * dstaddr = 0;
     char * remoteId =0;
+    char * relayId =0;
+    char * tmpOpt =0;
     int enterpriseNumber =0;
+    bool multiplyQ = false;
+
 
     int timeout  = 60; // default timeout value
     for (int i=1; i<argc; i++) {
@@ -69,8 +77,61 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                 Log(Error) << "Unable to parse command-line. -bulk used, but actual link-address is missing." << LogEnd;
                 return false;
             }
-            bulk = argv[++i];
-            continue;
+
+            if (!strncmp(argv[++i],"-m", 2) ) {
+                multiplyQ = true;
+                ++i;
+                while(i <= argc) {
+
+                    tmpOpt = argv[i];
+
+                    switch (tmpOpt) {
+
+                    case "ADDR":
+                        addr=argv[++i];
+                        if (argc == i) {
+                            Log(Error) << "Unable to parse command-line. -bulk used, but actual address is missing." << LogEnd;
+                            return false;
+                        }
+                        break;
+
+                    case "CLIENT-ID":
+                        duid=argv[++i];
+                        if (argc == i) {
+                            Log(Error) << "Unable to parse command-line. -bulk used, but actual DUID is missing." << LogEnd;
+                            return false;
+                        }
+                        break;
+                    case "LINK-ADDR":
+                        linkAddr=argv[++i];
+                        if (argc == i) {
+                            Log(Error) << "Unable to parse command-line. -bulk used, but actual link-addr is missing." << LogEnd;
+                            return false;
+                        }
+                        break;
+                    case "RELAY-ID":
+                        relayId = argv[++i];
+                        if (argc == i) {
+                            Log(Error) << "Unable to parse command-line. -bulk used, but actual relay is missing." << LogEnd;
+                            return false;
+                        }
+                        break;
+                    case "REMOTE-ID":
+                        remoteId = argv[++i];
+                        if (argc == i) {
+                            Log(Error) << "Unable to parse command-line. -bulk used, but actual remoteId is missing." << LogEnd;
+                            return false;
+                        }
+                        break;
+                    }
+
+                    ++i;
+                };
+
+            } else {
+                bulk = argv[++i];
+                continue;
+            }
         }
         if (!strncmp(argv[i],"-i", 2)) {
             if (argc==i) {
@@ -146,6 +207,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     a->dstaddr = dstaddr;
     a->remoteId = remoteId;
     a->enterpriseNumber = enterpriseNumber;
+    a->multiplyQuery = multiplyQ;
     return true;
 }
 
