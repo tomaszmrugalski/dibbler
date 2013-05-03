@@ -69,6 +69,7 @@ am_libOptions_a_OBJECTS = libOptions_a-OptAAAAuthentication.$(OBJEXT) \
 	libOptions_a-OptInteger.$(OBJEXT) \
 	libOptions_a-OptKeyGeneration.$(OBJEXT) \
 	libOptions_a-OptOptionRequest.$(OBJEXT) \
+	libOptions_a-OptRemoteId.$(OBJEXT) \
 	libOptions_a-OptStatusCode.$(OBJEXT) \
 	libOptions_a-OptString.$(OBJEXT) \
 	libOptions_a-OptDomainLst.$(OBJEXT) \
@@ -305,7 +306,7 @@ libOptions_a_SOURCES = OptAAAAuthentication.cpp OptAAAAuthentication.h \
 	OptIAAddress.h OptIA_NA.cpp OptIA_NA.h OptIA_PD.cpp OptIA_PD.h \
 	OptIAPrefix.cpp OptIAPrefix.h OptInteger.cpp OptInteger.h \
 	OptKeyGeneration.cpp OptKeyGeneration.h OptOptionRequest.cpp \
-	OptOptionRequest.h OptStatusCode.cpp OptStatusCode.h \
+	OptOptionRequest.h OptRemoteId.cpp OptRemoteId.h OptStatusCode.cpp OptStatusCode.h \
 	OptString.cpp OptString.h OptDomainLst.cpp OptDomainLst.h \
 	OptTA.cpp OptTA.h OptUserClass.cpp OptUserClass.h \
 	OptVendorData.cpp OptVendorData.h OptVendorSpecInfo.cpp \
@@ -375,6 +376,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptInteger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptOptionRequest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptRemoteId.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptRtPrefix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptStatusCode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptString.Po@am__quote@
@@ -662,6 +664,23 @@ libOptions_a-OptOptionRequest.obj: OptOptionRequest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='OptOptionRequest.cpp' object='libOptions_a-OptOptionRequest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptOptionRequest.obj `if test -f 'OptOptionRequest.cpp'; then $(CYGPATH_W) 'OptOptionRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/OptOptionRequest.cpp'; fi`
+
+libOptions_a-OptRemoteId.o: OptRemoteId.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptRemoteId.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptRemoteId.Tpo -c -o libOptions_a-OptRemoteId.o `test -f 'OptRemoteId.cpp' || echo '$(srcdir)/'`OptRemoteId.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptRemoteId.Tpo $(DEPDIR)/libOptions_a-OptRemoteId.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='OptRemoteId.cpp' object='libOptions_a-OptRemoteId.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptRemoteId.o `test -f 'OptRemoteId.cpp' || echo '$(srcdir)/'`OptRemoteId.cpp
+
+libOptions_a-OptRemoteId.obj: OptRemoteId.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptRemoteId.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptRemoteId.Tpo -c -o libOptions_a-OptRemoteId.obj `if test -f 'OptRemoteId.cpp'; then $(CYGPATH_W) 'OptRemoteId.cpp'; else $(CYGPATH_W) '$(srcdir)/OptRemoteId.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptRemoteId.Tpo $(DEPDIR)/libOptions_a-OptRemoteId.Po
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='OptRemoteId.cpp' object='libOptions_a-OptRemoteId.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptRemoteId.obj `if test -f 'OptRemoteId.cpp'; then $(CYGPATH_W) 'OptRemoteId.cpp'; else $(CYGPATH_W) '$(srcdir)/OptRemoteId.cpp'; fi`
+
 
 libOptions_a-OptStatusCode.o: OptStatusCode.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptStatusCode.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptStatusCode.Tpo -c -o libOptions_a-OptStatusCode.o `test -f 'OptStatusCode.cpp' || echo '$(srcdir)/'`OptStatusCode.cpp

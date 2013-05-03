@@ -5,11 +5,13 @@
 #include "Logger.h"
 
 
-TOptTOptRemoteID::TOptTOptRemoteID(int type, char * buf,  int n, TMsg* parent){
+TOptRemoteID::TOptRemoteID(int type, char * buf,  int n, TMsg* parent)
+    :TOpt(type, parent){
 
 }
 
-TOptTOptRemoteID::TOptTOptRemoteID(int type, int enterprise, char *data, int dataLen, TMsg* parent){
+TOptRemoteID::TOptRemoteID(int type, int enterprise, char *data, int dataLen, TMsg* parent)
+    :TOpt(type, parent){
 
 
 }
@@ -32,7 +34,7 @@ size_t TOptRemoteID::getSize(){
 char * TOptRemoteID::storeSelf( char* buf) {
 
     // option-code OPTION_VENDOR_OPTS (2 bytes long)
-    buf = writeUint16(buf,queryType);
+    buf = writeUint16(buf,OptType);
 
     // option-len size of total option-data
     buf = writeUint16(buf, getSize()-4);

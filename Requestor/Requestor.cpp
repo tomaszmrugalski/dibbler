@@ -16,6 +16,7 @@
 #include "IfaceMgr.h"
 #include "ReqTransMgr.h"
 #include "Logger.h"
+#include "DHCPConst.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -34,11 +35,34 @@ void printHelp()
 	 << "-bulk ADDR - query about link-address, e.g. -bulk 2000::43" << endl
          << "-timeout 10 - query timeout, specified in seconds" << endl
          << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl
-     << "To send bulk multiple query:"<< endl
-     << "- bulk -m ADDR [] CLIENT-ID [] LINK-ADDR [] RELAY-ID [] REMOTE-ID [], e.g. -bulk -m 2000::43 00:11:22:33:44:55:66:77:88 00:11:22:33:88:44:55:66:77"<< endl;
+     << "To send bulk (multiple) query:"<< endl
+     << "- bulk -dstaddr ADDRESS [] CLIENT_ID [] LINK_ADDRESS [] RELAY_ID [] REMOTE_ID [], e.g. -bulk -m 2000::43 00:11:22:33:44:55:66:77:88 00:11:22:33:88:44:55:66:77"<< endl;
         //<< "- bulk -m ADDR RE"<< endl;
 }
 
+int parseMultiQueryCmd(char * inputString ) {
+
+    /*QUERY_BY_ADDRESS
+    QUERY_BY_CLIENT_ID = 2,
+    QUERY_BY_RELAY_ID = 3,
+    QUERY_BY_LINK_ADDRESS = 4,
+    QUERY_BY_REMOTE_ID = 5*/
+
+    if (!strncmp(inputString,"ADDRESS", 7)){
+        return 1;
+    } else if(!strncmp(inputString,"CLIENT_ID", 9) ) {
+        return 2;
+    } else if(!strncmp(inputString,"RELAY_ID", 8) ){
+        return 3;
+    } else if(!strncmp(inputString,"LINK_ADDRESS", 12) ){
+        return 4;
+    } else if (!strncmp(inputString,"REMOTE_ID", 9) ){
+        return 5;
+    } else {
+        return 0;
+    }
+
+}
 bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 {
     char * addr    = 0;
@@ -49,8 +73,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     char * dstaddr = 0;
     char * remoteId =0;
     char * relayId =0;
-    char * tmpOpt =0;
-    int enterpriseNumber =0;
+    int enterpriseNumber =0, tmpOptCode=0;
     bool multiplyQ = false;
 
 
@@ -82,48 +105,48 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                 multiplyQ = true;
                 ++i;
                 while(i <= argc) {
+                    tmpOptCode = parseMultiQueryCmd(argv[i]);
+                    if(tmpOptCode>0) {
+                        switch (tmpOptCode) {
 
-                    tmpOpt = argv[i];
+                        case QUERY_BY_ADDRESS:
+                            addr=argv[++i];
+                            if (argc == i) {
+                                Log(Error) << "Unable to parse command-line. -bulk used, but actual address is missing." << LogEnd;
+                                return false;
+                            }
+                            break;
 
-                    switch (tmpOpt) {
-
-                    case "ADDR":
-                        addr=argv[++i];
-                        if (argc == i) {
-                            Log(Error) << "Unable to parse command-line. -bulk used, but actual address is missing." << LogEnd;
-                            return false;
+                        case QUERY_BY_CLIENT_ID:
+                            duid=argv[++i];
+                            if (argc == i) {
+                                Log(Error) << "Unable to parse command-line. -bulk used, but actual DUID is missing." << LogEnd;
+                                return false;
+                            }
+                            break;
+                        case QUERY_BY_LINK_ADDRESS:
+                            linkAddr=argv[++i];
+                            if (argc == i) {
+                                Log(Error) << "Unable to parse command-line. -bulk used, but actual link-addr is missing." << LogEnd;
+                                return false;
+                            }
+                            break;
+                        case QUERY_BY_RELAY_ID:
+                            relayId = argv[++i];
+                            if (argc == i) {
+                                Log(Error) << "Unable to parse command-line. -bulk used, but actual relay is missing." << LogEnd;
+                                return false;
+                            }
+                            break;
+                        case QUERY_BY_REMOTE_ID:
+                            remoteId = argv[++i];
+                            if (argc == i) {
+                                Log(Error) << "Unable to parse command-line. -bulk used, but actual remoteId is missing." << LogEnd;
+                                return false;
+                            }
+                            break;
                         }
-                        break;
-
-                    case "CLIENT-ID":
-                        duid=argv[++i];
-                        if (argc == i) {
-                            Log(Error) << "Unable to parse command-line. -bulk used, but actual DUID is missing." << LogEnd;
-                            return false;
-                        }
-                        break;
-                    case "LINK-ADDR":
-                        linkAddr=argv[++i];
-                        if (argc == i) {
-                            Log(Error) << "Unable to parse command-line. -bulk used, but actual link-addr is missing." << LogEnd;
-                            return false;
-                        }
-                        break;
-                    case "RELAY-ID":
-                        relayId = argv[++i];
-                        if (argc == i) {
-                            Log(Error) << "Unable to parse command-line. -bulk used, but actual relay is missing." << LogEnd;
-                            return false;
-                        }
-                        break;
-                    case "REMOTE-ID":
-                        remoteId = argv[++i];
-                        if (argc == i) {
-                            Log(Error) << "Unable to parse command-line. -bulk used, but actual remoteId is missing." << LogEnd;
-                            return false;
-                        }
-                        break;
-                    }
+                      }
 
                     ++i;
                 };
@@ -222,6 +245,7 @@ int initWin()
 #endif
     return 0;
 }
+
 
 int main(int argc, char *argv[])
 {

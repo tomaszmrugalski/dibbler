@@ -8,6 +8,7 @@
 class TOptRemoteID: public TOpt
 {
 public:
+
   TOptRemoteID(int type, char * buf,  int n, TMsg* parent);
   TOptRemoteID(int type, int enterprise, char *data, int dataLen, TMsg* parent);
 
@@ -18,7 +19,7 @@ public:
   unsigned int getRemoteId();
   std::string getPlain();
   ~TOptRemoteID();
-  bool doDuties() { return true; }
+  bool doDuties();
 protected:
   unsigned int RemoteId;
   unsigned int EnterpriseNumber;
