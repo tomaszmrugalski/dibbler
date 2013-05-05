@@ -14,7 +14,7 @@ TEST(AddrIATest, constructor) {
     const char duidData[] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6};
     SPtr<TDUID> duid = new TDUID(duidData, sizeof(duidData));
 
-    SPtr<TAddrIA> ia = new TAddrIA(1, TAddrIA::TYPE_IA, addr, duid, 100, 200, 300);
+    SPtr<TAddrIA> ia = new TAddrIA(1, IATYPE_IA, addr, duid, 100, 200, 300);
 
     EXPECT_EQ(1, ia->getIfindex());
     EXPECT_EQ(100u, ia->getT1());

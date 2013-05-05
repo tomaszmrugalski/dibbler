@@ -256,8 +256,9 @@ nobase_dist_doc_DATA = dibbler-user.pdf \
 	examples/client-fqdn.conf \
 	examples/client-prefix-delegation.conf \
 	examples/client-stateless.conf examples/client-ta.conf \
-	examples/client-win32.conf examples/relay-1interface.conf \
-	examples/relay.conf examples/relay-echo-remoteid.conf \
+	examples/client-win32.conf examples/client-custom.conf \
+	examples/relay-1interface.conf examples/relay.conf \
+	examples/relay-echo-remoteid.conf \
 	examples/server-3classes.conf examples/server-addrparams.conf \
 	examples/server-auth.conf examples/server-bulk-lq.conf \
 	examples/server.conf examples/server-extraopts.conf \
@@ -269,7 +270,9 @@ nobase_dist_doc_DATA = dibbler-user.pdf \
 	examples/server-relay-interface-id.conf \
 	examples/server-script.conf examples/server-stateless.conf \
 	examples/server-ta.conf examples/server-win32.conf \
-	examples/server-route.conf
+	examples/server-route.conf \
+	examples/server-client-classification.conf \
+	examples/server-subnet.conf
 dist_noinst_DATA = RELEASE-METHOD TEST-METHOD doxygen.cfg $(DOXYGEN) $(TEX_SOURCES) $(man8_MANS)
 TEX_SOURCES = dibbler-aaa.png dibbler-cascade-relays.png \
 	dibbler-fqdn-cli-update.png dibbler-fqdn-srv-update.png \

@@ -52,7 +52,7 @@ class TSrvTransMgr
                        std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
 
     void notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
-                          TAddrIA::TIAType type);
+                          TIAType type);
 
     char * getCtrlAddr();
     int    getCtrlIface();

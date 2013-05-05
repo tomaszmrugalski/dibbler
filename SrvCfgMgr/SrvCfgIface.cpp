@@ -100,9 +100,9 @@ unsigned int TSrvCfgIface::removeReservedFromCache() {
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
         if (x->getAddr())
-            cnt += SrvAddrMgr().delCachedEntry(x->getAddr(), TAddrIA::TYPE_IA);
+            cnt += SrvAddrMgr().delCachedEntry(x->getAddr(), IATYPE_IA);
         if (x->getPrefix())
-            cnt += SrvAddrMgr().delCachedEntry(x->getPrefix(), TAddrIA::TYPE_PD);
+            cnt += SrvAddrMgr().delCachedEntry(x->getPrefix(), IATYPE_PD);
     }
     return cnt;
 }
@@ -837,6 +837,10 @@ bool TSrvCfgIface::addrInSubnet(SPtr<TIPv6Addr> addr) {
     return false;
 }
 
+bool TSrvCfgIface::subnetDefined() {
+    return !Subnets_.empty();
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -1032,3 +1036,112 @@ uint32_t TSrvCfgIface::getPref(uint32_t proposal) {
 uint32_t TSrvCfgIface::getValid(uint32_t proposal) {
     return chooseTime(ValidMin_, ValidMax_, proposal);
 }
+
+/// checks if given address/prefix is valid on this interface
+///
+/// @param type IA, TA or PD
+/// @param addr address or prefix to be confirmed
+///
+/// @return YES, NO or UNKNOWN (if no subnet is defined and addr is outside of pool)
+EAddrStatus TSrvCfgIface::confirmAddress(TIAType type, SPtr<TIPv6Addr> addr) {
+
+    string what = "address";
+    if (type == IATYPE_PD)
+        what = "prefix";
+
+    Log(Debug) << "Confirm that " << what << addr->getPlain()
+               << " is on-link:";
+
+    if (subnetDefined()) {
+        // this is easy to check - client defined subnet
+        // we just check if the addres is in subnet and we're done
+
+        if (addrInSubnet(addr)) {
+            Log(Cont) << "yes (belongs to defined subnet)." << LogEnd;
+            return ADDRSTATUS_YES;
+        } else {
+            Log(Cont) << "no (outside of defined subnet)." << LogEnd;
+            return ADDRSTATUS_NO;
+        }
+
+    } else {
+
+        // Ok, admin was lazy enough and did not specify subnet
+        // parameter for us. We have to check it the hard way
+        bool inPool;
+        switch (type) {
+        case IATYPE_IA:
+            inPool = addrInPool(addr);
+            break;
+        case IATYPE_TA:
+            inPool = addrInTaPool(addr);
+            break;
+        case IATYPE_PD:
+            inPool = prefixInPdPool(addr);
+            break;
+        default:
+            // should never happen
+            inPool = false;
+        }
+
+        if (inPool) {
+            Log(Cont) << "yes (belongs to defined class)." << LogEnd;
+            return ADDRSTATUS_YES;
+        } else {
+            Log(Cont) << "unknown (outside of defined class)." << LogEnd;
+            return ADDRSTATUS_UNKNOWN;
+        }
+    }
+}
+
+/// checks if address is in NA pool
+///
+/// @param addr address to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::addrInPool(SPtr<TIPv6Addr> addr) {
+    firstAddrClass();
+    SPtr<TSrvCfgAddrClass> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getAddrClass()) {
+        inPool = ptrClass->addrInPool(addr);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+
+/// checks if address is in TA pool
+///
+/// @param addr address to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::addrInTaPool(SPtr<TIPv6Addr> addr) {
+    firstTA();
+    SPtr<TSrvCfgTA> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getTA()) {
+        inPool = ptrClass->addrInPool(addr);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+
+/// checks if prefix is in PD pool
+///
+/// @param prefix prefix to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::prefixInPdPool(SPtr<TIPv6Addr> prefix) {
+    firstPD();
+    SPtr<TSrvCfgPD> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getPD()) {
+        inPool = ptrClass->prefixInPool(prefix);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+

@@ -74,9 +74,6 @@ public:
     void delClntAddr(int iface, SPtr<TIPv6Addr> addr);
     void addClntAddr(int iface, SPtr<TIPv6Addr> addr);
 
-    bool isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
-    bool isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
-
     void addTAAddr(int iface);
     void delTAAddr(int iface);
 

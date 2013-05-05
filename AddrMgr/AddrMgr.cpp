@@ -302,7 +302,7 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
 
     // have we found this PD?
     if (!ptrPD) {
-        ptrPD = new TAddrIA(iface, TAddrIA::TYPE_PD, addr, duid, T1, T2, IAID);
+        ptrPD = new TAddrIA(iface, IATYPE_PD, addr, duid, T1, T2, IAID);
         /// @todo: This setState() was used on reconfigure branch, but not on master
         ptrPD->setState(STATE_CONFIGURED);
         client->addPD(ptrPD);
@@ -658,7 +658,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
             if ((x=strstr(buf,"unicast"))) {
                 char *end = strstr(x+9, "\"");
                 string uni(x+9, end);
-                unicast = new TIPv6Addr(uni.c_str(), true);
+		if (uni.size())
+		  unicast = new TIPv6Addr(uni.c_str(), true);
             }
             if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, iface)) {
                 if (!ia || !clnt)
@@ -671,7 +672,6 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 		}
 		if (unicast) {
                     ia->setUnicast(unicast);
-                    Log(Cont) << ", unicast=" << unicast->getPlain();
                     unicast = 0;
                 }
                 Log(Cont) << LogEnd;
@@ -788,7 +788,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
             Log(Debug) << "Loaded PD from a file: t1=" << t1 << ", t2="<< t2
                        << ", iaid=" << iaid << ", iface=" << iface << LogEnd;
 
-            ptrpd = new TAddrIA(iface, TAddrIA::TYPE_PD, 0, duid, t1, t2, iaid);
+            ptrpd = new TAddrIA(iface, IATYPE_PD, 0, duid, t1, t2, iaid);
 
             // @todo: Why are we always setting CONFIRMME state? What if the address/prefix
             // hasn't changed?
@@ -800,7 +800,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
             if (ptrpd && pr) {
                 if (verifyPrefix(pr->get())) {
                     ptrpd->addPrefix(pr);
-                    pr->setTentative(TENTATIVE_NO);
+                    pr->setTentative(ADDRSTATUS_NO);
                     //Log(Debug) << "Parsed prefix " << pr->getPlain() << LogEnd;
                 } else {
                     Log(Debug) << "Prefix " << pr->get()->getPlain() 
@@ -858,7 +858,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 	    Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
 		       << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
 	    
-	    ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
+	    ia = new TAddrIA(iface, IATYPE_IA, 0, duid, t1,t2, iaid);
 	    continue;
 	}
 	if (strstr(buf,"<fqdnDnsServer>")) {
@@ -911,7 +911,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 	    if (ia && addr) {
 		if (verifyAddr(addr->get())) {
 		    ia->addAddr(addr);
-		    addr->setTentative(TENTATIVE_NO);
+		    addr->setTentative(ADDRSTATUS_NO);
 		} else {
 		    Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
 		}

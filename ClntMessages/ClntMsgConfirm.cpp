@@ -7,8 +7,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgConfirm.cpp,v 1.14 2009-03-24 23:17:17 thomson Exp $
- *
  */
 
 #include "SmartPtr.h"
@@ -63,7 +61,7 @@ void TClntMsgConfirm::answer(SPtr<TClntMsg> reply)
     if (!status) {
         Log(Warning) << "Received malformed REPLY for CONFIRM: no status option." << LogEnd;
         addrsRejected();
-
+	return;
     }
     switch (status->getCode() ) {
     case STATUSCODE_SUCCESS:
@@ -101,19 +99,23 @@ void TClntMsgConfirm::addrsAccepted() {
         if (!ptrIA)
             continue;
 
-        //CHANGED: ??why ts=now()-ptrIA->getT1(); So comment this line.
-        // set them to RENEW timeout
         // Uncomment this line if you don't want RENEW to be sent after
         // CONFIRM exchange is complete
-        // ptrIA->setTimestamp( now()-ptrIA->getT1() );
         ptrIA->setState(STATE_CONFIGURED);
+
+	// Once confirmed, this triggers the
+        ptrIA->setTimestamp( now()-ptrIA->getT1() );
+	
+	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
+	if (!ptrIface)
+	  continue;
+	
+	ptrIA->firstAddr();
+	while (ptrAddrAddr = ptrIA->getAddr()) {
+            ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),
+			      ptrAddrAddr->getValid(), ptrIface->getPrefixLength());
+	}
     }
-    ClntAddrMgr().firstIA();
-        SPtr<TIfaceIface> ptrIface;
-        ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
-        ptrIA->firstAddr();
-        ptrAddrAddr = ptrIA->getAddr();
-        ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),ptrAddrAddr->getValid(),ptrIface->getPrefixLength());
 }
 
 void TClntMsgConfirm::addrsRejected() {
@@ -157,17 +159,16 @@ void TClntMsgConfirm::addrsRejected() {
 
 void TClntMsgConfirm::doDuties()
 {
-
     //The first Confirm message from the client on the interface MUST be
     //delayed by a random amount of time between 0 and CNF_MAX_DELAY.
-    /// @todo:
-        //if (RC == 0) ;
-                //microsleep(rand()%1000000);
+    /// @todo: MRD counters are a mess.
     if (!MRD) {
         // MRD reached. Nobody said that out addrs are faulty, so we suppose
         // they are ok. Use them
-        this->addrsAccepted();
-        this->IsDone = true;
+        Log(Info) << "MRD reached and there is no valid response for CONFIRM. "
+		  << "Assuming addresses are valid." << LogEnd;
+        addrsAccepted();
+        IsDone = true;
         return;
     }
 

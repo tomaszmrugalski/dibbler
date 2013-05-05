@@ -9,6 +9,7 @@
  */
 
 #include <string.h>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -182,7 +183,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 #endif
         return 0;
     }
-    result = ::select(maxFD,&fds,NULL, NULL, &czas);
+    result = ::select(maxFD, &fds, NULL, NULL, &czas);
 
     // something received
 

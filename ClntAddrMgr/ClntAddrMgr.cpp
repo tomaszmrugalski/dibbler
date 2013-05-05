@@ -363,12 +363,12 @@ SPtr<TIPv6Addr> TClntAddrMgr::getPreferredAddr() {
 
     firstIA();
     while ( ia = getIA() ) {
-	if (ia->getTentative() != TENTATIVE_NO)
+	if (ia->getTentative() != ADDRSTATUS_NO)
 	    continue;
 
 	ia->firstAddr();
 	while (addr = ia->getAddr()) {
-	    if (addr->getTentative() == TENTATIVE_NO)
+	    if (addr->getTentative() == ADDRSTATUS_NO)
 		return addr->get(); // return the first address from first non-tentative
 	    //if (is_addr_tentative(NULL, ia->getIface(), addr->get()->getPlain()) == LOWLEVEL_TENTATIVE_NO)
 	}

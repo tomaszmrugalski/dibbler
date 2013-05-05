@@ -903,7 +903,7 @@ be specified before logical ones.
 iface relay1 {
   relay eth1
 
-  // This relay1 actually represents a network that the 
+  // This relay1 actually represents a network that the
   // physical device relays packets from. The relay device should
   // have a global address assigned on its client-facing interface.
   // That address should belong to this subnet.
@@ -929,7 +929,7 @@ iface relay1 {
 iface relay2 {
   relay eth1
 
-  // This relay1 actually represents a network that the 
+  // This relay1 actually represents a network that the
   // physical device relays packets from. The relay device should
   // have a global address assigned on its client-facing interface.
   // That address should belong to this subnet.
@@ -1491,3 +1491,48 @@ Server does support experimental extension called remote
 autoconfiguration, as defined in \cite{draft-remote-autoconf}. See
 Section \ref{feature-remote-autoconf} for details and configuration
 examples.
+
+\subsubsection{Example 21: Subnet declaration}
+\label{example-server-subnet}
+Typically a network has only a subset of all its addresses managed by
+the DHCPv6 server. Let's assume that we have a network that uses
+2001:db8::/64 prefix, so there may be $2^{64}$ addresses in
+it. Usually the server has information about a dynamic range of
+addresses that it can manage. Let's assume that this pool is defined
+as 2001:db8::1 to 2001:db8::ff, so the server is responsible for only
+only 256 addresses.
+
+There are two cases where it is useful for the server to know the
+whole subnet, even though it manages only small subset of it. The
+first case is subnet selection. When receiving a packet from relay,
+there are several mechanisms that server uses to find appropriate
+subnet. One of them is matching based on link-addr field that was set
+up by the relay. As DHCP relays themselves are never configured with
+DHCP, the address used by the relay will always be outside of dynamic
+pool that the server manages, but within the whole subnet that is
+defined on a given link.
+
+The second case is useful when the server tries to respond
+to \msg{CONFIRM} message. CONFIRM has a special meaning. It is a
+question whether specified addresses are topologically correct in a
+given place, not whether the server has bindings for them. If there
+are 2 servers on a given link and each of them manages their own pool,
+both can potentially respond to CONFIRM to any clients, even those
+served by the other server. The server can only do so if they have
+information about available subnet.
+
+\begin{lstlisting}
+#server.conf
+iface eth0 {
+
+    # This is the prefix used on a given link
+    subnet 2001:db8:1::/64
+
+    class {
+
+        # This is the small part of that prefix that is
+        # managed by the DHCPv6 server
+        pool 2001:db8:1::/96
+    }
+}
+\end{lstlisting}

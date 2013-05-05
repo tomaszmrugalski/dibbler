@@ -99,7 +99,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while(ia = iface->getIA()) {
         if (ClntAddrMgr().getIA(ia->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), TAddrIA::TYPE_IA,
+        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), IATYPE_IA,
                                            0, 0, ia->getT1(), ia->getT2(),
                                            ia->getIAID());
         ClntAddrMgr().addIA(addrIA);
@@ -110,7 +110,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     if ( (ta = iface->getTA()) &&  (!ClntAddrMgr().getTA(ta->getIAID())))
     {
         // if there is such TA already, then skip adding it
-        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), TAddrIA::TYPE_TA,
+        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), IATYPE_TA,
                                            0, 0, DHCPV6_INFINITY, DHCPV6_INFINITY,
                                            ta->getIAID());
         ClntAddrMgr().addTA(addrTA);
@@ -121,7 +121,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while (pd = iface->getPD()) {
         if (ClntAddrMgr().getPD(pd->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getID(), TAddrIA::TYPE_PD,
+        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getID(), IATYPE_PD,
                                            0, 0, pd->getT1(), pd->getT2(),
                                            pd->getIAID());
         ClntAddrMgr().addPD(addrPD);
@@ -1036,7 +1036,7 @@ void TClntTransMgr::checkRenew()
     {
         if ( (ia->getT1Timeout()!=0) || 
              (ia->getState()!=STATE_CONFIGURED) ||
-             (ia->getTentative()==TENTATIVE_UNKNOWN) )
+             (ia->getTentative()==ADDRSTATUS_UNKNOWN) )
             continue;
         
         if (!iaPattern) {
@@ -1106,7 +1106,7 @@ void TClntTransMgr::checkDecline()
         ClntAddrMgr().firstIA();
         while((ptrIA=ClntAddrMgr().getIA())&&(!firstIA))
         {
-            if (ptrIA->getTentative()==TENTATIVE_YES)
+            if (ptrIA->getTentative()==ADDRSTATUS_YES)
                 firstIA=ptrIA;
         }
         if (firstIA)
@@ -1114,7 +1114,7 @@ void TClntTransMgr::checkDecline()
             declineIALst.append(firstIA);
             while(ptrIA=ClntAddrMgr().getIA())
             {
-                if ((ptrIA->getTentative()==TENTATIVE_YES)&&
+                if ((ptrIA->getTentative()==ADDRSTATUS_YES)&&
                     (*ptrIA->getDUID()==*firstIA->getDUID()))
                 {
                     declineIALst.append(ptrIA);
@@ -1137,7 +1137,7 @@ void TClntTransMgr::checkDecline()
                 Log(Info) << "Sending DECLINE for IA(IAID=" << ptrIA->getIAID() << ")" << LogEnd;
 
                 while ( ptrAddr= ptrIA->getAddr() ) {
-                    if (ptrAddr->getTentative() == TENTATIVE_YES) {
+                    if (ptrAddr->getTentative() == ADDRSTATUS_YES) {
                         Log(Cont) << ptrAddr->get()->getPlain() << " ";
 
                         /// @todo: check result

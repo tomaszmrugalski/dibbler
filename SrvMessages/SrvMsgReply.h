@@ -6,8 +6,6 @@
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
  * released under GNU GPL v2 only licence
  *
- * $Id: SrvMsgReply.h,v 1.12 2009-03-24 01:16:53 thomson Exp $
- *
  */
 
 class TSrvMsgReply;
@@ -23,6 +21,7 @@ class TSrvMsgReply;
 #include "SrvMsgRelease.h"
 #include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
+#include "SrvOptIAAddress.h"
 
 #include "OptDUID.h"
 
@@ -54,6 +53,7 @@ private:
     bool handleDeclineOptions(TOptList& options);
     bool handleConfirmOptions(TOptList& options);
     bool handleInfRequestOptions(TOptList& options);
+    EAddrStatus confirmAddress(TIAType type, SPtr<TIPv6Addr> addr);
 };
 
 

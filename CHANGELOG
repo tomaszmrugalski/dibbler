@@ -1,7 +1,11 @@
 
   Dibbler changelog
  ------------------- 
-0.8.4 [not released]
+0.8.4 [not-released-yet]
+  - Rel: Unknown message types are now relayed (as a forward compatibility
+    feature)
+
+0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
     (patch by Tao Cui)
   - It is now possible to send custom options (hex, string, address or address-list
@@ -35,6 +39,9 @@
     are now supported
   - Daemon mode should now be able to read sockets properly (bug #275)
     (patch by Jean-Jacques Sarton)
+  - Linux compilation fixes (bug #282)
+  - Srv: Confirm support improved, now also using subnet declaration (bug #240,
+    bug #259)
 
 0.8.3 [2013-01-20]
   - Cli: workaround for odd link-local interface detection code on OpenBSD

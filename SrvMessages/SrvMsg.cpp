@@ -267,8 +267,8 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         case OPTION_INTERFACE_ID:
         case OPTION_RECONF_MSG :
         case OPTION_STATUS_CODE : {
-            Log(Warning) << "Invalid option (" << opt->getOptType()
-                         << ") received. Client is not supposed to send it. Option ignored." << LogEnd;
+            Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. "
+                         << "Client is not supposed to send it. Option ignored." << LogEnd;
             break;
         }
 

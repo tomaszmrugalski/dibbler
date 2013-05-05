@@ -269,6 +269,13 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         return;
     }
 
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
+    if (!cfgIface) {
+        Log(Error) << "Received message on unknown interface (ifindex="
+                   << msg->getIface() << LogEnd;
+        return;
+    }
+
     // LEASE ASSIGN STEP 1: Evaluate defined expressions (client classification)
     // Ask NodeClietSpecific to analyse the message
     NodeClientSpecific::analyseMessage(msg);
@@ -302,11 +309,10 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
-        SPtr<TSrvCfgIface> ptrCfgIface = SrvCfgMgr().getIfaceByID(msg->getIface());
         if (msg->getOption(OPTION_RAPID_COMMIT)) {
-            if (!ptrCfgIface->getRapidCommit()) {
+            if (!cfgIface->getRapidCommit()) {
                 Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
-                          << ptrCfgIface->getName() << " interface." << LogEnd;
+                          << cfgIface->getName() << " interface." << LogEnd;
                 a = new TSrvMsgAdvertise((Ptr*)msg);
             } else {
                 SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
@@ -354,7 +360,8 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
     case LEASEQUERY_MSG: {
         int iface = msg->getIface();
-        if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
+        if (!SrvCfgMgr().getIfaceByID(iface) ||
+            !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
             Log(Error) << "LQ: LeaseQuery message received on " << iface
                        << " interface, but it is not supported there." << LogEnd;
             return;
@@ -382,7 +389,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
     }
 
-    if (a) {
+    if (a && !a->isDone()) {
         /// @todo: messages should not call send() in their ctors, send should be done here
         MsgLst.append((Ptr*)a);
         SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
@@ -444,8 +451,9 @@ void TSrvTransMgr::doDuties()
 /// @param params Notify parameters (all available info will be set here)
 /// @param exp expired lease details
 /// @param type type of lease (IA, TA or PD)
-void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
-                                    TAddrIA::TIAType type) {
+void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params,
+                                    const TSrvAddrMgr::TExpiredInfo& exp,
+                                    TIAType type) {
     stringstream tmp;
     tmp << exp.ia->getIfindex();
     params.addParam("IFINDEX", tmp.str());
@@ -457,13 +465,13 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrM
     if (exp.ia->getSrvAddr())
         params.addParam("REMOTE_ADDR", exp.ia->getSrvAddr()->getPlain());
     switch (type) {
-    case TAddrIA::TYPE_IA:
-    case TAddrIA::TYPE_TA:
+    case IATYPE_IA:
+    case IATYPE_TA:
     {
         params.addAddr(exp.addr, 0, 0, "");
         break;
     }
-    case TAddrIA::TYPE_PD:
+    case IATYPE_PD:
     {
         params.addPrefix(exp.addr, exp.prefixLen, 0, 0);
 	break;
@@ -509,7 +517,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
         SrvCfgMgr().delClntAddr(addr->ia->getIfindex(), addr->addr);
 
         TNotifyScriptParams params;
-        notifyExpireInfo(params, *addr, TAddrIA::TYPE_IA);
+        notifyExpireInfo(params, *addr, IATYPE_IA);
         SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
@@ -526,7 +534,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                                addr->addr, false);
 
         TNotifyScriptParams params;
-        notifyExpireInfo(params, *addr, TAddrIA::TYPE_TA);
+        notifyExpireInfo(params, *addr, IATYPE_TA);
         SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
@@ -545,7 +553,7 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
         SrvCfgMgr().decrPrefixCount(prefix->ia->getIfindex(), prefix->addr);
 
         TNotifyScriptParams params;
-        notifyExpireInfo(params, *prefix, TAddrIA::TYPE_PD);
+        notifyExpireInfo(params, *prefix, IATYPE_PD);
         SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 

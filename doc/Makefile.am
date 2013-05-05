@@ -17,7 +17,9 @@ nobase_dist_doc_DATA += examples/client-addrparams.conf examples/client-auth.con
 nobase_dist_doc_DATA += examples/client-autodetect.conf examples/client.conf examples/client-fqdn.conf
 nobase_dist_doc_DATA += examples/client-prefix-delegation.conf examples/client-stateless.conf
 nobase_dist_doc_DATA += examples/client-ta.conf examples/client-win32.conf
-nobase_dist_doc_DATA += examples/relay-1interface.conf examples/relay.conf examples/relay-echo-remoteid.conf
+nobase_dist_doc_DATA += examples/client-custom.conf
+nobase_dist_doc_DATA += examples/relay-1interface.conf examples/relay.conf
+nobase_dist_doc_DATA += examples/relay-echo-remoteid.conf
 nobase_dist_doc_DATA += examples/server-3classes.conf examples/server-addrparams.conf
 nobase_dist_doc_DATA += examples/server-auth.conf examples/server-bulk-lq.conf examples/server.conf
 nobase_dist_doc_DATA += examples/server-extraopts.conf examples/server-fqdn.conf
@@ -26,6 +28,7 @@ nobase_dist_doc_DATA += examples/server-per-client.conf examples/server-prefix-d
 nobase_dist_doc_DATA += examples/server-relay.conf examples/server-relay-interface-id.conf
 nobase_dist_doc_DATA += examples/server-script.conf examples/server-stateless.conf
 nobase_dist_doc_DATA += examples/server-ta.conf examples/server-win32.conf examples/server-route.conf
+nobase_dist_doc_DATA += examples/server-client-classification.conf examples/server-subnet.conf
 
 dist_noinst_DATA = RELEASE-METHOD TEST-METHOD doxygen.cfg $(DOXYGEN) $(TEX_SOURCES) $(man8_MANS)
 

@@ -307,11 +307,11 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     
     free(buffer);
     if (!found)
-        return TENTATIVE_UNKNOWN; /* not found */
+        return ADDRSTATUS_UNKNOWN; /* not found */
     if (found->DadState==IpDadStateDuplicate)
-        return TENTATIVE_YES;     /* tentative */
+        return ADDRSTATUS_YES;     /* tentative */
     else
-        return TENTATIVE_NO;      /* not tentative */
+        return ADDRSTATUS_NO;      /* not tentative */
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
                       unsigned long pref, unsigned long valid, int prefixLen)

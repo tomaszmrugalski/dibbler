@@ -25,12 +25,6 @@ class TAddrIA;
 class TAddrIA
 {
   public:
-    typedef enum
-    {
-	TYPE_IA,
-	TYPE_TA,
-	TYPE_PD
-    } TIAType;
 
     friend std::ostream & operator<<(std::ostream & strum,TAddrIA &x);
     TAddrIA(int iface, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
@@ -94,7 +88,7 @@ class TAddrIA
     
     //---tentative---
     unsigned long getTentativeTimeout();
-    enum ETentative getTentative();
+    enum EAddrStatus getTentative();
     void setTentative();
 
     //---DNS Updates---
@@ -112,7 +106,7 @@ private:
     unsigned long T2;
 
     enum EState State; // State of this IA
-    enum ETentative Tentative;
+    enum EAddrStatus Tentative;
 
     unsigned long Timestamp; // timestamp of last IA refresh (renew/rebind/confirm etc.)
 

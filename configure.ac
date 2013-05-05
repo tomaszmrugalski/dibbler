@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.3-git], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [0.8.4RC1], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
@@ -562,6 +562,7 @@ dnl ----------------------------------------
 dnl Print out configured parameters
 dnl ----------------------------------------
 echo
+echo "Dibbler version               : $PACKAGE_VERSION"
 echo "Selected OS port              : $PORT_SUBDIR"
 echo "Actual OS                     : $system $s_version"
 echo "Debug                         : $debug"

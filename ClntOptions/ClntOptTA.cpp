@@ -139,7 +139,7 @@ TClntOptTA::~TClntOptTA()
 
     if (!ta) {
 	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
-        ta = new TAddrIA(this->Iface, TAddrIA::TYPE_TA, 0 /*if unicast, then this->Addr*/, 
+        ta = new TAddrIA(this->Iface, IATYPE_TA, 0 /*if unicast, then this->Addr*/, 
 		         this->DUID, DHCPV6_INFINITY, 
 		         DHCPV6_INFINITY, this->getIAID());
         ClntAddrMgr().addTA(ta);

@@ -67,10 +67,17 @@ public:
     bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool supportPrefixDelegation() const;
 
+    // CONFIRM support
+    EAddrStatus confirmAddress(TIAType type, SPtr<TIPv6Addr> addr);
+    bool addrInPool(SPtr<TIPv6Addr> addr);
+    bool addrInTaPool(SPtr<TIPv6Addr> addr);
+    bool prefixInPdPool(SPtr<TIPv6Addr> addr);
+
     // subnet management
     void addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length);
     void addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max);
     bool addrInSubnet(SPtr<TIPv6Addr> addr);
+    bool subnetDefined();
 
     // other
     SPtr<TIPv6Addr> getUnicast();
