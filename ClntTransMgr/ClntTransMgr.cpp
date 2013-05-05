@@ -201,6 +201,9 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
  */
 void TClntTransMgr::removeExpired() {
 
+    /// @todo: call notify-script when address/prefix is expired
+    TNotifyScriptParams params;
+
     if (ClntAddrMgr().getValidTimeout())
         return;
 
@@ -267,7 +270,8 @@ void TClntTransMgr::removeExpired() {
                          << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
-	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength());
+	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength(),
+                &params);
 
 	    // Note: Technically, removing address here is not needed, as it will
 	    // be removed in AddrMgr::doDuties() anyway

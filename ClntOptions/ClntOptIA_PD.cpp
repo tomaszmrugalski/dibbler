@@ -269,7 +269,8 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
                                     prefix->getPrefixLength(), false);
             status = ClntIfaceMgr().addPrefix(this->Iface, prefix->getPrefix(),
                                               prefix->getPrefixLength(),
-                                              prefix->getPref(), prefix->getValid());
+                                              prefix->getPref(), prefix->getValid(),
+                                              static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                    << T2_ << " seconds." << LogEnd;
             action = "addition";
@@ -280,14 +281,16 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
                                        prefix->getValid(), prefix->getPrefixLength(), false);
             status = ClntIfaceMgr().updatePrefix(this->Iface, prefix->getPrefix(),
                                                  prefix->getPrefixLength(),
-                                                 prefix->getPref(), prefix->getValid());
+                                                 prefix->getPref(), prefix->getValid(),
+                                                 static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                        << T2_ << " seconds." << LogEnd;
             action = "update";
             break;
         case TClntIfaceMgr::PREFIX_MODIFY_DEL:
             ClntAddrMgr().delPrefix(ClntCfgMgr().getDUID(), IAID_, prefix->getPrefix(), false);
-            status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
+            status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+                                              static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             action = "delete";
             break;
         }

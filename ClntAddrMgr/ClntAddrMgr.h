@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.h,v 1.14 2008-10-12 14:05:25 thomson Exp $
- *
  */
 
 #ifndef CLNTADDRMGR_H
@@ -19,6 +17,7 @@
 #include "AddrMgr.h"
 #include "Portable.h"
 #include "IPv6Addr.h"
+#include "ScriptParams.h"
 
 #define ClntAddrMgr() (TClntAddrMgr::instance())
 
