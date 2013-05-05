@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+0.8.4 [not-released-yet]
+  - Rel: Unknown message types are now relayed (as a forward compatibility
+    feature)
+
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
     (patch by Tao Cui)

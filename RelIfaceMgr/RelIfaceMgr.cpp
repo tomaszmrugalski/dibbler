@@ -279,6 +279,10 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     
     // create specific message object
     switch (data[0]) {
+    default: {
+	Log(Warning) << "Unknown message type " << (int)(data[0]) << ", relaying anyway." << LogEnd;
+        // no break here
+    }
     case SOLICIT_MSG:
     case REQUEST_MSG:
     case CONFIRM_MSG:
@@ -289,14 +293,12 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     case INFORMATION_REQUEST_MSG:
     case ADVERTISE_MSG:
     case REPLY_MSG:
-	return this->decodeGeneric(iface, peer, data, dataLen);
+	return decodeGeneric(iface, peer, data, dataLen);
     case RELAY_FORW_MSG: 
-	return this->decodeRelayForw(iface, peer, data, dataLen);
+	return decodeRelayForw(iface, peer, data, dataLen);
     case RELAY_REPL_MSG:
-	return this->decodeRelayRepl(iface, peer, data, dataLen);
+	return decodeRelayRepl(iface, peer, data, dataLen);
     case RECONFIGURE_MSG:
-    default:
-	Log(Warning) << "Message type " << (int)(data[0]) << " is not supported." << LogEnd;
 	return 0;
     }
 }
