@@ -205,6 +205,7 @@ bool ReqTransMgr::SendMsg()
 
 bool ReqTransMgr::CreateNewTCPSocket()
 {
+
     if (!CfgMgr) {
         Log(Crit) << "Unable to bind sockets: no configration set." << LogEnd;
         return false;
@@ -226,7 +227,6 @@ bool ReqTransMgr::CreateNewTCPSocket()
     }
 
     SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
-
     if (!Iface->addTcpSocket(ll, DHCPCLIENT_PORT)) {
         Log(Crit) << "TCP Socket creation or binding failed." << LogEnd;
         return false;
@@ -256,16 +256,15 @@ bool ReqTransMgr::SendTcpMsg()
     //by Remote Id
 
     SPtr<TIPv6Addr> dstAddr;
-    if (!CfgMgr->dstaddr)
-    dstAddr = new TIPv6Addr("ff02::1:2", true);
-    else
-    dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
-
+    if (!CfgMgr->dstaddr) {
+        dstAddr = new TIPv6Addr("ff02::1:2", true);
+        Log(Debug) << "Destination addres of DHCP server not specified. Using:"<<dstAddr->getPlain() <<endl;
+    }  else {
+        dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
+    }
 
     Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to "
            << dstAddr->getPlain() << " address by tcp protocol." << LogEnd;
-
-
 
 
     char buf[1024];
@@ -376,7 +375,7 @@ bool ReqTransMgr::SendTcpMsg()
 
             // TReqOptRemoteId(int type,char * remoteId,int enterprise,char * data, int dataLen, TMsg* parent);
             SPtr<TReqOptRemoteId> optRemoteId = new TReqOptRemoteId(OPTION_REMOTE_ID,CfgMgr->remoteId, CfgMgr->enterpriseNumber,data, dataLen, msg);
-            optRemoteId->storeSelf(buf+bufLen,QueryType,CfgMgr->enterpriseNumber);
+            optRemoteId->storeSelf(buf+bufLen,CfgMgr->queryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {
             Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
@@ -572,6 +571,11 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
     return true;
 }
 
+
+
+
+
+
 string ReqTransMgr::BinToString(char * buf, int bufLen)
 {
     return (hexToText((uint8_t*)buf, bufLen, true));
@@ -598,5 +602,5 @@ void ReqTransMgr::TerminateTcpConn()
 }
 int ReqTransMgr::GetQueryType()
 {
-    return QueryType;
+    return CfgMgr->queryType;
 }

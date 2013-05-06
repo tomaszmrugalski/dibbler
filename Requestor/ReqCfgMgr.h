@@ -12,6 +12,7 @@
 #define REQCFGMGR_H
 
 typedef struct {
+
     // global parameters
     char * iface;
     int timeout;
@@ -28,8 +29,9 @@ typedef struct {
     char * clientId;
     int  enterpriseNumber;
     int  queryType;
-
+    int requestCount;
     bool multiplyQuery;
+
 
 } ReqCfgMgr;
 

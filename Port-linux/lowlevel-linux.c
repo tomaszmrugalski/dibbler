@@ -877,7 +877,7 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
 
         }
     }
-
+    //sprintf("Port: %d",port);
     //TCP server part
     if ( port > 0) {
         if (bind(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme))) {
