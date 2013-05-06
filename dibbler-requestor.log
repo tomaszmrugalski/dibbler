@@ -1,0 +1,633 @@
+2013.05.05 18:00:05 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.05 18:00:05 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 18:00:19 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.05 18:00:19 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 22:33:47 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.05 22:33:47 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 22:34:48 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:34:48 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:34:48 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:34:48 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:34:48 Requestor Critical  Unable to bind sockets: Interface ADDR not found.
+2013.05.05 22:34:48 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:35:14 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:35:14 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:35:14 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:35:14 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:35:14 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:35:14 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:35:14 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 22:35:14 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 22:35:14 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 22:35:14 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 22:39:55 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:39:55 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:39:55 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:39:55 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:39:55 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:39:55 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:39:55 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:39:55 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:39:55 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:39:55 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:40:13 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:40:13 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:40:13 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:40:13 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:40:13 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:40:13 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:40:13 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:40:13 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:40:13 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:40:13 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:40:15 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:40:15 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:40:15 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:40:15 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:40:15 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:40:15 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:40:15 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:40:15 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:40:15 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:40:15 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:40:39 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:40:39 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:40:39 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:40:39 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:40:39 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:40:39 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:40:39 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:40:39 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:40:39 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:40:39 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:42:25 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:42:25 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:42:25 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:42:25 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:42:25 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:42:25 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:42:25 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:42:25 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:42:25 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:42:25 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:44:06 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:44:06 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:44:06 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:44:06 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:44:06 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:44:06 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:44:06 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 22:44:06 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 22:44:06 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 22:44:06 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 22:44:47 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:44:47 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:44:47 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:44:47 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:44:47 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:44:47 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:44:47 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:44:47 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:44:47 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:44:47 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 22:46:54 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 22:46:54 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 22:46:54 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 22:46:54 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 22:46:54 Requestor Info      Binding socket on loopback interface.
+2013.05.05 22:46:54 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 22:46:54 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 22:46:54 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 22:46:54 Requestor Critical  Proper socket creation failed.
+2013.05.05 22:46:54 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 23:01:37 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:01:37 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:01:37 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:01:37 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:01:37 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:01:37 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:01:37 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:01:37 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:01:37 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:01:37 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:04:33 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:04:33 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:04:33 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:04:33 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:04:33 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:04:33 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:04:33 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:04:33 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:04:33 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:04:33 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:07:29 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:07:29 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:07:29 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:07:29 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:07:29 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:07:29 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:07:29 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:07:29 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:07:29 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:07:29 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:16:15 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:16:15 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:16:15 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:16:15 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:16:15 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:16:15 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:16:15 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:16:15 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:16:15 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:16:15 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:19:09 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:19:09 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:19:09 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:19:09 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:19:09 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:19:09 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:19:09 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:19:09 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:19:09 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:19:09 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:19:15 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.05 23:19:15 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 23:19:26 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:19:26 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:19:26 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:19:26 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:19:26 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:19:26 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:19:26 Requestor Debug     Socket 5 created on the lo/1 interface.
+2013.05.05 23:19:26 Requestor Debug     Socket 6 created on the vboxnet0/4 interface.
+2013.05.05 23:19:26 Requestor Debug     Transmitting data on the vboxnet0/4 interface to ff02::1:2 address.
+2013.05.05 23:19:26 Requestor Debug     Creating LINK-ADDRESS-based query. Asking for 
+2013.05.05 23:29:43 Requestor Error     Unable to parse command-line parameter: USER=damo
+2013.05.05 23:29:43 Requestor Error     Please use -h for help.
+2013.05.05 23:29:43 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 23:43:42 Requestor Debug     No request!
+2013.05.05 23:43:42 Requestor Error     Unable to parse command-line parameter: -bulk
+2013.05.05 23:43:42 Requestor Error     Please use -h for help.
+2013.05.05 23:43:42 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 23:44:38 Requestor Debug     No request!
+2013.05.05 23:44:38 Requestor Error     Unable to parse command-line parameter: -bulk
+2013.05.05 23:44:38 Requestor Error     Please use -h for help.
+2013.05.05 23:44:38 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 23:44:43 Requestor Debug     No request!
+2013.05.05 23:44:43 Requestor Error     Unable to parse command-line parameter: -bulk
+2013.05.05 23:44:43 Requestor Error     Please use -h for help.
+2013.05.05 23:44:43 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.05 23:47:28 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:47:28 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:47:28 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:47:28 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:47:28 Requestor Info      Binding socket on loopback interface.
+2013.05.05 23:47:28 Requestor Notice    Creating control (::) socket on the lo/1 interface.
+2013.05.05 23:47:28 Requestor Error     Unable to bind socket (iface=lo/1, addr=::, port=546).
+2013.05.05 23:47:28 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.05 23:47:28 Requestor Critical  Proper socket creation failed.
+2013.05.05 23:47:28 Requestor Critical  Aborted. Socket binding failed.
+2013.05.05 23:48:47 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:48:47 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:48:47 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:48:47 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:51:08 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:51:08 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:51:08 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:51:08 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:52:15 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:52:16 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:52:16 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:52:16 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.05 23:52:59 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.05 23:52:59 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.05 23:52:59 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.05 23:52:59 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 19:57:31 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.05.06 19:57:31 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 19:58:26 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to parse.
+2013.05.06 19:58:26 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 19:59:23 Requestor Error     Unable to parse command-line. -bulk used, but actual address is missing.
+2013.05.06 19:59:23 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:02:31 Requestor Error     Unable to parse command-line. -bulk used, but actual DUID is missing.
+2013.05.06 20:02:31 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:03:35 Requestor Error     Unable to parse command-line. -bulk used, but actual CLIENT-DUID is missing.
+2013.05.06 20:03:35 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:04:02 Requestor Error     Unable to parse command-line. -bulk used, but actual relay is missing.
+2013.05.06 20:04:02 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:11:10 Requestor Error     Unable to parse command-line. -bulk used, but actual LINK-ADDR is missing.
+2013.05.06 20:11:10 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:12:15 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.06 20:12:15 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:13:45 Requestor Debug     No request!
+2013.05.06 20:13:45 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to parse.
+2013.05.06 20:13:45 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:14:44 Requestor Debug     No bulk request.
+2013.05.06 20:14:44 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to parse.
+2013.05.06 20:14:44 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:39:06 Requestor Debug     No bulk request.
+2013.05.06 20:39:06 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to parse.
+2013.05.06 20:39:06 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 20:40:06 Requestor Error     Unable to parse command-line parameter: REMOTE
+2013.05.06 20:40:06 Requestor Error     Please use -h for help.
+2013.05.06 20:40:06 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 21:00:46 Requestor Debug     No bulk request.
+2013.05.06 21:00:46 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to parse.
+2013.05.06 21:00:46 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 21:05:20 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.06 21:05:20 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 21:06:26 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.06 21:06:26 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 21:09:47 Requestor Error     Unable to parse command-line parameter: 00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.05.06 21:09:47 Requestor Error     Please use -h for help.
+2013.05.06 21:09:47 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.06 21:21:05 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:21:05 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:21:05 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:21:05 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:21:05 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:21:05 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:21:05 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:21:05 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:21:05 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:26:13 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:26:13 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:26:13 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:26:13 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:26:13 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:26:13 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:26:13 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:26:13 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:26:13 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:31:33 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:31:33 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:31:33 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:31:33 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:31:33 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:31:33 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:31:33 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:31:33 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:31:33 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:33:23 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:33:23 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:33:23 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:33:23 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:33:23 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:33:23 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:33:23 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:33:23 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:33:23 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:33:50 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:33:50 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:33:50 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:33:50 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:33:50 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:33:50 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:33:50 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:33:50 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:33:50 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:37:00 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:37:00 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:37:00 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:37:00 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:37:00 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:37:00 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:37:00 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:37:00 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:37:00 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:37:39 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:37:39 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:37:39 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:37:39 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:37:39 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:37:39 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:37:39 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:37:39 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:37:39 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:39:04 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:39:04 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:39:04 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:39:04 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:39:04 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:39:04 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:39:04 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:39:04 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:39:04 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:41:18 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:41:18 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:41:18 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:41:18 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:41:18 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:41:18 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:41:18 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:41:18 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:41:18 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:44:04 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:44:04 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:44:04 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:44:04 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:44:04 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:44:04 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:44:04 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:44:04 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:44:04 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:44:04 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:44:51 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:44:51 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:44:51 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:44:51 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:44:51 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:44:51 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:44:51 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:44:51 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:45:32 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:45:32 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:45:32 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:45:32 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:45:32 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:45:32 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:45:32 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:45:32 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:45:32 Requestor Critical  Aborted.
+2013.05.06 21:47:58 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:47:58 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:47:58 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:47:58 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:47:58 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:47:58 Requestor Debug     DUPA
+2013.05.06 21:47:58 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:47:58 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:47:58 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:47:58 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:48:18 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:48:18 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:48:18 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:48:18 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:48:18 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:48:18 Requestor Debug     DUPA
+2013.05.06 21:48:18 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:48:18 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:48:18 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:48:18 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:48:37 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:48:37 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:48:37 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:48:37 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:48:37 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:48:37 Requestor Debug     DUPA
+2013.05.06 21:48:37 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:48:37 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:48:37 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:48:37 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:49:09 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:49:09 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:49:09 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:49:09 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:49:09 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:49:09 Requestor Debug     DUPA
+2013.05.06 21:49:09 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:49:09 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:49:09 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:49:09 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:49:29 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:49:29 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:49:29 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:49:29 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:49:29 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:49:29 Requestor Debug     DUPA
+2013.05.06 21:49:29 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:49:29 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:49:29 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:49:29 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:50:41 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:50:41 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:50:41 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:50:41 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:50:41 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:50:41 Requestor Debug     DUPA
+2013.05.06 21:50:41 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:50:41 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:50:41 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:50:41 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:51:00 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:51:00 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:51:00 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:51:00 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:51:00 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:51:00 Requestor Debug     DUPA
+2013.05.06 21:51:00 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:51:00 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:51:00 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:51:00 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:51:17 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:51:17 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:51:17 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:51:17 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:51:17 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:51:17 Requestor Debug     DUPA
+2013.05.06 21:51:17 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:51:17 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:51:17 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:51:17 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:51:51 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:51:51 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:51:51 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:51:51 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:51:51 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:51:51 Requestor Debug     DUPA
+2013.05.06 21:51:51 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:51:51 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:51:51 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:51:51 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:52:39 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:52:39 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:52:39 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:52:39 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:52:39 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:52:39 Requestor Debug     222DUPA
+2013.05.06 21:52:39 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:52:39 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:52:39 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:52:39 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 21:57:45 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 21:57:45 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 21:57:45 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 21:57:45 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 21:57:45 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 21:57:45 Requestor Debug     DUPA
+2013.05.06 21:57:45 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 21:57:45 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 21:57:45 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 21:57:45 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 22:58:49 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 22:58:49 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 22:58:49 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 22:58:49 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 22:58:49 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 22:58:49 Requestor Debug     DUPA
+2013.05.06 22:58:49 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 22:58:49 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 22:58:49 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 22:58:49 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 22:59:35 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 22:59:35 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 22:59:35 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 22:59:35 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 22:59:35 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 22:59:35 Requestor Debug     DUPA
+2013.05.06 22:59:35 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 22:59:35 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 22:59:35 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 22:59:35 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 22:59:53 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 22:59:53 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 22:59:53 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 22:59:53 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 22:59:53 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 22:59:53 Requestor Debug     DUPA
+2013.05.06 22:59:53 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 22:59:53 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 22:59:53 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 22:59:53 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:00:38 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:00:38 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:00:38 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:00:38 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:00:38 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:00:38 Requestor Debug     DUPA
+2013.05.06 23:00:38 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:00:38 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:00:38 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:00:38 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:00:51 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:00:51 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:00:51 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:00:51 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:00:51 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:00:51 Requestor Debug     DUPA
+2013.05.06 23:00:51 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:00:51 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:00:51 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:00:51 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:02:16 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:02:16 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:02:16 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:02:16 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:02:16 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:02:16 Requestor Debug     DUPA
+2013.05.06 23:02:16 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:02:16 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:02:16 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:02:16 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:02:49 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:02:49 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:02:49 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:02:49 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:02:49 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:02:49 Requestor Debug     DUPA
+2013.05.06 23:02:49 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:02:49 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:02:49 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:02:49 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:06:27 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:06:27 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:06:27 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:06:27 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:06:27 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:06:27 Requestor Debug     DUPA
+2013.05.06 23:06:27 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:06:27 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:06:27 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:06:27 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:06:28 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:06:28 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:06:28 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:06:28 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:06:28 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:06:28 Requestor Debug     DUPA
+2013.05.06 23:06:28 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:06:28 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:06:28 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:06:28 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:06:29 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:06:29 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:06:29 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:06:29 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:06:29 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:06:29 Requestor Debug     DUPA
+2013.05.06 23:06:29 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:06:29 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:06:29 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:06:29 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:06:29 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:06:29 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:06:29 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:06:29 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:06:29 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:06:29 Requestor Debug     DUPA
+2013.05.06 23:06:29 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:06:29 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:06:29 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:06:29 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:09:19 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:09:19 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:09:19 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:09:19 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:09:19 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:09:19 Requestor Debug     DUPA
+2013.05.06 23:09:19 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:09:19 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:09:19 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:09:19 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:12:15 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:12:15 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:12:15 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:12:15 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:12:15 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:12:15 Requestor Debug     DUPA
+2013.05.06 23:12:15 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:12:15 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:12:15 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:12:15 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:16:05 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:16:05 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:16:05 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:16:05 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:16:05 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:16:05 Requestor Debug     DUPA
+2013.05.06 23:16:05 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:16:05 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:16:05 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:16:05 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:17:17 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:17:17 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:17:17 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:17:17 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:17:17 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:17:17 Requestor Debug     DUPA
+2013.05.06 23:17:17 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:17:17 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:17:17 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:17:17 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:19:11 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:19:11 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:19:11 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:19:11 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:19:11 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:19:11 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:19:11 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:19:11 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:19:11 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.06 23:23:31 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:23:31 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:23:31 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:23:31 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:24:19 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.06 23:24:19 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.06 23:24:19 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.06 23:24:19 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.06 23:24:19 Requestor Debug      Bulk Leasequery part has been started
+2013.05.06 23:24:19 Requestor Error     Unable to bind socket (iface=vboxnet0/4, addr=fe80::800:27ff:fe00:0, port=546).
+2013.05.06 23:24:19 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
+2013.05.06 23:24:19 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.06 23:24:19 Requestor Critical  Aborted. TCP socket creation failed.
