@@ -217,34 +217,34 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     case RELEASE_MSG:
     case DECLINE_MSG:
     case INFORMATION_REQUEST_MSG:
-    case LEASEQUERY_MSG:
-        {
+    case LEASEQUERY_MSG:  {
             ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
             break;
-        }
-        case RELAY_FORW_MSG:
-        {
-            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-            break;
-        }
-        return ptr;
-        case ADVERTISE_MSG:
-        case REPLY_MSG:
-        case RECONFIGURE_MSG:
-        case RELAY_REPL_MSG:
-        case LEASEQUERY_REPLY_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; //NULL;
-        default:
-            Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
-            return 0; //NULL
+    }
+    case RELAY_FORW_MSG: {
+        ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+        break;
+    }
+    case ADVERTISE_MSG:
+    case REPLY_MSG:
+    case RECONFIGURE_MSG:
+    case RELAY_REPL_MSG:
+    case LEASEQUERY_REPLY_MSG:
+        Log(Warning) << "Illegal message type " << msgtype << " received."
+                     << LogEnd;
+        return 0; //NULL;
+    default:
+        Log(Warning) << "Message type " << msgtype << " not supported. Ignoring."
+                     << LogEnd;
+        return 0; //NULL
     }
 
     if (!ptr)
         return 0;
 
     if (!ptr->validateReplayDetection()) {
-        Log(Warning) << "Auth: message replay detection failed, message dropped" << LogEnd;
+        Log(Warning) << "Auth: message replay detection failed, message dropped"
+                     << LogEnd;
         return 0;
     }
 
@@ -252,7 +252,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
         Log(Warning) << "Auth: authorization is mandatory, but incoming message"
-                     << " does not have AUTH, KEYGEN or AAAAUTH options. Message dropped." << LogEnd;
+                     << " does not include AUTH option. Message dropped." << LogEnd;
         return 0;
     }
 
