@@ -137,9 +137,16 @@ TClntOptTA::~TClntOptTA()
     // find this TA in addrMgr...
     SPtr<TAddrIA> ta = ClntAddrMgr().getTA(this->getIAID());
 
+    SPtr<TClntCfgIface> cfgIface;
+    if (! (cfgIface = ClntCfgMgr().getIface(this->Iface)) ) {
+        Log(Error) << "Unable to find TA class in the CfgMgr, on the "
+                   << this->Iface << " interface." << LogEnd;
+        return true;
+    }
+
     if (!ta) {
 	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
-        ta = new TAddrIA(this->Iface, IATYPE_TA, 0 /*if unicast, then this->Addr*/, 
+        ta = new TAddrIA(cfgIface->getName(), this->Iface, IATYPE_TA, 0 /*if unicast, then this->Addr*/, 
 		         this->DUID, DHCPV6_INFINITY, 
 		         DHCPV6_INFINITY, this->getIAID());
         ClntAddrMgr().addTA(ta);
@@ -197,11 +204,6 @@ TClntOptTA::~TClntOptTA()
 
     // mark this TA as configured
     SPtr<TClntCfgTA> cfgTA;
-    SPtr<TClntCfgIface> cfgIface;
-    if (! (cfgIface = ClntCfgMgr().getIface(this->Iface)) ) {
-        Log(Error) << "Unable to find TA class in the CfgMgr, on the " << this->Iface << " interface." << LogEnd;
-        return true;
-    }
     cfgIface->firstTA();
     cfgTA = cfgIface->getTA();
     cfgTA->setState(STATE_CONFIGURED);

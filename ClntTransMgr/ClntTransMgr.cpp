@@ -98,7 +98,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while(ia = iface->getIA()) {
         if (ClntAddrMgr().getIA(ia->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), IATYPE_IA,
+        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_IA,
                                            0, 0, ia->getT1(), ia->getT2(),
                                            ia->getIAID());
         ClntAddrMgr().addIA(addrIA);
@@ -109,7 +109,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     if ( (ta = iface->getTA()) &&  (!ClntAddrMgr().getTA(ta->getIAID())))
     {
         // if there is such TA already, then skip adding it
-        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), IATYPE_TA,
+        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_TA,
                                            0, 0, DHCPV6_INFINITY, DHCPV6_INFINITY,
                                            ta->getIAID());
         ClntAddrMgr().addTA(addrTA);
@@ -120,7 +120,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while (pd = iface->getPD()) {
         if (ClntAddrMgr().getPD(pd->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getID(), IATYPE_PD,
+        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getName(), iface->getID(), IATYPE_PD,
                                            0, 0, pd->getT1(), pd->getT2(),
                                            pd->getIAID());
         ClntAddrMgr().addPD(addrPD);

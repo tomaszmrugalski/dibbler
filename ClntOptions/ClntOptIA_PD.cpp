@@ -260,11 +260,19 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
       }
     }
 
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(this->Iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable to set PD state for iaid=" << getIAID() << " received on interface "
+                   << "ifindex=" << Iface << ": No such interface in CfgMgr found." << LogEnd;
+        return false;
+    }
+
+
     this->firstPrefix();
     while (prefix = this->getPrefix() ) {
         switch (mode) {
         case TClntIfaceMgr::PREFIX_MODIFY_ADD:
-            ClntAddrMgr().addPrefix(this->DUID, this->Prefix, this->Iface, IAID_, T1_, T2_,
+            ClntAddrMgr().addPrefix(this->DUID, this->Prefix, cfgIface->getName(), this->Iface, IAID_, T1_, T2_,
                                     prefix->getPrefix(), prefix->getPref(), prefix->getValid(),
                                     prefix->getPrefixLength(), false);
             status = ClntIfaceMgr().addPrefix(this->Iface, prefix->getPrefix(),

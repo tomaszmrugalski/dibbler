@@ -60,6 +60,14 @@ bool TSrvAddrMgr::addClntAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
                               SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid,
                               bool quiet)
 {
+    // find config interface for this ifindex
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!cfgIface) {
+        Log(Error) << "Failed to add address: config interface with ifindex=" << iface
+                   << " not found." << LogEnd;
+        return false;
+    }
+
     // find this client
     SPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -86,7 +94,7 @@ bool TSrvAddrMgr::addClntAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
 
     // have we found this IA?
     if (!ptrIA) {
-        ptrIA = new TAddrIA(iface, IATYPE_IA, clntAddr, clntDuid, T1, T2, IAID);
+        ptrIA = new TAddrIA(cfgIface->getName(), iface, IATYPE_IA, clntAddr, clntDuid, T1, T2, IAID);
         ptrClient->addIA(ptrIA);
         if (!quiet)
             Log(Debug) << "Adding IA (IAID=" << IAID << ") to addrDB." << LogEnd;
@@ -203,6 +211,14 @@ bool TSrvAddrMgr::delClntAddr(SPtr<TDUID> clntDuid, unsigned long IAID,
 bool TSrvAddrMgr::addTAAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
                             int iface, unsigned long iaid, SPtr<TIPv6Addr> addr,
                             unsigned long pref, unsigned long valid) {
+    // find config interface for this ifindex
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+    if (!cfgIface) {
+        Log(Error) << "Failed to add temp. address: config interface with ifindex=" << iface
+                   << " not found." << LogEnd;
+        return false;
+    }
+
     // find this client
     SPtr <TAddrClient> ptrClient;
     this->firstClient();
@@ -228,7 +244,7 @@ bool TSrvAddrMgr::addTAAddr(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
 
     // have we found this TA?
     if (!ta) {
-        ta = new TAddrIA(iface, IATYPE_TA, clntAddr, clntDuid,
+        ta = new TAddrIA(cfgIface->getName(), iface, IATYPE_TA, clntAddr, clntDuid,
                          DHCPV6_INFINITY, DHCPV6_INFINITY, iaid);
         ptrClient->addTA(ta);
         Log(Debug) << "Adding TA (IAID=" << iaid << ") to the addrDB." << LogEnd;
