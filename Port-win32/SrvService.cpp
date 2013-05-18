@@ -33,10 +33,12 @@ TSrvService::TSrvService() : TWinService("DHCPv6Server","Dibbler - a DHCPv6 serv
 	verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
 	GetVersionEx(&verinfo);
 	
+	char dependenciesV5[] = "RpcSS\0tcpip6\0winmgmt\0";
+	char dependenciesV6[] = "RpcSS\0winmgmt\0";
 	if( verinfo.dwMajorVersion <= 5 )
-		strncpy(Dependencies, "RpcSS\0tcpip6\0winmgmt\0", sizeof(Dependencies)-1);
+		memcpy(Dependencies, dependenciesV5, sizeof(dependenciesV5));
 	else
-		strncpy(Dependencies, "RpcSS\0winmgmt\0", sizeof(Dependencies)-1);
+		memcpy(Dependencies, dependenciesV6, sizeof(dependenciesV6));
 }
 
 EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
