@@ -76,7 +76,7 @@ class TWinService
   int MajorVersion;
   int MinorVersion;
   DWORD ServiceType;
-  char* Dependencies;
+  char Dependencies[64];
   char* DisplayName;
   char* descr;
   static TWinService* ServicePtr;

@@ -21,12 +21,22 @@ TSrvService StaticService;
 
 using namespace std;
 
-TSrvService::TSrvService() 
- :TWinService("DHCPv6Server","Dibbler - a DHCPv6 server",SERVICE_AUTO_START,
-	      "RpcSS\0tcpip6\0winmgmt\0",
-	      "Dibbler - a portable DHCPv6. This is DHCPv6 server, version "
-	      DIBBLER_VERSION ".")
+TSrvService::TSrvService() : TWinService("DHCPv6Server","Dibbler - a DHCPv6 server",SERVICE_AUTO_START,
+	"RpcSS\0tcpip6\0winmgmt\0",
+	"Dibbler - a portable DHCPv6. This is DHCPv6 server, version "
+	DIBBLER_VERSION ".")
 {
+	// Depend on 'tcpip6' service only if it's Windows XP or Windows 2003.
+	// Vista and above have IPv6 intalled by default and it is not controlled
+	// by a service.
+	OSVERSIONINFO verinfo;
+	verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+	GetVersionEx(&verinfo);
+	
+	if( verinfo.dwMajorVersion <= 5 )
+		strncpy(Dependencies, "RpcSS\0tcpip6\0winmgmt\0", sizeof(Dependencies)-1);
+	else
+		strncpy(Dependencies, "RpcSS\0winmgmt\0", sizeof(Dependencies)-1);
 }
 
 EServiceState TSrvService::ParseStandardArgs(int argc,char* argv[])
