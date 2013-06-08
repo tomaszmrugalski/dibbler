@@ -11,9 +11,9 @@
     extended to all other BSDs as this affects pfSense as well
   - Cli/Srv: interface names are stored in *-AddrMgr.xml
   - Srv: Database is now checked against missing or interface index changes
-    (bugs #192, #250)
+    (bugs #192, #247, #250)
   - Cli: Database is now checked against missing or interface index changes
-    (bugs #192, #250)
+    (bugs #192, #247, #250)
 
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
