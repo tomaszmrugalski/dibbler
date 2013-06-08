@@ -1282,6 +1282,30 @@ void TClntTransMgr::printAdvertiseLst() {
     printLst(AdvertiseLst);
 }
 
+/// @brief checks/updates loaded database (regarding interface names/indexes)
+///
+///
+/// @return true if sanitization was successful, false if it failed
+bool TClntTransMgr::sanitizeAddrDB() {
+
+    // Those two maps will hold current interface names/ifindexes
+    TAddrMgr::NameToIndexMapping currentNameToIndex;
+    TAddrMgr::IndexToNameMapping currentIndexToName;
+
+    // Let's get name->index and index->name maps first
+    ClntIfaceMgr().firstIface();
+    while (SPtr<TIfaceIface> iface = ClntIfaceMgr().getIface()) {
+        currentNameToIndex.insert(make_pair(iface->getName(), iface->getID()));
+        currentIndexToName.insert(make_pair(iface->getID(), iface->getName()));
+    }
+
+    // Ok, let's iterate over all loaded entries in Ifa
+
+    return ClntAddrMgr().updateInterfacesInfo(currentNameToIndex,
+                                              currentIndexToName);
+}
+
+
 #ifdef MOD_REMOTE_AUTOCONF
 SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborInfoGet(SPtr<TIPv6Addr> addr) {
     for (TNeighborInfoLst::iterator it=Neighbors.begin(); it!=Neighbors.end(); ++it) {

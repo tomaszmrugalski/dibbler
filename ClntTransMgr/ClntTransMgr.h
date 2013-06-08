@@ -56,6 +56,8 @@ class TClntTransMgr
     int getAdvertiseLstCount();
     void printAdvertiseLst();
 
+    bool sanitizeAddrDB();
+
 #ifdef MOD_REMOTE_AUTOCONF
     struct TNeighborInfo {
 	typedef enum {

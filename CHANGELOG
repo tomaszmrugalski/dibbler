@@ -10,7 +10,9 @@
   - OpenBSD bug workaround for invalid link-local addresses reported is now
     extended to all other BSDs as this affects pfSense as well
   - Cli/Srv: interface names are stored in *-AddrMgr.xml
-  - Server: Database is now checked against missing or interface index changes
+  - Srv: Database is now checked against missing or interface index changes
+    (bugs #192, #250)
+  - Cli: Database is now checked against missing or interface index changes
     (bugs #192, #250)
 
 0.8.4RC1 [2013-04-27]
