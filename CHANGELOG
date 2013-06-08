@@ -18,6 +18,7 @@
   - Cli: Temporary addresses are now expired and removed properly (bug #285)
   - Linux: pthreads is now linked only when --enable-link-state is used
     (bug #249)
+  - Srv: Buffer for incoming UDP packets increased to 64k
 
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
