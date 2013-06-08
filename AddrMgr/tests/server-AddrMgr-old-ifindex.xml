@@ -1,0 +1,42 @@
+<AddrMgr>
+  <timestamp>1370686767</timestamp>
+  <cache size="15"/>
+  <AddrClient>
+    <duid length="15">00:01:00:01:17:6c:b5:cf:f4:6d:04:fa:ce:ba:be</duid>
+    <!-- 0 IA(s) -->
+    <!-- 0 TA(s) -->
+    <!-- 1 PD(s) -->
+    <AddrPD unicast="" T1="2000" T2="3000" IAID="1" state="NOTCONFIGURED" ifacename="eth0" iface="123">
+      <duid length="15">00:01:00:01:17:6c:b5:cf:f4:6d:04:fa:ce:ba:be</duid>
+      <AddrPrefix timestamp="1370685799" pref="8000000" valid="9000000" length="96">2001:db8:3333::1fe2:0:0</AddrPrefix>
+    </AddrPD>
+  </AddrClient>
+  <AddrClient>
+    <duid length="14">00:01:00:01:19:45:bd:f5:f4:6d:04:96:55:54</duid>
+    <!-- 1 IA(s) -->
+    <AddrIA unicast="fe80::f66d:4ff:fe96:58f2" T1="2000" T2="3000" IAID="1" state="NOTCONFIGURED" ifacename="eth0" iface="124">
+      <duid length="14">00:01:00:01:19:45:bd:f5:f4:6d:04:96:55:54</duid>
+      <AddrAddr timestamp="1370685814" pref="8000000" valid="9000000" prefix="128">2001:db8:1111:0:7004:3aaf:dd73:5bb0</AddrAddr>
+      <!--<fqdnDnsServer>-->
+      <!-- <fqdn>-->
+    </AddrIA>
+    <!-- 0 TA(s) -->
+    <!-- 0 PD(s) -->
+  </AddrClient>
+  <AddrClient>
+    <duid length="14">00:01:00:01:19:45:c1:15:f4:6d:04:96:55:54</duid>
+    <!-- 1 IA(s) -->
+    <AddrIA unicast="fe80::f66d:4ff:fe96:58f2" T1="2000" T2="3000" IAID="1" state="NOTCONFIGURED" ifacename="eth0" iface="125">
+      <duid length="14">00:01:00:01:19:45:c1:15:f4:6d:04:96:55:54</duid>
+      <AddrAddr timestamp="1370686614" pref="8000000" valid="9000000" prefix="128">2001:db8:1111:0:9fad:d137:6126:e4bf</AddrAddr>
+      <!--<fqdnDnsServer>-->
+      <!-- <fqdn>-->
+    </AddrIA>
+    <!-- 0 TA(s) -->
+    <!-- 1 PD(s) -->
+    <AddrPD unicast="" T1="2000" T2="3000" IAID="1" state="NOTCONFIGURED" ifacename="eth0" iface="126">
+      <duid length="14">00:01:00:01:19:45:c1:15:f4:6d:04:96:55:54</duid>
+      <AddrPrefix timestamp="1370686614" pref="8000000" valid="9000000" length="96">2001:db8:3333::3eb3:0:0</AddrPrefix>
+    </AddrPD>
+  </AddrClient>
+</AddrMgr>
