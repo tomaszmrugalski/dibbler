@@ -460,7 +460,7 @@ AC_SUBST(GTEST_LDADD)
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
    fi
 
-   if [ x$MOD_CLNT_CONFIRM = xyes ] && [ $ARCH = LINUX ]; then
+   if test x$MOD_CLNT_CONFIRM = xyes && test $ARCH = LINUX ; then
       echo "Link state detection enabled on Linux, adding -lpthreads"
    LDFLAGS="${LDFLAGS} -lpthread"
    else
