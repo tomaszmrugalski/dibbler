@@ -19,13 +19,6 @@ class TAddrMgr;
 #include "AddrClient.h"
 #include "AddrIA.h"
 
-#ifdef MOD_LIBXML2
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-
-#define ADDRDB_DTD (xmlChar*)"AddrMgr.dtd"
-#endif
-
 ///
 /// @brief Address Manager that holds address and prefix information.
 ///

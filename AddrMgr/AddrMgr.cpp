@@ -62,7 +62,9 @@ void TAddrMgr::dbLoad(const char * xmlFile)
 {
     Log(Info) << "Loading old address database (" << xmlFile
               << "), using built-in routines." << LogEnd;
-    xmlLoadBuiltIn(xmlFile);
+    if (!xmlLoadBuiltIn(xmlFile)) {
+        IsDone = true;
+    }
 }
 
 /**
@@ -587,12 +589,6 @@ bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> x)
 }
 
 // --------------------------------------------------------------------
-// --- XML-related methods (libxml2) ----------------------------------
-// --------------------------------------------------------------------
-#ifdef MOD_LIBXML2
-#else
-
-// --------------------------------------------------------------------
 // --- XML-related methods (built-in) ---------------------------------
 // --------------------------------------------------------------------
 /**
@@ -943,7 +939,6 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 		continue; // malformed line, ignore it
 	    *end = 0;
 	    SPtr<TIPv6Addr> dns = new TIPv6Addr(beg, true);
-	    // Log(Debug) << "#### Parsed DNS addr=" << *dns << LogEnd;
 	    if (ia)
 		ia->setFQDNDnsServer(dns);
 	    continue;
@@ -1109,12 +1104,6 @@ SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bo
     }
     return addraddr;
 }
-
-
-
-
-
-#endif
 
 /**
  * @brief returns if shutdown is complete
