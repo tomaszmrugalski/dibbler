@@ -62,9 +62,10 @@ void TAddrMgr::dbLoad(const char * xmlFile)
 {
     Log(Info) << "Loading old address database (" << xmlFile
               << "), using built-in routines." << LogEnd;
-    if (!xmlLoadBuiltIn(xmlFile)) {
-        IsDone = true;
-    }
+
+    // Ignore status code. Missing server-AddrMgr.xml is ok if running
+    // for the first time
+    xmlLoadBuiltIn(xmlFile);
 }
 
 /**

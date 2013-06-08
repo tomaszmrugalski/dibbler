@@ -26,11 +26,13 @@ TEST_F(AddrMgrTest, constructor) {
     // do no load the XML file
     NakedAddrMgr * mgr = new NakedAddrMgr("non-existing.xml", false);
     EXPECT_FALSE(mgr->isDone());
+    EXPECT_EQ(0, mgr->countClient());
     delete mgr;
 
     // please load the XML file
     mgr = new NakedAddrMgr("non-existing.xml", true);
-    EXPECT_TRUE(mgr->isDone());
+    EXPECT_FALSE(mgr->isDone());
+    EXPECT_EQ(0, mgr->countClient());
     delete mgr;
 }
 
