@@ -321,7 +321,6 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {hexdigit}{2}(:{hexdigit}{2})+ {
    int len = (strlen(yytext)+1)/3;
    char * pos = 0;
-   // Log(Crit) << "#### Detected [" << yytext << "] as DUID [len=" << len << "]" << LogEnd;
    yylval.duidval.length = len;
    yylval.duidval.duid   = new char[len];
 

@@ -739,9 +739,7 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
     SPtr<TSrvCfgIface> ptrIface;
     firstIface();
     while ( ptrIface = getIface() ) {
-        Log(Debug) << "#### looking for iface=" << name << ", found " << ptrIface->getName() << LogEnd;
         if ( ptrIface->getName()==name ) {
-            Log(Debug) << "#### Found!" << LogEnd;
             return ptrIface;
         }
     }
