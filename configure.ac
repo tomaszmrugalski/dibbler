@@ -460,11 +460,11 @@ AC_SUBST(GTEST_LDADD)
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
    fi
 
-   if test x$MOD_CLNT_CONFIRM = xyes; -a ARCH = "LINUX"; then
-     echo "Link state detection enabled on Linux, adding -lpthreads"
-      LDFLAGS="${LDFLAGS} -lpthread"
+   if [ x$MOD_CLNT_CONFIRM = xyes ] && [ $ARCH = LINUX ]; then
+      echo "Link state detection enabled on Linux, adding -lpthreads"
+   LDFLAGS="${LDFLAGS} -lpthread"
    else
-     echo "Link state detection disabled or this is not Linux, NOT adding -lpthreads"
+      echo "Link state detection disabled or this is not Linux, NOT adding -lpthreads"
    fi
 
 ### Remote autoconf ######################################
