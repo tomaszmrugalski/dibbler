@@ -46,6 +46,8 @@ class TSrvTransMgr
     void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
 #endif
 
+    bool sanitizeAddrDB();
+
     void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);

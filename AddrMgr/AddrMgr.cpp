@@ -183,6 +183,84 @@ bool TAddrMgr::delClient(SPtr<TDUID> duid)
     return false;
 }
 
+
+/// @brief tries to update interface name/index information (if required)
+///
+/// @param nameToIndex network interface name to index mapping
+/// @param indexToName network interface index to name mapping
+///
+/// @return true if successful
+bool TAddrMgr::updateInterfacesInfo(const NameToIndexMapping& nameToIndex,
+                                    const IndexToNameMapping& indexToName) {
+    firstClient();
+    while (SPtr<TAddrClient> client = getClient()) {
+
+        client->firstIA();
+        while (SPtr<TAddrIA> ia = client->getIA()) {
+            if (!updateInterfacesInfoIA(ia, nameToIndex, indexToName))
+                return false;
+        }
+
+        client->firstTA();
+        while (SPtr<TAddrIA> ta = client->getTA()) {
+            if (!updateInterfacesInfoIA(ta, nameToIndex, indexToName))
+                return false;
+        }
+
+        client->firstPD();
+        while (SPtr<TAddrIA> pd = client->getPD()) {
+            if (!updateInterfacesInfoIA(pd, nameToIndex, indexToName))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool TAddrMgr::updateInterfacesInfoIA(SPtr<TAddrIA> ia,
+                                      const NameToIndexMapping& nameToIndex,
+                                      const IndexToNameMapping& indexToName) {
+
+    // check if ifacename is empty. If it is, then this is an
+    // old (pre 0.8.4) database that didn't store interface names
+    // info.
+    if (ia->getIfacename().length() == 0) {
+        IndexToNameMapping::const_iterator i = indexToName.find(ia->getIfindex());
+        if ( i == indexToName.end() ) {
+            Log(Crit) << "Loaded old (pre 0.8.4?) database contains only "
+                      << "interface index and that index " << ia->getIfindex()
+                      << " is not present in the OS now. Can't fix this database."
+                      << LogEnd;
+            return false;
+        }
+
+        ia->setIfacename(i->second);
+        Log(Debug) << "Updated old (pre 0.8.4?) database: IA with ifindex=" << ia->getIfindex()
+                   << " and no ifacename, updated to " << i->second << LogEnd;
+        return true;
+    }
+
+    // Check if name is present in the system
+    NameToIndexMapping::const_iterator n = nameToIndex.find(ia->getIfacename());
+    if (n == nameToIndex.end()) {
+        Log(Crit) << "Loaded database mentions interface "
+                  << ia->getIfacename() << ", which is not present in the OS."
+                  << "Can't use this database." << LogEnd;
+        return false;
+    }
+
+    // check if ifindex is valid. If it changed, update it.
+    if (ia->getIfindex() != n->second) {
+        Log(Warning) << "Interface index for " << n->first << " has changed: was "
+                     << ia->getIfindex() << ", but it is now " << n->second
+                     << ", updating database." << LogEnd;
+        ia->setIfindex(n->second);
+    }
+
+    return true;
+}
+
+
 // --------------------------------------------------------------------
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
@@ -643,14 +721,14 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 iaid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrIA::IAID=" << iaid << LogEnd;
             }
-            if ((x=strstr(buf,"iface"))) {
+            if ((x=strstr(buf,"iface="))) {
                 ifindex = atoi(x+7);
                 // Log(Debug) << "Parsed AddrIA::iface=" << iface << LogEnd;
             }
             if ((x=strstr(buf,"ifacename"))) {
-                char* end = strstr(x + 10, "\"");
+                char* end = strstr(x + 11, "\"");
                 if (end) {
-                    ifacename = string(x + 10, end);
+                    ifacename = string(x + 11, end);
                 }
             }
             if ((x=strstr(buf,"unicast"))) {
@@ -696,14 +774,14 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 pdid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrPD::PDID=" << pdid << LogEnd;
             }
-            if ((x=strstr(buf,"iface"))) {
+            if ((x=strstr(buf,"iface="))) {
                 ifindex = atoi(x+7);
                 // Log(Debug) << "Parsed AddrPD::iface=" << iface << LogEnd;
             }
             if ((x=strstr(buf,"ifacename"))) {
-                char* end = strstr(x + 10, "\"");
+                char* end = strstr(x + 11, "\"");
                 if (end) {
-                    ifacename = string(x + 10, end);
+                    ifacename = string(x + 11, end);
                 }
             }
             if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, ifacename, ifindex)) {

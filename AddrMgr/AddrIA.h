@@ -37,14 +37,16 @@ class TAddrIA
     void setState(enum EState state);
     void setT1(unsigned long T1);
     void setT2(unsigned long T2);
-    //void reset(unsigned long id);
     void reset();
     unsigned long getT1();
     unsigned long getT2();
     unsigned long getIAID();
 
-    //---Iface---
+    //---Iface details ---
+    const std::string& getIfacename();
     int getIfindex();
+    void setIfindex(int ifindex) { Ifindex_ = ifindex; }
+    void setIfacename(const std::string& ifacename) { Iface_ = ifacename; }
 
     //---Server's DUID---
     void setDUID(SPtr<TDUID> duid);

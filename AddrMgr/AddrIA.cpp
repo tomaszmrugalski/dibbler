@@ -63,6 +63,10 @@ void TAddrIA::reset()
     setState(STATE_NOTCONFIGURED);
 }
 
+const std::string& TAddrIA::getIfacename() {
+    return Iface_;
+}
+
 int TAddrIA::getIfindex()
 {
     return Ifindex_;

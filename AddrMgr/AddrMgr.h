@@ -13,6 +13,7 @@ class TAddrMgr;
 #define ADDRMGR_H
 
 #include <string>
+#include <map>
 #include "SmartPtr.h"
 #include "Container.h"
 #include "AddrClient.h"
@@ -44,9 +45,23 @@ class TAddrMgr;
 class TAddrMgr
 {
   public:
+
+    /// holds network interface name to ifindex mapping
+    typedef std::map<std::string, int> NameToIndexMapping;
+
+    /// holds network interface ifindex to name mapping
+    typedef std::map<int, std::string> IndexToNameMapping;
+
     friend std::ostream & operator<<(std::ostream & strum,TAddrMgr &x);
     TAddrMgr(const std::string& addrdb, bool loadfile = false);
     virtual ~TAddrMgr();
+
+    bool updateInterfacesInfo(const NameToIndexMapping& nameToIndex,
+                              const IndexToNameMapping& indexToName);
+
+    bool updateInterfacesInfoIA(SPtr<TAddrIA> ia,
+                                const NameToIndexMapping& nameToIndex,
+                                const IndexToNameMapping& indexToName);
 
     //--- Client container ---
     void addClient(SPtr<TAddrClient> x);
@@ -70,11 +85,12 @@ class TAddrMgr
                            int length, bool quiet);
     virtual bool updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
                               const std::string& ifname,
-                              int ifindex, unsigned long IAID, unsigned long T1, unsigned long T2,
-                              SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-                              int length, bool quiet);
+                              int ifindex, unsigned long IAID, unsigned long T1,
+                              unsigned long T2, SPtr<TIPv6Addr> prefix, unsigned long pref,
+                              unsigned long valid, int length, bool quiet);
 
-    virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID, SPtr<TIPv6Addr> prefix, bool quiet);
+    virtual bool delPrefix(SPtr<TDUID> clntDuid, unsigned long IAID,
+                           SPtr<TIPv6Addr> prefix, bool quiet);
     bool prefixIsFree(SPtr<TIPv6Addr> prefix);
 
     //--- Time related methods ---
@@ -99,8 +115,10 @@ class TAddrMgr
     // database loading methods that use internal loading routines
     bool xmlLoadBuiltIn(const char * xmlFile);
     SPtr<TAddrClient> parseAddrClient(const char * xmlFile, FILE *f);
-    SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,int iaid,const std::string& ifname, int ifindex);
-    SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,int iaid,const std::string& ifname, int ifindex);
+    SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,
+                              int iaid, const std::string& ifname, int ifindex);
+    SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,
+                              int iaid, const std::string& ifname, int ifindex);
     SPtr<TAddrAddr> parseAddrAddr(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrPrefix> parseAddrPrefix(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);
@@ -108,10 +126,10 @@ class TAddrMgr
 
 protected:
     virtual void print(std::ostream & out) = 0;
-    bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr, const std::string& ifname,
-                   int ifindex, unsigned long IAID, unsigned long T1, unsigned long T2,
-                   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-                   int length, bool quiet);
+    bool addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
+                   const std::string& ifname, int ifindex, unsigned long IAID,
+                   unsigned long T1, unsigned long T2, SPtr<TIPv6Addr> prefix,
+                   unsigned long pref, unsigned long valid, int length, bool quiet);
     bool updatePrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
                       int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
                       SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
@@ -121,7 +139,8 @@ protected:
     List(TAddrClient) ClntsLst;
     std::string XmlFile;
 
-    bool DeleteEmptyClient; // should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
+    /// should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
+    bool DeleteEmptyClient;
 };
 
 #endif
