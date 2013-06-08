@@ -219,7 +219,7 @@ dnl ---------------------------------------------
       ARCH="LINUX"
       PORT_SUBDIR="Port-linux"
       PORT_CFLAGS=""
-      PORT_LDFLAGS="-lpthread"
+      PORT_LDFLAGS=""
       EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
@@ -458,6 +458,13 @@ AC_SUBST(GTEST_LDADD)
 
    if test x$MOD_CLNT_CONFIRM = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
+   fi
+
+   if test x$MOD_CLNT_CONFIRM = xyes; -a ARCH = "LINUX"; then
+     echo "Link state detection enabled on Linux, adding -lpthreads"
+      LDFLAGS="${LDFLAGS} -lpthread"
+   else
+     echo "Link state detection disabled or this is not Linux, NOT adding -lpthreads"
    fi
 
 ### Remote autoconf ######################################

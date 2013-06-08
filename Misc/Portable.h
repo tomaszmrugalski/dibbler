@@ -309,7 +309,8 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
     extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
     extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
-    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links, volatile int * notify);
+    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links,
+                                       volatile int * notify);
     extern void link_state_change_cleanup();
     extern void microsleep(int microsecs);
     uint64_t htonll(uint64_t n);

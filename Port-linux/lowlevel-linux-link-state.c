@@ -5,8 +5,9 @@
  *
  * Released under GNU GPL v2 licence
  *
- * $Id: lowlevel-linux-link-state.c,v 1.4 2009-03-24 23:17:18 thomson Exp $
  */
+
+#ifdef MOD_CLNT_CONFIRM
 
 #define __USE_UNIX98
 
@@ -164,7 +165,8 @@ struct iface * filter_if_list(struct iface *head, volatile struct link_state_not
  * @param monitored_links head of the monitored links list
  * @param notify pointer to variable that is going to be modifed if change is detected
  */
-void link_state_change_init(volatile struct link_state_notify_t * monitored_links, volatile int * notify)
+void link_state_change_init(volatile struct link_state_notify_t * monitored_links,
+                            volatile int * notify)
 {
     struct iface * ifacesLst;
     int err;
@@ -257,3 +259,11 @@ int report_link_state(const char* iface) {
    close(fd);
    return r;
 }
+#else
+
+/* just a dummy code to not cause link failures */
+void link_state_change_init(volatile struct link_state_notify_t * monitored_links,
+                            volatile int * notify) {
+}
+
+#endif
