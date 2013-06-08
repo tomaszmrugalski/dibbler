@@ -224,7 +224,7 @@ void TClntTransMgr::removeExpired() {
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
             Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
                          << ptrIface->getFullName()
-                         << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+                         << " interface (in IA_NA " << ptrIA->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
             ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
@@ -252,6 +252,48 @@ void TClntTransMgr::removeExpired() {
 	}
     }
 
+    // are there any expired IA_TAs?
+    ClntAddrMgr().firstTA();
+    while (ptrIA = ClntAddrMgr().getTA()) {
+        if (ptrIA->getValidTimeout())
+            continue;
+
+        ptrIA->firstAddr();
+        while (ptrAddr = ptrIA->getAddr()) {
+            if (ptrAddr->getValidTimeout())
+                continue;
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
+            Log(Warning) << "Temporary address " << ptrAddr->get()->getPlain() << " assigned to the "
+                         << ptrIface->getFullName()
+                         << " interface (in IA_TA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+
+            // remove that address from the physical interace
+            ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrIA->delAddr(ptrAddr->get());
+	    Log(Info) << "Expired temporary address " << ptrAddr->get()->getPlain()
+		      << " from IA " << ptrIA->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
+        }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrIA->countAddr()) {
+	    Log(Debug) << "The IA_TA (with IAID=" << ptrIA->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIfindex());
+	    if (cfgIface) {
+                cfgIface->firstTA();
+		SPtr<TClntCfgTA> cfgTA = cfgIface->getTA();
+		if (cfgTA) {
+		    cfgTA->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
+    }
+
     // are there any expired IA_PDs?
     SPtr<TAddrIA> ptrPD;
     SPtr<TAddrPrefix> ptrPrefix;
@@ -267,7 +309,7 @@ void TClntTransMgr::removeExpired() {
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIfindex());
             Log(Warning) << "Prefix " << ptrPrefix->get()->getPlain() << " obtained on the "
                          << ptrIface->getFullName()
-                         << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
+                         << " interface (in IA_PD " << ptrPD->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
 	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength(),
@@ -665,7 +707,7 @@ unsigned long TClntTransMgr::getTimeout()
     if (timeout > tmp)
         timeout = tmp;
     // Uncomment for timeout debugging
-    // Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
+    //Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
 
     if (timeout == 0) {
 	ClntAddrMgr().getTimeout();

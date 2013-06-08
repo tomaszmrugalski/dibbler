@@ -15,6 +15,7 @@
   - Cli: Database is now checked against missing or interface index changes
     (bugs #192, #247, #250)
   - Srv: Temporary addresses are now stored in the database (bug #284)
+  - Cli: Temporary addresses are now expired and removed properly (bug #285)
 
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
