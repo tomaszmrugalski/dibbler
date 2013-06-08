@@ -192,11 +192,12 @@ struct iface * if_list_get() {
                     {
                         char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
 
-#ifdef OPENBSD
-			// this is ugly. OpenBSD returns interface index on the 4th byte. Link-local
+                        /// @todo: Ugly workaround. Please remove one BSD guys fix their kernel.
+
+			// This is ugly. OpenBSD returns interface index on the 4th byte. Link-local
 			// addresses are supposed to be in format fe80:[6 zeros here]:EUI-64
+                        // This problem also appears on pfSense
 			memset(ptr+2, 0, 6);
-#endif
 
 #ifdef LOWLEVEL_DEBUG
 			printf("Link-local addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x:"

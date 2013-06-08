@@ -88,8 +88,6 @@ AC_TYPE_UINT8_T
 
 # Checks for library functions.
 AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostname gethostbyname gettimeofday inet_ntoa inet_aton memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
 CFLAGS="$CFLAGS_SAVED"
