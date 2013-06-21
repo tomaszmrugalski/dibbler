@@ -154,7 +154,7 @@ int init(const char * pidfile, const char * workdir) {
     unlink(pidfile);
     ofstream pidFile(pidfile);
     if (!pidFile.is_open()) {
-	Log(Crit) << "Unable to create " << pidfile << " file." << LogEnd;
+	Log(Crit) << "Unable to createdsaddsadas " << pidfile << " file." << LogEnd;
 	return 0;
     }
     pidFile << getpid();

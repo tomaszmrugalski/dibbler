@@ -205,7 +205,6 @@ bool ReqTransMgr::SendMsg()
 
 bool ReqTransMgr::CreateNewTCPSocket()
 {
-
     if (!CfgMgr) {
         Log(Crit) << "Unable to bind sockets: no configration set." << LogEnd;
         return false;
@@ -227,6 +226,7 @@ bool ReqTransMgr::CreateNewTCPSocket()
     }
 
     SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+
     if (!Iface->addTcpSocket(ll, DHCPCLIENT_PORT)) {
         Log(Crit) << "TCP Socket creation or binding failed." << LogEnd;
         return false;

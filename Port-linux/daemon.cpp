@@ -122,6 +122,12 @@ void daemon_die() {
 
 int init(const char * pidfile, const char * workdir) {
     string tmp;
+    /** @todo: buf needs to fit "/proc/%d/exe", where %d is pid_t
+     * (on my system it's 20 B exactly with positive PID. However this is not
+     * portable.) */
+    char buf[20];
+    char cmd[256];
+    
     pid_t pid = getPID(pidfile);
     if (pid > 0) {
         /** @todo: buf needs to fit "/proc/%d/exe", where %d is pid_t

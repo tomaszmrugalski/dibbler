@@ -109,6 +109,7 @@ public:
     void bulkLQTcpPort(unsigned short portNumber);
     void bulkLQMaxConns(unsigned int maxConnections);
     void bulkLQTimeout(unsigned int timeout);
+    bool isBulkSupported();
 
     //Authentication
 #ifndef MOD_DISABLE_AUTH

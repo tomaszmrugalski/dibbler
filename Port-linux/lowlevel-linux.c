@@ -34,6 +34,7 @@
 #include <fnmatch.h>
 #include <time.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 
 
 #include "libnetlink.h"
@@ -477,11 +478,11 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     else
 	multicast = 0;
 
-#ifdef LOWLEVEL_DEBUG
-    printf("### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
+//#ifdef LOWLEVEL_DEBUG
+    printf("\n ### iface: %s(id=%d), addr=%s, port=%d, ifaceonly=%d reuse=%d###\n",
     ifacename,ifaceid, addr, port, thisifaceonly, reuse);
     fflush(stdout);
-#endif
+//#endif
     
     /* Open a socket for inbound traffic */
     memset(&hints, 0, sizeof(hints));
@@ -510,6 +511,8 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	    sprintf(Message, "Unable to bind socket to interface %s.", ifacename);
 	    return LOWLEVEL_ERROR_BIND_IFACE;
 	}
+    } else {
+        printf("\n IFACE_ONLY \n");
     }
 
     /* allow address reuse (this option sucks - why allow running multiple servers?) */
@@ -816,117 +819,146 @@ void print_trace(void)
 
 
 
-extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
+extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
+
+
+    int on = 1;
 
     int error;
-    int on = 1;
-    struct addrinfo hints;
+
     struct addrinfo *res;
+    struct addrinfo hints;
+    fd_set master_set;
     int Insock;
     char port_char[6];
-    char * tmp;
-    struct sockaddr_in6 bindme;
+    //char * tmp;
     sprintf(port_char,"%d",port);
-    int fd_new;
     int connectionNumber =1;
+    ifaceid = 6;
 
-#ifdef LOWLEVEL_DEBUG
-    printf("### iface: %s(id=%d), addr=%s, port=%d", ifacename,ifaceid, addr, port);
+//#ifdef LOWLEVEL_DEBUG
+    printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
     fflush(stdout);
-#endif
+//#endif  
 
-
-    /* Open a TCP socket for inbound traffic */
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = PF_INET6;
+    hints.ai_family = AF_INET6;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
-
-    if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ){
-    sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
-    return LOWLEVEL_ERROR_GETADDRINFO;
+    if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ) {
+        sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
+        return LOWLEVEL_ERROR_GETADDRINFO;
     }
 
-    if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0){
-    sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
-    return LOWLEVEL_ERROR_UNSPEC;
+    if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0) {
+        sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
+        printf("\n TCP socket has been created correctly\n " );
+    }
+
+    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) ) < 0) {
+        sprintf(Message, "Unable to set up socket option SO_REUSEADDR");
+        return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 
     /* Set the options  to receivce ipv6 traffic */
     if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
-    sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
-    return LOWLEVEL_ERROR_SOCK_OPTS;
+      sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
+      return LOWLEVEL_ERROR_SOCK_OPTS;
+    }
+
+    // set socket as nonblocking
+    if (ioctl(Insock, FIONBIO, (char *)&on) < 0) {
+       sprintf(Message, "Unable to set up socket as nonblocking - ioctl's failure.");
+       return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 
     freeaddrinfo(res);
 
+
+    //initialize master fd_set
+    FD_ZERO(&master_set);
+    FD_SET(Insock,&master_set);
+
+    /* Open a TCP socket for inbound traffic */
+    struct sockaddr_in6 bindmeServer;
+    struct sockaddr_in6 bindmeClient;
+
+
+
     /* bind socket to a specified port */
-    bzero(&bindme, sizeof(struct sockaddr_in6));
-    bindme.sin6_family = AF_INET6;
-    bindme.sin6_port   = htons(port);
-    tmp = (char*)(&bindme.sin6_addr);
-    inet_pton6(addr, tmp);
+    bzero(&bindmeClient, sizeof(struct sockaddr_in6));
+    bindmeClient.sin6_family = AF_INET6;
+    //bindmeTcp.ai_socktype = SOCK_STREAM;
+    bindmeClient.sin6_port   = htons(port);
+    //bindmeTcp.sin6_ = IPPROTO_TCP;
+    //tmp = (char*)(&bindmeClient.sin6_addr);
+    //inet_pton6(addr, tmp);
+
+
+    /* bind socket to a specified port */
+    bzero(&bindmeServer, sizeof(struct sockaddr_in6));
+    bindmeServer.sin6_family = AF_INET6;
+    bindmeServer.sin6_port   = htons(port);
+    //tmp = (char*)(&bindmeServer.sin6_addr);
+    bindmeServer.sin6_addr = in6addr_any;
+    socklen_t bindmeServerSize;
+    bindmeServerSize= sizeof (struct sockaddr_in6);
+
+    //resultInet=inet_pton6(addr, tmp);
+   // printf("resultInet:%d ", resultInet);
+
 
     //TCP client part
     if (port == 0) {
 
-         if (connect(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme)) != 0) {
+         if (connect(Insock, (struct sockaddr_in6*)&bindmeClient, sizeof(struct sockaddr_in6)) != 0) {
              sprintf(Message, "Unable to connect with DHCP server, connect function failed");
              return LOWLEVEL_ERROR_CONNECT_FAILED;
 
         }
     }
-    //sprintf("Port: %d",port);
+    int result=0;
     //TCP server part
     if ( port > 0) {
-        if (bind(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme))) {
+
+        printf("\n Socket FD: %d", Insock );
+       // printf("\n Size of struct passed to bind:%d\n",sizeof(struct sockaddr_in6));
+        //printf("\n Size of struct passed to bind:%d",sizeof(struct sockaddr_in6));
+        result = bind( Insock,(struct sockaddr_in6 *)&bindmeServer,bindmeServerSize);
+        printf("\n Result:%d \n",result);
+
+        if (result < 0 ) {
             sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
             return LOWLEVEL_ERROR_BIND_FAILED;
         } else {
             sprintf(Message, "Socket has been bind succesfully");
+            printf("\n Socket has been bind succesfully \n");
         }
 
         if (connectionNumber > 0)  {
-             if ( listen_tcp (Insock,connectionNumber) != 0 ) {
+             if ( listen (Insock,connectionNumber) != 0 ) {
+                 printf("\n Listen function has NOT been called correctly \n");
                  return LOWLEVEL_ERROR_LISTEN_FAILED;
              } else {
                  sprintf(Message,"Listen function has been called correctly");
+                 printf("\n Listen function has been called correctly \n");
              }
         } else {
             sprintf(Message, "Connection number hasn't been specified");
             return LOWLEVEL_ERROR_LISTEN_FAILED;
         }
 
-
-        while ((fd_new = accept(Insock, (struct sockaddr_in6 *)&bindme, sizeof(struct sockaddr_in6) )) == 0) {
-            if (fd_new == -1) {
-                sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
-                close(fd_new);
-                return 1;
-            } else {
-                return fd_new;
-            }
-        }
     }
 
     return Insock;
 
 }
 
-
-extern int listen_tcp (int fd,int connectionNumber ) {
-
-    if ( listen( fd, connectionNumber ) < 0 ) {
-              sprintf(Message, "Listen function failed");
-              close(fd);
-              return 1;
-    } else {
-        return 0;
-    }
-}
-
-extern int getsOpt(int fd, int level, int optname, char *optval, int *optlen) {
+//!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype)
+extern int getsOpt(int fd, int level, int optname, char *optval) {
 
     socklen_t len = sizeof(int);
 
@@ -936,23 +968,47 @@ extern int getsOpt(int fd, int level, int optname, char *optval, int *optlen) {
     } else {
         return 0;
     }
+    return 0;
 }
 
-//extern int accept_tcp (int fd,char * addr, struct socketStruct) {
+extern int accept_tcp (int fd) {
 
-//    int fd_new;
+    int fd_new;
+    /*
+    if(!master_set) {
+        sprintf(Message, "Master set of file descriptor not defined");
+        return 1;
+    }*/
 
-//    addrLength = sizeof(socketStruct.sockaddr_in);
-//    fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
-//    if (fd_new == -1) {
-//        sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
-//        close(fd_new);
-//        return 1;
-//    } else {
-//        return fd_new;
-//    }
+    /*addrLength = sizeof(socketStruct.sockaddr_in);
+    if (( addr!=NULL) && (addrLength!=0 ) ) {
+        fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
+        if (fd_new == -1) {
+            sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+            close(fd_new);
+            return 1;
+        } else {
+            return fd_new;
+        }
 
-//}
+    } */
+
+    fd_new = accept(fd,NULL,NULL);
+    if (fd_new < 0) {
+        //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+        //close(fd_new);
+
+        if (errno !=  EWOULDBLOCK) {
+            sprintf(Message, "Accept function failed. Cannot create net socket descriptor" );
+
+            //Here should be check if client didn't close connection
+            //close(fd_new);
+            return -1;
+        }
+
+    }
+    return fd_new;
+}
 
 //extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
 
@@ -999,8 +1055,8 @@ extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, i
     if (!buflen){
         buflen=(int)strlen(buf);
     }
-
-    if (iResult = send (fd,buf,buflen,flags))
+    iResult = send (fd,buf,buflen,flags);
+    if (iResult)
     {
         if (iResult < 0);
         sprintf(Message, "Unable to send data (dst addr: %s)", addr);

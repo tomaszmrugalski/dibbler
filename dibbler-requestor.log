@@ -631,3 +631,126 @@
 2013.05.06 23:24:19 Requestor Error     Low-level layer error message: Unable to bind socket: Permission denied
 2013.05.06 23:24:19 Requestor Critical  TCP Socket creation or binding failed.
 2013.05.06 23:24:19 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:00:34 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:00:34 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:00:34 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:00:34 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:00:34 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:00:34 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:03:14 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:03:14 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:03:14 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:03:14 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:03:14 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:03:14 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:04:14 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:04:14 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:04:14 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:04:14 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:04:14 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:04:14 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:06:05 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:06:05 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:06:05 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:06:05 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:06:05 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:06:05 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:06:19 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.07 20:06:19 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.07 20:06:56 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:06:56 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:06:56 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:06:56 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:06:56 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:06:56 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:08:05 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:08:05 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:08:05 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:08:05 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:08:05 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:08:05 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:08:19 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:08:19 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:08:19 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:08:19 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:08:19 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.05.07 20:08:19 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.07 20:14:18 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.07 20:14:18 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.07 20:14:18 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.07 20:14:18 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.07 20:14:18 Requestor Debug      Bulk Leasequery part has been started
+2013.05.07 20:14:18 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.05.07 20:14:18 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.07 20:14:18 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.14 18:31:59 Requestor Debug     BBBBBUUUUULLLLKKK
+2013.05.14 18:31:59 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 18:31:59 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 18:31:59 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 18:31:59 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 18:31:59 Requestor Debug     Bulk Leasequery part has been started
+2013.05.14 18:31:59 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.05.14 18:31:59 Requestor Critical  TCP Socket creation or binding failed.
+2013.05.14 18:31:59 Requestor Critical  Aborted. TCP socket creation failed.
+2013.05.14 21:20:56 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.14 21:20:56 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 21:24:25 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:24:25 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:24:25 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:24:25 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:24:45 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:24:45 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:24:45 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:24:45 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:30:59 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:30:59 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:30:59 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:30:59 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:31:43 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.14 21:31:43 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 21:43:03 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:43:03 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:43:03 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:43:03 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:43:17 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:43:17 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:43:17 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:43:17 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:49:39 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.14 21:49:39 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 21:50:45 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.14 21:50:45 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 21:50:51 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:50:51 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:50:51 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:50:51 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:51:43 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:51:43 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:51:43 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:51:43 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:51:48 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:51:48 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:51:48 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:51:48 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:52:39 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:52:39 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:52:39 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:52:39 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:53:11 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:53:11 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:53:11 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:53:11 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:53:26 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:53:26 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:53:26 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:53:26 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 21:55:36 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.05.14 21:55:36 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 21:55:53 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.05.14 21:55:53 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.05.14 21:55:53 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.05.14 21:55:53 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.05.14 22:11:11 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.14 22:11:11 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.05.14 22:15:29 Requestor Error     Interface not defined. Please use -i command-line switch.
+2013.05.14 22:15:29 Requestor Critical  Aborted. Invalid command-line parameters or help called.

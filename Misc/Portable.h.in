@@ -221,7 +221,7 @@ struct link_state_notify_t
 #define OPTION_NISP_DOMAIN_FILENAME  "option-nisplus-domain"
 
 /* --- bulk leasequery --- */
-#define BULKLQ_ACCEPT false
+#define BULKLQ_ACCEPT true
 #define BULKLQ_TCP_PORT 547
 #define BULKLQ_MAX_CONNS 10
 #define BULKLQ_TIMEOUT 300
@@ -321,11 +321,12 @@ unsigned long pref, unsigned long valid, int prefixLength);
 
     extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port);
     extern int listen_tcp (int fd,int connectionNumber );
-    extern int accept_tcp (int fd, struct socketStruct);
+    //extern int accept_tcp (int fd,char * addr, struct socketStruct, fd_set *master_set)
+    extern int accept_tcp (int fd);
     extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, int port);
     extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags);
     extern int terminate_tcp_connection(int fd,int how);
-    extern int getsOpt(int fd, int level, int optname, char *optval, int *optlen);
+    extern int getsOpt(int fd, int level, int optname, char *optval);
     
     /* pack/unpack address */
     extern void print_packed(char addr[]);

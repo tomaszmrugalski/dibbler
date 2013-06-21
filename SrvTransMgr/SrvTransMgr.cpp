@@ -221,6 +221,15 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
         }
     }
 
+    // Creating TCP socket
+    if (SrvCfgMgr().isBulkSupported()) {
+        Log(Notice) << "Bulk-leasequery accepted. Creating TCP socket on" << confIface->getName()
+                       <<"/" << confIface->getID() << " interface." << LogEnd;
+        if (!iface->addTcpSocket(unicast,DHCPSERVER_PORT)) {
+            Log(Crit) << "Proper TCP socket creation failed." << LogEnd;
+        }
+    }
+
     char srvAddr[16];
     if (!confIface->isRelay()) {
         inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
@@ -486,6 +495,28 @@ void TSrvTransMgr::doDuties()
         SrvAddrMgr().doDuties(addrLst, tempAddrLst, prefixLst);
         removeExpired(addrLst, tempAddrLst, prefixLst);
     }
+
+    // for each message on list, let it do its duties, if timeout is reached
+    SPtr<TSrvMsg> msg;
+    MsgLst.first();
+    while (msg=MsgLst.get())
+        if ( (!msg->getTimeout()) && (!msg->isDone()) )
+            msg->doDuties();
+
+    // now delete messages marked as done
+    MsgLst.first();
+    while (msg = MsgLst.get() )
+    {
+        if (msg->isDone())
+        {
+            MsgLst.del();
+            deletedCnt++;
+        }
+    }
+    if (deletedCnt) {
+        Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
+    }
+
 
     // Open socket on interface which becames ready during server run
     if (SrvCfgMgr().inactiveMode())
