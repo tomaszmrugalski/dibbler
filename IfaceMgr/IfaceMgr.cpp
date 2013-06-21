@@ -52,6 +52,7 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
         return;
     }
 
+    Log(Debug) <<"BBBBBUUUUULLLLKKK" << LogEnd;
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
@@ -148,7 +149,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer) {
     struct timeval czas;
-    int result;
+    int result, fd_new_tcp;
     if (time > DHCPV6_INFINITY/2)
         time /=2;
 
@@ -206,11 +207,13 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     char myPlainAddr[48];   // my plain address
     char peerPlainAddr[48]; // peer plain address
 
-    int stype, flags =0, typelen =sizeof(int);
-    if (!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype, &typelen)) {
+    int stype, flags =0;
+    if (!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype)) {
       if (stype==SOCK_DGRAM)
        result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
       else if (stype==SOCK_STREAM)
+       fd_new_tcp = accept_tcp(sock->getFD());
+       FD_SET(fd_new_tcp,&fds);
        sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
     } else {
             Log(Error) << "Seems like internal error. Unable to distinguish socket type." << LogEnd;

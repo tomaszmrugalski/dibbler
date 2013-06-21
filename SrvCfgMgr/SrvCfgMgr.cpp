@@ -75,6 +75,7 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
+    Log(Debug) << "TESTTESTTEST" <<LogEnd;
     // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
@@ -125,6 +126,8 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     } else {
         Log(Notice) << "Running in stateful mode." << LogEnd;
     }
+
+
 
     // @todo: remove this info later
     Log(Debug) << "Bulk-leasequery: enabled=" << (BulkLQAccept?"yes":"no")
@@ -1133,4 +1136,9 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     if (!DNSAddr) {
     }
     return DNSAddr;
+}
+
+bool TSrvCfgMgr::isBulkSupported()
+{
+    return BulkLQAccept;
 }

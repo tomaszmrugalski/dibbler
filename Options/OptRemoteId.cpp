@@ -61,7 +61,7 @@ char * TOptRemoteID::storeSelf( char* buf) {
 }
 
 bool TOptRemoteID::isValid() {
-
+    return 0;
 }
 
 unsigned int TOptRemoteID::getRemoteId(){

@@ -67,12 +67,12 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                   << " and you have IPv6 support enabled." << LogEnd;
         return;
     }
-
+    Log(Debug) << "DDDDDDDDDDDDDDDDD" << LogEnd;
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
-
+	
         SPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
                                                        ptr->flags,
                                                        ptr->mac,

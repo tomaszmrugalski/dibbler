@@ -151,6 +151,7 @@ int TIfaceSocket::createSocket_TCP(char *iface, int ifaceid, SPtr<TIPv6Addr> add
     this->Status = STATE_NOTCONFIGURED;
     this->Addr   = addr;
 
+    //todo:
     int connectionNumber = BULKLQ_MAX_CONNS;
 
     // create socket
