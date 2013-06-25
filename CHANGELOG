@@ -20,7 +20,7 @@
     (bug #249)
   - Srv: Buffer for incoming UDP packets increased to 64k
   - Srv: incoming packet destination address check is disabled by default and
-    can be enabled with --enable-dst-addr-check parameter
+    can be enabled with --enable-dst-addr-check parameter (bug #286)
 
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
