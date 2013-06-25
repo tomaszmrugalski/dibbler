@@ -651,6 +651,8 @@ GTEST_LDFLAGS
 GTEST_INCLUDES
 RESOLVCONF_FALSE
 RESOLVCONF_TRUE
+MOD_SRV_DST_ADDR_CHECK_FALSE
+MOD_SRV_DST_ADDR_CHECK_TRUE
 ALLOCA
 CXXCPP
 CPP
@@ -791,6 +793,7 @@ enable_
 enable_debug
 enable_efence
 enable_bind_reuse
+enable_dst_addr_filter
 enable_resolvconf
 enable_dns_update
 enable_auth
@@ -1448,7 +1451,8 @@ Dibbler modular features:
   --enable-debug          Turn on debugging (default: no)
   --enable-efence         Enables linking with electric-fence (default: no)
   --enable-bind-reuse     Enables reusing the same port/address: SO_REUSEADDR (default: yes)
-  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)
+  --enable-dst-addr-check Enables server checks of dst address vs socket binding address (default: no)
+  --enable-resolvconf	  Enables support for resolvconf (/sbin/resolvcof) (default: no)
   --enable-dns-update     Enables DNS Update mechanism (default: yes)
   --enable-auth           Enables authentication (default: yes)
   --enable-link-state     Enables link-state change detections (default: yes)
@@ -17091,6 +17095,40 @@ fi
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### reusing dst addr filter ####################
+   # Check whether --enable-dst-addr-filter was given.
+if test "${enable_dst_addr_filter+set}" = set; then :
+  enableval=$enable_dst_addr_filter;  case "${enableval}" in
+              yes)
+              MOD_SRV_DST_ADDR_CHECK=yes
+              ;;
+              no)
+              MOD_SRV_DST_ADDR_CHECK=no
+              ;;
+              *)
+              as_fn_error $? "bad value ${enableval} for --enable-dst-addr-check" "$LINENO" 5
+              ;;
+           esac
+else
+  MOD_SRV_DST_ADDR_CHECK=yes
+
+fi
+
+
+ if test $MOD_SRV_DST_ADDR_CHECK = yes; then
+  MOD_SRV_DST_ADDR_CHECK_TRUE=
+  MOD_SRV_DST_ADDR_CHECK_FALSE='#'
+else
+  MOD_SRV_DST_ADDR_CHECK_TRUE='#'
+  MOD_SRV_DST_ADDR_CHECK_FALSE=
+fi
+
+if test -z "$MOD_SRV_DST_ADDR_CHECK_TRUE"; then :
+
+$as_echo "#define MOD_SRV_DST_ADDR_CHECK 1" >>confdefs.h
+
+fi
+
 ### support for resolvconf tool (mostly Debian, probably) ##############
    # Check whether --enable-resolvconf was given.
 if test "${enable_resolvconf+set}" = set; then :
@@ -17439,6 +17477,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${MOD_SRV_DST_ADDR_CHECK_TRUE}" && test -z "${MOD_SRV_DST_ADDR_CHECK_FALSE}"; then
+  as_fn_error $? "conditional \"MOD_SRV_DST_ADDR_CHECK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${RESOLVCONF_TRUE}" && test -z "${RESOLVCONF_FALSE}"; then
