@@ -1,6 +1,10 @@
 
   Dibbler changelog
  ------------------- 
+0.9.0 [not-released-yet]
+  - Reconfigure support (by Grzegorz Pluto)
+  - Authentication rewritten (now uses RFC3315 option formats)
+
 0.8.4 [not-released-yet]
   - Rel: Unknown message types are now relayed (as a forward compatibility
     feature)
@@ -40,7 +44,6 @@
   - Srv: Relay support refactored. Unknown options are now handled better
     and any development related to relays will be easier
   - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
-  - Reconfigure support (by Grzegorz Pluto)
   - Classes for USER_CLASS and VENDOR_CLASS options implemented.
   - Linux: stop command fix (bug #268)
   - Win32: dibbler waits for netsh.exe execution completion, because netsh.exe
