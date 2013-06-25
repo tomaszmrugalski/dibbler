@@ -347,9 +347,30 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### reusing dst addr filter ####################
+   AC_ARG_ENABLE(dst-addr-filter,
+        [  --enable-dst-addr-check Enables server checks of dst address vs socket binding address (default: no)],
+        [ case "${enableval}" in
+              yes)
+              MOD_SRV_DST_ADDR_CHECK=yes
+              ;;
+              no)
+              MOD_SRV_DST_ADDR_CHECK=no
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-dst-addr-check)
+              ;;
+           esac],
+        [MOD_SRV_DST_ADDR_CHECK=yes]
+   )
+
+AM_CONDITIONAL(MOD_SRV_DST_ADDR_CHECK, test $MOD_SRV_DST_ADDR_CHECK = yes)
+AM_COND_IF([MOD_SRV_DST_ADDR_CHECK], [AC_DEFINE([MOD_SRV_DST_ADDR_CHECK], [1],
+           [Support for server checks if incoming destination addr matches socket address])])
+
 ### support for resolvconf tool (mostly Debian, probably) ##############
    AC_ARG_ENABLE(resolvconf,
-	[  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)],
+	[  --enable-resolvconf	  Enables support for resolvconf (/sbin/resolvcof) (default: no)],
 	[ case "${enableval}" in
 	       yes)
 	       MOD_RESOLVCONF=yes
