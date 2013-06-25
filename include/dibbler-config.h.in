@@ -222,6 +222,10 @@
 /* Support for /sbin/resolvconf enabled? */
 #undef MOD_RESOLVCONF
 
+/* Support for server checks if incoming destination addr matches socket
+   address */
+#undef MOD_SRV_DST_ADDR_CHECK
+
 /* Name of package */
 #undef PACKAGE
 
