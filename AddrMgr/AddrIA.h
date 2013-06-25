@@ -14,6 +14,7 @@ class TAddrIA;
 #define ADDRIA_H
 
 #include <iostream>
+#include <string>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -27,7 +28,7 @@ class TAddrIA
   public:
 
     friend std::ostream & operator<<(std::ostream & strum,TAddrIA &x);
-    TAddrIA(int iface, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
+    TAddrIA(const std::string& ifacename, int ifindex, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
 	    unsigned long T1, unsigned long T2,unsigned long ID);
     ~TAddrIA();
 
@@ -36,14 +37,16 @@ class TAddrIA
     void setState(enum EState state);
     void setT1(unsigned long T1);
     void setT2(unsigned long T2);
-    //void reset(unsigned long id);
     void reset();
     unsigned long getT1();
     unsigned long getT2();
     unsigned long getIAID();
 
-    //---Iface---
+    //---Iface details ---
+    const std::string& getIfacename();
     int getIfindex();
+    void setIfindex(int ifindex) { Ifindex_ = ifindex; }
+    void setIfacename(const std::string& ifacename) { Iface_ = ifacename; }
 
     //---Server's DUID---
     void setDUID(SPtr<TDUID> duid);
@@ -116,8 +119,8 @@ private:
     bool Unicast;
     SPtr<TIPv6Addr> SrvAddr;
 
-    // Iface ID
-    int Ifindex_;
+    std::string Iface_; ///< Interface name
+    int Ifindex_; ///< Interface index
 
     SPtr<TIPv6Addr> fqdnDnsServer; // DNS Updates was performed to that server
     SPtr<TFQDN> fqdn;              // this FQDN object was used to perform update

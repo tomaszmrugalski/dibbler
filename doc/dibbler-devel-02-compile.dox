@@ -194,6 +194,13 @@ options to allow binding the same address/port many times (SO_REUSEADDR
 flag passed to setsockopt). In certain cases this is convenient, so it is
 enabled by default.
 
+ - \b --enable-dst-addr-check - When server receives a packet on a socket, it checks
+whether the destination address matches the address the socket is bound to. On some
+systems when there are 2 sockets - one bound to multicast address and second bound
+to unicast address - the packet is received twice. This check can drop the packet
+when received over the wrong interface. Disabled by default. Please enable this if
+you are receiving every packet twice.
+
 - \b --enable-resolvconf - Dibbler client may update /etc/resolv.conf to add, change
 or remove entries for DNS servers and domain names. There may be other
 processes in your system (e.g. pppd) that may do the same. In some cases

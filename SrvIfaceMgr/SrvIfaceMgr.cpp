@@ -169,8 +169,10 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 // @return message object (or NULL)
 SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
-    // static buffer speeds things up
-    const int maxBufsize = 4096;
+    // static buffer speeds things up. We use maximum size for UDP (almost 64k)
+    // to be on the safe side. Otherwise someone could send us a fragmented
+    // huge UDP packet and we would be in for a surprise. :)
+    const int maxBufsize = 0xffff - 20 - 8;
     int bufsize=maxBufsize;
     static char buf[maxBufsize];
 

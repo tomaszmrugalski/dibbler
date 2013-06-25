@@ -25,7 +25,7 @@ volatile int serviceShutdown;
 volatile int linkstateChange;
 
 TDHCPClient::TDHCPClient(const std::string& config)
-  :IsDone(false)
+  :IsDone_(false)
 {
     serviceShutdown = 0;
     linkstateChange = 0;
@@ -34,14 +34,14 @@ TDHCPClient::TDHCPClient(const std::string& config)
     TClntIfaceMgr::instanceCreate(CLNTIFACEMGR_FILE);
     if ( ClntIfaceMgr().isDone() ) {
         Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
-        IsDone = true;
+        IsDone_ = true;
         return;
     }
 
     TClntCfgMgr::instanceCreate(config);
     if ( ClntCfgMgr().isDone() ) {
         Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
-        this->IsDone = true;
+        IsDone_ = true;
         return;
     }
 
@@ -49,16 +49,24 @@ TDHCPClient::TDHCPClient(const std::string& config)
                                      CLNTADDRMGR_FILE, false);
     if ( ClntAddrMgr().isDone() ) {
         Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
-            IsDone = true;
+            IsDone_ = true;
             return;
     }
 
     TClntTransMgr::instanceCreate(CLNTTRANSMGR_FILE);
     if ( TClntTransMgr::instance().isDone() ) {
         Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
-        this->IsDone = true;
+        IsDone_ = true;
         return;
     }
+
+    if ( !ClntTransMgr().sanitizeAddrDB() ) {
+        Log(Crit) << "Loaded address database failed sanitization checks."
+                  << LogEnd;
+        IsDone_ = true;
+        return;
+    }
+
 
     if (ClntCfgMgr().useConfirm())
         initLinkStateChange();
@@ -187,7 +195,7 @@ void TDHCPClient::run()
 }
 
 bool TDHCPClient::isDone() const {
-    return IsDone;
+    return IsDone_;
 }
 
 bool TDHCPClient::checkPrivileges() {

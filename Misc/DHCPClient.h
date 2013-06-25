@@ -36,7 +36,7 @@ class TDHCPClient
 
   private:
     void initLinkStateChange();
-    bool IsDone;
+    bool IsDone_;
     volatile link_state_notify_t linkstates;
 };
 

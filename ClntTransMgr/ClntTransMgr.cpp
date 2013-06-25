@@ -99,7 +99,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while(ia = iface->getIA()) {
         if (ClntAddrMgr().getIA(ia->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getID(), IATYPE_IA,
+        SPtr<TAddrIA> addrIA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_IA,
                                            0, 0, ia->getT1(), ia->getT2(),
                                            ia->getIAID());
         ClntAddrMgr().addIA(addrIA);
@@ -110,7 +110,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     if ( (ta = iface->getTA()) &&  (!ClntAddrMgr().getTA(ta->getIAID())))
     {
         // if there is such TA already, then skip adding it
-        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getID(), IATYPE_TA,
+        SPtr<TAddrIA> addrTA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_TA,
                                            0, 0, DHCPV6_INFINITY, DHCPV6_INFINITY,
                                            ta->getIAID());
         ClntAddrMgr().addTA(addrTA);
@@ -121,7 +121,7 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     while (pd = iface->getPD()) {
         if (ClntAddrMgr().getPD(pd->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
-        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getID(), IATYPE_PD,
+        SPtr<TAddrIA> addrPD = new TAddrIA(iface->getName(), iface->getID(), IATYPE_PD,
                                            0, 0, pd->getT1(), pd->getT2(),
                                            pd->getIAID());
         ClntAddrMgr().addPD(addrPD);
@@ -202,6 +202,9 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
  */
 void TClntTransMgr::removeExpired() {
 
+    /// @todo: call notify-script when address/prefix is expired
+    TNotifyScriptParams params;
+
     if (ClntAddrMgr().getValidTimeout())
         return;
 
@@ -222,7 +225,7 @@ void TClntTransMgr::removeExpired() {
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
             Log(Warning) << "Address " << ptrAddr->get()->getPlain() << " assigned to the "
                          << ptrIface->getFullName()
-                         << " interface (in IA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+                         << " interface (in IA_NA " << ptrIA->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
             ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
@@ -250,6 +253,48 @@ void TClntTransMgr::removeExpired() {
 	}
     }
 
+    // are there any expired IA_TAs?
+    ClntAddrMgr().firstTA();
+    while (ptrIA = ClntAddrMgr().getTA()) {
+        if (ptrIA->getValidTimeout())
+            continue;
+
+        ptrIA->firstAddr();
+        while (ptrAddr = ptrIA->getAddr()) {
+            if (ptrAddr->getValidTimeout())
+                continue;
+            ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
+            Log(Warning) << "Temporary address " << ptrAddr->get()->getPlain() << " assigned to the "
+                         << ptrIface->getFullName()
+                         << " interface (in IA_TA " << ptrIA->getIAID() <<") has expired." << LogEnd;
+
+            // remove that address from the physical interace
+            ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
+
+	    // Note: Technically, removing address here is not needed, as it will
+	    // be removed in AddrMgr::doDuties() anyway
+	    ptrIA->delAddr(ptrAddr->get());
+	    Log(Info) << "Expired temporary address " << ptrAddr->get()->getPlain()
+		      << " from IA " << ptrIA->getIAID()
+		      << " has been removed from addrDB." << LogEnd;
+        }
+
+	// if there are no more addresses in this IA, declare it freed
+	if (!ptrIA->countAddr()) {
+	    Log(Debug) << "The IA_TA (with IAID=" << ptrIA->getIAID() << ") has expired. " << LogEnd;
+	    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ptrIA->getIfindex());
+	    if (cfgIface) {
+                cfgIface->firstTA();
+		SPtr<TClntCfgTA> cfgTA = cfgIface->getTA();
+		if (cfgTA) {
+		    cfgTA->setState(STATE_NOTCONFIGURED);
+		}
+	    } else {
+		// something is terribly wrong here
+	    }
+	}
+    }
+
     // are there any expired IA_PDs?
     SPtr<TAddrIA> ptrPD;
     SPtr<TAddrPrefix> ptrPrefix;
@@ -265,10 +310,11 @@ void TClntTransMgr::removeExpired() {
             ptrIface = ClntIfaceMgr().getIfaceByID(ptrPD->getIfindex());
             Log(Warning) << "Prefix " << ptrPrefix->get()->getPlain() << " obtained on the "
                          << ptrIface->getFullName()
-                         << " interface (in IA " << ptrPD->getIAID() <<") has expired." << LogEnd;
+                         << " interface (in IA_PD " << ptrPD->getIAID() <<") has expired." << LogEnd;
 
             // remove that address from the physical interace
-	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength());
+	    ClntIfaceMgr().delPrefix(ptrPD->getIfindex(), ptrPrefix->get(), ptrPrefix->getLength(),
+                &params);
 
 	    // Note: Technically, removing address here is not needed, as it will
 	    // be removed in AddrMgr::doDuties() anyway
@@ -690,7 +736,7 @@ unsigned long TClntTransMgr::getTimeout()
     if (timeout > tmp)
         timeout = tmp;
     // Uncomment for timeout debugging
-    // Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
+    //Log(Debug) << "Timeout after AddrMgr=" << timeout << LogEnd;
 
     if (timeout == 0) {
 	ClntAddrMgr().getTimeout();
@@ -1339,6 +1385,30 @@ void TClntTransMgr::sortAdvertiseLst()
 void TClntTransMgr::printAdvertiseLst() {
     printLst(AdvertiseLst);
 }
+
+/// @brief checks/updates loaded database (regarding interface names/indexes)
+///
+///
+/// @return true if sanitization was successful, false if it failed
+bool TClntTransMgr::sanitizeAddrDB() {
+
+    // Those two maps will hold current interface names/ifindexes
+    TAddrMgr::NameToIndexMapping currentNameToIndex;
+    TAddrMgr::IndexToNameMapping currentIndexToName;
+
+    // Let's get name->index and index->name maps first
+    ClntIfaceMgr().firstIface();
+    while (SPtr<TIfaceIface> iface = ClntIfaceMgr().getIface()) {
+        currentNameToIndex.insert(make_pair(iface->getName(), iface->getID()));
+        currentIndexToName.insert(make_pair(iface->getID(), iface->getName()));
+    }
+
+    // Ok, let's iterate over all loaded entries in Ifa
+
+    return ClntAddrMgr().updateInterfacesInfo(currentNameToIndex,
+                                              currentIndexToName);
+}
+
 
 #ifdef MOD_REMOTE_AUTOCONF
 SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborInfoGet(SPtr<TIPv6Addr> addr) {

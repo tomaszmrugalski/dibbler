@@ -11,6 +11,7 @@
  */
 
 #include <sstream>
+#include <map>
 #include <limits.h>
 #include "SrvTransMgr.h"
 #include "SmartPtr.h"
@@ -596,16 +597,41 @@ void TSrvTransMgr::instanceCreate(const std::string& config, int port)
   if (!Instance)
       Instance = new TSrvTransMgr(config, port);
   else
-    Log(Crit) << "Attempt to create another Transmission Manager. One instance already present!" << LogEnd;
+    Log(Crit) << "Attempt to create another Transmission Manager. "
+              << "One instance already present!" << LogEnd;
 }
 
 TSrvTransMgr & TSrvTransMgr::instance()
 {
     if (!Instance) {
-        Log(Crit) << "TransMgr not created yet. Application error. Emergency shutdown." << LogEnd;
+        Log(Crit) << "TransMgr not created yet. Application error. "
+                  << "Emergency shutdown." << LogEnd;
         exit(EXIT_FAILURE);
     }
     return *Instance;
+}
+
+/// @brief checks/updates loaded database (regarding interface names/indexes)
+///
+///
+/// @return true if sanitization was successful, false if it failed
+bool TSrvTransMgr::sanitizeAddrDB() {
+
+    // Those two maps will hold current interface names/ifindexes
+    TAddrMgr::NameToIndexMapping currentNameToIndex;
+    TAddrMgr::IndexToNameMapping currentIndexToName;
+
+    // Let's get name->index and index->name maps first
+    SrvIfaceMgr().firstIface();
+    while (SPtr<TIfaceIface> iface = SrvIfaceMgr().getIface()) {
+        currentNameToIndex.insert(make_pair(iface->getName(), iface->getID()));
+        currentIndexToName.insert(make_pair(iface->getID(), iface->getName()));
+    }
+
+    // Ok, let's iterate over all loaded entries in Ifa
+
+    return SrvAddrMgr().updateInterfacesInfo(currentNameToIndex,
+                                             currentIndexToName);
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)

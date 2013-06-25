@@ -274,6 +274,12 @@ unsigned long TAddrClient::getValidTimeout() {
             ts = ptr->getValidTimeout();
     }
 
+    TALst.first();
+    while ( ptr = TALst.get() ) {
+        if (ts > ptr->getValidTimeout())
+            ts = ptr->getValidTimeout();
+    }
+
     PDLst.first();
     while ( ptr = PDLst.get() ) {
         if (ts > ptr->getValidTimeout())

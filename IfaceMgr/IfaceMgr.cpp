@@ -234,7 +234,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
         return -1;
     }
 
-#ifndef WIN32
+#ifdef MOD_SRV_DST_ADDR_CHECK
     // check if we've received data addressed to us. There's problem with sockets binding.
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
