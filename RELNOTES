@@ -1,24 +1,46 @@
 
-  Dibbler 0.8.4 Release Candidate 1 release notes [2013-01-20]
- ---------------------------------------------------------
+  Dibbler 0.8.4 [2013-06-27]
+ ----------------------------
 
- This is a Release Candidate 1 for 0.8.4 release of the Dibbler software.
+ This is a final 0.8.4 release of the Dibbler software.
 
- There is no single major new feature, just a lot of bug fixes.
+ There is no single major new feature, just a lot of bug fixes:
+ 34 bug fixes, tweaks and small improvements since 0.8.3.
 
- In particular, relay support has been rewritten. It is now possible to select
- subnet based on interface-id or value of linkaddr field set by the relay.
- Client classification has been improved and now can be used to differentiate
- between 2 or more classes, e.g. docsis3.0 and eRouter in cable networks.
- Confirm support has been cleaned. Daemon mode no longer has issues when reading
- from socket descriptor 0.
+ Vendor class and User class methods are now implemented.
+
+ Relay support has been rewritten. It is now possible to select subnet
+ based on interface-id or value of linkaddr field set by the relay.
+ Client classification has been improved and now can be used to
+ differentiate between 2 or more classes, e.g. docsis3.0 and eRouter
+ in cable networks.  Confirm support has been cleaned. Daemon mode no
+ longer has issues when reading from socket descriptor 0.
+
+ The database format has changed a bit. It now stores interface names,
+ not just interface indexes. That is helpful in cases your interfaces
+ has changed, e.g. when your ppp0 interface went down and was
+ recreated with different ifindex. Opening up old database should be
+ seamless, but make sure you make a backup before migrating to 0.8.4.
 
  See CHANGELOG for a complete list of changes.
 
- If you find bugs, please report them on http://klub.com.pl/bugzilla/. 
- Appropriate links are  on project website: http://klub.com.pl/dhcpv6/. If you
- need help or want to share your thoughts, take a look at one of two Dibbler
- related mailing lists: dibbler or dibbler-devel.
+ If you find bugs, please report them on http://klub.com.pl/bugzilla/.
+ Appropriate links are on project website: http://klub.com.pl/dhcpv6/.
+ If you need help or want to share your thoughts, take a look at one
+ of two mailing lists: dibbler or dibbler-devel. Please do not contact
+ author directly, unless you want to report security issues or discuss
+ confidential matters.
 
-                               Tomek Mrugalski,
-                               author
+  Planned changes in the next release
+ -------------------------------------
+
+ It is likely that the next release will be 0.9.0. It will offer the
+ last major feature defined in RFC3315 that is still missing - full
+ reconfigure support. Another planned update is a change how the
+ addresses are configured by client. Right now it assumes /64, which
+ is an arbitrary value (unless strict-rfc-no-routing is used). That
+ will change and client will configure received addresses with /128 as
+ envisaged by RFC3315.
+
+			       Tomek Mrugalski,
+			       author
