@@ -66,14 +66,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgdatadir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_bison___OBJECTS = closure.$(OBJEXT) derives.$(OBJEXT) \
-	getargs.$(OBJEXT) getopt1.$(OBJEXT) lalr.$(OBJEXT) \
-	lr0.$(OBJEXT) nullable.$(OBJEXT) print.$(OBJEXT) \
-	reduce.$(OBJEXT) version.$(OBJEXT) warshall.$(OBJEXT) \
-	allocate.$(OBJEXT) conflict.$(OBJEXT) files.$(OBJEXT) \
-	getopt.$(OBJEXT) gram.$(OBJEXT) lex.$(OBJEXT) main.$(OBJEXT) \
-	output.$(OBJEXT) reader.$(OBJEXT) symtab.$(OBJEXT) \
-	old.$(OBJEXT)
+am_bison___OBJECTS = closure.$(OBJEXT) alloca.$(OBJEXT) \
+	derives.$(OBJEXT) getargs.$(OBJEXT) getopt1.$(OBJEXT) \
+	lalr.$(OBJEXT) lr0.$(OBJEXT) nullable.$(OBJEXT) \
+	print.$(OBJEXT) reduce.$(OBJEXT) version.$(OBJEXT) \
+	warshall.$(OBJEXT) allocate.$(OBJEXT) conflict.$(OBJEXT) \
+	files.$(OBJEXT) getopt.$(OBJEXT) gram.$(OBJEXT) lex.$(OBJEXT) \
+	main.$(OBJEXT) output.$(OBJEXT) reader.$(OBJEXT) \
+	symtab.$(OBJEXT) old.$(OBJEXT) vmsgetargs.$(OBJEXT)
 bison___OBJECTS = $(am_bison___OBJECTS)
 bison___LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -285,7 +285,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign 
-bison___SOURCES = closure.cc \
+bison___SOURCES = closure.cc alloca.c\
 			derives.cc \
 			getargs.cc \
 			getopt1.cc \
@@ -306,9 +306,15 @@ bison___SOURCES = closure.cc \
 			output.cc \
 			reader.cc \
 			symtab.cc\
-			old.c 
+			old.c \
+	files.h FlexLexer.h getopt.h gram.h lex.h machine.h new.h \
+	state.h symtab.h system.h types.h vmsgetargs.c
 
-dist_noinst_DATA = bison.cc bison.hairy bison.h
+dist_noinst_DATA = bison.cc bison.hairy bison.h bison++.1 \
+	bison++.1.dman bison.cld bison.info bison.info-1 bison.info-2 \
+	bison.info-3 bison.info-4 bison.info-5 bison_pp.mak \
+	bison.ps.gz bison.rnh bison.texinfo bison++.yacc \
+	bison++.yacc.1 README++ REFERENCES version.texi
 
 #info_TEXINFOS = bison.texinfo
 #man_MANS = bison++.1 bison.1 bison++.yacc.1
@@ -410,6 +416,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/alloca.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/allocate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/closure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conflict.Po@am__quote@
@@ -431,6 +438,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reduce.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symtab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vmsgetargs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/warshall.Po@am__quote@
 
 .c.o:

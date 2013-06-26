@@ -291,7 +291,7 @@ DOXYGEN = dibbler-devel-00-mainpage.dox dibbler-devel-01-intro.dox \
 	dibbler-devel-04-common.dox dibbler-devel-05-sources.dox \
 	dibbler-devel-06-arch.dox dibbler-devel-07-debug.dox \
 	dibbler-devel-08-contrib.dox dibbler-devel-09-misc.dox \
-	dibbler-devel-bibl.dox
+	dibbler-devel-bibl.dox doxygen.cfg
 LATEX = pdflatex
 LATEXOPTS = -file-line-error -halt-on-error
 all: all-am
