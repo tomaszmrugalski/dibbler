@@ -39,6 +39,12 @@ AddrMgr_tests_LDADD = $(GTEST_LDADD)
 AddrMgr_tests_LDADD += $(top_builddir)/AddrMgr/libAddrMgr.a
 AddrMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 AddrMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
+
+dist_noinst_DATA = server-AddrMgr-0.8.3.xml
+dist_noinst_DATA += server-AddrMgr-bogus-ifacenames.xml
+dist_noinst_DATA += server-AddrMgr-empty-ifacenames.xml
+dist_noinst_DATA += server-AddrMgr-old-ifindex.xml
+
 endif
 
 noinst_PROGRAMS = $(TESTS)

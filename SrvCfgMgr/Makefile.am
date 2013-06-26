@@ -16,6 +16,8 @@ libSrvCfgMgr_a_CPPFLAGS += -I$(top_srcdir)/@PORT_SUBDIR@
 
 libSrvCfgMgr_a_SOURCES = NodeClientSpecific.cpp NodeClientSpecific.h NodeConstant.cpp NodeConstant.h Node.cpp Node.h NodeOperator.cpp NodeOperator.h SrvCfgAddrClass.cpp SrvCfgAddrClass.h SrvCfgClientClass.cpp SrvCfgClientClass.h SrvCfgIface.cpp SrvCfgIface.h SrvCfgMgr.cpp SrvCfgMgr.h SrvCfgOptions.cpp SrvCfgOptions.h SrvCfgPD.cpp SrvCfgPD.h SrvCfgTA.cpp SrvCfgTA.h SrvLexer.cpp SrvParsClassOpt.cpp SrvParsClassOpt.h SrvParser.cpp SrvParser.h SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h SrvParsIfaceOpt.cpp SrvParsIfaceOpt.h
 
+dist_noinst_DATA = SrvLexer.l SrvParser.y
+
 parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
 	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d SrvParser.y -o SrvParser.cpp
