@@ -446,7 +446,8 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 
-    if (thisifaceonly) {
+    /* bind to device only when running as root */
+    if (thisifaceonly && !getuid()) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
 	    sprintf(Message, "Unable to bind socket to interface %s.", ifacename);
 	    return LOWLEVEL_ERROR_BIND_IFACE;
@@ -465,6 +466,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     bzero(&bindme, sizeof(struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port   = htons(port);
+    bindme.sin6_scope_id = ifaceid;
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
