@@ -22,6 +22,11 @@
  recreated with different ifindex. Opening up old database should be
  seamless, but make sure you make a backup before migrating to 0.8.4.
 
+ Dibbler server no longer does by default destination address filtering
+ against the addresses sockets are bound to. If that bothers you,
+ because on your OS you see the same incoming packet being received over
+ two sockets, please use --enable-dst-addr-check in configure phase.
+
  See CHANGELOG for a complete list of changes.
 
  If you find bugs, please report them on http://klub.com.pl/bugzilla/.
