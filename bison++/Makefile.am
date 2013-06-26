@@ -24,7 +24,7 @@ bison___SOURCES = closure.cc alloca.c\
 			symtab.cc\
 			old.c \
 	files.h FlexLexer.h getopt.h gram.h lex.h machine.h new.h \
-	state.h symtab.h system.h types.h vmsgetargs.c
+	state.h symtab.h system.h types.h
 
 dist_noinst_DATA = bison.cc bison.hairy bison.h
 dist_noinst_DATA += bison++.1 bison++.1.dman bison.cld
