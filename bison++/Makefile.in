@@ -73,7 +73,7 @@ am_bison___OBJECTS = closure.$(OBJEXT) alloca.$(OBJEXT) \
 	warshall.$(OBJEXT) allocate.$(OBJEXT) conflict.$(OBJEXT) \
 	files.$(OBJEXT) getopt.$(OBJEXT) gram.$(OBJEXT) lex.$(OBJEXT) \
 	main.$(OBJEXT) output.$(OBJEXT) reader.$(OBJEXT) \
-	symtab.$(OBJEXT) old.$(OBJEXT) vmsgetargs.$(OBJEXT)
+	symtab.$(OBJEXT) old.$(OBJEXT)
 bison___OBJECTS = $(am_bison___OBJECTS)
 bison___LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -308,7 +308,7 @@ bison___SOURCES = closure.cc alloca.c\
 			symtab.cc\
 			old.c \
 	files.h FlexLexer.h getopt.h gram.h lex.h machine.h new.h \
-	state.h symtab.h system.h types.h vmsgetargs.c
+	state.h symtab.h system.h types.h
 
 dist_noinst_DATA = bison.cc bison.hairy bison.h bison++.1 \
 	bison++.1.dman bison.cld bison.info bison.info-1 bison.info-2 \
@@ -438,7 +438,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reduce.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symtab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vmsgetargs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/warshall.Po@am__quote@
 
 .c.o:
