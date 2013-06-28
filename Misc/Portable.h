@@ -13,7 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.8.4RC1"
+#define DIBBLER_VERSION "0.8.4RC1-git"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -313,7 +313,8 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
     extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
     extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
-    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links, volatile int * notify);
+    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links,
+                                       volatile int * notify);
     extern void link_state_change_cleanup();
     extern void microsleep(int microsecs);
     uint64_t htonll(uint64_t n);

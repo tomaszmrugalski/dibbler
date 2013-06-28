@@ -86,6 +86,11 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
         ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIfindex());
+        if (!ptrIface) {
+            Log(Warning) << "Unable to find interface with ifindex "
+                         << x->getIfindex() << " while creating RELEASE." << LogEnd;
+            continue;
+        }
         x->firstAddr();
         while (ptrAddr = x->getAddr()) {
             ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
@@ -101,8 +106,21 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     }
 
     // --- RELEASE TA ---
-    if (ta)
+    if (ta) {
         Options.push_back(new TClntOptTA(ta, this));
+        SPtr<TClntIfaceIface> ptrIface;
+        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(ta->getIfindex());
+        if (ptrIface) {
+            SPtr<TAddrAddr> addr;
+            ta->firstAddr();
+            while (addr = ta->getAddr()) {
+                ptrIface->delAddr(addr->get(), addr->getPrefix());
+            }
+        } else {
+            Log(Warning) << "Unable to find interface with ifindex "
+                         << ta->getIfindex() << " while creating RELEASE." << LogEnd;
+        }
+    }
 
     // --- RELEASE PD ---
 

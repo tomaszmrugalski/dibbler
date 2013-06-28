@@ -1,9 +1,30 @@
 
   Dibbler changelog
  ------------------- 
+0.9.0 [not-released-yet]
+  - Reconfigure support (by Grzegorz Pluto)
+  - Authentication rewritten (now uses RFC3315 option formats)
+
 0.8.4 [not-released-yet]
   - Rel: Unknown message types are now relayed (as a forward compatibility
     feature)
+  - Cli: DOWNLINK_PREFIX_IFACES and DOWNLINK_PREFIXES variables are now passed
+    to the notify script (bug #265)
+  - AC_FUNC_MALLOC/AC_FUNC_REALLOC are no longer used
+  - OpenBSD bug workaround for invalid link-local addresses reported is now
+    extended to all other BSDs as this affects pfSense as well
+  - Cli/Srv: interface names are stored in *-AddrMgr.xml
+  - Srv: Database is now checked against missing or interface index changes
+    (bugs #192, #247, #250)
+  - Cli: Database is now checked against missing or interface index changes
+    (bugs #192, #247, #250)
+  - Srv: Temporary addresses are now stored in the database (bug #284)
+  - Cli: Temporary addresses are now expired and removed properly (bug #285)
+  - Linux: pthreads is now linked only when --enable-link-state is used
+    (bug #249)
+  - Srv: Buffer for incoming UDP packets increased to 64k
+  - Srv: incoming packet destination address check is disabled by default and
+    can be enabled with --enable-dst-addr-check parameter (bug #286)
 
 0.8.4RC1 [2013-04-27]
   - Inteface-ids shorter than 4 bytes are not handled properly
@@ -23,7 +44,6 @@
   - Srv: Relay support refactored. Unknown options are now handled better
     and any development related to relays will be easier
   - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
-  - Reconfigure support (by Grzegorz Pluto)
   - Classes for USER_CLASS and VENDOR_CLASS options implemented.
   - Linux: stop command fix (bug #268)
   - Win32: dibbler waits for netsh.exe execution completion, because netsh.exe

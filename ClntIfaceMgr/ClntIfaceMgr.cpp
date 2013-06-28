@@ -394,14 +394,18 @@ void TClntIfaceMgr::dump()
  *
  * @return true if operation was successful, false otherwise
  */
-bool TClntIfaceMgr::addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid)
+bool TClntIfaceMgr::addPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                              unsigned int pref, unsigned int valid,
+                              TNotifyScriptParams* params /*= NULL*/)
 {
-    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_ADD);
+    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_ADD, params);
 }
 
-bool TClntIfaceMgr::updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid)
+bool TClntIfaceMgr::updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                                 unsigned int pref, unsigned int valid,
+                                 TNotifyScriptParams* params /*= NULL*/)
 {
-    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_UPDATE);
+    return modifyPrefix(iface, prefix, prefixLen, pref, valid, PREFIX_MODIFY_UPDATE, params);
 }
 
 /**
@@ -413,14 +417,16 @@ bool TClntIfaceMgr::updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
  *
  * @return true if operation was successful, false otherwise
  */
-bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen)
+bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                              TNotifyScriptParams* params /*= NULL*/)
 {
-    return modifyPrefix(iface, prefix, prefixLen, 0, 0, PREFIX_MODIFY_DEL);
+    return modifyPrefix(iface, prefix, prefixLen, 0, 0, PREFIX_MODIFY_DEL, params);
 }
 
 bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
                                  unsigned int pref, unsigned int valid,
-                                 PrefixModifyMode mode)
+                                 PrefixModifyMode mode,
+                                 TNotifyScriptParams* params /*= NULL*/)
 {
     SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
     if (!ptrIface) {
@@ -509,18 +515,25 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         }
     }
 
-    Log(Info) << "PD: Using " << ifaceLst.size() << " suitable interface(s):";
     TIfaceIfaceLst::const_iterator i;
+    string dl_ifaces;
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
-        Log(Cont) << (*i)->getName() << " ";
+      dl_ifaces += string((*i)->getName()) + " ";
     }
-    Log(Cont) << LogEnd;
+    Log(Info) << "PD: Using " << ifaceLst.size() << " suitable interface(s):"
+	      << dl_ifaces << LogEnd;
+
+    // pass this info to the script as well
+    if (params) {
+        params->addParam("DOWNLINK_PREFIX_IFACES", dl_ifaces);
+    }
 
     if (ifaceLst.size() == 0) {
         Log(Warning) << "Suitable interfaces not found. Delegated prefix not split." << LogEnd;
         return true;
     }
 
+    stringstream prefix_split; // textual representation, used to pass as script
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
 
         char buf[16];
@@ -562,6 +575,11 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << subprefixLen
                     << " on the " << (*i)->getFullName() << " interface." << LogEnd;
 
+	if (params) {
+	  prefix_split << (*i)->getName() << " " << tmpAddr->getPlain()
+		       << "/" << subprefixLen << " ";
+	}
+
         switch (mode) {
         case PREFIX_MODIFY_ADD:
             status = prefix_add( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
@@ -580,6 +598,10 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
         }
 
+    }
+
+    if (params) {
+      params->addParam("DOWNLINK_PREFIXES", prefix_split.str());
     }
 
     if (conf) // at least one prefix configured successfully

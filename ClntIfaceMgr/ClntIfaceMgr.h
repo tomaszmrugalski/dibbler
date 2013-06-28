@@ -24,6 +24,7 @@ class TClntIfaceIface;
 #include "ClntIfaceIface.h"
 #include "IPv6Addr.h"
 #include "ClntMsg.h"
+#include "ScriptParams.h"
 
 #define ClntIfaceMgr() (TClntIfaceMgr::instance())
 
@@ -60,9 +61,14 @@ public:
     bool fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& domainname);
     bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& domainname);
 
-    bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
-    bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, unsigned int valid);
-    bool delPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen);
+    bool addPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                      unsigned int pref, unsigned int valid,
+                      TNotifyScriptParams* params /*= NULL*/);
+    bool updatePrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                      unsigned int pref, unsigned int valid,
+                      TNotifyScriptParams* params /*= NULL*/);
+    bool delPrefix   (int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                      TNotifyScriptParams* params /*= NULL*/);
 
     // --- option related ---
     void removeAllOpts();
@@ -74,8 +80,9 @@ public:
     void redetectIfaces();
 
   private:
-    bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen, unsigned int pref, 
-		      unsigned int valid, PrefixModifyMode mode);
+    bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
+                      unsigned int pref, unsigned int valid, PrefixModifyMode mode,
+                      TNotifyScriptParams* params /*= NULL*/);
 
     std::string XmlFile;
 

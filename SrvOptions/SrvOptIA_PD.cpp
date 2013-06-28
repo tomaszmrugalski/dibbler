@@ -169,10 +169,17 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
         /// @todo: master had if (!fake) here, assign branch didn't. Find out which one was right
         // if (!fake)
         {
+            SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
+            if (!cfgIface) {
+                Log(Error) << "Missing configuration interface with ifindex=" << Iface << LogEnd;
+                return false;
+            }
+
             // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
             // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, IAID_, T1_, T2_,
-                                   prefix, this->Prefered, this->Valid, this->PDLength, false);
+            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, cfgIface->getName(), 
+                                   Iface, IAID_, T1_, T2_, prefix, Prefered, Valid,
+                                   this->PDLength, false);
 
             // but CfgMgr has to increase usage only once. Don't ask my why :)
             SrvCfgMgr().incrPrefixCount(Iface, prefix);
@@ -444,7 +451,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
 
         SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
 
-        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, iface->getName(), Iface, IAID_, 
+                               T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
 
         // but CfgMgr has to increase usage only once. Don't ask my why :)
         SrvCfgMgr().incrPrefixCount(Iface, reservedPrefix);
@@ -464,7 +472,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
 
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
 
-    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, iface->getName(), Iface, 
+                           IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
 
     return true;
 }

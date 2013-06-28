@@ -486,7 +486,7 @@ void TSrvMsg::processIA_NA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_NA> queryOpt)
 
 void TSrvMsg::processIA_TA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt) {
     SPtr<TOpt> optTA;
-    optTA = new TSrvOptTA(queryOpt, clientMsg, SOLICIT_MSG, this);
+    optTA = new TSrvOptTA(queryOpt, clientMsg, clientMsg->getType(), this);
     Options.push_back(optTA);
 }
 

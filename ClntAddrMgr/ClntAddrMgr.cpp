@@ -320,7 +320,7 @@ void TClntAddrMgr::print(std::ostream &) {
  * @return true if successful, false otherwise
  */
 bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
-			     int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+			     const std::string& ifacename, int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 			     SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 			     int length, bool quiet)
 {
@@ -334,7 +334,8 @@ bool TClntAddrMgr::addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
     this->firstClient();
     ptrClient = getClient();
 
-    return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, iface, IAID, T1, T2, prefix,
+    return TAddrMgr::addPrefix(ptrClient, srvDuid, srvAddr, ifacename,
+                               iface, IAID, T1, T2, prefix,
 			       pref, valid, length, quiet);
 }
 

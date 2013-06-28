@@ -26,7 +26,8 @@ using namespace std;
  *
  * used for creation of IA, a container for addresses
  *
- * @param iface interface index (ifindex)
+ * @param ifacename, name of the interface
+ * @param ifindex interface index (ifindex)
  * @param type specifies container type (IA, PD or TA)
  * @param addr address
  * @param duid DUID (client DUID in server's database and server DUID in client's database)
@@ -35,11 +36,11 @@ using namespace std;
  * @param id IAID (if this is really IA) or PDID (if this is PD, not IA)
  *
  */
-TAddrIA::TAddrIA(int iface, TIAType type, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
-		 unsigned long t1, unsigned long t2,unsigned long id)
+TAddrIA::TAddrIA(const std::string& ifacename, int ifindex, TIAType type, SPtr<TIPv6Addr> addr,
+                 SPtr<TDUID> duid, unsigned long t1, unsigned long t2,unsigned long id)
     :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
      Tentative(ADDRSTATUS_UNKNOWN), Timestamp(now()), 
-     Unicast(false), Ifindex_(iface), Type(type)
+     Unicast(false), Iface_(ifacename), Ifindex_(ifindex), Type(type)
 {
     this->setDUID(duid);
     if (addr)
@@ -60,6 +61,10 @@ unsigned long TAddrIA::getIAID()
 void TAddrIA::reset()
 {
     setState(STATE_NOTCONFIGURED);
+}
+
+const std::string& TAddrIA::getIfacename() {
+    return Iface_;
 }
 
 int TAddrIA::getIfindex()
@@ -565,7 +570,8 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
 	  << " T2=\"" << x.T2 << "\"";
 
     strum << " IAID=\"" << x.IAID << "\""
-	  << " state=\"" << StateToString(x.State) 
+	  << " state=\"" << StateToString(x.State)
+          << "\" ifacename=\"" << x.Iface_
 	  << "\" iface=\"" << x.Ifindex_ << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;

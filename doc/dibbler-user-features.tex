@@ -1028,6 +1028,15 @@ for additional options is in progress. Options are passed as
 environment variables. For example client DUID (conveyed in option
 code 1), will be passed as OPTION1.
 
+In 0.8.4 additional variables were added: DOWLINK\_PREFIX\_IFACES that
+defines a list of downlink interfaces when splitting delegated prefix.
+Typically it contains (sanitized) list defined
+in \verb+downlink-prefix-ifaces+ in \verb+client.conf+ or detected
+automatically by the client. The accompanying variable
+DOWNLINK\_PREFIXES contains the actual prefixes that were configured
+on specified interfaces. Those two variables are set on the client
+side only, for obvious reasons.
+
 To enable script execution, \verb+script+ global option must
 be added to \verb+client.conf+ file. For example:
 
