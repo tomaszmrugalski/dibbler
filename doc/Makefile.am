@@ -52,6 +52,7 @@ DOXYGEN += dibbler-devel-07-debug.dox
 DOXYGEN += dibbler-devel-08-contrib.dox
 DOXYGEN += dibbler-devel-09-misc.dox
 DOXYGEN += dibbler-devel-bibl.dox
+DOXYGEN += doxygen.cfg
 
 LATEX=pdflatex
 LATEXOPTS=-file-line-error -halt-on-error

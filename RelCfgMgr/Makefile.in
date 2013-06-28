@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -52,7 +53,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = RelCfgMgr
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp
+	$(top_srcdir)/depcomp $(dist_noinst_DATA)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -142,6 +143,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(dist_noinst_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -300,6 +302,7 @@ libRelCfgMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/RelMessages -I$(top_srcdir)/Messages \
 	-I$(top_srcdir)/@PORT_SUBDIR@
 libRelCfgMgr_a_SOURCES = RelCfgIface.cpp RelCfgIface.h RelCfgMgr.cpp RelCfgMgr.h RelLexer.cpp RelLexer.h RelParser.cpp RelParser.h RelParsGlobalOpt.cpp RelParsGlobalOpt.h RelParsIfaceOpt.cpp RelParsIfaceOpt.h
+dist_noinst_DATA = RelLexer.l RelParser.y
 all: all-am
 
 .SUFFIXES:
@@ -550,7 +553,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LIBRARIES) $(DATA)
 installdirs:
 install: install-am
 install-exec: install-exec-am

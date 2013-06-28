@@ -5,7 +5,7 @@
   - Reconfigure support (by Grzegorz Pluto)
   - Authentication rewritten (now uses RFC3315 option formats)
 
-0.8.4 [not-released-yet]
+0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility
     feature)
   - Cli: DOWNLINK_PREFIX_IFACES and DOWNLINK_PREFIXES variables are now passed
@@ -169,7 +169,7 @@
   - Doc: Fixed bug in example in server man page
   - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
   - All: Inteface link address is now detected properly on Mac OS X
-  - All: Many Mac OS port fixes. It should be operational now. 
+  - All: Many Mac OS port fixes. It should be operational now.
   - Linux: client now adds addresses with proper preferred/valid lifetimes
   - Linux: client now properly updates addresses during renew/rebind
   - Cli: Client now properly copies prefixes from ADVERTISE to REQUEST (bug #197)
@@ -177,7 +177,7 @@
   - Cli: It is now possible to define serveral prefixes in one pd
   - Cli: It is now possible to define specific prefix in pd as a hint
   - Cli: T1,T2 are now properly set for PD
-  - Cli: Duplicate IA,TA and PD are no longer created in database, when 
+  - Cli: Duplicate IA,TA and PD are no longer created in database, when
     restarting client with existing leases.
   - Cli: Client no longer silently quits, if adding/updating prefix failed.
   - Linux/Mac OS: daemonizing should close stdin/stdout/stderr (bug #188)
@@ -252,7 +252,7 @@
   - Numerous fixes after 3rd bakeoff meeting (Philadelphia)
 
  0.7.0 [was never properly released]
-	
+
  0.7.0RC1 [2007-12-31]
   - Leasequery support (new entity: requestor added)
   - Numerous fixes after 2nd bakeoff meeting (Vancouver)
@@ -344,7 +344,7 @@
   - Linux: multiple domains are now added and removed properly to /etc/resolv.conf
   - Linux: NTP servers are now set up properly. (bug #138, #139)
   - All: Messages with reconfigure-accept or vendor-class options are now accepted
- 
+
  0.5.0 [2006-10-05]
   - FQDN fixes
   - Documentation update and cleanup
@@ -375,7 +375,7 @@
 
  0.4.0 [2005-03-15]
   - white list (accept-only) works ok (bug #106)
-	
+
  0.4.0-RC2 [2005-03-08]
   - Domain List option is now properly built and parsed (bug #104)
   - Srv/Clnt/Relay no longer crash when invalid interface is specified (bug #105)
@@ -389,7 +389,7 @@
   - Server now supports relays (bug #70)
   - Working directories are not properly stored in the *-CfgMgr.xml files (bug #100)
   - Linux: Paths to config files fixed (bugs #96, #97)
-	
+
  0.3.1 [2004-12-27] (bugfix release)
   - Documenatation (PDF files) now should look ok on all systems
   - Linux: URLs in the manual are now visible (bugs #92, #93)
@@ -462,15 +462,15 @@
   - Srv: Now properly creates DUID (bug #45, #46)
   - Doc: a real documentation included
   - Srv: class-max-lease, iface-max-lease parameters added
-  - Client: config file logic changed, no-config is no longer needed. 
-  - Client: No more stupid "Interface is loopback, down, not multicast-capable or 
+  - Client: config file logic changed, no-config is no longer needed.
+  - Client: No more stupid "Interface is loopback, down, not multicast-capable or
     not present in the system" message.
   - Linux: Sending through wrong interface problem fixed
   - Linux: build process rewritten
 
  0.1.1
-  - Hmmm... don't remember :) 
- 
+  - Hmmm... don't remember :)
+
  0.1.0
   - First release
 
