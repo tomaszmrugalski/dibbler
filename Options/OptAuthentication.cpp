@@ -106,10 +106,20 @@ TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
                                        AuthReplay rdm, TMsg* parent)
     :TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0),
     authDataPtr_(NULL) {
-    if (parent) {
-        AuthInfoLen_ = getDigestSize(parent->DigestType_);
-    } else {
-        AuthInfoLen_ = 0;
+    switch (proto) {
+    default:
+    case AUTH_PROTO_DELAYED:
+    case AUTH_PROTO_DIBBLER: {
+        if (parent) {
+            AuthInfoLen_ = getDigestSize(parent->DigestType_);
+        } else {
+            AuthInfoLen_ = 0;
+        }
+        return;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY:
+        AuthInfoLen_ = 17; // Sec section 21.5.1, RFC3315
+        return;
     }
 }
 

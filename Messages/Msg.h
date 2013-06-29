@@ -70,7 +70,8 @@ class TMsg
     void setAuthKey(const TKey& key);
     TKey getAuthKey();
 
-    bool validateAuthInfo(char *buf, int bufSize, const DigestTypesLst& acceptedDigestTypes);
+    bool validateAuthInfo(char *buf, int bufSize, AuthProtocols proto,
+                          const DigestTypesLst& acceptedDigestTypes);
     uint32_t getSPI();
     void setSPI(uint32_t val);
     DigestTypes DigestType_;

@@ -457,9 +457,8 @@ void TClntMsg::appendAuthenticationOption()
         break;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: { // RFC 3315, section 21.5.1
-        /// @todo: reconfigure-key
-        Log(Error) << "Auth: reconfigure key not supported yet." << LogEnd;
-        break;
+        // When reconfigure-key is enabled, client does not send anything
+        return;
     }
     case AUTH_PROTO_DIBBLER: { // Mechanism proposed by Kowalczuk
         DigestType_ = ClntCfgMgr().getDigest();
@@ -513,7 +512,6 @@ void TClntMsg::appendRequestedOptions() {
 	Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
 	return;
     }
-
 
     if ( (MsgType==SOLICIT_MSG || MsgType==REQUEST_MSG) &&
 	 ClntCfgMgr().getReconfigure())

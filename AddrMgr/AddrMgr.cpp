@@ -21,6 +21,7 @@
 #include "AddrClient.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include "hex.h"
 
 using namespace std;
 
@@ -694,10 +695,11 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
     SPtr<TAddrClient> clnt = 0;
     SPtr<TDUID> duid = 0;
     SPtr<TAddrIA> ia = 0;
-    SPtr<TAddrIA> ptrpd=0;
+    SPtr<TAddrIA> ptrpd = 0;
     SPtr<TAddrIA> ta = 0;
     SPtr<TIPv6Addr> unicast;
     string ifacename;
+    std::vector<uint8_t> reconfKey;
 
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
@@ -716,6 +718,18 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
             continue;
         }
+        
+        if (strstr(buf, "<ReconfigureKey")) {
+            x = strstr(buf, ">") + 1;
+            char* end;
+            if (x) {
+                end = strstr(x, "</ReconfigureKey>");
+                if (end)
+                    *end = 0;
+            }
+            reconfKey = textToHex(string(x));
+        }
+
         if(strstr(buf,"<AddrIA ")){
             t1 = 0; t2 = 0; iaid = 0; ifindex = 0; ifacename = "";
             if ((x=strstr(buf,"T1"))) {
@@ -813,6 +827,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
         }
         if (strstr(buf,"</AddrClient>"))
             break;
+    }
+
+    if (clnt) {
+        clnt->ReconfKey_ = reconfKey;
     }
 
     return clnt;
@@ -1011,7 +1029,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 		    ia->addAddr(addr);
 		    addr->setTentative(ADDRSTATUS_NO);
 		} else {
-		    Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
+		    Log(Debug) << "Address " << addr->get()->getPlain()
+                               << " is no longer supported. Lease dropped." << LogEnd;
 		}
 	    }
 	}

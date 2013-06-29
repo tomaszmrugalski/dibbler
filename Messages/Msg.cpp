@@ -274,9 +274,23 @@ uint32_t TMsg::getSPI() {
 }
 
 bool TMsg::validateAuthInfo(char *buf, int bufSize,
+                            AuthProtocols proto,
                             const DigestTypesLst& acceptedDigestTypes) {
     bool is_ok = false;
     bool dt_in_list = false;
+
+    switch (proto) {
+    case AUTH_PROTO_NONE:
+        return true;
+    case AUTH_PROTO_DELAYED:
+        Log(Error) << "AUTH: Delayed authentication not implemented." << LogEnd;
+        return false;
+    case AUTH_PROTO_RECONFIGURE_KEY:
+        if (MsgType != RECONFIGURE_MSG)
+            return true;
+    case AUTH_PROTO_DIBBLER:
+        break;
+    }
     
     //empty list means that any digest type is accepted
     if (acceptedDigestTypes.empty()) {
@@ -361,8 +375,9 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
 	}
 #endif
     } else {
-      Log(Error) << "Auth: Digest mode set to " << DigestType_
-                 << ", but AUTH option not set." << LogEnd;
+        Log(Error) << "Auth: Digest mode set to " << DigestType_
+                   << ", but AUTH option not set." << LogEnd;
+        return false;
     }
     
     return is_ok;

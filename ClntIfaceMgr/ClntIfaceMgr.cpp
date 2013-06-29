@@ -152,7 +152,8 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         }
 
 #ifndef MOD_DISABLE_AUTH
-	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
+	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
+                                   ClntCfgMgr().getAuthAcceptMethods())) {
 	  Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
 	  return 0;
 	}

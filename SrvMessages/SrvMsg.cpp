@@ -517,7 +517,7 @@ void TSrvMsg::appendReconfigureKey() {
         // If there is no reconfigure key nonce generated
         client->generateReconfKey();
         // insert reconfigure nonce
-        vector<uint8_t> key(0, 17);
+        vector<uint8_t> key(17, 0);
         key[0] = 1; // reconfigure key (see RFC3315, 21.5.1)
         memcpy(&key[1], &client->ReconfKey_[0], 16);
         auth->setPayload(key);
@@ -845,7 +845,9 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
         Log(Warning) << "Auth: delayed-auth protocol not supported yet." << LogEnd;
         return;
     case AUTH_PROTO_RECONFIGURE_KEY:
-        break;
+        // Server is supposed to include reconfigure-key in RECONFIGURE message only
+        if (MsgType != RECONFIGURE_MSG)
+            return;
     case AUTH_PROTO_DIBBLER:
 
       /// @todo: server now forces its default algorithm. It should be possible

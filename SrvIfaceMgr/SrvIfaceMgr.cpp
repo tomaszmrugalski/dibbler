@@ -250,7 +250,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         return 0;
     }
 
-    bool authOk = ptr->validateAuthInfo(buf, bufsize, SrvCfgMgr().getAuthDigests());
+    bool authOk = ptr->validateAuthInfo(buf, bufsize,
+                                        SrvCfgMgr().getAuthProtocol(),
+                                        SrvCfgMgr().getAuthDigests());
 
     if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
         Log(Warning) << "Auth: authorization is mandatory, but incoming message"

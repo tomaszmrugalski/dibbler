@@ -93,12 +93,10 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
             Log(Error) << "AddrMgr does not have PD with IAID=" << pd->getIAID() << LogEnd;
     }
     
-    if(rapid)
+    if (rapid)
         Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
 
-    if (ClntCfgMgr().getReconfigure()) {
-        Options.push_back(new TOptEmpty(OPTION_RECONF_ACCEPT, this));
-    }
+    // RECONF-ACCEPT is added in TClntMsg::appendRequestedOptions()
 
     // append and switch to INPROCESS state
     if (!remoteAutoconf)
