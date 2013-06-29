@@ -74,6 +74,11 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
             Valid = false;
             return;
         }
+        if (!Parent) {
+            Log(Error) << "Orphaned option AUTH: no parent set." << LogEnd;
+            Valid = false;
+            return;
+        }
 	Parent->DigestType_ = static_cast<DigestTypes>(algo_);
 
         Parent->setSPI(readUint32(buf));

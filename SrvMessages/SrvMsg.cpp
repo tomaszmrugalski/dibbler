@@ -170,7 +170,6 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             ptr = new TOptAuthentication(buf+pos, length, this);
 #ifndef MOD_DISABLE_AUTH
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
-                DigestType_ = SrvCfgMgr().getDigest();
 
                 SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
                 if (optDUID) {

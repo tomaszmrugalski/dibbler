@@ -293,9 +293,9 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
 
     if (dt_in_list == false) {
         if (DigestType_ == DIGEST_NONE)
-            Log(Error) << "Authentication option is required." << LogEnd;
+            Log(Warning) << "Authentication option is required." << LogEnd;
         else
-            Log(Error) << "Authentication method " << getDigestName(DigestType_)
+            Log(Warning) << "Authentication method " << getDigestName(DigestType_)
                        << " not accepted." << LogEnd;
         return false;
     }
