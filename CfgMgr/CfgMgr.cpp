@@ -32,7 +32,8 @@ TCfgMgr::TCfgMgr()
   // Authentication
   AuthProtocol_(AUTH_PROTO_NONE),
   AuthAlgorithm_(0),
-  AuthReplay_(AUTH_REPLAY_NONE)
+  AuthReplay_(AUTH_REPLAY_NONE),
+  AuthDropUnauthenticated_(false)
 {
 
 }

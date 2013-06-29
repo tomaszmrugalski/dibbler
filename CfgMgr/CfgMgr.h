@@ -82,7 +82,6 @@ class TCfgMgr
     DNSUpdateProtocol DdnsProto;
     unsigned int DDNSTimeout_;
 
-
 #ifndef MOD_DISABLE_AUTH
     AuthProtocols AuthProtocol_;
     uint8_t AuthAlgorithm_;
