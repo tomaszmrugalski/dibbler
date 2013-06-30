@@ -39,6 +39,7 @@ public:
     bool doDuties();
 
     void setPayload(const std::vector<uint8_t>& data);
+    void getPayload(std::vector<uint8_t>& data);
 
     // not real fields, those are used for checksum calculations
     

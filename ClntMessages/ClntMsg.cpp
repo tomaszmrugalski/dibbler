@@ -37,6 +37,7 @@
 #include "OptAddrLst.h"
 #include "ClntOptLifetime.h"
 #include "OptAuthentication.h"
+#include "hex.h"
 
 #include "Logger.h"
 
@@ -444,8 +445,8 @@ void TClntMsg::appendAuthenticationOption()
 
     DigestType_ = DIGEST_NONE;
 
-    ClntAddrMgr().firstClient();
-    SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+    // ClntAddrMgr().firstClient();
+    // SPtr<TAddrClient> client = ClntAddrMgr().getClient();
 
     switch (ClntCfgMgr().getAuthProtocol()) {
     case AUTH_PROTO_NONE: {
@@ -817,8 +818,8 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
     // Check authentication first. If the checks fail, we need to drop the whole message
     // without using its contents.
-    if (!checkReceivedAuthOption()) {
-        Log(Warning) << "Auth option verification failed. Ignoring message." << LogEnd;
+    if (!reply->checkReceivedAuthOption()) {
+        Log(Warning) << "AUTH: AUTH option verification failed. Ignoring message." << LogEnd;
         return;
     }
 
@@ -1110,10 +1111,74 @@ bool TClntMsg::checkReceivedAuthOption() {
         return false;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: {
-        /// @todo: implement reconfigure-key
-        Log(Error) << "Support for reconfigure-key not implementd yet."
-                   << LogEnd;
-        return false;
+
+        bool optional = (MsgType != RECONFIGURE_MSG);
+
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            // there's no auth option. We can't store anything
+            return optional;
+        }
+        if (auth->getProto() != AUTH_PROTO_RECONFIGURE_KEY) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 3(reconfigure-key), but got "
+                         << auth->getProto() << ", key ignored." << LogEnd;
+            return optional;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1, but got "
+                         << auth->getAlgorithm() << ", key ignored." << LogEnd;
+            return optional;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+
+        vector<uint8_t> key;
+        auth->getPayload(key);
+
+        if (key.size() != RECONFIGURE_KEY_AUTHINFO_SIZE) {
+            Log(Warning) << "AUTH: Invalid authentication information length, expected "
+                         << RECONFIGURE_KEY_AUTHINFO_SIZE
+                         << "(1 for type, 16 for reconfigure-key value), got "
+                         << key.size() << LogEnd;
+            return optional;
+        }
+
+        switch (MsgType) {
+        case RECONFIGURE_MSG: {
+            /// @todo calculate HMAC-MD5 checksum and compare it against stored key
+            Log(Error) << "Support for reconfigure-key in RECONFIGURE message not implementd yet."
+                       << LogEnd;
+            return false;
+        }
+
+        case REPLY_MSG: {
+            if (key[0] != 1) { // see RFC3315, section 21.5.1
+                Log(Warning) << "AUTH: Invalid type " << key[0] << " in AUTH for reconfigure-key"
+                             << " protocol, expected 1, key ingored." << LogEnd;
+                return true;
+            }
+
+            key.erase(key.begin()); // delete first octect (it is type 1)
+
+            // Store the reconfigure-key
+            ClntAddrMgr().firstClient();
+            SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+            if (!client) {
+                Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
+                return false;
+            }
+            client->ReconfKey_ = key;
+            Log(Info) << "AUTH: Received reconfigure-key " << hexToText(key, true, false)
+                      << LogEnd;
+            return true;
+        }
+        default:
+            Log(Warning) << "AUTH: AUTH option not expected in message " << MsgType << LogEnd;
+            return true;
+        }
     } 
     case AUTH_PROTO_DIBBLER: {
       return true;

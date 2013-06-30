@@ -102,6 +102,14 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     Valid = true;
 }
 
+uint8_t TOptAuthentication::getAlgorithm() const {
+    return algo_;
+}
+
+AuthReplay TOptAuthentication::getRDM() const {
+    return rdm_;
+}
+
 TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
                                        AuthReplay rdm, TMsg* parent)
     :TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0),
@@ -192,6 +200,10 @@ uint64_t TOptAuthentication::getReplayDetection() {
 
 void TOptAuthentication::setPayload(const std::vector<uint8_t>& data) {
     data_ = data;
+}
+
+void TOptAuthentication::getPayload(std::vector<uint8_t>& data) {
+    data = data_;
 }
 
 bool TOptAuthentication::doDuties() {

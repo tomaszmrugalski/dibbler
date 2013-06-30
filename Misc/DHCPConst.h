@@ -296,7 +296,8 @@ char *getDigestName(enum DigestTypes type);
 // so it's size is always size of HMAC-SHA1 result which is 160bits = 20bytes
 #define AUTHKEYLEN 20
 
-// Values used in reconfigure-key algorithm
+// Values used in reconfigure-key algorithm (see RFC3315, section 21.5.1)
+const static unsigned int RECONFIGURE_KEY_AUTHINFO_SIZE = 17;
 const static unsigned int RECONFIGURE_KEY_SIZE = 16;
 const static unsigned int RECONFIGURE_DIGEST_SIZE = 16;
 
