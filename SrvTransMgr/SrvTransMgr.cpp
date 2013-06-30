@@ -83,7 +83,7 @@ int TSrvTransMgr::checkReconfigures() {
     unsigned long IAID;
 
     Log(Debug) << "Checking which clients need RECONFIGURE." << LogEnd;
-    
+
     while (cli = SrvAddrMgr().getClient() ) 
     {
         /// @todo clean up this shit
@@ -103,14 +103,15 @@ int TSrvTransMgr::checkReconfigures() {
             while( (adr=ia->getAddr()) && check ) 
             {
                 PD=false;
-                if(ClientInPool1(adr->get(),iface,PD)) 
+                if(ClientInPool1(adr->get(),iface,PD))
                 {
-                    Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure IA (iaid=" << ia->getIAID() << ")." << LogEnd;
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain()
+                               << " doesn't need to reconfigure IA (iaid=" << ia->getIAID() << ")." << LogEnd;
                 }
                 else 
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
-                              << "uses outdated info. Sending RECONFIGURE." << LogEnd;
+                              << " uses outdated info. Sending RECONFIGURE." << LogEnd;
                     sendReconfigure(unicast, iface, RENEW_MSG, ptrDUID);
                     clients++;
                     if (SrvAddrMgr().delClntAddr(cli->getDUID(), ia->getIAID(), adr->get(),false)) {
