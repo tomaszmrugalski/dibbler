@@ -47,8 +47,10 @@ int parseMultiQueryCmd(char * inputString ) {
     QUERY_BY_RELAY_ID = 3,
     QUERY_BY_LINK_ADDRESS = 4,
     QUERY_BY_REMOTE_ID = 5*/
+     Log( Debug) << "LOGParseM" << LogEnd;
+     Log( Debug) << "input string:" << inputString << LogEnd;
 
-    if (!strncmp(inputString,"ADDRESS", 7)){
+    if (!strncmp(inputString,"ADDRESS", 7)) {
         return 1;
     } else if(!strncmp(inputString,"CLIENT_ID", 9) ) {
         return 2;
@@ -58,10 +60,8 @@ int parseMultiQueryCmd(char * inputString ) {
         return 4;
     } else if (!strncmp(inputString,"REMOTE_ID", 9) ){
         return 5;
-    } else {
-        return 0;
     }
-
+    return 0;
 }
 bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 {
@@ -78,8 +78,9 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 
 
     int timeout  = 60; // default timeout value
-    for (int i=1; i<argc; i++) {
-        if (!strncmp(argv[i],"-addr", 5)) {
+    for (int i=1; i<=argc; i++) {
+        //Log(Info) << "i: \t" << i << "\t argv: " << argv[i] << endl;
+        if ((!strncmp(argv[i],"-addr", 5)) && (strlen(argv[i])==5)) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -addr used, but actual address is missing." << LogEnd;
                 return false;
@@ -87,7 +88,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             addr = argv[++i];
             continue;
         }
-        if (!strncmp(argv[i],"-duid", 5)) {
+        if ((!strncmp(argv[i],"-duid", 5)) && (strlen(argv[i])==5)) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -duid used, but actual DUID is missing." << LogEnd;
                 return false;
@@ -95,17 +96,24 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             duid = argv[++i];
             continue;
         }
-        if (!strncmp(argv[i], "-bulk", 5)) {
+        if ((!strncmp(argv[i], "-bulk", 5)) && (strlen(argv[i])==5)) {
+
             if (argc == i) {
                 Log(Error) << "Unable to parse command-line. -bulk used, but actual link-address is missing." << LogEnd;
                 return false;
             }
 
-            if (!strncmp(argv[++i],"-m", 2) ) {
+            if ((!strncmp(argv[++i],"-m", 2)) && (strlen(argv[i])==2) ) {
                 multiplyQ = true;
                 ++i;
-                while (i <= argc) {
-                    tmpOptCode = parseMultiQueryCmd(argv[i]);
+                while (i < argc) {
+
+                    if ( strlen(argv[i]) < 5 ) {
+                       continue;
+                    }
+
+                   // tmpOptCode = parseMultiQueryCmd(argv[i]);
+                    Log( Debug) << "tmpCode" << tmpOptCode << LogEnd;
                     if(tmpOptCode>0) {
                         switch (tmpOptCode) {
 
@@ -145,23 +153,34 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                                 return false;
                             }requestCount++;
                             break;
+
+                         default:
+                            break;
+
                         }
                       }
-
                     ++i;
                 };
+
                 //zeroing count of multiple request
                 a->requestCount=requestCount;
                 if (multiplyQ && !requestCount) {
                     Log(Error) << "Unable to parse command-line. -bulk used, but there is no more parameter to." << LogEnd;
                     return false;
                 }
-            } else {
-                bulk = argv[++i];
-                continue;
             }
+            if (argc == i) {
+                Log(Error) << "Unable to parse command-line. -bulk used, but actual remoteId is missing." << LogEnd;
+                //return false;
+            }
+            bulk = argv[++i];
+            continue;
         }
-        if (!strncmp(argv[i],"-i", 2)) {
+
+        if (i==argc)
+           break;
+
+        if ((!strncmp(argv[i],"-i", 2)) && ((strlen(argv[i])==2) )) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -i used, but actual interface name is missing." << LogEnd;
                 return false;
@@ -169,7 +188,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             iface = argv[++i];
             continue;
         }
-        if (!strncmp(argv[i],"-timeout", 8)) {
+        if ((!strncmp(argv[i],"-timeout", 8)) && (strlen(argv[i])==8)) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -timeout used, but actual timeout value is missing." << LogEnd;
                 return false;
@@ -177,16 +196,17 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             timeout = atoi(argv[++i]);
             continue;
         }
-        if (!strncmp(argv[i],"-dstaddr", 7)) {
+        if ((!strncmp(argv[i],"-dstaddr", 8)) && (strlen(argv[i])==8) ) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -dstaddr used, but actual destination address is missing." << LogEnd;
             }
             dstaddr = argv[++i];
+            Log(Info) << "DstAddr:" << dstaddr<< LogEnd;
             continue;
         }
 
-        // add opportunity to send queryByRemoteId over TCP (bulk)
-        if (!strncmp(argv[i],"-remoteId", 5)) {
+
+        if ((!strncmp(argv[i],"-remoteId", 9)) && (strlen(argv[i])==9) ) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -remoteId used, but actual address is missing." << LogEnd;
                 return false;
@@ -195,7 +215,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             continue;
         }
 
-        if (!strncmp(argv[i],"-enterpriseNumber", 5)) {
+        if ((!strncmp(argv[i],"-enterpriseNumber", 17)) && (strlen(argv[i])==17)) {
             if (argc==i) {
                 Log(Error) << "Unable to parse command-line. -enterpriseNumber used, but actual address is missing." << LogEnd;
                 return false;
@@ -203,8 +223,8 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
             enterpriseNumber = atoi(argv[++i]);
             continue;
         }
-        if (!strncmp(argv[i], "--help", 5) || !strncmp(argv[i], "-h", 5) || !strncmp(argv[i], "/help", 5) ||
-            !strncmp(argv[i], "-?", 2) || !strncmp(argv[i], "/?",2)) {
+        if ((!strncmp(argv[i], "--help", 6)&&(strlen(argv[i])==6)) || (!strncmp(argv[i], "-h", 2)&&(strlen(argv[i])==2)) || (!strncmp(argv[i], "/help", 5)&&(strlen(argv[i])==5))||
+                (!strncmp(argv[i], "-?", 2)&&(strlen(argv[i])==2)) || (!strncmp(argv[i], "/?",2)&&(strlen(argv[i])==2)) ) {
             return false;
         }
 
@@ -237,6 +257,18 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     a->remoteId = remoteId;
     a->enterpriseNumber = enterpriseNumber;
     a->multiplyQuery = multiplyQ;
+
+
+    Log(Debug) << "Addr:" << a->duid <<LogEnd;
+    Log(Debug) << "Duid:" << a->duid <<LogEnd;
+    Log(Debug) << "Bulk:" <<a->bulk << LogEnd;
+    Log(Debug) << "Iface:" << a->iface << LogEnd;
+    Log(Debug) << "Timeout:"<< a->timeout << LogEnd;
+    Log(Debug) << "dstAddr"<< a->dstaddr <<LogEnd;
+    Log(Debug) << "LinkAddr:"<< a->linkAddr << LogEnd;
+    Log(Debug) << "remoteId:" << a->remoteId <<LogEnd;
+    Log(Debug) << "enterpriseNumber"<<a->enterpriseNumber<< LogEnd;
+    Log(Debug) << "MultipleQuery:"<< a->multiplyQuery<< LogEnd;
     return true;
 }
 
@@ -251,8 +283,10 @@ int EmptyBulkQueue(ReqCfgMgr *a ) {
     a->remoteId = remoteId;
     a->enterpriseNumber = enterpriseNumber;*/
 
+
     if (a->addr) {
         a->queryType = QUERY_BY_ADDRESS;
+       // a->addr = 0;
         return 1;
     } else if (a->duid) {
         a->queryType = QUERY_BY_CLIENT_ID;
@@ -267,7 +301,7 @@ int EmptyBulkQueue(ReqCfgMgr *a ) {
         a->queryType = QUERY_BY_LINK_ADDRESS;
         return 1;
     } else {
-        Log(Debug) << "There is no parameter to set by bulkQueueMgr" << endl;
+        Log(Debug) << "There is no more parameter to set by bulkQueueMgr" << endl;
         return 0;
     }
 
@@ -309,37 +343,42 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+
     TIfaceMgr   * ifaceMgr = new TIfaceMgr(REQIFACEMGR_FILE, true);
     ReqTransMgr * transMgr = new ReqTransMgr(ifaceMgr);
 
     //leasequery's part
     transMgr->SetParams(&a);
-    if (!a.bulk) {
+    /*if (!a.bulk) {
         if (!transMgr->BindSockets()) {
             Log(Crit) << "Aborted. Socket binding failed." << LogEnd;
             return LOWLEVEL_ERROR_BIND_FAILED;
         }
+
 
         if (!transMgr->SendMsg()) {
             Log(Crit) << "Aborted. Message transmission failed." << LogEnd;
             return LOWLEVEL_ERROR_SOCKET;
         }
 
+
         if (!transMgr->WaitForRsp()) {
             Log(Crit) << "Aborted. Cannot receive any data, WaitForResponse function failed." << LogEnd;
             return LOWLEVEL_ERROR_SOCKET;
         }
-    }
+
+    } */
 
     //bulk's part
     //TODO: if statement
-    if (a.bulk != 0) {
+    if (a.multiplyQuery) {
 
         if(!transMgr->CreateNewTCPSocket()) {
             Log(Crit) << "Aborted. TCP socket creation failed." << LogEnd;
             return LOWLEVEL_ERROR_SOCKET;
         }
 
+        Log(Debug) << "RequestCount:" << a.requestCount << LogEnd;
         while (i != a.requestCount ) {
 
             if (!EmptyBulkQueue(&a)) {
@@ -347,20 +386,21 @@ int main(int argc, char *argv[])
             } else {
                 Log(Debug) <<  "query type has been set" << endl;
             }
+
             if(!transMgr->SendTcpMsg()) {
                 Log(Crit) << "Aborted. TCP message transmission failed." << LogEnd;
                 return LOWLEVEL_ERROR_SOCKET;
             }
+
             if (!transMgr->WaitForRsp()) {
                 Log(Crit) << "Aborted. Cannot receive any data, WaitForResponse function failed." << LogEnd;
                 //transMgr->RetryConnection();
                 return LOWLEVEL_ERROR_SOCKET;
             }
         }
+
         transMgr->TerminateTcpConn();
     }
-
-
 
     delete transMgr;
 

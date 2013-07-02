@@ -54,7 +54,7 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
         return;
     }
 
-    Log(Debug) <<"BBBBBUUUUULLLLKKK" << LogEnd;
+
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
