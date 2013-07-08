@@ -18,7 +18,7 @@
 #include "Portable.h"
 
 TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), authDataPtr_(NULL) {
+    :TOpt(OPTION_AUTH, parent), authDataPtr_(NULL), AuthInfoLen_(0) {
 
     if (buflen < OPT_AUTH_FIXED_SIZE) {
         Valid = false;
@@ -62,8 +62,19 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     default:
     case AUTH_PROTO_NONE:
     case AUTH_PROTO_DELAYED:
+        data_ = std::vector<uint8_t>(buf, buf + buflen);
+        Parent->setAuthDigestPtr(buf, buflen);
+        break;
     case AUTH_PROTO_RECONFIGURE_KEY: {
         data_ = std::vector<uint8_t>(buf, buf + buflen);
+        Parent->setAuthDigestPtr(buf + 1, buflen);
+        if (data_.size() != RECONFIGURE_KEY_AUTHINFO_SIZE) {
+            Log(Warning) << "AUTH: Invalid reconfigure-key data received. Expected size is "
+                         << RECONFIGURE_KEY_AUTHINFO_SIZE << ", but received " << data_.size()
+                         << LogEnd;
+            Valid = false;
+            return;
+        }
         break;
     }
 
@@ -84,6 +95,8 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         Parent->setSPI(readUint32(buf));
         buf += sizeof(uint32_t);
         buflen -= sizeof(uint32_t);
+
+        data_ = std::vector<uint8_t>(buf, buf + buflen);
 
         AuthInfoLen_ = getDigestSize(parent->DigestType_);
         if (buflen != AuthInfoLen_){
@@ -126,7 +139,7 @@ TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
         return;
     }
     case AUTH_PROTO_RECONFIGURE_KEY:
-        AuthInfoLen_ = 17; // Sec section 21.5.1, RFC3315
+        AuthInfoLen_ = RECONFIGURE_DIGEST_SIZE; // Sec section 21.5.1, RFC3315
         return;
     }
 }
@@ -140,6 +153,8 @@ size_t TOptAuthentication::getSize() {
     switch (proto_) {
     default:
         return tmp;
+    case AUTH_PROTO_RECONFIGURE_KEY:
+        return tmp + 1;
     case AUTH_PROTO_DIBBLER:
         return tmp + sizeof(uint32_t); // +4 bytes for SPI
     }
@@ -161,16 +176,38 @@ char* TOptAuthentication::storeSelf(char* buf) {
 
     switch (proto_) {
 
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+        if (!data_.size()) {
+            return buf;
+        }
+
+        switch (data_[0]) {
+        default:
+        case 1: // reconfigure-key value
+            authDataPtr_ = buf;
+            buf = writeData(buf, (char*)&data_[0], data_.size());
+            return buf;
+        case 2: // HMAC-MD5 digest
+            authDataPtr_ = buf + 1; // The first byte is 1 or 2 (see RFC3315, 21.5.1)
+            buf[0] = data_[0]; // 2 = HMAC-MD5 digest
+            memset(buf + 1, 0, RECONFIGURE_DIGEST_SIZE); // 16 bytes
+            return buf + RECONFIGURE_KEY_AUTHINFO_SIZE;
+        }
+    }
+
     default:
     case AUTH_PROTO_NONE:
-    case AUTH_PROTO_DELAYED:
-    case AUTH_PROTO_RECONFIGURE_KEY: {
+    case AUTH_PROTO_DELAYED: {
         authDataPtr_ = buf;
         buf = writeData(buf, (char*)&data_[0], data_.size());
         return buf;
     }
 
     case AUTH_PROTO_DIBBLER: {
+        if (!Parent) {
+            return writeUint32(buf, 0); // no SPI at all
+        }
+
         AuthInfoLen_ = getDigestSize(Parent->DigestType_);
 
         // write SPI first
