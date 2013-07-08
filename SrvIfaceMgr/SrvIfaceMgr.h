@@ -40,7 +40,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
    void dump();
 
    // ---sends messages---
-   bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+   virtual bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
 
    // ---receives messages---
    SPtr<TSrvMsg> select(unsigned long timeout);
