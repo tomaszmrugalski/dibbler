@@ -50,6 +50,8 @@ public:
     // virtual std::string getName() = 0;
     virtual void answer(SPtr<TClntMsg> reply);
 
+    void getReconfKeyFromAddrMgr();
+
  protected:
     bool check(bool clntIDmandatory, bool srvIDmandatory);
     bool appendClientID();

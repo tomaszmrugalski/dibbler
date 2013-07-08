@@ -152,6 +152,10 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         }
 
 #ifndef MOD_DISABLE_AUTH
+        if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_RECONFIGURE_KEY) {
+            ptr->getReconfKeyFromAddrMgr();
+        }
+
 	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
                                    ClntCfgMgr().getAuthAcceptMethods())) {
 	  Log(Error) << "Message dropped, authentication validation failed." << LogEnd;

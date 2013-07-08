@@ -1188,6 +1188,16 @@ bool TClntMsg::checkReceivedAuthOption() {
     return false;
 }
 
+void TClntMsg::getReconfKeyFromAddrMgr() {
+    ClntAddrMgr().firstClient();
+    SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+    if (!client) {
+        Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
+        return;
+    }
+    AuthKey_ = client->ReconfKey_;
+}
+
 bool TClntMsg::validateReplayDetection() {
 
     if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_NONE) {

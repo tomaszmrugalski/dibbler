@@ -21,6 +21,7 @@
 #include "OptAuthentication.h"
 #include "Logger.h"
 #include "hex.h"
+#include "Key.h"
 
 TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
                                        int msgType, SPtr<TDUID> clientDuid)
@@ -36,23 +37,25 @@ TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
     // include Reconfigure Message
     Options.push_back(new TOptReconfigureMsg(msgType, this) );
 
-    // insert authentication option
-    Options.push_back(new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
-                                             AUTH_REPLAY_NONE, this));
 
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
     if (cli && cli->ReconfKey_.size() > 0) {
         setAuthKey(cli->ReconfKey_);
         Log(Debug) << "Auth: Setting reconfigure-key to "
                    << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
+
+        // insert authentication option
+        SPtr<TOptAuthentication> optAuth = new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
+                                                                  AUTH_REPLAY_NONE, this);
+        TKey tmp(17,0);
+        tmp[0] = 2; // see RFC3315, section 21.5.1
+        optAuth->setPayload(tmp);
+
+        Options.push_back((Ptr*)optAuth);
+
     } else {
         Log(Warning) << "Auth: No reconfigure-key specified for client. Sending"
                      << " without key, client will likely to ignore this update." << LogEnd;
-    }
-
-    SPtr<TOptAuthentication> auth = (Ptr*) getOption(OPTION_AUTH);
-    if (auth->getProto() == AUTH_PROTO_RECONFIGURE_KEY) {
-        // let's find out what's reconfigure key for this message is
     }
 
     send();

@@ -285,9 +285,61 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     case AUTH_PROTO_DELAYED:
         Log(Error) << "AUTH: Delayed authentication not implemented." << LogEnd;
         return false;
-    case AUTH_PROTO_RECONFIGURE_KEY:
+    case AUTH_PROTO_RECONFIGURE_KEY: {
         if (MsgType != RECONFIGURE_MSG)
             return true;
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE,"
+                         << " message dropped." << LogEnd;
+        }
+        if (auth->getProto() != AUTH_PROTO_RECONFIGURE_KEY) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 3(reconfigure-key), but got "
+                         << auth->getProto() << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1, but got "
+                         << auth->getAlgorithm() << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+        if (AuthKey_.size() != RECONFIGURE_KEY_SIZE) {
+            Log(Error) << "AUTH: Failed to verify incoming RECONFIGURE message due to "
+                       << "reconfigure-key issue: expected size " << RECONFIGURE_KEY_SIZE
+                       << ", but got " << AuthKey_.size() << ", message dropped." << LogEnd;
+            return false;
+        }
+        if (!AuthDigestPtr_) {
+            Log(Error) << "AUTH: Failed to verify incoming RECONFIGURE message: "
+                       << "AuthDigestPtr_ not set, message dropped." << LogEnd;
+            return false;
+        }
+
+        char *rcvdAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+        char *goodAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+
+        memmove(rcvdAuthInfo, AuthDigestPtr_, RECONFIGURE_DIGEST_SIZE);
+        memset(AuthDigestPtr_, 0, RECONFIGURE_DIGEST_SIZE);
+
+        hmac_md5(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo);
+
+        Log(Debug) << "Auth: Checking reconfigure-key" << LogEnd;
+        PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, RECONFIGURE_DIGEST_SIZE);
+        PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, RECONFIGURE_DIGEST_SIZE);
+
+        if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, RECONFIGURE_DIGEST_SIZE))
+            is_ok = true;
+
+        delete [] rcvdAuthInfo;
+        delete [] goodAuthInfo;
+
+        return is_ok;
+    }
     case AUTH_PROTO_DIBBLER:
         break;
     }
