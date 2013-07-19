@@ -123,7 +123,7 @@ virtual ~SrvParser();
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
 %token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_, AUTH_LIFETIME_, AUTH_KEY_LEN_
-%token AUTH_DROP_UNAUTH_
+%token AUTH_DROP_UNAUTH_, AUTH_REALM_
 %token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
@@ -181,6 +181,7 @@ GlobalOption
 | AuthProtocol
 | AuthAlgorithm
 | AuthReplay
+| AuthRealm
 | AuthMethods
 | AuthLifetime
 | AuthKeyGenNonceLen
@@ -578,6 +579,11 @@ AuthReplay
         Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
         YYABORT;
     }
+};
+
+AuthRealm
+: AUTH_REALM_ STRING_ {
+    CfgMgr->setAuthRealm(std::string($2));
 };
 
 AuthMethods

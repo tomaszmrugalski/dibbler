@@ -380,3 +380,12 @@ void TCfgMgr::setAuthDropUnauthenticated(bool drop) {
 bool TCfgMgr::getAuthDropUnauthenticated() {
     return AuthDropUnauthenticated_;
 }
+
+void TCfgMgr::setAuthRealm(const std::string& realm) {
+    AuthRealm_ = realm;
+    Log(Debug) << "AUTH: Realm set to '" << realm << "'." << LogEnd;
+}
+
+std::string TCfgMgr::getAuthRealm() {
+    return AuthRealm_;
+}

@@ -65,6 +65,8 @@ class TCfgMgr
     uint8_t getAuthAlgorithm();
     void setAuthDropUnauthenticated(bool drop);
     bool getAuthDropUnauthenticated();
+    void setAuthRealm(const std::string& realm);
+    std::string getAuthRealm();
 #endif
 
  protected:
@@ -86,6 +88,7 @@ class TCfgMgr
     AuthProtocols AuthProtocol_;
     uint8_t AuthAlgorithm_;
     AuthReplay AuthReplay_;
+    std::string AuthRealm_;
 
     bool AuthDropUnauthenticated_;
 #endif
