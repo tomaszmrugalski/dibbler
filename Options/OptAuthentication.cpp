@@ -61,13 +61,54 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     switch (proto_) {
     default:
     case AUTH_PROTO_NONE:
-    case AUTH_PROTO_DELAYED:
         data_ = std::vector<uint8_t>(buf, buf + buflen);
-        Parent->setAuthDigestPtr(buf, buflen);
+        if (Parent)
+            Parent->setAuthDigestPtr(buf, buflen);
         break;
+    case AUTH_PROTO_DELAYED: {
+        // We can have 2 cases here:
+        // 1. this is SOLICIT and client sends no data, buflen should be zero
+        // 2. this is something else, so the data format should follow section 21.4.1
+        //    i.e. have 4bytes key ID, 128bis of HMAC-MD5 and the rest is 'realm'
+        if (buflen == 0) {
+            // SOLICIT option, without any data.
+            break;
+        }
+        if (buflen < DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE) {
+            Log(Warning) << "AUTH: protocol set to delayed-auth, but variable option data"
+                         << " is smaller (" << buflen << ") than required 20. Invalid auth."
+                         << LogEnd;
+            Valid = false;
+            return;
+        }
+
+        // The gentleman who designed delayed auth protocol was not exactly sober
+        // during the act of creation.
+        data_ = std::vector<uint8_t>(buf, buf + buflen); // let's store that crap in data_
+
+        // First undetermined number of bytes is DHCP realm
+        // (fine idea to start with variable field. Why not?)
+        int realm_size = buflen - DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE;
+        realm_ = std::string(buf, buf + realm_size);
+        buf += realm_size;
+        buflen -= realm_size;
+
+        // The next 4 bytes (RFC3315 never says that it's exactly 4 bytes. Nah, every
+        // implementor will just guess the same size)
+        if (Parent)
+            Parent->setSPI(readUint32(buf));
+        buf += sizeof(uint32_t);
+        buflen -= sizeof(uint32_t);
+
+        // The rest should be 16 bytes of of HMAC-MD5 data
+        if (Parent)
+            Parent->setAuthDigestPtr(buf, buflen); // that should be the last 16 bytes.
+        break;
+    }
     case AUTH_PROTO_RECONFIGURE_KEY: {
         data_ = std::vector<uint8_t>(buf, buf + buflen);
-        Parent->setAuthDigestPtr(buf + 1, buflen);
+        if (Parent)
+            Parent->setAuthDigestPtr(buf + 1, buflen);
         if (data_.size() != RECONFIGURE_KEY_AUTHINFO_SIZE) {
             Log(Warning) << "AUTH: Invalid reconfigure-key data received. Expected size is "
                          << RECONFIGURE_KEY_AUTHINFO_SIZE << ", but received " << data_.size()
@@ -81,7 +122,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     case AUTH_PROTO_DIBBLER: {
         if (algo_ >= DIGEST_INVALID) {
             Log(Warning) << "Unsupported digest type: " << algo_ << ", max supported "
-	                 << " type is " << DIGEST_INVALID - 1 << LogEnd;
+                         << " type is " << DIGEST_INVALID - 1 << LogEnd;
             Valid = false;
             return;
         }
@@ -90,8 +131,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
             Valid = false;
             return;
         }
-	Parent->DigestType_ = static_cast<DigestTypes>(algo_);
-
+        Parent->DigestType_ = static_cast<DigestTypes>(algo_);
         Parent->setSPI(readUint32(buf));
         buf += sizeof(uint32_t);
         buflen -= sizeof(uint32_t);
@@ -101,14 +141,14 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         AuthInfoLen_ = getDigestSize(parent->DigestType_);
         if (buflen != AuthInfoLen_){
             Log(Warning) << "Auth: Invalid digest size for digest type " << algo_
-	 	       << ", expected len=" << AuthInfoLen_ << ", received " << buflen << LogEnd;
+                       << ", expected len=" << AuthInfoLen_ << ", received " << buflen << LogEnd;
             Valid = false;
             return;
         }
 
         Parent->setAuthDigestPtr(buf, AuthInfoLen_);
         PrintHex(std::string("Auth: Received digest ") + getDigestName(parent->DigestType_) + ": ",
-		 (uint8_t*)buf, AuthInfoLen_);
+                 (uint8_t*)buf, AuthInfoLen_);
     }
     }
 
@@ -129,7 +169,16 @@ TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
     authDataPtr_(NULL) {
     switch (proto) {
     default:
+        AuthInfoLen_ = 0;
+        return;
     case AUTH_PROTO_DELAYED:
+        if (algo != 1) {
+            Log(Warning) << "AUTH: The only defined protocol for delayed-auth is 1, but "
+                         << static_cast<int>(algo) << " was specified." << LogEnd;
+        }
+        AuthInfoLen_ = 0; // Keep it as zero (we don't know yet if it's a SOLICIT
+                          // (no data at all) or any other (realm + key id + HMAC-MD5)
+        return;
     case AUTH_PROTO_DIBBLER: {
         if (parent) {
             AuthInfoLen_ = getDigestSize(parent->DigestType_);
@@ -153,6 +202,12 @@ size_t TOptAuthentication::getSize() {
     switch (proto_) {
     default:
         return tmp;
+    case AUTH_PROTO_DELAYED:
+        if (realm_.empty()) {
+            return tmp;
+        } else {
+            return tmp + realm_.size() + DELAYED_AUTH_KEY_ID_SIZE;
+        }
     case AUTH_PROTO_RECONFIGURE_KEY:
         return tmp + 1;
     case AUTH_PROTO_DIBBLER:
@@ -196,11 +251,28 @@ char* TOptAuthentication::storeSelf(char* buf) {
     }
 
     default:
-    case AUTH_PROTO_NONE:
-    case AUTH_PROTO_DELAYED: {
+    case AUTH_PROTO_NONE: {
         authDataPtr_ = buf;
         buf = writeData(buf, (char*)&data_[0], data_.size());
         return buf;
+    }
+    case AUTH_PROTO_DELAYED: {
+        if (realm_.empty()) {
+            // SOLICIT without any data
+            return buf;
+        } else {
+            // Realm set, build the option for real
+
+            memcpy(buf, &realm_[0], realm_.size()); // realm (variable)
+            buf += realm_.size();
+            if (Parent)
+                buf = writeUint32(buf, Parent->getSPI()); // key id (4 bytes)
+            else
+                buf = writeUint32(buf, 0);
+            memset(buf, 0, AuthInfoLen_); // HMAC-MD5 (16 bytes)
+            buf += AuthInfoLen_;
+            return buf;
+        }
     }
 
     case AUTH_PROTO_DIBBLER: {
@@ -245,4 +317,13 @@ void TOptAuthentication::getPayload(std::vector<uint8_t>& data) {
 
 bool TOptAuthentication::doDuties() {
     return true;
+}
+
+void TOptAuthentication::setRealm(const std::string& realm) {
+    realm_ = realm;
+    if (realm_.empty()) {
+        AuthInfoLen_ = 0;
+    } else {
+        AuthInfoLen_ = DELAYED_AUTH_DIGEST_SIZE;
+    }
 }

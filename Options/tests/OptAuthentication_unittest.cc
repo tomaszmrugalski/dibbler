@@ -83,6 +83,58 @@ TEST(OptAuthTest, constructorReconfigureKey) {
     EXPECT_TRUE(0 == memcmp(buf, expData2, expLen));
 }
 
+TEST(OptAuthTest, constructorDelayedAuth) {
+
+    char expData1[] = { 0, 11, // option type
+                        0, TOptAuthentication::OPT_AUTH_FIXED_SIZE, // option length
+                        2, // protocol
+                        1, // algorithm (HMAC-MD5)
+                        1, // RDM = monotonic,
+                        0, 0, 0, 0, 0, 0, 0, 0 // replay detection data
+    };
+
+    const std::string realm = "DHCP realm";
+
+    char expData2[] = { 0, 11, // option type
+                        0, static_cast<uint8_t>(TOptAuthentication::OPT_AUTH_FIXED_SIZE +
+                                                realm.size() +
+                                                DELAYED_AUTH_DIGEST_SIZE +
+                                                DELAYED_AUTH_KEY_ID_SIZE), // option length
+                        2, // protocol
+                        1, // algorithm (HMAC-MD5)
+                        1, // RDM = monotonic,
+                        1, 2, 3, 4, 5, 6, 7, 8, // replay detection data
+                        'D', 'H', 'C', 'P', ' ', 'r', 'e', 'a', 'l', 'm',
+                        0, 0, 0, 0, // key ID 0x0
+                        0, 0, 0, 0, 0, 0, 0, 0, // zeroed - HMAC-MD5 digest will be calculated
+                        0, 0, 0, 0, 0, 0, 0, 0 }; // later
+
+    char buf[100];
+    memset(buf, 0, sizeof(buf));
+
+    // Try empty option (sent in SOLICIT)
+    SPtr<TOptAuthentication> opt = new TOptAuthentication(AUTH_PROTO_DELAYED,
+                                                          1, AUTH_REPLAY_MONOTONIC, NULL);
+    opt->setReplayDetection(0x0);
+    opt->setRealm(std::string(""));
+    char* ptr = opt->storeSelf(buf);
+    size_t expLen = TOpt::OPTION6_HDR_LEN + TOptAuthentication::OPT_AUTH_FIXED_SIZE;
+    EXPECT_EQ(expLen, opt->getSize());
+    EXPECT_EQ(ptr, buf + expLen);
+    EXPECT_TRUE(0 == memcmp(buf, expData1, expLen));
+
+    opt = new TOptAuthentication(AUTH_PROTO_DELAYED,
+                                 1, AUTH_REPLAY_MONOTONIC, NULL);
+    opt->setReplayDetection(0x0102030405060708);
+    opt->setRealm(realm);
+    ptr = opt->storeSelf(buf);
+    expLen = TOpt::OPTION6_HDR_LEN + TOptAuthentication::OPT_AUTH_FIXED_SIZE
+        + realm.size() + + DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE;
+    EXPECT_EQ(expLen, opt->getSize());
+    EXPECT_EQ(ptr - buf, expLen);
+    EXPECT_TRUE(0 == memcmp(buf, expData2, expLen));
+}
+
 TEST(OptAuthTest, constructorDibbler) {
 
     char expData[] = { 0, 11, // option type

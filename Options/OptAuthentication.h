@@ -51,6 +51,8 @@ public:
 
     inline char* getAuthDataPtr() const { return authDataPtr_; }
 
+    void setRealm(const std::string& realm);
+
 private:
     AuthProtocols proto_; // protocol
     uint8_t algo_;  // algorithm
@@ -58,6 +60,8 @@ private:
     uint64_t replay_;
 
     std::vector<uint8_t> data_; ///< auth data (specific to a given proto)
+
+    std::string realm_; ///< auth realm (used in delayed-auth)
 
     char* authDataPtr_;
 
