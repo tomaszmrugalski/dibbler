@@ -139,16 +139,14 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
     return 0;
 }
 
-/*
- * tries to read data from any socket on all interfaces
- * returns after time seconds.
- * @param time listens for time seconds
- * @param buf buffer
- * @param bufsize buffer size
- * @param peer informations about sender
- *
- * @return socket descriptor (or negative values for errors)
- */
+/// tries to read data from any socket on all interfaces
+/// returns after time seconds.
+/// @param time listens for time seconds
+/// @param buf buffer
+/// @param bufsize buffer size
+/// @param peer informations about sender
+///
+/// @return socket descriptor (or negative values for errors)
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer) {
     struct timeval czas;

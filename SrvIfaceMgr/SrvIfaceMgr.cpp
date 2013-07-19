@@ -162,6 +162,23 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 }
 
+/// @brief tries to receive a packet
+///
+/// This method is virtual for the purpose of easy faking packet
+/// reception in tests
+///
+/// @param timeout select() timeout in seconds
+/// @param buf pointer to reception buffer
+/// @param bufsize reference to buffer size (will be updated to received packet size
+///        if reception is successful)
+/// @param peer address of the pkt sender
+///
+/// @return socket descriptor (or negative values for errors)
+///
+int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer) {
+    return TIfaceMgr::select(timeout, buf, bufsize, peer);
+}
+
 // @brief reads messages from all interfaces
 // it's wrapper around IfaceMgr::select(...) method
 //
@@ -180,7 +197,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     int sockid;
 
     // read data
-    sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
+    sockid = receive(timeout, buf, bufsize, peer);
     if (sockid < 0) {
         return 0;
     }
