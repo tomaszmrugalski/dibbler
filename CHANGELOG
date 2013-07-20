@@ -1,9 +1,11 @@
 
   Dibbler changelog
  ------------------- 
-0.9.0 [not-released-yet]
-  - Reconfigure support (by Grzegorz Pluto)
+1.0.0 [not-released-yet]
+  - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
   - Authentication rewritten (now uses RFC3315 option formats)
+  - Auth: support for reconfigure-key added
+  - Auth: support for delayed authentication
 
 0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility
