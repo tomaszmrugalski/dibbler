@@ -158,8 +158,10 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 
 	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
                                    ClntCfgMgr().getAuthAcceptMethods())) {
-	  Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
-	  return 0;
+
+            /// @todo Implement AUTH_DROP_UNAUTH_ on client-side
+            Log(Warning) << "Message dropped, authentication validation failed." << LogEnd;
+            return 0;
 	}
 
 	return ptr;

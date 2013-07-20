@@ -1172,3 +1172,14 @@ int TSrvCfgMgr::getAnyRelay() {
 
     return -1;
 }
+
+/// returns key-id that should be used for a given client-id
+///
+/// @param clientid client identifier
+///
+/// @return Key ID to be used (or 0)
+uint32_t TSrvCfgMgr::getDelayedAuthKeyID(SPtr<TDUID> clientid) {
+    /// @todo implement duid-key_id reservation
+    Log(Crit) << "#### AUTH: DUID-key_id mapping not implemented, using key 1020304." << LogEnd;
+    return 0x1020304;
+}

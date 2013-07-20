@@ -24,7 +24,6 @@ class TSrvCfgMgr;
 #include "KeyList.h"
 #include "SrvCfgClientClass.h"
 
-
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
 class SrvParser;
@@ -110,6 +109,7 @@ public:
     void setAuthDigests(const DigestTypesLst& digests);
     DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
+    uint32_t getDelayedAuthKeyID(SPtr<TDUID> clientid);
 #endif
 
     void setDefaults();

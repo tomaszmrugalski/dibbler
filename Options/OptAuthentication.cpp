@@ -88,7 +88,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
 
         // First undetermined number of bytes is DHCP realm
         // (fine idea to start with variable field. Why not?)
-        int realm_size = buflen - DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE;
+        int realm_size = buflen - DELAYED_AUTH_DIGEST_SIZE - DELAYED_AUTH_KEY_ID_SIZE;
         realm_ = std::string(buf, buf + realm_size);
         buf += realm_size;
         buflen -= realm_size;
@@ -269,6 +269,7 @@ char* TOptAuthentication::storeSelf(char* buf) {
                 buf = writeUint32(buf, Parent->getSPI()); // key id (4 bytes)
             else
                 buf = writeUint32(buf, 0);
+            authDataPtr_ = buf; // Digest will be stored here
             memset(buf, 0, AuthInfoLen_); // HMAC-MD5 (16 bytes)
             buf += AuthInfoLen_;
             return buf;

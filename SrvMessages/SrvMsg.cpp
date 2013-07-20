@@ -832,6 +832,8 @@ void TSrvMsg::copyAAASPI(SPtr<TSrvMsg> q) {
 void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 {
 
+    uint8_t algo = 0;
+
 #ifndef MOD_DISABLE_AUTH
     if (!duid) {
         Log(Error) << "Auth: No duid! Probably internal error. Authentication option not appended." << LogEnd;
@@ -841,21 +843,36 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
     switch (SrvCfgMgr().getAuthProtocol()) {
     case AUTH_PROTO_NONE:
         return;
-    case AUTH_PROTO_DELAYED:
-        Log(Warning) << "Auth: delayed-auth protocol not supported yet." << LogEnd;
-        return;
+    case AUTH_PROTO_DELAYED: {
+        uint32_t key_id = SrvCfgMgr().getDelayedAuthKeyID(duid);
+        if (!key_id) {
+            Log(Info) << "AUTH: no key-id specified for client with DUID " << duid->getPlain() << LogEnd;
+            return;
+        }
+        setSPI(key_id);
+        if (!loadAuthKey()) {
+            Log(Error) << "AUTH: Failed to load key with key-id: " << hex << key_id << LogEnd;
+            return;
+        }
+
+        algo = 1; // HMAC-MD5
+
+        break;
+    }
     case AUTH_PROTO_RECONFIGURE_KEY:
         // Server is supposed to include reconfigure-key in RECONFIGURE message only
         if (MsgType != RECONFIGURE_MSG)
             return;
     case AUTH_PROTO_DIBBLER:
 
-      /// @todo: server now forces its default algorithm. It should be possible
-      /// for the server to keep using whatever the client chose.
+        /// @todo: server now forces its default algorithm. It should be possible
+        /// for the server to keep using whatever the client chose.
         DigestType_ = SrvCfgMgr().getDigest();
         if (DigestType_ == DIGEST_NONE) {
             return;
         }
+        algo = DigestType_;
+
         Log(Debug) << "Auth: Dibbler protocol, setting digest type to "
                    << getDigestName(DigestType_) << LogEnd;
 
@@ -872,10 +889,12 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 
     if (!getOption(OPTION_AUTH)) {
         SPtr<TOptAuthentication> auth = new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
-                                                               static_cast<uint8_t>(DigestType_),
+                                                               algo,
                                                                SrvCfgMgr().getAuthReplay(),
                                                                this);
         auth->setReplayDetection(SrvAddrMgr().getNextReplayDetectionValue());
+
+        auth->setRealm(SrvCfgMgr().getAuthRealm()); // defined for delayed-auth only
 
         Options.push_back((Ptr*)auth);
     }

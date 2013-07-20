@@ -302,7 +302,8 @@ const static unsigned int RECONFIGURE_KEY_SIZE = 16;    // HMAC-MD5 key
 const static unsigned int RECONFIGURE_DIGEST_SIZE = 16; // HMAC-MD5 digest
 
 // Values used in delayed-auth algorithm (see RFC3315, section 21.4)
-const static unsigned int DELAYED_AUTH_DIGEST_SIZE = 16; // HMAC-MD5
+const static unsigned int DELAYED_AUTH_KEY_SIZE = 16;   // HMAC-MD5 key
+const static unsigned int DELAYED_AUTH_DIGEST_SIZE = 16; // HMAC-MD5 digest
 const static unsigned int DELAYED_AUTH_KEY_ID_SIZE = 4; // uint32
 
 #endif

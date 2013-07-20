@@ -129,12 +129,25 @@ void TMsg::calculateDigests(char* buffer, size_t len) {
 
     switch (auth->getProto()) {
     default: {
-        Log(Error) << "Auth: protocol " << auth->getProto() << " not supported yet." << LogEnd;
+        Log(Error) << "AUTH: protocol " << auth->getProto() << " not supported yet." << LogEnd;
+        return;
+    }
+    case AUTH_PROTO_DELAYED: {
+        if (AuthKey_.empty()) {
+            if (MsgType == SOLICIT_MSG) {
+                return; // That's alright, no auth info in SOLICIT
+            }
+            Log(Error) << "AUTH: Can't sign delayed-auth option, key empty." << LogEnd;
+            return;
+        }
+        if (auth->getAuthDataPtr()) {
+            hmac_md5(buffer, len, (char*) &AuthKey_[0], AuthKey_.size() ,auth->getAuthDataPtr());
+        }
         return;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: {
         if (AuthKey_.size() != RECONFIGURE_KEY_SIZE) {
-            Log(Error) << "Auth: Invalid size of reconfigure-key: expected " <<
+            Log(Error) << "AUTH: Invalid size of reconfigure-key: expected " <<
                 RECONFIGURE_KEY_SIZE << ", actual size " << AuthKey_.size() << LogEnd;
             return;
         }
@@ -282,25 +295,81 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     switch (proto) {
     case AUTH_PROTO_NONE:
         return true;
-    case AUTH_PROTO_DELAYED:
-        Log(Error) << "AUTH: Delayed authentication not implemented." << LogEnd;
-        return false;
+    case AUTH_PROTO_DELAYED: {
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            Log(Warning) << "AUTH: Mandatory AUTH option missing in delayed auth."
+                         << LogEnd;
+            return false;
+        }
+        if (auth->getProto() != AUTH_PROTO_DELAYED) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 2(delayed auth), but got "
+                         << int(auth->getProto()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1 (HMAC-MD5), but got "
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (MsgType == SOLICIT_MSG) {
+            if (auth->getSize() != TOptAuthentication::OPT_AUTH_FIXED_SIZE + TOpt::OPTION6_HDR_LEN) {
+                Log(Warning) << "AUTH: Received non-empty delayed-auth option in SOLICIT,"
+                             << " expected empty." << LogEnd;
+                return false;
+            } else {
+                return true; // delayed auth in Solicit should come in empty
+            }
+        }
+
+        if (SPI_ == 0) {
+            Log(Warning) << "AUTH: Received invalid SPI = 0." << LogEnd;
+            return false;
+        }
+
+        if (!loadAuthKey()) {
+            Log(Warning) << "AUTH: Failed to load delayed auth key with key id="
+                         << std::hex << getSPI() << std::dec << LogEnd;
+            return false;
+        }
+
+        // Ok, let's do validation
+        char *rcvdAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+        char *goodAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+
+        memmove(rcvdAuthInfo, AuthDigestPtr_, DELAYED_AUTH_DIGEST_SIZE);
+        memset(AuthDigestPtr_, 0, DELAYED_AUTH_DIGEST_SIZE);
+
+        hmac_md5(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo);
+
+        Log(Debug) << "Auth: Checking delayed-auth (HMAC-MD5) digest:" << LogEnd;
+        PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, DELAYED_AUTH_DIGEST_SIZE);
+        PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, DELAYED_AUTH_DIGEST_SIZE);
+
+        if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, DELAYED_AUTH_DIGEST_SIZE))
+            is_ok = true;
+
+        delete [] rcvdAuthInfo;
+        delete [] goodAuthInfo;
+
+        return is_ok;
+    }
     case AUTH_PROTO_RECONFIGURE_KEY: {
         if (MsgType != RECONFIGURE_MSG)
             return true;
         SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
         if (!auth) {
-            Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE,"
-                         << " message dropped." << LogEnd;
+            Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE." << LogEnd;
+            return false;
         }
         if (auth->getProto() != AUTH_PROTO_RECONFIGURE_KEY) {
             Log(Warning) << "AUTH: Bad protocol in auth: expected 3(reconfigure-key), but got "
-                         << auth->getProto() << ", key ignored." << LogEnd;
+                         << int(auth->getProto()) << ", key ignored." << LogEnd;
             return false;
         }
         if (auth->getAlgorithm() != 1) {
             Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1, but got "
-                         << auth->getAlgorithm() << ", key ignored." << LogEnd;
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
             return false;
         }
         if (auth->getRDM() != AUTH_REPLAY_NONE) {

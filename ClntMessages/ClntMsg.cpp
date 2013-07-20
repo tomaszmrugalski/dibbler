@@ -99,9 +99,6 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     int pos=0;
     SPtr<TOpt> ptr;
 
-    char* auth_offset = 0;
-    size_t auth_len = 0;
-
     while (pos<bufSize) {
 	if (pos+4>bufSize) {
 	    Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
@@ -191,8 +188,6 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	}
 #ifndef MOD_DISABLE_AUTH
 	case OPTION_AUTH:
-            auth_offset = buf + pos;
-            auth_len = length;
 	    if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
 		DigestType_ = ClntCfgMgr().getDigest();
 	    }
@@ -447,6 +442,7 @@ void TClntMsg::appendAuthenticationOption()
 
     // ClntAddrMgr().firstClient();
     // SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+    string realm;
 
     switch (ClntCfgMgr().getAuthProtocol()) {
     case AUTH_PROTO_NONE: {
@@ -455,6 +451,7 @@ void TClntMsg::appendAuthenticationOption()
     }
     case AUTH_PROTO_DELAYED: {
         algorithm = 1;
+        realm = ClntCfgMgr().getAuthRealm();
         break;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: { // RFC 3315, section 21.5.1
@@ -485,6 +482,13 @@ void TClntMsg::appendAuthenticationOption()
         new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
                                algorithm,
                                ClntCfgMgr().getAuthReplay(), this);
+
+    // Realm is used by delayed-auth only. Even fro delayed-auth, it is set
+    // only for non-SOLICIT messages
+    if (MsgType != SOLICIT_MSG && !realm.empty()) {
+        auth->setRealm(realm);
+    }
+
     // replay detection
     if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
         auth->setReplayDetection(ClntAddrMgr().getNextReplayDetectionValue());
@@ -1105,10 +1109,27 @@ bool TClntMsg::checkReceivedAuthOption() {
         return true;
     }
     case AUTH_PROTO_DELAYED: {
-        /// @todo: implement delayed-auth
-        Log(Error) << "Support for delayed authentication not implemented yet."
-                   << LogEnd;
-        return false;
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            return false;
+        }
+        if (auth->getProto() != AUTH_PROTO_DELAYED) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 2(delayed-auth), but got "
+                         << int(auth->getProto()) << ", auth option ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1 (HMAC-MD5), but got "
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+
+        return true;
     }
     case AUTH_PROTO_RECONFIGURE_KEY: {
 

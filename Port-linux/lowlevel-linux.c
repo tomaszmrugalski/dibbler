@@ -654,7 +654,7 @@ char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];
     if (SPI != 0)
-        snprintf(filename, 1024, "%s%s%x", "/var/lib/dibbler/AAA/", "AAA-key-", SPI);
+        snprintf(filename, 1024, "%s%s%08x", "/var/lib/dibbler/AAA/", "AAA-key-", SPI);
     else
         strcpy(filename, "/var/lib/dibbler/AAA/AAA-key");
     return filename;

@@ -500,6 +500,42 @@ bool TClntCfgMgr::validateConfig()
             return false;
         }
     }
+
+    // Validate authentication settings
+    switch (getAuthProtocol()) {
+    case AUTH_PROTO_NONE:
+    case AUTH_PROTO_DELAYED: {
+        const std::vector<DigestTypes> digests = getAuthAcceptMethods();
+        if (digests.size() > 1) {
+            Log(Warning) << "AUTH: More than one digest type allowed for delayed-auth,"
+                         << " expected only HMAC-MD5" << LogEnd;
+        }
+        if (digests[0] != DIGEST_HMAC_MD5) {
+            Log(Error) << "AUTH: First digest type for delayed-auth is "
+                       << getDigestName(digests[0]) << ", but only HMAC-MD5 is allowed for delayed-auth."
+                       << LogEnd;
+            return false;
+        }
+        break;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+        const std::vector<DigestTypes> digests = getAuthAcceptMethods();
+        if (digests.size() > 1) {
+            Log(Warning) << "AUTH: More than one digest type allowed for reconfigure-key,"
+                         << " expected only HMAC-MD5." << LogEnd;
+        }
+        if (digests[0] != DIGEST_HMAC_MD5) {
+            Log(Error) << "AUTH: First digest type for reconfigure-key is "
+                       << getDigestName(digests[0]) << ", but only HMAC-MD5 is allowed for delayed-auth."
+                       << LogEnd;
+            return false;
+        }
+        break;
+    }
+    case AUTH_PROTO_DIBBLER:
+        break;
+    }
+
     return true;
 }
 

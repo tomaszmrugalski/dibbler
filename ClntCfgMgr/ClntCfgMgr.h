@@ -86,6 +86,8 @@ class TClntCfgMgr : public TCfgMgr
 #ifndef MOD_DISABLE_AUTH
     // Authorization
     uint32_t getSPI();
+
+    /// @todo move this to CfgMgr
     void setAuthAcceptMethods(const std::vector<DigestTypes>& methods);
     const std::vector<DigestTypes>& getAuthAcceptMethods();
 
