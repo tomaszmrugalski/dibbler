@@ -155,10 +155,12 @@ uint32_t link_get_mo_bits(struct rtattr* rta) {
 
             mo_flags = *((u_int32_t *)rtadata1);
 
+#ifdef LOWLEVEL_DEBUG
             if (mo_flags & IF_RA_MANAGED)
                 printf("M flag!");
             if (mo_flags & IF_RA_OTHERCONF)
                 printf("O flag!");
+#endif
 
             return mo_flags;
         }
