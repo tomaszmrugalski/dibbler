@@ -128,6 +128,45 @@ void if_list_release(struct iface * list) {
     }
 }
 
+#define IF_RA_MANAGED 0x40
+#define IF_RA_OTHERCONF 0x80
+
+/**
+ * extracts M(managed) and O(other conf) flags set by Router Advertisement
+ *
+ * @param rta a pointer to tb[IFLA_PROTINFO] message received over netlink
+ *
+ * @return flags (see IF_RA_MANAGED and IF_RA_OTHERCONF)
+ */
+uint32_t link_get_mo_bits(struct rtattr* rta) {
+    size_t rtasize1;
+    void *rtadata;
+    struct rtattr *rta1;
+    uint32_t mo_flags = 0;
+
+    rtadata = RTA_DATA(rta);
+    rtasize1 = rta->rta_len;
+    for (rta1 = (struct rtattr *)rtadata; RTA_OK(rta1, rtasize1);
+         rta1 = RTA_NEXT(rta1, rtasize1)) {
+        void *rtadata1 = RTA_DATA(rta1);
+
+        switch(rta1->rta_type) {
+        case IFLA_INET6_FLAGS:
+
+            mo_flags = *((u_int32_t *)rtadata1);
+
+            if (mo_flags & IF_RA_MANAGED)
+                printf("M flag!");
+            if (mo_flags & IF_RA_OTHERCONF)
+                printf("O flag!");
+
+            return mo_flags;
+        }
+    }
+
+    return 0;
+}
+
 /*
  * returns interface list with detailed informations
  */
@@ -139,17 +178,20 @@ struct iface * if_list_get()
     struct rtnl_handle rth;
     struct iface * head = NULL;
     struct iface * tmp;
-    int preferred_family = AF_PACKET;
+    uint32_t mo_bits = 0;
 
     /* required to display information about interface */
     struct ifinfomsg *ifi;
-    struct rtattr * tb[IFLA_MAX+1];
+
+    /* table for storing base interface information */
+    struct rtattr * tb[IFLA_MAX + 1];
+
     int len;
-    memset(tb, 0, sizeof(*tb));
+    memset(tb, 0, sizeof(tb));
     memset(&rth,0, sizeof(rth));
 
     rtnl_open(&rth, 0);
-    rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
+    rtnl_wilddump_request(&rth, AF_INET6, RTM_GETLINK);
     rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
     
     /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
@@ -163,10 +205,17 @@ struct iface * if_list_get()
 	len -= NLMSG_LENGTH(sizeof(*ifi));
 	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
 
+        /* let's get M,O flags for interface */
+        mo_bits = 0;
+        if (tb[IFLA_PROTINFO]) {
+            mo_bits = link_get_mo_bits(tb[IFLA_PROTINFO]);
+        }
+
 #ifdef LOWLEVEL_DEBUG
-	printf("### iface %d %s (flags:%d) ###\n",ifi->ifi_index,
-	       (char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags);
+	printf("### iface %d %s (flags:%d) (mo bits:%d)###\n",ifi->ifi_index,
+	       (char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags, mo_bits);
 #endif
+
 
 	tmp = malloc(sizeof(struct iface));
 	memset(tmp, 0, sizeof(struct iface));
@@ -176,11 +225,13 @@ struct iface * if_list_get()
 	tmp->hardwareType = ifi->ifi_type;
 	tmp->next=head;
 	head=tmp;
-        /* printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags); */
+
+        tmp->m_bit = (mo_bits & IF_RA_MANAGED)?1:0;
+        tmp->o_bit = (mo_bits & IF_RA_OTHERCONF)?1:0;
 
         memset(tmp->mac,0,255);
 	/* This stuff reads MAC addr */
-	/* Does inetface has LL_ADDR? */
+	/* Does inetface have LL_ADDR? */
 	if (tb[IFLA_ADDRESS]) {
   	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
 	    memcpy(tmp->mac,RTA_DATA(tb[IFLA_ADDRESS]), tmp->maclen);

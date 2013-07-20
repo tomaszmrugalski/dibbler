@@ -68,6 +68,8 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
                                                        ptr->globaladdr,
                                                        ptr->globaladdrcount,
                                                        ptr->hardwareType));
+        iface->setMBit(ptr->m_bit);
+        iface->setOBit(ptr->o_bit);
         this->IfaceLst.append(iface);
         ptr = ptr->next;
     }

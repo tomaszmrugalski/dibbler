@@ -684,8 +684,12 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
-	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\""
+          << " mBit=\"" << (x.M_bit_?"1":"0") << "\" oBit=\"" << (x.O_bit_?"1":"0")
+          << "\">" << endl;
+
+    strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback")
+          << (x.flagRunning()?" running":" no-running")
           << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
 
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;

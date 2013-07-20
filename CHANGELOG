@@ -6,6 +6,7 @@
   - Authentication rewritten (now uses RFC3315 option formats)
   - Auth: support for reconfigure-key added
   - Auth: support for delayed authentication
+  - Linux: support for M,O bits reading from Router Advertisements
 
 0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility

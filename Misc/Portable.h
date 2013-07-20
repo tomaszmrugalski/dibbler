@@ -106,6 +106,8 @@ struct iface {
     int  globaladdrcount;          /* number of global IPV6 addresses */
     int  link_state;               /* used in link change detection routines */
     unsigned int flags;            /* look IF_xxx in portable.h */
+    unsigned char m_bit;           /* M bit in RA received? */
+    unsigned char o_bit;           /* O bit in RA received? */
     struct iface* next;            /* structure describing next iface in system */
 };
 
