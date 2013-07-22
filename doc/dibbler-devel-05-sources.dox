@@ -209,6 +209,14 @@ parser. In particular, make sure that there are no error messages that
 the grammar is inconsistent. Please refer to one of many bison tutorials
 that explain how to solve conflicts.
 
+@b Note: When making the configuration parsers you might run into some 
+prototype issues with yyFlexLexer::LexerInput(..) and yyFlexLexer::LexerOutput(..)
+due to incompatibilities between the 'FlexLex.h' file distributed with dibbler
+and the Flex on you system. These issuses can for the most parts be solved by simply 
+replacing the 'CfgMgr/FlexLexer.h' distributed with dibbler with the one found 
+on you system.
+
+
 @section srcParsersParsing 5.5.1 Parsing
 Configuration file reading is done using Flex and bison++ tools. Flex
 is so called lexer. Its responsibility is to read config file and
