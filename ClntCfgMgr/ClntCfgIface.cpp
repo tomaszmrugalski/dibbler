@@ -536,6 +536,18 @@ SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
     return 0; // not found
 }
 
+void TClntCfgIface::setMbit(bool m_bit) {
+    if (!m_bit) {
+        Stateful_ = false;
+    }
+}
+
+void TClntCfgIface::setObit(bool o_bit) {
+    if (!o_bit) {
+        setDefaults();
+    }
+}
+
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

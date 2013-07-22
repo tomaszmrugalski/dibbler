@@ -197,6 +197,9 @@ public:
     EState getKeyGenerationState();
     void setKeyGenerationState(EState state);
 
+    void setMbit(bool m_bit);
+    void setObit(bool o_bit);
+
 private:
     void setDefaults();
     std::string IfaceName;
