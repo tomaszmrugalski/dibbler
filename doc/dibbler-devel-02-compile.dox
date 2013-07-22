@@ -35,6 +35,13 @@ make parser
  * @section compilationMac 2.3 Mac OS X Compilation
  * Please follow POSIX complilation guidelines (@ref compilationPosix).
  *
+ * @b Note: When making the configuration parsers (@ref srcParsers) you might 
+ * run into some prototype issues with yyFlexLexer::LexerInput(..) and 
+ * yyFlexLexer::LexerOutput(..). 
+ * These issuses can for the most parts be solved by simply replacing 
+ * the 'CfgMgr/FlexLexer.h' distributed with dibbler with the one found 
+ * on you system.
+ *
  * @section compilationBSD 2.4 FreeBSD/NetBSD/OpenBSD Compilation
  * Please follow POSIX complilation guidelines (@ref compilationPosix).
  *
