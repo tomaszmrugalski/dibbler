@@ -13,7 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.8.4"
+#define DIBBLER_VERSION "1.0.0RC1-git"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -106,8 +106,6 @@ struct iface {
     int  globaladdrcount;          /* number of global IPV6 addresses */
     int  link_state;               /* used in link change detection routines */
     unsigned int flags;            /* look IF_xxx in portable.h */
-    unsigned char m_bit;           /* M bit in RA received? */
-    unsigned char o_bit;           /* O bit in RA received? */
     struct iface* next;            /* structure describing next iface in system */
 };
 
