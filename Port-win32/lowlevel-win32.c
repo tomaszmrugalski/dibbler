@@ -11,6 +11,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
+#include <icmpapi.h>
+
 #include <Ws2tcpip.h.>
 #include <Ws2spi.h>
 
@@ -668,6 +670,7 @@ int execute(const char *filename, const char * argv[], const char *env[])
 int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                       char* mac, int* mac_len) {
     /// @todo: Implement MAC reading for Windows
+	printf("%s \n", v6addr);
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
