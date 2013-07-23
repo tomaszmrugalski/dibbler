@@ -443,7 +443,7 @@ void TClntTransMgr::doDuties()
                           << " Following operation may be unstable!" << LogEnd;
             }
             if (!openSockets(x)) {
-                Log(Crit) << "Attempt to bind activates interfaces failed."
+                Log(Crit) << "Attempt to bind activated interfaces failed."
                           << " Following operation may be unstable!" << LogEnd;
             }
         }

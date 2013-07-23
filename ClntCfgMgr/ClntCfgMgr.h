@@ -51,7 +51,8 @@ class TClntCfgMgr : public TCfgMgr
     SPtr<TClntCfgIface> getIface(int id);
     void firstIface();
     void addIface(SPtr<TClntCfgIface> x);
-    void makeInactiveIface(int ifindex, bool inactive);
+    void makeInactiveIface(int ifindex, bool inactive, bool managed,
+                           bool otherConf);
     int countIfaces();
     void dump();
 
@@ -82,6 +83,9 @@ class TClntCfgMgr : public TCfgMgr
     int inactiveIfacesCnt();
     SPtr<TClntCfgIface> checkInactiveIfaces();
     bool openSocket(SPtr<TClntCfgIface> iface);
+
+    void obeyRaBits(bool obey);
+    bool obeyRaBits();
 
 #ifndef MOD_DISABLE_AUTH
     // Authorization
@@ -136,6 +140,8 @@ private:
     bool FQDNFlagS; // S bit in the FQDN option
 
     std::vector<std::string> DownlinkPrefixIfaces_;
+
+    bool ObeyRaBits_;
 
     static TClntCfgMgr * Instance;
 };

@@ -49,7 +49,7 @@ void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
 
 
 TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
-    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT)
+    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT), ObeyRaBits_(false)
 {
 
 #ifdef MOD_REMOTE_AUTOCONF
@@ -179,8 +179,8 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                 return false;
             }
             if (cfgIface->noConfig()) {
-                Log(Info) << "Interface " << cfgIface->getName() << "/" << cfgIface->getID()
-                               << " has flag no-config set, so it is ignored." << LogEnd;
+                Log(Info) << "Interface " << cfgIface->getFullName()
+                          << " has flag no-config set, so it is ignored." << LogEnd;
                 continue;
             }
 
@@ -205,7 +205,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                                 << " is not operational yet (does not have "
                                 << "link-local address or is down), skipping it for now." << LogEnd;
                     addIface(cfgIface);
-                    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+                    makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
                     continue;
                 }
 
@@ -230,7 +230,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                                 << " is not operational yet (link-local address "
                                 << "is not ready), skipping it for now." << LogEnd;
                     addIface(cfgIface);
-                    makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+                    makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
                     continue;
                 }
 
@@ -239,9 +239,19 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                 return false;
             }
 
+            if (obeyRaBits() && (!ifaceIface->getMBit() && !ifaceIface->getOBit()) ) {
+                Log(Info) << "Interface " << cfgIface->getFullName()
+                          << " configuration loaded, but did not receive a Router "
+                          << "Advertisement with M or O bits set, adding to inactive."
+                          << LogEnd;
+                addIface(cfgIface);
+                makeInactiveIface(cfgIface->getID(), true, true, true); // move it to inactive list
+                continue;
+            }
+
             addIface(cfgIface);
             Log(Info) << "Interface " << cfgIface->getFullName()
-                      << " configuation has been loaded." << LogEnd;
+                      << " configuration has been loaded." << LogEnd;
         }
         return countIfaces() || (inactiveMode() && inactiveIfacesCnt());
     } else {
@@ -332,7 +342,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                       << " has been added." << LogEnd;
 
             if (inactiveMode() && !ifaceIface->flagRunning() ) {
-                makeInactiveIface(cfgIface->getID(), true); // move it to InactiveLst
+                makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
                 Log(Notice) << "Interface " << ifaceIface->getFullName()
                             << " is not operational yet"
                             << " (not running), made inactive." << LogEnd;
@@ -358,7 +368,8 @@ void TClntCfgMgr::addIface(SPtr<TClntCfgIface> ptr)
     ClntCfgIfaceLst.append(ptr);
 }
 
-void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
+void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive, bool managed,
+                                    bool otherConf)
 {
     SPtr<TClntCfgIface> x;
 
@@ -384,6 +395,8 @@ void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive)
             Log(Info) << "Switching " << x->getFullName() << " to normal mode." << LogEnd;
             InactiveLst.del();
             InactiveLst.first();
+            x->setMbit(managed);
+            x->setObit(otherConf);
             addIface(x);
             return;
         }
@@ -628,7 +641,9 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
     InsistMode     = opt->getInsistMode();// should the client insist on receiving
                                           // all options i.e. sending INF-REQUEST
                                           // if REQUEST did not grant required opts
-    InactiveMode   = opt->getInactiveMode(); // should the client accept not ready interfaces?
+    if (opt->getInactiveMode()) // should the client accept not ready interfaces?
+        InactiveMode   = true;  // This may have been set up already by obeyRaBits()
+
     FQDNFlagS      = opt->getFQDNFlagS();
     UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
 
@@ -740,12 +755,12 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
     SPtr<TIfaceIface> iface;
     InactiveLst.first();
     while (x = InactiveLst.get()) {
-            iface = ClntIfaceMgr().getIfaceByID(x->getID());
+        iface = ClntIfaceMgr().getIfaceByID(x->getID());
         if (!iface) {
-                Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
-                continue;
-            }
-            iface->firstLLAddress();
+            Log(Error) << "Unable to find interface with ifindex=" << x->getID() << LogEnd;
+            continue;
+        }
+        iface->firstLLAddress();
         if (iface->flagUp() && iface->flagRunning() && iface->getLLAddress()) {
             // check if its link-local address is not tentative
             char tmp[64];
@@ -758,7 +773,17 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
                 continue;
             }
 
-            makeInactiveIface(x->getID(), false); // move it to InactiveLst
+            if (obeyRaBits() && !iface->getMBit() && !iface->getOBit()) {
+                Log(Debug) << "Interface " << iface->getFullName()
+                           << " is up and running, but did not receive Router Advertisement "
+                           << "with either M or O bits set." << LogEnd;
+                continue;
+            }
+
+            bool managed = !obeyRaBits() || iface->getMBit();
+            bool otherConf = !obeyRaBits() || iface->getOBit();
+
+            makeInactiveIface(x->getID(), false, managed, otherConf); // move it to active mode
             return x;
         }
     }
@@ -859,6 +884,17 @@ void TClntCfgMgr::setDownlinkPrefixIfaces(List(std::string)& ifaces) {
         DownlinkPrefixIfaces_.push_back(*iface);
     }
     Log(Cont) << LogEnd;
+}
+
+void TClntCfgMgr::obeyRaBits(bool obey) {
+    ObeyRaBits_ = obey;
+    if (obey) {
+        InactiveMode = true;
+    }
+}
+
+bool TClntCfgMgr::obeyRaBits() {
+    return ObeyRaBits_;
 }
 
 #ifdef MOD_CLNT_EMBEDDED_CFG

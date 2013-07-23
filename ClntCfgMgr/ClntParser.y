@@ -118,7 +118,7 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
+%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_, OBEY_RA_BITS_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_REALM_
@@ -175,6 +175,7 @@ GlobalOptionDeclaration
 | SkipConfirm
 | ReconfigureAccept
 | DownlinkPrefixInterfaces
+| ObeyRaBits
 ;
 
 InterfaceOptionDeclaration
@@ -712,6 +713,12 @@ ExperimentalRemoteAutoconf
 #endif
 };
 
+ObeyRaBits
+: OBEY_RA_BITS_
+{
+    Log(Debug) << "Obeying Router Advertisement (M, O) bits." << LogEnd;
+    CfgMgr->obeyRaBits(true);
+}
 
 SkipConfirm
 : SKIP_CONFIRM_

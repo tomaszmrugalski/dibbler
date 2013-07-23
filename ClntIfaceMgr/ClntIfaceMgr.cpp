@@ -632,9 +632,21 @@ void TClntIfaceMgr::redetectIfaces() {
     }
     while (ptr!=NULL) {
         iface = getIfaceByID(ptr->id);
-        if (iface && (ptr->flags!=iface->getFlags())) {
-            Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex <<iface->getFlags()
-                        << ", new=" << ptr->flags << ")." << dec << LogEnd;
+        if (!iface) {
+            ptr = ptr->next;
+            continue;
+        }
+
+        if  ( (ptr->flags != iface->getFlags()) ||
+              (ptr->m_bit != iface->getMBit()) ||
+              (ptr->o_bit != iface->getOBit())
+            ) {
+            Log(Notice) << "Flags on interface " << iface->getFullName()
+                        << " has changed (old=" << hex <<iface->getFlags()
+                        << ", new=" << ptr->flags << dec
+                        << ", M bit:" << (iface->getMBit()?"1":"0") << "->" << (ptr->m_bit?"1":"0")
+                        << ", O bit:" << (iface->getOBit()?"1":"0") << "->" << (ptr->o_bit?"1":"0")
+                        << ")."  << LogEnd;
             iface->updateState(ptr);
         }
         ptr = ptr->next;

@@ -121,6 +121,9 @@ void TIfaceIface::updateState(struct iface *x)
     }
 
     HWType = x->hardwareType;
+
+    setMBit(x->m_bit);
+    setOBit(x->o_bit);
 }
 
 
