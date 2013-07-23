@@ -122,7 +122,7 @@ virtual ~SrvParser();
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
 %token AFTR_
-%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_
 %token AUTH_DROP_UNAUTH_, AUTH_REALM_
 %token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
@@ -183,8 +183,6 @@ GlobalOption
 | AuthReplay
 | AuthRealm
 | AuthMethods
-| AuthLifetime
-| AuthKeyGenNonceLen
 | AuthDropUnauthenticated
 | Experimental
 | IfaceIDOrder
@@ -616,14 +614,6 @@ AuthDropUnauthenticated
 : AUTH_DROP_UNAUTH_ Number {
     CfgMgr->setAuthDropUnauthenticated($2);
 }
-
-AuthLifetime
-: AUTH_LIFETIME_ Number { ParserOptStack.getLast()->setAuthLifetime($2); }
-;
-
-AuthKeyGenNonceLen
-: AUTH_KEY_LEN_ Number { ParserOptStack.getLast()->setAuthKeyLen($2); }
-;
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters

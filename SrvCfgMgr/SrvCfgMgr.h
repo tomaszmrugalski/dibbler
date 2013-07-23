@@ -104,8 +104,6 @@ public:
     //Authentication
 #ifndef MOD_DISABLE_AUTH
     SPtr<KeyList> AuthKeys;
-    unsigned int getAuthLifetime();
-    unsigned int getAuthKeyGenNonceLen();
     void setAuthDigests(const DigestTypesLst& digests);
     DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();

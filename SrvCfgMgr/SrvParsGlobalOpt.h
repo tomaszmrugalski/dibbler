@@ -40,11 +40,6 @@ public:
     bool getInactiveMode() const;
     void setGuessMode(bool guess);
     bool getGuessMode() const;
-
-    void setAuthLifetime(unsigned int lifetime);
-    unsigned int getAuthLifetime() const;
-    void setAuthKeyLen(unsigned int len);
-    unsigned int getAuthKeyLen() const;
     
 private:
     bool   Experimental_;
@@ -53,8 +48,6 @@ private:
     bool   InactiveMode_;
     bool   GuessMode_;
     int    CacheSize_;
-    unsigned int AuthLifetime_;
-    unsigned int AuthKeyLen_;
     ESrvIfaceIdOrder InterfaceIDOrder_;
 };
 #endif

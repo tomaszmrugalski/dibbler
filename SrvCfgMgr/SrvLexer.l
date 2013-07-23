@@ -136,8 +136,6 @@ auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
 auth-replay         { return SrvParser::AUTH_REPLAY_;}
 auth-realm          { return SrvParser::AUTH_REALM_; }
 auth-methods        { return SrvParser::AUTH_METHODS_; }
-auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
-auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
 auth-required       { return SrvParser::AUTH_DROP_UNAUTH_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-plain        { return SrvParser::DIGEST_PLAIN_; }

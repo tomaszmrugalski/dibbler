@@ -17,7 +17,6 @@ using namespace std;
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) 
     :Experimental_(false), WorkDir_(WORKDIR), Stateless_(false),
      InactiveMode_(false), GuessMode_(false), CacheSize_(SERVER_DEFAULT_CACHE_SIZE),
-     AuthLifetime_(DHCPV6_INFINITY), AuthKeyLen_(16),
      InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE)
 {
 }
@@ -71,25 +70,6 @@ void TSrvParsGlobalOpt::setInactiveMode(bool flex) {
 
 bool TSrvParsGlobalOpt::getInactiveMode() const {
     return InactiveMode_;
-}
-
-void TSrvParsGlobalOpt::setAuthLifetime(unsigned int lifetime) {
-    AuthLifetime_ = lifetime;
-    Log(Debug) << "AUTH: Authorisation lifetime set to " << lifetime << "." << LogEnd;
-}
-
-unsigned int TSrvParsGlobalOpt::getAuthLifetime() const
-{
-    return AuthLifetime_;
-}
-
-void TSrvParsGlobalOpt::setAuthKeyLen(unsigned int len) {
-    AuthKeyLen_ = len;
-    Log(Debug) << "AUTH: Key gen nonce length set to " << len << "." << LogEnd;
-}
-
-unsigned int TSrvParsGlobalOpt::getAuthKeyLen() const {
-    return AuthKeyLen_;
 }
 
 void TSrvParsGlobalOpt::setGuessMode(bool guess) {

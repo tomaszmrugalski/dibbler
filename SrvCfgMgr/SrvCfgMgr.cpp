@@ -149,11 +149,6 @@ bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
     this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
     this->GuessMode        = opt->getGuessMode();
 
-#ifndef MOD_DISABLE_AUTH
-    this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
-    this->AuthLifetime = opt->getAuthLifetime();
-#endif
-
     return true;
 }
 
@@ -882,15 +877,6 @@ enum DigestTypes TSrvCfgMgr::getDigest() {
     return DigestTypesLst_[0];
 }
 
-unsigned int TSrvCfgMgr::getAuthLifetime()
-{
-    return AuthLifetime;
-}
-
-unsigned int TSrvCfgMgr::getAuthKeyGenNonceLen()
-{
-    return AuthKeyGenNonceLen;
-}
 #endif
 
 // --------------------------------------------------------------------
