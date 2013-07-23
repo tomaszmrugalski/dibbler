@@ -1305,11 +1305,69 @@ description for server only:
 \subsection{Authentication and Authorization}
 \label{feature-auth}
 
-Implementation of authentication and authorization in Dibbler is
-loosely based on \cite{draft-aaa}. Mainly option formats have been
-used, for interoperability purposes. This means that there should be
-no reasonable expectation of interoperability with other
-implementations.
+Implementation of authentication and authorization in Dibbler in
+versions 0.8.4 and earlier was loosely based
+on \cite{draft-aaa}. Authentication and authorization in 1.0.0 has
+been rewritten and is now based on standard \cite{rfc3315} format and
+mechanism, with custom extensions. Dibbler supports several
+mechanisms:
+
+\begin{enumerate}
+\item Replay detection -- Dibbler is able to detect whether the
+messages are being new or replayed. It implements the Replay Detection
+mechanism described in Section 21.3 of \cite{rfc3315}.
+\item Reconfigure Key Authentication Protocol -- Dibbler supports
+reconfiguration mechanism since 1.0.0. Reconfiguration requires that
+the server generates a random key when configuring clients. That key
+is later used by server and client to verify if the reconfigure
+request really comes from the ligit server, not a rogue one. This
+mechanism uses HMAC-MD5 digests. This mechanism is described in
+Section 21.5 of \cite{rfc3315}.
+\item Delayed Authentication protocol -- It is possible to
+pre-provision clients with keys and configure the server to use them
+to sign its messages. Client informs the server that it is capable of
+using this method by sending empty AUTH option in its SOLICIT
+message. The server then selects a key and sends its key id to the
+client and signs its response. Then the client checks if it has a key
+with matching key-id and then uses it to verify incoming packets and
+sign its own transmissions. This mechanism uses HMAC-MD5
+digests. That follows the mechanism specified in Section 21.4
+of \cite{rfc3315}
+\item Dibbler protocol -- Dibbler also supports its own, custom
+authentication extension. It is somewhat similar to the delayed
+authentication, but has a number of advantages over it. First, it
+secures the whole transmission, including initial SOLICIT
+message. Second, it offers much stronger digests: HMAC-MD5, HMAC-SHA1,
+HMAC-SHA224, HMAC-SHA256, HMAC-SHA384 and HMAC-SHA512. As this is
+Dibbler specific extension, it is not expected to inter-operate with
+any other implementations.
+\end{enumerate}
+
+The authentication/authorization implementation in Dibbler is highly
+flexible. That is both blessing and a curse. You can tweak it to match
+your specific needs, but if you don't know what you are doing, you may
+get only an impression of security and complicate your deployment a
+lot.
+
+Both delayed authentication and Dibbler protocols are dynamic. It
+means that the server and the client reads its key files every time
+packet is sent or received. It means that the keys can be updated in
+real-time without any need for restarts.
+
+The following subsections explain how to take advantage of each
+mechanisms.
+
+\subsubsection{Replay Detection}
+
+
+
+
+
+
+
+Mainly option formats have been used, for
+interoperability purposes. This means that there should be no
+reasonable expectation of interoperability with other implementations.
 
 Draft does not specify how to communicate with home and foreign AAA
 servers (AAAH and AAAF) using Diameter or Radius protocol, so Dibbler
