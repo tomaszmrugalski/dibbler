@@ -1301,13 +1301,12 @@ description for server only:
       information about previously assigned addresses.
 \end{itemize}
 
-
 \subsection{Authentication and Authorization}
 \label{feature-auth}
 
 Implementation of authentication and authorization in Dibbler in
 versions 0.8.4 and earlier was loosely based
-on \cite{draft-aaa}. Authentication and authorization in 1.0.0 has
+on \cite{draft-aaa}. The implementation in 1.0.0 has
 been rewritten and is now based on standard \cite{rfc3315} format and
 mechanism, with custom extensions. Dibbler supports several
 mechanisms:
@@ -1316,7 +1315,7 @@ mechanisms:
 \item Replay detection -- Dibbler is able to detect whether the
 messages are being new or replayed. It implements the Replay Detection
 mechanism described in Section 21.3 of \cite{rfc3315}.
-\item Reconfigure Key Authentication Protocol -- Dibbler supports
+\item Reconfigure Key Authentication protocol -- Dibbler supports
 reconfiguration mechanism since 1.0.0. Reconfiguration requires that
 the server generates a random key when configuring clients. That key
 is later used by server and client to verify if the reconfigure
@@ -1336,11 +1335,13 @@ of \cite{rfc3315}
 \item Dibbler protocol -- Dibbler also supports its own, custom
 authentication extension. It is somewhat similar to the delayed
 authentication, but has a number of advantages over it. First, it
-secures the whole transmission, including initial SOLICIT
+secures the whole transmission, including initial \msg{SOLICIT}
 message. Second, it offers much stronger digests: HMAC-MD5, HMAC-SHA1,
 HMAC-SHA224, HMAC-SHA256, HMAC-SHA384 and HMAC-SHA512. As this is
 Dibbler specific extension, it is not expected to inter-operate with
-any other implementations.
+any other implementations. Third, it does not require to maintain
+strict client DUID-key-id bindings on the server side, as clients send
+ID of the key they used to protect their transmissions. 
 \end{enumerate}
 
 The authentication/authorization implementation in Dibbler is highly
@@ -1358,39 +1359,202 @@ The following subsections explain how to take advantage of each
 mechanisms.
 
 \subsubsection{Replay Detection}
+\label{auth-replay}
+TODO
+
+\subsubsection{Reconfigure Key Authentication}
+\label{auth-reconf-key}
+To take advantage of reconfigure key authentication, the client must
+do a couple things. First, it must support reconfiguration. Second, it
+must set its authentication protocol to reconfigure-key. Third, it
+must discard messages that are not authenticated. Finally, it should
+accept authentication method HMAC-MD5, as this is the method used by
+reconfigure key authentication. The minimal configuration file for
+client looks like this:
+
+\begin{lstlisting}
+# client.conf - reconfigure-key authentication
+reconfigure-accept 1
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+Server's configuration is modified in the similar way:
+\begin{lstlisting}
+# server.conf - reconfigure-key authentication
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+auth-required 0
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+For a more fully featured example, see
+\verb+doc/examples/client-auth-reconf-key.conf+ for client
+and \verb+doc/examples/server-auth-reconf-key.conf+ for server.
+
+\subsubsection{Delayed Authentication}
+\label{auth-delayed}
+Delayed authentication assumes that there are shared keys. Those keys
+must be somehow installed on the client and server machines, using an
+out of band mechanisms, e.g. using scp, manually copying keys using
+USB sticks etc.
+
+Dibbler assumes that the keys are stored in
+\verb+/var/lib/dibbler/AAA+ directory. See section \ref{keygen} below
+for details on how to generate and deploy keys. Let's assume that the
+client and server shares a key with key-id 0x01020304. In such case
+both client and server much name the key file \verb+AAA-key-01020304+
+and place it in \verb+/var/lib/dibbler/AAA+ directory.
+
+In the delayed authentication keys belong to a given realm, which is
+really an administrative domain. Each realm must have a unique
+name. For the examples we use 'dibbler test realm' as the realm name.
+
+Once this is done, both client and server should be configured to use
+delayed authentication. Here's minimal client's example:
+
+\begin{lstlisting}
+# client.conf - delayed auth
+auth-protocol delayed
+auth-realm 'dibbler test realm'
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+Server's configuration is similar:
+\begin{lstlisting}
+# server.conf - delayed auth
+auth-protocol delayed
+auth-replay monotonic
+auth-methods digest-hmac-md5
+auth-realm "dibbler test realm"
+auth-required 1
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+
+}
+\end{lstlisting}
+
+There is one additional step required. Server must be told which keys
+are to be used when communicating with specific clients. That is
+specified using a separate file \verb+delayed-auth-keys+, which should
+be placed in \verb+/var/lib/dibbler/AAA+ directory. The format of the
+file is simple. It is a text file. Each line consists of a DUID
+followed by a coma, followed by key-id in hex notation. For example:
+
+\begin{lstlisting}
+00:01:02:03:04:06:07:08:09, 0x010203ff
+00:04:ff:ab:cd:ef:09:87:65:a1:bc, 0xabcdef00
+\end{lstlisting}
+
+\subsubsection{Dibbler Authentication Protocol}
+\label{auth-dibbler}
+This is a mechanism that evolved from master thesis done by Michal
+Kowalczuk. It was rewritten by Tomek Mrugalski to use standard \opt{AUTH}
+option as defined in \cite{rfc3315}, rather then using its own non-standard
+\opt{AUTH}, \opt{KEYGENERATION} and \opt{AAAAUTHENTICATION} options.
+
+This authentication protocol provides strong protection against
+message tampering, can be used to authenticate the server (i.e. client
+is confident that it is talking to ligitimate server) by the clients
+and vice versa (i.e. the server is confident that it is providing
+configuration to the legitimate client).
+
+The first step is to deploy shared keys on the clients and the
+server. That is explained in details in \ref{keygen}. The server needs
+only one key per client. It is possible to share the same key among
+multiple clients, but that somewhat defeats the purpose of
+authentication. The client side requires two files: the key itself and
+a \texttt{AAA-SPI}, which contains 32-bit key identifier. That extra
+mechanism is needed for cases where client has multiple keys
+provisioned. That can come in handy for doing key rollover or using
+different keys for different visited networks.
+
+Both client and server can specify a list of accepted digests, using
+\emph{auth-methods} list. The first method on the list will be used as
+a default, but the server can later override it and use different
+method. Care should be taken to configure client and server with at
+least one common method, otherwise the authentication will fail.
+
+Once client is provided with key and AAA-SPI file that points to that
+key, the client sends \msg{SOLICIT} that includes \opt{AUTH} option
+with used key-id and digest using the first method specified on
+auth-methods list. The server will use specified key-id to select
+appropriate key and will validate the signature. Server will then know
+that the client is legitimate as it used known secret key. The server
+will then send \opt{ADVERTISE} option that will be protected by digest
+generated with the same key. Once client receives the message, it will
+do exactly the same verification as the server. Client will then know
+that the response was sent by legitimate server. Both sides have
+established their validity and the configuration process will
+continue.
+
+Depending on the intended outcome, the server may require clients to
+authenticate and drop packets from non-authenticated users. That is
+convenient for high-security networks where only known (registered)
+clients are able to get a service.
+
+An example client configuration file looks as follows:
+\begin{lstlisting}
+auth-protocol dibbler
+auth-replay monotonic
+auth-methods digest-hmac-sha256, digest-hmac-sha1, digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+An example server configuration file looks as follows:
+\begin{lstlisting}
+auth-protocol dibbler
+auth-replay monotonic
+auth-required 1
+
+iface eth0 {
+    class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Key generation}
+\label{keygen}
+
+Delayed authentication and Dibbler authentication require secret key
+to be generated and shared between the server and the client.
 
 
+For each pair of client and server three (two for delayed
+authentication) files are needed. Client uses a file \texttt{AAA-SPI},
+which contains 32-bit AAA-SPI (AAA Security Parameter Index) --- eight
+hexadecimal digits, to properly introduce himself (authorize) to
+server. This file is needed only for Dibbler authentication.
 
-
-
-
-
-Mainly option formats have been used, for
-interoperability purposes. This means that there should be no
-reasonable expectation of interoperability with other implementations.
-
-Draft does not specify how to communicate with home and foreign AAA
-servers (AAAH and AAAF) using Diameter or Radius protocol, so Dibbler
-uses a different, simpler approach. Keys are stored locally in
-files. (see Fig. \ref{fig-aaa}).
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=0.65\textwidth]{dibbler-aaa}
-\caption{\emph{Simplified model of AAA}}
-\label{fig-aaa}
-\end{center}
-\end{figure}
-
-For each pair of client and server three files are needed. Client uses
-a file \texttt{AAA-SPI}, which contains 32-bit AAA-SPI (AAA Security
-Parameter Index) --- eight hexadecimal digits, to properly introduce
-himself (authorize) to server. Also it needs file named
-\texttt{AAA-key-\textit{AAASPI}}, which contains a key that is used to
-generate authentication information in AAAAUTH and AUTH options. The
-AAA-key is any number of arbitrary chosen bytes and is generated by
-administrator of DHCPv6 server. The server needs only one file per
-client to properly communicate using authentication. The file is named
+Also it needs file named \texttt{AAA-key-\textit{AAASPI}},
+which contains a key that is used to generate authentication
+information in \opt{AUTH} options. The AAA-key is any number of
+arbitrary chosen bytes and is generated by administrator of DHCPv6
+server. The server needs only one file per client to properly
+communicate using authentication. The file is named
 \texttt{AAA-key-\textit{AAASPI}}, where \textit{AAASPI} is the same
 value, that client has in \texttt{AAA-SPI} file. This file contains
 the same AAA-key, that client has in \texttt{AAA-key} file. Dibbler
@@ -1445,42 +1609,7 @@ b9a6452c
 When configuration files are prepared and stored in client's and
 server's \textit{AAA directory} you are ready to use
 authentication. For detailed description of possible options see
-\ref{client-conf-reference}. For quick start:
-\begin{itemize}
- \item set ``\texttt{auth-enabled true}'' in \texttt{client.conf}
-
- \item set ``\texttt{auth-method digest-hmac-sha256}'' in
-   \texttt{server.conf}
-
-\end{itemize}
-
-See section \ref{example-client-auth} for example client configuration
-and \ref{example-server-auth} for server configuration.
-
-TODO:
-
-New authentication framework:
-
-# Client.conf:
-
-# This specifies authentication protocol:
-# allowed values: none, reconfigure-key, delayed-auth, dibbler
-auth-protocol dibbler
-
-# client will accept following digests from the server
-# The first method on the list specifies the default digest type
-# that is used in AUTH in SOLICIT (and following messages) if
-# the server do not override the method.
-auth-accept-methods digest-hmac-md5, digest-hmac-sha1
-
-
-# server.conf
-
-auth-protocol dibbler
-auth-method digest-hmac-sha256
-
-# Todo: better to specify as auth-failed-fate: accept, log, drop
-auth-drop-unathenticated 0 or 1
+\ref{client-conf-reference}.
 
 \subsection{Exceptions: per client configuration}
 \label{feature-exceptions}

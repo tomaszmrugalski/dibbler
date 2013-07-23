@@ -2,6 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Michal Kowalczuk <michal@kowalczuk.eu>
+ * changes: Tomek Mrugalski <thomson@klub.com.pl>
  *
  * released under GNU GPL v2 licence
  */

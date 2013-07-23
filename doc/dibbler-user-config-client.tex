@@ -654,20 +654,32 @@ address is an IPv6 address, address-list is coma separated list of
 IPv6 addresses, string-keyword is a word ``string'' and
 request-keyword is a word ``request''. See Section \ref{feature-custom-options}.
 
- \item[auth-enabled] -- (scope: global). Takes one boolean
-   parameter. The default is 0. This option enables authentication and
-   authorization. When set to true, server support must also be
-   enabled, otherwise all messages will be dropped. See
-   Section \ref{feature-auth} for details.
+\item[auth-protocol] -- (scope: global, type: string, default:
+  none). This is a crucial parameter that specifies which
+  authorization/authentication protocol is used. Allowed values are:
+  \texttt{none}, \texttt{delayed}, \texttt{reconfigure-key} and
+  \texttt{dibbler}. See section \ref{feature-auth} for details.
 
- \item[auth-accept-methods] -- (scope: global). Takes coma separated
+ \item[auth-methods] -- (scope: global). Takes coma separated
    list of accepted authentication methods methods that client will
    accept from server. If this list is empty, any method will be
-   accepted. Possible values
-   are: \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
-   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
-   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
-   and \texttt{digest\_hmac\_sha512}.
+   accepted. The first method on the list is the default one. Possible values
+   are:  \texttt{none}, \texttt{digest-plain}, \texttt{digest-hmac-md5},
+   \texttt{digest-hmac-sha1}, \texttt{digest-hmac-sha224},
+   \texttt{digest-hmac-sha256}, \texttt{digest-hmac-sha384},
+   and \texttt{digest-hmac-sha512}. 
+
+\item[auth-replay] -- (scope: global, type: string, default:
+  none). Specifies which replay detection methods are
+  supported. Currently two values are implemented: \texttt{none} and
+  \texttt{monotonic}.
+
+\item[auth-required] -- (scope: global, type: boolean, default:
+  0). This parameter specifies if the client is required to
+  authenticate itself. When set to 0, any client authentication
+  failures (invalid signature or lack of \opt{AUTH} option) will
+  result in a warning only. When set to 1, such messages will be
+  dropped.
 
  \item[route] -- (scope: interface). Takes one boolean parameter that
  defines if routing information should requested or not. The default
@@ -1062,7 +1074,7 @@ iface "eth0" {
 }
 \end{lstlisting}
 
-\subsubsection{Example 14: Authentication}
+\subsubsection{Example 14: Dibbler Authentication}
 \label{example-client-auth}
 Authentication is enabled. Client will accept HMAC-SHA-512, HMAC-MD5
 and HMAC-SHA-256 as an authentication method.
@@ -1073,8 +1085,10 @@ and HMAC-SHA-256 as an authentication method.
 log-mode short
 log-level 7
 
-auth-enabled true
-auth-accept-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
+auth-protocol dibbler
+auth-replay monotonic
+auth-required 1
+auth-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
 
 iface eth0 {
 }

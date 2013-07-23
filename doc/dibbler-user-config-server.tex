@@ -604,14 +604,35 @@ string is any string enclosed in single or double quotes. See Section
    option requires \emph{experimental} mode to be enabled. See Section
    \ref{feature-remote-autoconf}.
 
- \item[auth-method] -- (scope: global, type: string, default:
-   empty). Set it to one of the following values to enable
+\item[auth-protocol] -- (scope: global, type: string, default:
+  none). This is a crucial parameter that specifies which
+  authorization/authentication protocol is used. Allowed values are:
+  \texttt{none}, \texttt{delayed}, \texttt{reconfigure-key} and
+  \texttt{dibbler}. See section \ref{feature-auth} for details.
+
+ \item[auth-methods] -- (scope: global, type: string, default:
+   empty). This a coma separated list of one or more methods. The
+   first one on the list will specify the default method, while the
+   others list accepted methods when receiving data from clients.
+   Set it to one or more of the following values to enable
    authentication on ther server side, using selected method of
    generating authentication information:
-   \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
-   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
-   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
-   and \texttt{digest\_hmac\_sha512}.
+   \texttt{none}, \texttt{digest-plain}, \texttt{digest-hmac-md5},
+   \texttt{digest-hmac-sha1}, \texttt{digest-hmac-sha224},
+   \texttt{digest-hmac-sha256}, \texttt{digest-hmac-sha384},
+   and \texttt{digest-hmac-sha512}. 
+
+\item[auth-replay] -- (scope: global, type: string, default:
+  none). Specifies which replay detection methods are
+  supported. Currently two values are implemented: \texttt{none} and
+  \texttt{monotonic}.
+
+\item[auth-required] -- (scope: global, type: boolean, default:
+  0). This parameter specifies if the client is required to
+  authenticate itself. When set to 0, any client authentication
+  failures (invalid signature or lack of \opt{AUTH} option) will
+  result in a warning only. When set to 1, such messages will be
+  dropped.
 
  \item[auth-lifetime] -- (scope: global, type: integer, default:
    0). Authentication lifetime. Currently not supported.
@@ -1404,24 +1425,24 @@ iface "eth0" {
 \end{lstlisting}
 
 
-\subsubsection{Example 17: Authentication}
+\subsubsection{Example 17: Dibbler Authentication}
 \label{example-server-auth}
-It is possible to configure server to require authentication. In this
+It is possible to configure server to require Dibbler authentication. In this
 example, HMAC-SHA-512 will be used as an authentication method.
 Key Generation Nonce will have 64 bytes.
 
 \begin{lstlisting}
 # server.conf
 
-auth-method digest-hmac-sha512
-auth-key-len 64
+auth-protocol dibbler
+auth-replay monotonic
+auth-methods digest-hmac-sha512
+auth-required 1
 
-iface eth0
-{
-  class
-  {
-    pool 2000::100-2000::10f
-  }
+iface eth0 {
+    class {
+        pool 2000::100-2000::10f
+    }
 }
 \end{lstlisting}
 
