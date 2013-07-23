@@ -499,15 +499,14 @@ NEXT_HOP_ IPV6ADDR_ '{'
 }
 RouteList '}'
 {
-    SrvCfgIfaceLst.getLast()->addExtraOption(nextHop, false);
+    ParserOptStack.getLast()->addExtraOption(nextHop, false);
     nextHop = 0;
-    //should we call YYABORT;?
 }
 | NEXT_HOP_ IPV6ADDR_
 {
     SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
-    SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
+    ParserOptStack.getLast()->addExtraOption(myNextHop, false);
 }
 ;
 
@@ -524,7 +523,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_
 {
@@ -533,7 +532,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
 {
@@ -542,7 +541,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 };
 
 AuthProtocol
@@ -694,14 +693,14 @@ VendorSpecList
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
 	       << $3 << ", valuelen=" << $5.length << LogEnd;
 
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
 								    $5.duid, $5.length, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
 	       << $5 << ", valuelen=" << $7.length << LogEnd;
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
 								    $7.duid, $7.length, 0), false);
 }
 ;
@@ -984,14 +983,14 @@ DsLiteAftrName
 {
     SPtr<TOpt> tunnelName = new TOptDomainLst(OPTION_AFTR_NAME, $3, 0);
     Log(Debug) << "Enabling DS-Lite tunnel option, AFTR name=" << $3 << LogEnd;
-    SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
+    ParserOptStack.getLast()->addExtraOption(tunnelName, false);
 };
 
 ExtraOption
 :OPTION_ Number DUID_KEYWORD_ DUID_
 {
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length << LogEnd;
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
@@ -999,7 +998,7 @@ ExtraOption
     SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
 
     SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
 |OPTION_ Number ADDRESS_LIST_
@@ -1008,13 +1007,13 @@ ExtraOption
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
 };
 
@@ -1032,7 +1031,7 @@ RemoteAutoconfNeighborsOption
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst(OPTION_NEIGHBORS, PresentAddrLst, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Remote autoconf neighbors enabled (" << PresentAddrLst.count()
 	       << " neighbors defined.)" << LogEnd;
 }
@@ -1366,8 +1365,6 @@ DNSServerOption
 {
     SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nis_servers, false);
-
-    // ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1381,7 +1378,6 @@ DomainOption
 {
     SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
     ParserOptStack.getLast()->addExtraOption(domains, false);
-    // ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
 ;
 
@@ -1977,13 +1973,13 @@ void SrvParser::yyerror(char *m)
 }
 
 SrvParser::~SrvParser() {
-    this->ParserOptStack.clear();
-    this->SrvCfgIfaceLst.clear();
-    this->SrvCfgAddrClassLst.clear();
-    this->SrvCfgTALst.clear();
-    this->PresentAddrLst.clear();
-    this->PresentStringLst.clear();
-    this->PresentRangeLst.clear();
+    ParserOptStack.clear();
+    SrvCfgIfaceLst.clear();
+    SrvCfgAddrClassLst.clear();
+    SrvCfgTALst.clear();
+    PresentAddrLst.clear();
+    PresentStringLst.clear();
+    PresentRangeLst.clear();
 }
 
 static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
