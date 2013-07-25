@@ -911,6 +911,9 @@ void TClntTransMgr::checkSolicit() {
         if (iface->noConfig())
             continue;
 
+        if (iface->stateless())
+            continue;
+
         // step 1: check if there are any IA to be configured
         List(TClntCfgIA) iaLst; // list of IA requiring configuration
         SPtr<TClntCfgIA> cfgIA;
@@ -1011,6 +1014,7 @@ void TClntTransMgr::checkInfRequest()
     {
         if (iface->noConfig())
             continue;
+
         SPtr<TClntIfaceIface> ifaceIface = (Ptr*)ClntIfaceMgr().getIfaceByID(iface->getID());
         if (!ifaceIface) {
             Log(Error) << "Interface with ifindex=" << iface->getID() << " not found." << LogEnd;
