@@ -239,14 +239,18 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                 return false;
             }
 
-            if (obeyRaBits() && (!ifaceIface->getMBit() && !ifaceIface->getOBit()) ) {
-                Log(Info) << "Interface " << cfgIface->getFullName()
-                          << " configuration loaded, but did not receive a Router "
-                          << "Advertisement with M or O bits set, adding to inactive."
-                          << LogEnd;
-                addIface(cfgIface);
-                makeInactiveIface(cfgIface->getID(), true, true, true); // move it to inactive list
-                continue;
+            if (obeyRaBits()) {
+                if (!ifaceIface->getMBit() && !ifaceIface->getOBit()) {
+                    Log(Info) << "Interface " << cfgIface->getFullName()
+                              << " configuration loaded, but did not receive a Router "
+                              << "Advertisement with M or O bits set, adding to inactive."
+                              << LogEnd;
+                    addIface(cfgIface);
+                    makeInactiveIface(cfgIface->getID(), true, true, true); // move it to inactive list
+                    continue;
+                }
+                cfgIface->setMbit(ifaceIface->getMBit());
+                cfgIface->setObit(ifaceIface->getOBit());
             }
 
             addIface(cfgIface);
