@@ -9,7 +9,7 @@
   - Linux: support for M,O bits reading from Router Advertisements
   - Srv: server no longer crashes when options are defined in global scope
     (issue reported by Michael Thorsager, thanks!)
-  - Srv: database sanitization now works also for relays
+  - Srv: database sanitization now works also for relays (bug #288)
     (issue reported by Michael Thorsager, thanks!)
 
 0.8.4 [2013-06-27]
