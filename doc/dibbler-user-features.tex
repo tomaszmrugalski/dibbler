@@ -1055,7 +1055,47 @@ TODO: Describe it.
 
 \subsection{Following M, O bits from Router Advertisements}
 
-TODO: Describe it.
+Rounter Advertisements contain two bits that inform what kind of
+DHCPv6 services are available on link. \b M (Managed) that tells that
+addresses and prefixes can be obtained using stateful DHCPv6. \b O
+(OtherConf) tells that other configuration options may be
+configured. Both bits are defined in \cite{rfc4861}, section 4.2. It
+should be noted that those bits are informational only. In the default
+mode (when \emph{obey-ra-bits} is absent), the client will ask for
+configuration options that are specified specified in its configuration
+file. With \emph{obey-ra-bits}, the client will wait till it receives
+the RA message and will act according to the received bits. The
+default is off (\emph{obey-ra-bits}
+missing). Enabling \emph{obey-ra-bits} implies \emph{inactive-mode}.
+
+Let's take this simple client configuration:
+\begin{lstlisting}
+# client.conf - example that takes care of M,O bits from Router Adv.
+obey-ra-bits
+
+iface eth0 {
+   ia
+   option dns-server
+}
+\end{lstlisting}
+Without obey-ra-bits enabled, it would simply send \msg{SOLICIT} with
+one IA\_NA option (i.e. requesting non-temporary address)
+and \opt{ORO} requesting \opt{DNS-SERVER} configuration. If there is
+RA received with M=0, O=0, then Dibbler will not send anything and
+will simply wait till RA with at least one of M or O bits is received.
+If RA is received with M=0, O=1, then Dibbler will request ``other''
+configuration options, i.e. all those that are not stateful or in
+other words any type of IA will not be sent. Dibbler will
+send \msg{INFORMATION-REQUEST} with \opt{ORO}
+requesting \opt{DNS-SERVERS}. With M=1, O=0 Dibbler will send
+a \msg{SOLCIT} only request an address, but will not ask
+for \opt{DNS-SERVERS}. Finally, with M=1, O=1 Dibbler will
+send \msg{SOLICIT} asking for both an address and \opt{DNS-SERVERS}.
+
+It should be noted that Dibbler will assess M,O bits only during
+start-up or while enabling an interface. It will not monitor any
+possible future changes in those bits (e.g. as a result of receiving
+Router Advertisement with updated flags).
 
 \subsection{CONFIRM message}
 \label{feature-confirm}
