@@ -8,7 +8,9 @@
   - Auth: support for delayed authentication
   - Linux: support for M,O bits reading from Router Advertisements
   - Srv: server no longer crashes when options are defined in global scope
-    (reported by Michael Thorsager, thanks!)
+    (issue reported by Michael Thorsager, thanks!)
+  - Srv: database sanitization now works also for relays
+    (issue reported by Michael Thorsager, thanks!)
 
 0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility

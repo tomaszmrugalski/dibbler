@@ -623,8 +623,8 @@ bool TSrvTransMgr::sanitizeAddrDB() {
     TAddrMgr::IndexToNameMapping currentIndexToName;
 
     // Let's get name->index and index->name maps first
-    SrvIfaceMgr().firstIface();
-    while (SPtr<TIfaceIface> iface = SrvIfaceMgr().getIface()) {
+    SrvCfgMgr().firstIface();
+    while (SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIface()) {
         currentNameToIndex.insert(make_pair(iface->getName(), iface->getID()));
         currentIndexToName.insert(make_pair(iface->getID(), iface->getName()));
     }
