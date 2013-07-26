@@ -107,7 +107,7 @@ public:
     void setAuthDigests(const DigestTypesLst& digests);
     DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
-    uint32_t getDelayedAuthKeyID(SPtr<TDUID> clientid);
+    uint32_t getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid);
 #endif
 
     void setDefaults();

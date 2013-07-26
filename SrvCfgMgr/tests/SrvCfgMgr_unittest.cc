@@ -89,5 +89,18 @@ TEST_F(SrvCfgMgrTest, constructor) {
     //delete cfgmgr;
 }
 
+TEST_F(SrvCfgMgrTest, getDelayedAuthKeyID) {
+    // We don't care about config here
+    SPtr<NakedSrvCfgMgr> cfgmgr = new NakedSrvCfgMgr("", "");
+
+    SPtr<TDUID> duid1(new TDUID("00:01:02:03:04:06:07:08:09"));
+    SPtr<TDUID> duid2(new TDUID("00:04:ff:ab:cd:ef:09:87:65:a1:bc"));
+    SPtr<TDUID> duid_bogus(new TDUID("01:02:03:04"));
+
+    EXPECT_EQ(0x010203ff, cfgmgr->getDelayedAuthKeyID("testdata/keys-mapping", duid1));
+    EXPECT_EQ(0xabcdef00, cfgmgr->getDelayedAuthKeyID("testdata/keys-mapping", duid2));
+    EXPECT_EQ(0, cfgmgr->getDelayedAuthKeyID("testdata/keys-mapping", duid_bogus));
+    EXPECT_EQ(0, cfgmgr->getDelayedAuthKeyID("no-such-file", duid1));
+}
 
 }

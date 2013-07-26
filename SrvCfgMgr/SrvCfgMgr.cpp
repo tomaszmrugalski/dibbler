@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include "SmartPtr.h"
@@ -219,7 +220,6 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
         // method names.
         cfgIface->setName(ifaceIface->getName());
         cfgIface->setID(ifaceIface->getID());
-
 
         // Check for link scope address presence
         if (!ifaceIface->countLLAddress()) {
@@ -1164,8 +1164,40 @@ int TSrvCfgMgr::getAnyRelay() {
 /// @param clientid client identifier
 ///
 /// @return Key ID to be used (or 0)
-uint32_t TSrvCfgMgr::getDelayedAuthKeyID(SPtr<TDUID> clientid) {
-    /// @todo implement duid-key_id reservation
-    Log(Crit) << "#### AUTH: DUID-key_id mapping not implemented, using key 1020304." << LogEnd;
-    return 0x1020304;
+uint32_t TSrvCfgMgr::getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid) {
+
+    ifstream f(mapping_file, ios::in);
+
+    if (!f.is_open()) {
+        Log(Error) << "Can't open keys mapping file: " << mapping_file << LogEnd;
+        // map not found or is inaccessible
+        return 0;
+    }
+
+    string lookingfor = clientid->getPlain();
+
+    for( std::string line; getline( f, line ); )
+    {
+        if (line.empty())
+            continue;
+        if (!line.empty() && (line[0] == '#') )
+            continue;
+
+        std::istringstream iss(line);
+        string duid;
+        uint32_t keyid;
+
+        // parse the line. We don't really care if it is malformed.
+        // If it is, server will not use the right key
+        iss >> duid >> hex >> keyid;
+
+        duid = duid.substr(0, duid.find(","));
+
+        if (duid == lookingfor) {
+            return keyid;
+        }
+    }
+
+    // no key found
+    return 0;
 }

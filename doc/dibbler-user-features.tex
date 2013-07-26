@@ -1412,6 +1412,20 @@ TODO
 
 \subsubsection{Reconfigure Key Authentication}
 \label{auth-reconf-key}
+Reconfigure key is a mechanism that protects only \msg{RECONFIGURE}
+message that the server sends to clients to force them to initiate
+reconfiguration procedure. The major benefit of Reconfigure key
+algorithm is that it does not require any preconfigured key. The
+server randomly generates keys on the fly when sending \msg{REPLY}
+message back to a client that reported support for
+reconfiguration. The major flaw of the Reconfigure key algorithm is
+that it sends the key value as a plain text, so client is only
+moderately confident that the entity that sent \msg{RECONFIGURE} is
+indeed the server. It is sufficient to sniff the initial client
+configuration procedure to obtain the key to later
+spoof \msg{RECONFIGURE} message to trick the client to initiate
+reconfiguration process.
+
 To take advantage of reconfigure key authentication, the client must
 do a couple things. First, it must support reconfiguration. Second, it
 must set its authentication protocol to reconfigure-key. Third, it
@@ -1503,12 +1517,15 @@ iface eth0 {
 
 There is one additional step required. Server must be told which keys
 are to be used when communicating with specific clients. That is
-specified using a separate file \verb+delayed-auth-keys+, which should
+specified using a separate file \verb+keys-mapping+, which should
 be placed in \verb+/var/lib/dibbler/AAA+ directory. The format of the
 file is simple. It is a text file. Each line consists of a DUID
 followed by a coma, followed by key-id in hex notation. For example:
 
 \begin{lstlisting}
+# Comments starting with # are ignored.
+# So are empty lines
+
 00:01:02:03:04:06:07:08:09, 0x010203ff
 00:04:ff:ab:cd:ef:09:87:65:a1:bc, 0xabcdef00
 \end{lstlisting}

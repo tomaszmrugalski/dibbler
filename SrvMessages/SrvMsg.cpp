@@ -844,7 +844,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
     case AUTH_PROTO_NONE:
         return;
     case AUTH_PROTO_DELAYED: {
-        uint32_t key_id = SrvCfgMgr().getDelayedAuthKeyID(duid);
+        uint32_t key_id = SrvCfgMgr().getDelayedAuthKeyID(SRV_KEYMAP_FILE, duid);
         if (!key_id) {
             Log(Info) << "AUTH: no key-id specified for client with DUID " << duid->getPlain() << LogEnd;
             return;
