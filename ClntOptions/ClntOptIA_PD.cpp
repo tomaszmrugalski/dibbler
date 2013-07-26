@@ -26,7 +26,8 @@ using namespace std;
  * @param parent
  */
 TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
-    :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent)
+    :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent),
+     Unicast(false), Iface(-1)
 {
 
     bool zeroTimes = false;
@@ -53,7 +54,8 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
 /// @param cfgPD
 /// @param parent
 TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
-    :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent)
+    :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent),
+     Unicast(false), Iface(-1)
 {
     cfgPD->firstPrefix();
     SPtr<TClntCfgPrefix> cfgPrefix;
@@ -74,7 +76,7 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
  * @param parent
  */
 TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
-:TOptIA_PD(buf,bufsize, parent)
+    :TOptIA_PD(buf,bufsize, parent), Unicast(false)
 {
     int pos=0;
     while(pos<bufsize)

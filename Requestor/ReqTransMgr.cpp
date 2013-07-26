@@ -272,7 +272,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	    
 	    char *Message = new char[length+10];
 	    memcpy(Message,buf+pos+2,length-2);
-	    sprintf(Message+length-2, "(%d)", st);
+	    sprintf(Message+length-2, "(%u)", st);
 	    o = string(Message);
 	    delete [] Message;
 	    break;

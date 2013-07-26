@@ -328,8 +328,8 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
     intptr_t i;
     sprintf(arg5,"interface=\"%s\"", ifacename);
     sprintf(arg6,"address=%s", addr);
-    sprintf(arg7,"validlifetime=%d", valid);
-    sprintf(arg8,"preferredlifetime=%d", pref);
+    sprintf(arg7,"validlifetime=%u", valid);
+    sprintf(arg8,"preferredlifetime=%u", pref);
     // use _P_DETACH to speed things up, (but the tentative detection will surely fail)
     i=_spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, NULL);
     return i;
@@ -605,8 +605,8 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     
     sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg6,"interface=\"%s\"", ifname);
-    sprintf(arg7,"preferredlifetime=%d", prefered);
-    sprintf(arg8,"validlifetime=%d", valid);
+    sprintf(arg7,"preferredlifetime=%u", prefered);
+    sprintf(arg8,"validlifetime=%u", valid);
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
     i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);

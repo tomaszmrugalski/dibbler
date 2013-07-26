@@ -37,7 +37,7 @@ TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
  * @param parent 
  */
 TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
-:TOptTA(buf,bufsize, parent)
+    :TOptTA(buf,bufsize, parent), Iface(-1)
 {
     int pos=0, length=0;
     while(pos<bufsize) 
@@ -73,8 +73,7 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
 }
 
 TClntOptTA::TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent)
-    :TOptTA(ta->getIAID(), parent) 
-
+    :TOptTA(ta->getIAID(), parent), Iface(-1)
 {
     ta->firstAddr();
     SPtr<TAddrAddr> addr;

@@ -642,7 +642,7 @@ uint16_t txt_to_qclass(const char *str, bool allow_q) {
 
 stl_string intstring(u_int16 x) {
   char tmp[16];
-  snprintf(tmp, 15, "%d", x);
+  snprintf(tmp, 15, "%u", x);
   return stl_string(tmp);
 }
 
@@ -725,7 +725,7 @@ stl_string str_ttl(uint32_t ttl) {
     if (ttl == 0) return res;
     f++;
   }
-  sprintf(val, "%d", ttl);
+  sprintf(val, "%u", ttl);
   res += val;
   return res;
 }
