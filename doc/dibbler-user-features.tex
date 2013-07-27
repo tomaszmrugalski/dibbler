@@ -1051,7 +1051,34 @@ iface eth0 {
 
 \subsection{Reconfiguration}
 
-TODO: Describe it.
+Once DHCPv6 clients receive their configuration, they are not
+communicating with the server until T1 timer expires. If the
+network configuration changes before that time, it may be useful in
+some cases to inform that the clients should start reconfiguration
+process now, rather than wait till T1. To address this problem, DHCPv6
+offers reconfigure mechanism.
+
+First, clients are informing the server that they are supporting
+reconfiguration process by sending \opt{RECONFIGURE-ACCEPT} in their
+\msg{SOLICIT} messages. Configuration then proceeds as usual, but the
+server includes \opt{AUTH} option in the \msg{REPLY} message with a
+randomly generated reconfigure-key. The client then knows that if it
+receives any \msg{RECONFIGURE} message, it will be signed using
+HMAC-MD5 generate with that particular key. That is a protection
+against rogue DHCPv6 servers, as the only server that is allows to
+trigger reconfiguration is the one who originally provided the
+configuration.
+
+The aforementioned example assumes that the default reconfigure-key
+authentication is used. It is also possible to sign \msg{RECONFIGURE}
+using delayed auth or Dibbler authentication protocol.
+
+During start-up, the server will load its lease database and will
+check whether loaded database matches existing configuration. In
+particular, it will check if the addresses clients have still belong
+to the configured subnets. If the server detects and outdated
+configuration, it will send \msg{RECONFIGURE} informing the client
+that it must start reconfiguration process.
 
 \subsection{Following M, O bits from Router Advertisements}
 
@@ -1408,7 +1435,7 @@ mechanisms.
 
 \subsubsection{Replay Detection}
 \label{auth-replay}
-TODO
+
 
 \subsubsection{Reconfigure Key Authentication}
 \label{auth-reconf-key}
