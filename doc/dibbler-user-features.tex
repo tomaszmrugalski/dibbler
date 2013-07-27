@@ -1080,6 +1080,26 @@ to the configured subnets. If the server detects and outdated
 configuration, it will send \msg{RECONFIGURE} informing the client
 that it must start reconfiguration process.
 
+Clients by default have reconfigure support disabled. To enable it,
+use \emph{reconfigure-accept} directive. When enabling reconfigure
+support, it is strongly recommended to enable one of authentication
+methods, e.g. reconfigure-key. See section \ref{feature-auth} for
+detailed discussion about authentication. A short example that has
+reconfigure enabled looks like this:
+
+\begin{lstlisting}
+# client.conf - with reconfigure and reconfigure-key enabled
+reconfigure-accept 1
+
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
 \subsection{Following M, O bits from Router Advertisements}
 
 Rounter Advertisements contain two bits that inform what kind of
@@ -1435,7 +1455,51 @@ mechanisms.
 
 \subsubsection{Replay Detection}
 \label{auth-replay}
+One of the possible attacks in DHCPv6 is a replay detection. In
+particular, the attacker could capture \msg{RECONFIGURE} message and
+then replay it frequently to cause the client to transmit \msg{RENEW}
+or other messages many times. To prevent such an attack, a mechanism 
+called replay detection was implemented. It's basic principle is that
+the server includes a value in replay-detection field in \opt{AUTH}
+option. That value must be strictly increasing, i.e. the server must
+use greater value in any next message. Since the message is also
+protected using digest, attacker can't simply increase the value, as
+it would invalidate the digest.
 
+This parameter is configured using \emph{auth-replay}. The only
+allowed values are \emph{none} and \emph{monotonic}. It should be
+noted that this mechanism is useless on its own and must be used with
+one of other authentication mechanisms.
+
+The example for server configuration:
+\begin{lstlisting}
+# server.conf - example with enabled auth-replay protection
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+This is an example client configuration:
+\begin{lstlisting}
+# client.conf - with replay protection enabled
+auth-protocol reconfigure-key
+
+# This specifies replay detection mechanism.
+# Available modes: none, monotonic
+auth-replay monotonic
+
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
 
 \subsubsection{Reconfigure Key Authentication}
 \label{auth-reconf-key}
