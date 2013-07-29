@@ -131,11 +131,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     SPtr<TIfaceSocket> backup;
     ptrIface->firstSocket();
     while (sock = ptrIface->getSocket()) {
+        if (sock->multicast())
+            continue; // don't send anything via multicast sockets
         if (!backup) {
             backup = sock;
         }
-        if (sock->multicast())
-            continue; // don't send anything via multicast sockets
         if (!addr->linkLocal() && sock->getAddr()->linkLocal())
             continue; // we need socket bound to global address if dst is global addr
         if (addr->linkLocal() && !sock->getAddr()->linkLocal())
