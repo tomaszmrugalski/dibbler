@@ -13,7 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "1.0.0RC1-git"
+#define DIBBLER_VERSION "1.0.0RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"

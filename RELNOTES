@@ -1,31 +1,49 @@
 
-  Dibbler 0.8.4 [2013-06-27]
- ----------------------------
+  Dibbler 1.0.0 Release Candidate 1 [2013-07-30]
+ ------------------------------------------------
 
- This is a final 0.8.4 release of the Dibbler software.
+ This is a first Release Candidate for 1.0.0 release of the Dibbler software.
 
- There is no single major new feature, just a lot of bug fixes:
- 34 bug fixes, tweaks and small improvements since 0.8.3.
+ This version is being released today to celebrate 10th anniversary
+ of the DHCPv6 protocol. The RFC3315 that defines it was published exactly
+ 10 years ago - on 30th July of 2003.
 
- Vendor class and User class methods are now implemented.
+ According to the author's knowledge, Dibbler is currently the only
+ implementation that implements every feature mentioned in the RFC3315.
+ Please note that feature complete does not mean bug free ;-)
 
- Relay support has been rewritten. It is now possible to select subnet
- based on interface-id or value of linkaddr field set by the relay.
- Client classification has been improved and now can be used to
- differentiate between 2 or more classes, e.g. docsis3.0 and eRouter
- in cable networks.  Confirm support has been cleaned. Daemon mode no
- longer has issues when reading from socket descriptor 0.
+ This release brings in all outstanding RFC3315 features that used to
+ be missing in previous releases. In particular:
 
- The database format has changed a bit. It now stores interface names,
- not just interface indexes. That is helpful in cases your interfaces
- has changed, e.g. when your ppp0 interface went down and was
- recreated with different ifindex. Opening up old database should be
- seamless, but make sure you make a backup before migrating to 0.8.4.
-
- Dibbler server no longer does by default destination address filtering
- against the addresses sockets are bound to. If that bothers you,
- because on your OS you see the same incoming packet being received over
- two sockets, please use --enable-dst-addr-check in configure phase.
+ - Reconfigure support. Server is now able to load database, check it against
+   existing configuration and send reconfigure to clients that have 
+   configuration out of date. Clients are able to accept incoming reconfigure
+   messages and initiate reconfiguration.
+ - Reconfigure-key authentication. Server is now able to generate
+   reconfigure-key when responding to clients and later use that key to
+   sign reconfigure messages. Clients are able to store received key and
+   later confirm that incoming reconfigure message is properly signed.
+ - Delayed authentication - clients and server are able to leverage
+   pre-configured keys to sign later parts of the messages exchange.
+ - Dibbler authentication - it is a rewritten mechanism used in earlier
+   versions. It has number of advantages compared to delayed
+   authentication, but has a number of advantages over it. First, it
+   secures the whole transmission, including initial SOLICIT
+   message. Second, it offers much stronger digests: HMAC-MD5, HMAC-SHA1,
+   HMAC-SHA224, HMAC-SHA256, HMAC-SHA384 and HMAC-SHA512. As this is
+   Dibbler specific extension, it is not expected to inter-operate with
+   any other implementations. Third, it does not require to maintain
+   strict client DUID-key-id bindings on the server side, as clients send
+   ID of the key they used to protect their transmissions. 
+ - Replay detection - both client and server can now detect whether
+   receiving message is a new one or it is replayed by attacker.
+ - Client is now able to act according to received M(managed) and O(Other
+   configuration options) in Router Advertisements, if configured to
+   do so.
+ - Server and client now checks database against changes in the network
+   interfaces and tries to update it if possible. That should be helpful
+   if you happen to lost and recreated an interface (e.g. broken ppp
+   connection).
 
  See CHANGELOG for a complete list of changes.
 
@@ -35,17 +53,6 @@
  of two mailing lists: dibbler or dibbler-devel. Please do not contact
  author directly, unless you want to report security issues or discuss
  confidential matters.
-
-  Planned changes in the next release
- -------------------------------------
-
- It is likely that the next release will be 0.9.0. It will offer the
- last major feature defined in RFC3315 that is still missing - full
- reconfigure support. Another planned update is a change how the
- addresses are configured by client. Right now it assumes /64, which
- is an arbitrary value (unless strict-rfc-no-routing is used). That
- will change and client will configure received addresses with /128 as
- envisaged by RFC3315.
 
 			       Tomek Mrugalski,
 			       author

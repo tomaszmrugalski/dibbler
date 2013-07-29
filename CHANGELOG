@@ -1,7 +1,7 @@
 
   Dibbler changelog
  ------------------- 
-1.0.0 [not-released-yet]
+1.0.0 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
   - Authentication rewritten (now uses RFC3315 option formats)
   - Auth: support for reconfigure-key added
@@ -11,6 +11,8 @@
     (issue reported by Michael Thorsager, thanks!)
   - Srv: database sanitization now works also for relays (bug #288)
     (issue reported by Michael Thorsager, thanks!)
+  - After 10 years of development, all features from RFC3315 are now supported!
+    (there are outstanding bugs, though...)
 
 0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility
