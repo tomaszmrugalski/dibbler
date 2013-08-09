@@ -203,7 +203,7 @@ bool ReqTransMgr::SendMsg()
 }
 
 
-bool ReqTransMgr::CreateNewTCPSocket()
+bool ReqTransMgr::CreateNewTCPSocket(char *dstAddr)
 {
     int port=0;
     if (!CfgMgr) {
@@ -217,21 +217,71 @@ bool ReqTransMgr::CreateNewTCPSocket()
         return false;
     }
 
+
     // get link-local address
     char* llAddr = 0;
     Iface->firstLLAddress();
     llAddr=Iface->getLLAddress();
+
     if (!llAddr) {
         Log(Error) << "Interface " << Iface->getFullName() << " does not have link-layer address. Weird." << LogEnd;
         return false;
     }
 
-    SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+    Log(Info) << "llAddr:"<< llAddr << LogEnd;
+    Log(Info) << "dstAddr:"<< dstAddr << LogEnd;
+   // SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+    SPtr<TIPv6Addr> gl = new TIPv6Addr();
 
-    if (!Iface->addTcpSocket(ll,port)) {
-        Log(Crit) << "TCP Socket creation or binding failed." << LogEnd;
+
+    Log(Crit) << "TCP Socket creation or binding failed (link-local address)." << LogEnd;
+    Log(Info) << "Trying on global address..." << LogEnd;
+    //get global address
+    Iface->firstGlobalAddr();
+
+    gl=Iface->getGlobalAddr();
+
+    if(!gl) {
+        Log(Error) << "Interface " << Iface->getFullName() << " does not have global address. Weird." << LogEnd;
         return false;
     }
+
+    SPtr<TIPv6Addr> dstAddrTmp = new TIPv6Addr(dstAddr);
+
+    if(!Iface->addTcpSocket(dstAddrTmp,port)) {
+        Log(Crit) << "TCP Socket creation or binding failed (global address)." << LogEnd;
+        return false;
+    } else {
+        Log(Crit) << "TCP Socket creation or binding no global address ok" << LogEnd;
+    }
+
+
+    /*
+
+    if (!Iface->addTcpSocket(ll,port)) {
+        Log(Crit) << "TCP Socket creation or binding failed (link-local address)." << LogEnd;
+        Log(Info) << "Trying on global address..." << LogEnd;
+        //get global address
+        Iface->firstGlobalAddr();
+
+        gl=Iface->getGlobalAddr();
+
+        if(!gl) {
+            Log(Error) << "Interface " << Iface->getFullName() << " does not have global address. Weird." << LogEnd;
+            return false;
+        }
+
+        if(!Iface->addTcpSocket(gl,port)) {
+            Log(Crit) << "TCP Socket creation or binding failed (global address)." << LogEnd;
+            return false;
+        } else {
+            Log(Crit) << "TCP Socket creation or binding no global address ok" << LogEnd;
+        }
+
+    } else {
+        Log(Crit) << "TCP Socket creation or binding no link-local address ok" << LogEnd;
+    }
+    */
 
     Iface->firstSocket();
     Socket = Iface->getSocket();

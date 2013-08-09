@@ -1858,3 +1858,615 @@
 2013.07.03 00:11:46 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
 2013.07.03 00:11:46 Requestor Critical  TCP Socket creation or binding failed.
 2013.07.03 00:11:46 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 12:11:09 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:11:09 Requestor Debug     tmpCode0
+2013.07.06 12:11:09 Requestor Debug     tmpCode0
+2013.07.06 12:11:09 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:11:09 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:24:37 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:24:37 Requestor Debug     tmpCode0
+2013.07.06 12:24:37 Requestor Debug     tmpCode0
+2013.07.06 12:24:37 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:24:37 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:25:04 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:25:04 Requestor Debug     tmpCode0
+2013.07.06 12:25:04 Requestor Debug     tmpCode0
+2013.07.06 12:25:04 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:25:04 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:25:25 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:25:25 Requestor Debug     tmpCode0
+2013.07.06 12:25:25 Requestor Debug     tmpCode0
+2013.07.06 12:25:25 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:25:25 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:29:45 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:29:45 Requestor Debug     tmpCode0
+2013.07.06 12:29:45 Requestor Debug     tmpCode0
+2013.07.06 12:29:45 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:29:45 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:37:37 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:37:37 Requestor Debug     tmpCode0
+2013.07.06 12:37:37 Requestor Debug     tmpCode0
+2013.07.06 12:37:37 Requestor Info      multiple: 1requestCount:0
+2013.07.06 12:37:37 Requestor Error     Unable to parse command-line. -bulk used, but there is no more parameter to.
+2013.07.06 12:37:37 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.07.06 12:50:17 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 12:50:17 Requestor Debug     LOGParseM
+2013.07.06 12:50:17 Requestor Debug     input string:REMOTE_ID
+2013.07.06 12:50:17 Requestor Debug     tmpCode5
+2013.07.06 12:50:17 Requestor Info      multiple: 1requestCount:1
+2013.07.06 12:50:17 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 12:50:17 Requestor Debug     Addr:
+2013.07.06 12:50:17 Requestor Debug     Duid:
+2013.07.06 12:50:17 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 12:50:17 Requestor Debug     Iface:vboxnet0
+2013.07.06 12:50:17 Requestor Debug     Timeout:60
+2013.07.06 12:50:17 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 12:50:17 Requestor Debug     LinkAddr:
+2013.07.06 12:50:17 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 12:50:17 Requestor Debug     enterpriseNumber0
+2013.07.06 12:50:17 Requestor Debug     MultipleQuery:1
+2013.07.06 12:50:17 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 12:50:17 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 12:50:17 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 12:50:17 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 12:50:17 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 12:50:17 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 12:50:17 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 13:58:44 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 13:58:44 Requestor Debug     LOGParseM
+2013.07.06 13:58:44 Requestor Debug     input string:REMOTE_ID
+2013.07.06 13:58:44 Requestor Debug     tmpCode5
+2013.07.06 13:58:44 Requestor Info      multiple: 1requestCount:1
+2013.07.06 13:58:44 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 13:58:44 Requestor Debug     Addr:
+2013.07.06 13:58:44 Requestor Debug     Duid:
+2013.07.06 13:58:44 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 13:58:44 Requestor Debug     Iface:vboxnet0
+2013.07.06 13:58:44 Requestor Debug     Timeout:60
+2013.07.06 13:58:44 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 13:58:44 Requestor Debug     LinkAddr:
+2013.07.06 13:58:44 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 13:58:44 Requestor Debug     enterpriseNumber0
+2013.07.06 13:58:44 Requestor Debug     MultipleQuery:1
+2013.07.06 13:58:44 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 13:58:44 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 13:58:44 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 13:58:44 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 13:58:44 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 13:58:44 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 13:58:44 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 16:19:56 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 16:19:56 Requestor Debug     LOGParseM
+2013.07.06 16:19:56 Requestor Debug     input string:REMOTE_ID
+2013.07.06 16:19:56 Requestor Debug     tmpCode5
+2013.07.06 16:19:56 Requestor Info      multiple: 1requestCount:1
+2013.07.06 16:19:56 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 16:19:56 Requestor Debug     Addr:
+2013.07.06 16:19:56 Requestor Debug     Duid:
+2013.07.06 16:19:56 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 16:19:56 Requestor Debug     Iface:vboxnet0
+2013.07.06 16:19:56 Requestor Debug     Timeout:60
+2013.07.06 16:19:56 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 16:19:56 Requestor Debug     LinkAddr:
+2013.07.06 16:19:56 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 16:19:56 Requestor Debug     enterpriseNumber0
+2013.07.06 16:19:56 Requestor Debug     MultipleQuery:1
+2013.07.06 16:19:56 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 16:19:56 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 16:19:56 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 16:19:56 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 16:19:56 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 16:19:56 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 16:19:56 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 16:25:42 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 16:25:42 Requestor Debug     LOGParseM
+2013.07.06 16:25:42 Requestor Debug     input string:REMOTE_ID
+2013.07.06 16:25:42 Requestor Debug     tmpCode5
+2013.07.06 16:25:42 Requestor Info      multiple: 1requestCount:1
+2013.07.06 16:25:42 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 16:25:42 Requestor Debug     Addr:
+2013.07.06 16:25:42 Requestor Debug     Duid:
+2013.07.06 16:25:42 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 16:25:42 Requestor Debug     Iface:vboxnet0
+2013.07.06 16:25:42 Requestor Debug     Timeout:60
+2013.07.06 16:25:42 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 16:25:42 Requestor Debug     LinkAddr:
+2013.07.06 16:25:42 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 16:25:42 Requestor Debug     enterpriseNumber0
+2013.07.06 16:25:42 Requestor Debug     MultipleQuery:1
+2013.07.06 16:25:42 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 16:25:42 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 16:25:42 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 16:25:42 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 16:25:42 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 16:25:42 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 16:25:42 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 16:32:47 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 16:32:47 Requestor Debug     LOGParseM
+2013.07.06 16:32:47 Requestor Debug     input string:REMOTE_ID
+2013.07.06 16:32:47 Requestor Debug     tmpCode5
+2013.07.06 16:32:47 Requestor Info      multiple: 1requestCount:1
+2013.07.06 16:32:47 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 16:32:47 Requestor Debug     Addr:
+2013.07.06 16:32:47 Requestor Debug     Duid:
+2013.07.06 16:32:47 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 16:32:47 Requestor Debug     Iface:vboxnet0
+2013.07.06 16:32:47 Requestor Debug     Timeout:60
+2013.07.06 16:32:47 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 16:32:47 Requestor Debug     LinkAddr:
+2013.07.06 16:32:47 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 16:32:47 Requestor Debug     enterpriseNumber0
+2013.07.06 16:32:47 Requestor Debug     MultipleQuery:1
+2013.07.06 16:32:47 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 16:32:47 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 16:32:47 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 16:32:47 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 16:32:47 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 16:32:47 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 16:32:47 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 16:40:07 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 16:40:07 Requestor Debug     LOGParseM
+2013.07.06 16:40:07 Requestor Debug     input string:REMOTE_ID
+2013.07.06 16:40:07 Requestor Debug     tmpCode5
+2013.07.06 16:40:07 Requestor Info      multiple: 1requestCount:1
+2013.07.06 16:40:07 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 16:40:07 Requestor Debug     Addr:
+2013.07.06 16:40:07 Requestor Debug     Duid:
+2013.07.06 16:40:07 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 16:40:07 Requestor Debug     Iface:vboxnet0
+2013.07.06 16:40:07 Requestor Debug     Timeout:60
+2013.07.06 16:40:07 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 16:40:07 Requestor Debug     LinkAddr:
+2013.07.06 16:40:07 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 16:40:07 Requestor Debug     enterpriseNumber0
+2013.07.06 16:40:07 Requestor Debug     MultipleQuery:1
+2013.07.06 16:40:07 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 16:40:07 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 16:40:07 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 16:40:07 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 16:40:07 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 16:40:07 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 16:40:07 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 16:47:38 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 16:47:38 Requestor Debug     LOGParseM
+2013.07.06 16:47:38 Requestor Debug     input string:REMOTE_ID
+2013.07.06 16:47:38 Requestor Debug     tmpCode5
+2013.07.06 16:47:38 Requestor Info      multiple: 1requestCount:1
+2013.07.06 16:47:38 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 16:47:38 Requestor Debug     Addr:
+2013.07.06 16:47:38 Requestor Debug     Duid:
+2013.07.06 16:47:38 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 16:47:38 Requestor Debug     Iface:vboxnet0
+2013.07.06 16:47:38 Requestor Debug     Timeout:60
+2013.07.06 16:47:38 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 16:47:38 Requestor Debug     LinkAddr:
+2013.07.06 16:47:38 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 16:47:38 Requestor Debug     enterpriseNumber0
+2013.07.06 16:47:38 Requestor Debug     MultipleQuery:1
+2013.07.06 16:47:38 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 16:47:38 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 16:47:38 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 16:47:38 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 16:47:38 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 16:47:38 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 16:47:38 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 17:01:01 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 17:01:01 Requestor Debug     LOGParseM
+2013.07.06 17:01:01 Requestor Debug     input string:REMOTE_ID
+2013.07.06 17:01:01 Requestor Debug     tmpCode5
+2013.07.06 17:01:01 Requestor Info      multiple: 1requestCount:1
+2013.07.06 17:01:01 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 17:01:01 Requestor Debug     Addr:
+2013.07.06 17:01:01 Requestor Debug     Duid:
+2013.07.06 17:01:01 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 17:01:01 Requestor Debug     Iface:vboxnet0
+2013.07.06 17:01:01 Requestor Debug     Timeout:60
+2013.07.06 17:01:01 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 17:01:01 Requestor Debug     LinkAddr:
+2013.07.06 17:01:01 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 17:01:01 Requestor Debug     enterpriseNumber0
+2013.07.06 17:01:01 Requestor Debug     MultipleQuery:1
+2013.07.06 17:01:01 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 17:01:01 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 17:01:01 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 17:01:01 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 17:01:01 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 17:01:01 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 17:01:01 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.06 17:20:04 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 17:20:04 Requestor Debug     LOGParseM
+2013.07.06 17:20:04 Requestor Debug     input string:REMOTE_ID
+2013.07.06 17:20:04 Requestor Debug     tmpCode5
+2013.07.06 17:20:04 Requestor Info      multiple: 1requestCount:1
+2013.07.06 17:20:04 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 17:20:04 Requestor Debug     Addr:
+2013.07.06 17:20:04 Requestor Debug     Duid:
+2013.07.06 17:20:04 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 17:20:04 Requestor Debug     Iface:vboxnet0
+2013.07.06 17:20:04 Requestor Debug     Timeout:60
+2013.07.06 17:20:04 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 17:20:04 Requestor Debug     LinkAddr:
+2013.07.06 17:20:04 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 17:20:04 Requestor Debug     enterpriseNumber0
+2013.07.06 17:20:04 Requestor Debug     MultipleQuery:1
+2013.07.06 17:20:04 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 17:20:04 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 17:20:04 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 17:20:04 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 17:20:31 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 17:20:31 Requestor Debug     LOGParseM
+2013.07.06 17:20:31 Requestor Debug     input string:REMOTE_ID
+2013.07.06 17:20:31 Requestor Debug     tmpCode5
+2013.07.06 17:20:31 Requestor Info      multiple: 1requestCount:1
+2013.07.06 17:20:31 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 17:20:31 Requestor Debug     Addr:
+2013.07.06 17:20:31 Requestor Debug     Duid:
+2013.07.06 17:20:31 Requestor Debug     Bulk:SSH_AGENT_PID=1718
+2013.07.06 17:20:31 Requestor Debug     Iface:vboxnet0
+2013.07.06 17:20:31 Requestor Debug     Timeout:60
+2013.07.06 17:20:31 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 17:20:31 Requestor Debug     LinkAddr:
+2013.07.06 17:20:31 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 17:20:31 Requestor Debug     enterpriseNumber0
+2013.07.06 17:20:31 Requestor Debug     MultipleQuery:1
+2013.07.06 17:20:31 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 17:20:31 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 17:20:31 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 17:20:31 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 17:21:15 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 17:21:15 Requestor Debug     LOGParseM
+2013.07.06 17:21:15 Requestor Debug     input string:REMOTE_ID
+2013.07.06 17:21:15 Requestor Debug     tmpCode5
+2013.07.06 17:21:15 Requestor Info      multiple: 1requestCount:1
+2013.07.06 17:21:15 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 17:21:15 Requestor Debug     Addr:
+2013.07.06 17:21:15 Requestor Debug     Duid:
+2013.07.06 17:21:15 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 17:21:15 Requestor Debug     Iface:vboxnet0
+2013.07.06 17:21:15 Requestor Debug     Timeout:60
+2013.07.06 17:21:15 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 17:21:15 Requestor Debug     LinkAddr:
+2013.07.06 17:21:15 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 17:21:15 Requestor Debug     enterpriseNumber0
+2013.07.06 17:21:15 Requestor Debug     MultipleQuery:1
+2013.07.06 17:21:15 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 17:21:15 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 17:21:15 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 17:21:15 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 17:26:30 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.06 17:26:30 Requestor Debug     LOGParseM
+2013.07.06 17:26:30 Requestor Debug     input string:REMOTE_ID
+2013.07.06 17:26:30 Requestor Debug     tmpCode5
+2013.07.06 17:26:30 Requestor Info      multiple: 1requestCount:1
+2013.07.06 17:26:30 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.06 17:26:30 Requestor Debug     Addr:
+2013.07.06 17:26:30 Requestor Debug     Duid:
+2013.07.06 17:26:30 Requestor Debug     Bulk:TERM=xterm
+2013.07.06 17:26:30 Requestor Debug     Iface:vboxnet0
+2013.07.06 17:26:30 Requestor Debug     Timeout:60
+2013.07.06 17:26:30 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.06 17:26:30 Requestor Debug     LinkAddr:
+2013.07.06 17:26:30 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.06 17:26:30 Requestor Debug     enterpriseNumber0
+2013.07.06 17:26:30 Requestor Debug     MultipleQuery:1
+2013.07.06 17:26:30 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.06 17:26:30 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.06 17:26:30 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.06 17:26:30 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.06 17:26:30 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.06 17:26:30 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.06 17:26:30 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.07 10:03:59 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.07 10:03:59 Requestor Debug     LOGParseM
+2013.07.07 10:03:59 Requestor Debug     input string:REMOTE_ID
+2013.07.07 10:03:59 Requestor Debug     tmpCode5
+2013.07.07 10:03:59 Requestor Info      multiple: 1requestCount:1
+2013.07.07 10:03:59 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.07 10:03:59 Requestor Debug     Addr:
+2013.07.07 10:03:59 Requestor Debug     Duid:
+2013.07.07 10:03:59 Requestor Debug     Bulk:TERM=xterm
+2013.07.07 10:03:59 Requestor Debug     Iface:vboxnet0
+2013.07.07 10:03:59 Requestor Debug     Timeout:60
+2013.07.07 10:03:59 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.07 10:03:59 Requestor Debug     LinkAddr:
+2013.07.07 10:03:59 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.07 10:03:59 Requestor Debug     enterpriseNumber0
+2013.07.07 10:03:59 Requestor Debug     MultipleQuery:1
+2013.07.07 10:03:59 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.07 10:03:59 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.07 10:03:59 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.07 10:03:59 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.07 10:03:59 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.07 10:03:59 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.07 10:03:59 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.07 11:08:03 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.07 11:08:03 Requestor Debug     LOGParseM
+2013.07.07 11:08:03 Requestor Debug     input string:REMOTE_ID
+2013.07.07 11:08:03 Requestor Debug     tmpCode5
+2013.07.07 11:08:03 Requestor Info      multiple: 1requestCount:1
+2013.07.07 11:08:03 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.07 11:08:03 Requestor Debug     Addr:
+2013.07.07 11:08:03 Requestor Debug     Duid:
+2013.07.07 11:08:03 Requestor Debug     Bulk:TERM=xterm
+2013.07.07 11:08:03 Requestor Debug     Iface:vboxnet0
+2013.07.07 11:08:03 Requestor Debug     Timeout:60
+2013.07.07 11:08:03 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.07 11:08:03 Requestor Debug     LinkAddr:
+2013.07.07 11:08:03 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.07 11:08:03 Requestor Debug     enterpriseNumber0
+2013.07.07 11:08:03 Requestor Debug     MultipleQuery:1
+2013.07.07 11:08:03 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.07 11:08:03 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.07 11:08:03 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.07 11:08:03 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.07.07 11:08:03 Requestor Error     Low-level layer error message: Unable to connect with DHCP server, connect function failed
+2013.07.07 11:08:03 Requestor Critical  TCP Socket creation or binding failed.
+2013.07.07 11:08:03 Requestor Critical  Aborted. TCP socket creation failed.
+2013.07.07 12:25:59 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.07.07 12:25:59 Requestor Debug     LOGParseM
+2013.07.07 12:25:59 Requestor Debug     input string:REMOTE_ID
+2013.07.07 12:25:59 Requestor Debug     tmpCode5
+2013.07.07 12:25:59 Requestor Info      multiple: 1requestCount:1
+2013.07.07 12:25:59 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.07.07 12:25:59 Requestor Debug     Addr:
+2013.07.07 12:25:59 Requestor Debug     Duid:
+2013.07.07 12:25:59 Requestor Debug     Bulk:TERM=xterm
+2013.07.07 12:25:59 Requestor Debug     Iface:vboxnet0
+2013.07.07 12:25:59 Requestor Debug     Timeout:60
+2013.07.07 12:25:59 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.07.07 12:25:59 Requestor Debug     LinkAddr:
+2013.07.07 12:25:59 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.07.07 12:25:59 Requestor Debug     enterpriseNumber0
+2013.07.07 12:25:59 Requestor Debug     MultipleQuery:1
+2013.07.07 12:25:59 Requestor Notice    Detected iface vboxnet0/4, MAC=0a:00:27:00:00:00.
+2013.07.07 12:25:59 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.07.07 12:25:59 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.07.07 12:25:59 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:31:47 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:31:47 Requestor Debug     LOGParseM
+2013.08.03 16:31:47 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:31:47 Requestor Debug     tmpCode5
+2013.08.03 16:31:47 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:31:47 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:31:47 Requestor Debug     Addr:
+2013.08.03 16:31:47 Requestor Debug     Duid:
+2013.08.03 16:31:47 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:31:47 Requestor Debug     Iface:vboxnet0
+2013.08.03 16:31:47 Requestor Debug     Timeout:60
+2013.08.03 16:31:47 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:31:47 Requestor Debug     LinkAddr:
+2013.08.03 16:31:47 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:31:47 Requestor Debug     enterpriseNumber0
+2013.08.03 16:31:47 Requestor Debug     MultipleQuery:1
+2013.08.03 16:31:47 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:31:47 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:31:47 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:31:47 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:31:47 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:31:47 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.08.03 16:31:47 Requestor Critical  Aborted. TCP socket creation failed.
+2013.08.03 16:32:34 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:32:34 Requestor Debug     LOGParseM
+2013.08.03 16:32:34 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:32:34 Requestor Debug     tmpCode5
+2013.08.03 16:32:34 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:32:34 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:32:34 Requestor Debug     Addr:
+2013.08.03 16:32:34 Requestor Debug     Duid:
+2013.08.03 16:32:34 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:32:34 Requestor Debug     Iface:vboxnet0
+2013.08.03 16:32:34 Requestor Debug     Timeout:60
+2013.08.03 16:32:34 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:32:34 Requestor Debug     LinkAddr:
+2013.08.03 16:32:34 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:32:34 Requestor Debug     enterpriseNumber0
+2013.08.03 16:32:34 Requestor Debug     MultipleQuery:1
+2013.08.03 16:32:34 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:32:34 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:32:34 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:32:34 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:32:34 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:32:34 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.08.03 16:32:34 Requestor Critical  Aborted. TCP socket creation failed.
+2013.08.03 16:32:37 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:32:37 Requestor Debug     LOGParseM
+2013.08.03 16:32:37 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:32:37 Requestor Debug     tmpCode5
+2013.08.03 16:32:37 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:32:37 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:32:37 Requestor Debug     Addr:
+2013.08.03 16:32:37 Requestor Debug     Duid:
+2013.08.03 16:32:37 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:32:37 Requestor Debug     Iface:vboxnet0
+2013.08.03 16:32:37 Requestor Debug     Timeout:60
+2013.08.03 16:32:37 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:32:37 Requestor Debug     LinkAddr:
+2013.08.03 16:32:37 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:32:37 Requestor Debug     enterpriseNumber0
+2013.08.03 16:32:37 Requestor Debug     MultipleQuery:1
+2013.08.03 16:32:37 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:32:37 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:32:37 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:32:37 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:32:37 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:32:37 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.08.03 16:32:37 Requestor Critical  Aborted. TCP socket creation failed.
+2013.08.03 16:33:07 Requestor Error     Unable to parse command-line parameter: -m
+2013.08.03 16:33:07 Requestor Error     Please use -h for help.
+2013.08.03 16:33:07 Requestor Critical  Aborted. Invalid command-line parameters or help called.
+2013.08.03 16:33:56 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:33:56 Requestor Debug     LOGParseM
+2013.08.03 16:33:56 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:33:56 Requestor Debug     tmpCode5
+2013.08.03 16:33:56 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:33:56 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:33:56 Requestor Debug     Addr:
+2013.08.03 16:33:56 Requestor Debug     Duid:
+2013.08.03 16:33:56 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:33:56 Requestor Debug     Iface:vboxnet0
+2013.08.03 16:33:56 Requestor Debug     Timeout:60
+2013.08.03 16:33:56 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:33:56 Requestor Debug     LinkAddr:
+2013.08.03 16:33:56 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:33:56 Requestor Debug     enterpriseNumber0
+2013.08.03 16:33:56 Requestor Debug     MultipleQuery:1
+2013.08.03 16:33:56 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:33:56 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:33:56 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:33:56 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:33:56 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:33:56 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.08.03 16:33:56 Requestor Critical  Aborted. TCP socket creation failed.
+2013.08.03 16:34:46 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:34:46 Requestor Debug     LOGParseM
+2013.08.03 16:34:46 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:34:46 Requestor Debug     tmpCode5
+2013.08.03 16:34:46 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:34:46 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:34:46 Requestor Debug     Addr:
+2013.08.03 16:34:46 Requestor Debug     Duid:
+2013.08.03 16:34:46 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:34:46 Requestor Debug     Iface:wlan0
+2013.08.03 16:34:46 Requestor Debug     Timeout:60
+2013.08.03 16:34:46 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:34:46 Requestor Debug     LinkAddr:
+2013.08.03 16:34:46 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:34:46 Requestor Debug     enterpriseNumber0
+2013.08.03 16:34:46 Requestor Debug     MultipleQuery:1
+2013.08.03 16:34:46 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:34:46 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:34:46 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:34:46 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:34:46 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:35:12 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:35:12 Requestor Debug     LOGParseM
+2013.08.03 16:35:12 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:35:12 Requestor Debug     tmpCode5
+2013.08.03 16:35:12 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:35:12 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:35:12 Requestor Debug     Addr:
+2013.08.03 16:35:12 Requestor Debug     Duid:
+2013.08.03 16:35:12 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:35:12 Requestor Debug     Iface:wlan0
+2013.08.03 16:35:12 Requestor Debug     Timeout:60
+2013.08.03 16:35:12 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:35:12 Requestor Debug     LinkAddr:
+2013.08.03 16:35:12 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:35:12 Requestor Debug     enterpriseNumber0
+2013.08.03 16:35:12 Requestor Debug     MultipleQuery:1
+2013.08.03 16:35:12 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:35:12 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:35:12 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:35:12 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:35:12 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:36:22 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:36:22 Requestor Debug     LOGParseM
+2013.08.03 16:36:22 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:36:22 Requestor Debug     tmpCode5
+2013.08.03 16:36:22 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:36:22 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:36:22 Requestor Debug     Addr:
+2013.08.03 16:36:22 Requestor Debug     Duid:
+2013.08.03 16:36:22 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:36:22 Requestor Debug     Iface:wlan0
+2013.08.03 16:36:22 Requestor Debug     Timeout:60
+2013.08.03 16:36:22 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:36:22 Requestor Debug     LinkAddr:
+2013.08.03 16:36:22 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:36:22 Requestor Debug     enterpriseNumber0
+2013.08.03 16:36:22 Requestor Debug     MultipleQuery:1
+2013.08.03 16:36:22 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:36:22 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:36:22 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:36:22 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:36:22 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:42:58 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:42:58 Requestor Debug     LOGParseM
+2013.08.03 16:42:58 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:42:58 Requestor Debug     tmpCode5
+2013.08.03 16:42:58 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:42:58 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:42:58 Requestor Debug     Addr:
+2013.08.03 16:42:58 Requestor Debug     Duid:
+2013.08.03 16:42:58 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:42:58 Requestor Debug     Iface:wlan0
+2013.08.03 16:42:58 Requestor Debug     Timeout:60
+2013.08.03 16:42:58 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:42:58 Requestor Debug     LinkAddr:
+2013.08.03 16:42:58 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:42:58 Requestor Debug     enterpriseNumber0
+2013.08.03 16:42:58 Requestor Debug     MultipleQuery:1
+2013.08.03 16:42:58 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:42:58 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:42:58 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:42:58 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:42:58 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 16:47:06 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 16:47:06 Requestor Debug     LOGParseM
+2013.08.03 16:47:06 Requestor Debug     input string:REMOTE_ID
+2013.08.03 16:47:06 Requestor Debug     tmpCode5
+2013.08.03 16:47:06 Requestor Info      multiple: 1requestCount:1
+2013.08.03 16:47:06 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 16:47:06 Requestor Debug     Addr:
+2013.08.03 16:47:06 Requestor Debug     Duid:
+2013.08.03 16:47:06 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 16:47:06 Requestor Debug     Iface:wlan0
+2013.08.03 16:47:06 Requestor Debug     Timeout:60
+2013.08.03 16:47:06 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 16:47:06 Requestor Debug     LinkAddr:
+2013.08.03 16:47:06 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 16:47:06 Requestor Debug     enterpriseNumber0
+2013.08.03 16:47:06 Requestor Debug     MultipleQuery:1
+2013.08.03 16:47:06 Requestor Notice    Detected iface tun/17, MAC=.
+2013.08.03 16:47:06 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 16:47:06 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 16:47:06 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 16:47:06 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 17:09:26 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.08.03 17:09:26 Requestor Debug     LOGParseM
+2013.08.03 17:09:26 Requestor Debug     input string:REMOTE_ID
+2013.08.03 17:09:26 Requestor Debug     tmpCode5
+2013.08.03 17:09:26 Requestor Info      multiple: 1requestCount:1
+2013.08.03 17:09:26 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.03 17:09:26 Requestor Debug     Addr:
+2013.08.03 17:09:26 Requestor Debug     Duid:
+2013.08.03 17:09:26 Requestor Debug     Bulk:SSH_AGENT_PID=2042
+2013.08.03 17:09:26 Requestor Debug     Iface:wlan0
+2013.08.03 17:09:26 Requestor Debug     Timeout:60
+2013.08.03 17:09:26 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.08.03 17:09:26 Requestor Debug     LinkAddr:
+2013.08.03 17:09:26 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.03 17:09:26 Requestor Debug     enterpriseNumber0
+2013.08.03 17:09:26 Requestor Debug     MultipleQuery:1
+2013.08.03 17:09:26 Requestor Notice    Detected iface tun/19, MAC=.
+2013.08.03 17:09:26 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.03 17:09:26 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.03 17:09:26 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.03 17:09:26 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.03 17:09:26 Requestor Critical  TCP Socket creation or binding failed (link-local address).
+2013.08.03 17:09:26 Requestor Info      Trying on global address...
+2013.08.03 17:09:26 Requestor Error     Interface wlan0/3 does not have global address. Weird.
+2013.08.03 17:09:26 Requestor Critical  Aborted. TCP socket creation failed.
+2013.08.05 22:19:34 Requestor Info      DstAddr:2002:5032:83da:1:a00:27ff:fea5:b092
+2013.08.05 22:19:34 Requestor Debug     LOGParseM
+2013.08.05 22:19:34 Requestor Debug     input string:REMOTE_ID
+2013.08.05 22:19:34 Requestor Debug     tmpCode5
+2013.08.05 22:19:34 Requestor Info      multiple: 1requestCount:1
+2013.08.05 22:19:34 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.08.05 22:19:34 Requestor Debug     Addr:
+2013.08.05 22:19:34 Requestor Debug     Duid:
+2013.08.05 22:19:34 Requestor Debug     Bulk:SSH_AGENT_PID=2052
+2013.08.05 22:19:34 Requestor Debug     Iface:eth0
+2013.08.05 22:19:34 Requestor Debug     Timeout:60
+2013.08.05 22:19:34 Requestor Debug     dstAddr2002:5032:83da:1:a00:27ff:fea5:b092
+2013.08.05 22:19:34 Requestor Debug     LinkAddr:
+2013.08.05 22:19:34 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.08.05 22:19:34 Requestor Debug     enterpriseNumber0
+2013.08.05 22:19:34 Requestor Debug     MultipleQuery:1
+2013.08.05 22:19:34 Requestor Notice    Detected iface tun/6, MAC=.
+2013.08.05 22:19:34 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.08.05 22:19:34 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.08.05 22:19:34 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.08.05 22:19:34 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.08.05 22:19:34 Requestor Error     Interface eth0/2 does not have link-layer address. Weird.
+2013.08.05 22:19:34 Requestor Critical  Aborted. TCP socket creation failed.

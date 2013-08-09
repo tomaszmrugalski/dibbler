@@ -112,7 +112,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                        continue;
                     }
 
-                   // tmpOptCode = parseMultiQueryCmd(argv[i]);
+                    tmpOptCode = parseMultiQueryCmd(argv[i]);
                     Log( Debug) << "tmpCode" << tmpOptCode << LogEnd;
                     if(tmpOptCode>0) {
                         switch (tmpOptCode) {
@@ -164,6 +164,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 
                 //zeroing count of multiple request
                 a->requestCount=requestCount;
+                Log(Info) << "multiple: " << multiplyQ << "requestCount:" << a->requestCount << endl;
                 if (multiplyQ && !requestCount) {
                     Log(Error) << "Unable to parse command-line. -bulk used, but there is no more parameter to." << LogEnd;
                     return false;
@@ -373,7 +374,7 @@ int main(int argc, char *argv[])
     //TODO: if statement
     if (a.multiplyQuery) {
 
-        if(!transMgr->CreateNewTCPSocket()) {
+        if(!transMgr->CreateNewTCPSocket(a.dstaddr)) {
             Log(Crit) << "Aborted. TCP socket creation failed." << LogEnd;
             return LOWLEVEL_ERROR_SOCKET;
         }

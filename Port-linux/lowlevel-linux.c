@@ -817,21 +817,24 @@ void print_trace(void)
 }
 #endif
 
-
+void Rerror(char *msg) {
+    perror(msg);
+    exit(0);
+}
 
 extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
 
 
-    int on = 1;
+    int on = 1,result=0;
 
     int error;
 
-    struct addrinfo *res;
+    struct addrinfo *res, *rp;
     struct addrinfo hints;
     fd_set master_set;
     int Insock;
     char port_char[6];
-    //char * tmp;
+    char * tmp;
     sprintf(port_char,"%d",port);
     int connectionNumber =1;
     ifaceid = 6;
@@ -851,78 +854,114 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
         return LOWLEVEL_ERROR_GETADDRINFO;
     }
 
-    if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0) {
-        sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
-        return LOWLEVEL_ERROR_UNSPEC;
-    } else {
-        printf("\n TCP socket has been created correctly\n " );
+    if (port > 0) {
+        if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0) {
+            sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
+            return LOWLEVEL_ERROR_UNSPEC;
+        } else {
+            printf("\n TCP socket has been created correctly\n " );
+        }
+
+        if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) ) < 0) {
+            sprintf(Message, "Unable to set up socket option SO_REUSEADDR");
+            return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        /* Set the options  to receivce ipv6 traffic */
+        if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
+          sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
+          return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        // set socket as nonblocking
+        if (ioctl(Insock, FIONBIO, (char *)&on) < 0) {
+           sprintf(Message, "Unable to set up socket as nonblocking - ioctl's failure.");
+           return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        freeaddrinfo(res);
+
+
+        //initialize master fd_set
+        FD_ZERO(&master_set);
+        FD_SET(Insock,&master_set);
     }
-
-    if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) ) < 0) {
-        sprintf(Message, "Unable to set up socket option SO_REUSEADDR");
-        return LOWLEVEL_ERROR_SOCK_OPTS;
-    }
-
-    /* Set the options  to receivce ipv6 traffic */
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
-      sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
-      return LOWLEVEL_ERROR_SOCK_OPTS;
-    }
-
-    // set socket as nonblocking
-    if (ioctl(Insock, FIONBIO, (char *)&on) < 0) {
-       sprintf(Message, "Unable to set up socket as nonblocking - ioctl's failure.");
-       return LOWLEVEL_ERROR_SOCK_OPTS;
-    }
-
-    freeaddrinfo(res);
-
-
-    //initialize master fd_set
-    FD_ZERO(&master_set);
-    FD_SET(Insock,&master_set);
-
     /* Open a TCP socket for inbound traffic */
-    struct sockaddr_in6 bindmeServer;
-    struct sockaddr_in6 bindmeClient;
 
-
-
-    /* bind socket to a specified port */
-    bzero(&bindmeClient, sizeof(struct sockaddr_in6));
-    bindmeClient.sin6_family = AF_INET6;
-    //bindmeTcp.ai_socktype = SOCK_STREAM;
-    bindmeClient.sin6_port   = htons(port);
-    //bindmeTcp.sin6_ = IPPROTO_TCP;
-    //tmp = (char*)(&bindmeClient.sin6_addr);
-    //inet_pton6(addr, tmp);
-
-
-    /* bind socket to a specified port */
-    bzero(&bindmeServer, sizeof(struct sockaddr_in6));
-    bindmeServer.sin6_family = AF_INET6;
-    bindmeServer.sin6_port   = htons(port);
-    //tmp = (char*)(&bindmeServer.sin6_addr);
-    bindmeServer.sin6_addr = in6addr_any;
-    socklen_t bindmeServerSize;
-    bindmeServerSize= sizeof (struct sockaddr_in6);
-
-    //resultInet=inet_pton6(addr, tmp);
-   // printf("resultInet:%d ", resultInet);
-
+   // struct sockaddr_in6 bindmeClient;
 
     //TCP client part
     if (port == 0) {
 
-         if (connect(Insock, (struct sockaddr_in6*)&bindmeClient, sizeof(struct sockaddr_in6)) != 0) {
-             sprintf(Message, "Unable to connect with DHCP server, connect function failed");
-             return LOWLEVEL_ERROR_CONNECT_FAILED;
+        port=547;
 
+        /* bind socket to a specified port */
+        /*bzero(&bindmeClient, sizeof(struct sockaddr_in6));
+        bindmeClient.sin6_family = AF_INET6;
+        bindmeClient.sin6_port   = htons(port);
+        bindmeClient.sin6_family = IPPROTO_TCP;
+        tmp = (char*)(&bindmeClient.sin6_addr);
+        inet_pton6(addr, tmp);*/
+        //bindmeClient.sin6_addr = addr;
+
+        memset(&hints,0,sizeof(hints));
+        memset(&res,0,sizeof(res));
+
+        hints.ai_flags    = AI_NUMERICSERV;
+        hints.ai_family   = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+
+       /* if ((error = getaddrinfo(hostp->hostname, hostp->port,
+                    &hints, &res)) != 0) */
+
+        printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
+
+        if( (error = getaddrinfo(addr, port_char, &hints, &res)) ) {
+            sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
+            return LOWLEVEL_ERROR_GETADDRINFO;
+        } else {
+            printf ("\n getaddrinfo called correctly\n");
+            //printf("\n addr: %s\n", res->ai_addr);
+        }
+        //(connect(Insock, (struct sockaddr_in6*)&bindmeClient, sizeof(struct sockaddr_in6)) != 0)
+
+        for(rp=res; rp!=NULL;rp->ai_next) {
+            Insock = socket(rp->ai_family,rp->ai_socktype,rp->ai_protocol);
+            if(Insock==-1) {
+                continue;
+            } else {
+                printf("\n TCP socket has been created correctly\n " );
+            }
+            if (connect(Insock, rp->ai_addr, rp->ai_addrlen) != 0) {
+                 Rerror("Unable to connect with DHCP server, connect function failed");
+            } else {
+                 result++;
+                 break;
+            }
+        }
+
+        if (result==0) {
+            printf("\n Can't connect on any interface with specified host");
+            return LOWLEVEL_ERROR_CONNECT_FAILED;
+        } else {
+            printf("\n Connected with host");
+            return Insock;
         }
     }
-    int result=0;
+    result=0;
     //TCP server part
+    struct sockaddr_in6 bindmeServer;
     if ( port > 0) {
+
+        /* bind socket to a specified port */
+        bzero(&bindmeServer, sizeof(struct sockaddr_in6));
+        bindmeServer.sin6_family = AF_INET6;
+        bindmeServer.sin6_port   = htons(port);
+        tmp = (char*)(&bindmeServer.sin6_addr);
+        inet_pton6(addr, tmp);
+
+        socklen_t bindmeServerSize;
+        bindmeServerSize= sizeof (struct sockaddr_in6);
 
         printf("\n Socket FD: %d", Insock );
        // printf("\n Size of struct passed to bind:%d\n",sizeof(struct sockaddr_in6));

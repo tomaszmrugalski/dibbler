@@ -23,7 +23,7 @@ public:
     ReqTransMgr(TIfaceMgr * ifaceMgr);
     void SetParams(ReqCfgMgr * cfgMgr);
     bool BindSockets();
-    bool CreateNewTCPSocket();
+    bool CreateNewTCPSocket(char *dstAddr);
     bool SendMsg();
     bool SendTcpMsg();
     bool WaitForRsp();
