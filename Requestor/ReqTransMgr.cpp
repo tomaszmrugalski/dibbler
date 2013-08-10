@@ -246,7 +246,7 @@ bool ReqTransMgr::CreateNewTCPSocket(char *dstAddr)
         return false;
     }
 
-    SPtr<TIPv6Addr> dstAddrTmp = new TIPv6Addr(dstAddr);
+    SPtr<TIPv6Addr> dstAddrTmp = new TIPv6Addr(dstAddr,true);
 
     if(!Iface->addTcpSocket(dstAddrTmp,port)) {
         Log(Crit) << "TCP Socket creation or binding failed (global address)." << LogEnd;

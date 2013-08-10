@@ -835,7 +835,6 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
     int Insock;
     char port_char[6];
     char * tmp;
-    sprintf(port_char,"%d",port);
     int connectionNumber =1;
     ifaceid = 6;
 
@@ -855,6 +854,8 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
     }
 
     if (port > 0) {
+
+        sprintf(port_char,"%d",port);
         if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0) {
             sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
             return LOWLEVEL_ERROR_UNSPEC;
@@ -894,6 +895,7 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
     if (port == 0) {
 
         port=547;
+        sprintf(port_char,"%d",port);
 
         /* bind socket to a specified port */
         /*bzero(&bindmeClient, sizeof(struct sockaddr_in6));
