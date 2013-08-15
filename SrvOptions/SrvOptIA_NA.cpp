@@ -129,7 +129,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     }
 
     // --- LEASE ASSIGN STEP 4: Try to find fixed lease
-    if (assignFixedLease(queryOpt)) {
+    if (assignFixedLease(queryOpt, quiet)) {
         return;
     }
 
@@ -238,7 +238,7 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
 /// @param req client's IA_NA (used for trying to assign as close T1,T2,pref,valid values as possible)
 ///
 /// @return true, if assignment was successful, false if there are no fixed-leases reserved
-bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
+bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet) {
     // is there any specific address reserved for this client? (exception mechanism)
     SPtr<TIPv6Addr> reservedAddr = getExceptionAddr();
     if (!reservedAddr) {
@@ -283,6 +283,9 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
         
         SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
         
+        SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+        SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
+
         return true;
     }
     
@@ -296,6 +299,8 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
     SubOptions.append(optAddr);
     
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+    SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
     
     return true;
 }
