@@ -639,7 +639,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
 
         SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);
         if (!ptrAddrClient) {
-            Log(Warning) << "Unable to find client.";
+            Log(Warning) << "Unable to find client." << LogEnd;
             return 0;
         }
 

@@ -97,5 +97,10 @@
     2013-03: Inactive-mode for Win32
     2013-04: OptFQDN improvements
 
+  - George Joseph <george(dot)joseph(at)fairview5(dot)com>
+    2013-08: Fixed leases are now kept in the database (bug #291)
+    2013-08: Client segfault when incomplete/invalid AUTH info specified (bug #289)
+    2013-08: Log message fix (bug #292)
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

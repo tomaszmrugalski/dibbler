@@ -461,13 +461,11 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         optionToEnv(params, opt, "SRV");
     }
 
-#if 0
     // add options from client message
     question->firstOption();
     while( SPtr<TOpt> opt = question->getOption() ) {
         optionToEnv(params, opt, "CLNT");
     }
-#endif
 
     notifyScript(scriptName, action, params);
 }

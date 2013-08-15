@@ -4,8 +4,10 @@
 1.0.0 [not-released-yet]
   - Cli: segfault when invalid or incomplete auth parameters are specified
     Thanks to George Joseph for a patch (bug #289)
-  - Srv: fixed leases are not added to AddrMgr. Thank to George Joseph for
+  - Srv: fixed leases are not added to AddrMgr. Thanks to George Joseph for
     a patch (bug #291)
+  - Log message fixed. Thanks to George Joseph for a patch (bug #292)
+  - Client options are now passed to notify scripts (bug #293)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
