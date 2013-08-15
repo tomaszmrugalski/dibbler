@@ -1,7 +1,11 @@
 
   Dibbler changelog
  ------------------- 
-1.0.0 [2013-07-30]
+1.0.0 [not-released-yet]
+  - Cli: segfault when invalid or incomplete auth parameters are specified
+    Thanks to George Joseph for a patch (bug #289)
+
+1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
   - Authentication rewritten (now uses RFC3315 option formats)
   - Auth: support for reconfigure-key added

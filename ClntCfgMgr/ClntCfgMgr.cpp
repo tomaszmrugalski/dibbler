@@ -521,8 +521,14 @@ bool TClntCfgMgr::validateConfig()
     // Validate authentication settings
     switch (getAuthProtocol()) {
     case AUTH_PROTO_NONE:
+        break;
     case AUTH_PROTO_DELAYED: {
         const std::vector<DigestTypes> digests = getAuthAcceptMethods();
+        if (digests.empty()) {
+            Log(Error) << "AUTH: No digests specified. For delayed-auth HMAC-MD5 must be used."
+                       << LogEnd;
+            return false;
+        }
         if (digests.size() > 1) {
             Log(Warning) << "AUTH: More than one digest type allowed for delayed-auth,"
                          << " expected only HMAC-MD5" << LogEnd;
