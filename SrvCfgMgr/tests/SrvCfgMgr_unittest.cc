@@ -31,6 +31,11 @@ namespace {
                     && (!iface_->flagUp() || !iface_->flagRunning())) {
             }
         }
+
+        virtual ~SrvCfgMgrTest() {
+            unlink("testdata/server-IfaceMgr.xml");
+        }
+
         NakedSrvIfaceMgr * ifacemgr_;
         SPtr<TIfaceIface> iface_;
     };
@@ -85,8 +90,8 @@ TEST_F(SrvCfgMgrTest, constructor) {
         EXPECT_EQ(string("2000::400"), addr->getPlain());
     }
 
-
-    //delete cfgmgr;
+    unlink("testdata/server-1.conf");
+    unlink("testdata/server-CfgMgr1.xml");
 }
 
 TEST_F(SrvCfgMgrTest, getDelayedAuthKeyID) {
