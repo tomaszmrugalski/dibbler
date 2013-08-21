@@ -157,6 +157,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     int isBulk;
 
     // read data
+    //select(unsigned long, char*, int&, SPtr<TIPv6Addr>)
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
 
     if (sockid>0) {

@@ -75,7 +75,7 @@ void TDHCPServer::run()
         if (serviceShutdown)     timeout = 0;
 
         if (!silent)
-            Log(Notice) << "Accepting dsadasdsadsadconnections. Next event in " << timeout
+            Log(Notice) << "Accepting connections. Next event in " << timeout
                 << " second(s)." << LogEnd;
     #ifdef WIN32
         // There's no easy way to break select under Windows, so just don't sleep for too long.
