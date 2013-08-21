@@ -999,15 +999,19 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
 }
 
 //!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype)
-extern int getsOpt(int fd, int level, int optname, char *optval) {
+//int getsockopt(int socket, int level, int option_name,void *restrict option_value, socklen_t *restrict option_len);
+extern int getsOpt(int fd) {
 
-    socklen_t len = sizeof(int);
+    int len, sockType, result;
 
-    if (getsockopt(fd, level, optname,optval,len) ) {
-        sprintf(Message, "Getsockopt function failed");
-        return 1;
+    len = sizeof(sockType);
+    result = getsockopt(fd,SOL_SOCKET,SO_TYPE,&sockType,&len);
+    if (result < 0) {
+        Rerror("Getsockopt function failed");
+        return result;
     } else {
-        return 0;
+        sprintf(Message, "Getsockopt OK");
+        return sockType;
     }
     return 0;
 }

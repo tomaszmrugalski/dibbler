@@ -203,6 +203,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     // read data
     sockid = receive(timeout, buf, bufsize, peer, myaddr);
+    //sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
     if (sockid < 0) {
         return SPtr<TSrvMsg>(); // NULL
     }

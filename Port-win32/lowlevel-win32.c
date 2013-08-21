@@ -835,14 +835,20 @@ extern int listen_tcp (int fd,int connectionNumber ) {
     }
 }
 
-extern int getsOpt(int fd, int level, int optname, char *optval, int *optlen) {
+extern int getsOpt(int fd) {
 
-    if (getsockopt(fd,level,optname,optval,optlen) ) {
-        sprintf(Message, "Getsockopt function failed");
-        return 1;
+    int len, sockType, result;
+
+    len = sizeof(sockType);
+
+    if (result = getsockopt(fd,SOL_SOCKET,SO_TYPE,&sockType,&len) ) {
+        Rerror("Getsockopt function failed");
+        return -1;
     } else {
-        return 0;
+        sprintf(Message, "Getsockopt OK");
+        return result;
     }
+    return -1;
 }
 
 

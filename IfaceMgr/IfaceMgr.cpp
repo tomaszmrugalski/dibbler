@@ -225,16 +225,40 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     char peerPlainAddr[48]; // peer plain address
 
     int stype, flags =0;
-    if (!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype)) {
-      if (stype==SOCK_DGRAM)
-       result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
-      else if (stype==SOCK_STREAM)
-       fd_new_tcp = accept_tcp(sock->getFD());
-       FD_SET(fd_new_tcp,&fds);
-       sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+    stype = getsOpt(sock->getFD());
+    if(stype != -1) {
+        if (stype==SOCK_DGRAM) {
+            result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
+            char peerAddrPacked[16];
+            char myAddrPacked[16];
+            inet_pton6(peerPlainAddr,peerAddrPacked);
+            inet_pton6(myPlainAddr,myAddrPacked);
+            peer->setAddr(peerAddrPacked);
+
+            #ifndef WIN32
+                // check if we've received data addressed to us. There's problem with sockets binding.
+                // If there are 2 open sockets (one bound to multicast and one to global address),
+                // each packet sent on multicast address is also received on unicast socket.
+                char anycast[16] = {0};
+
+                if (!iface->flagLoopback()
+                    && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)
+                    && memcmp(sock->getAddr()->getAddr(), anycast, 16) ) {
+                        Log(Debug) << "Received data on address " << myPlainAddr << ", expected "
+                               << *sock->getAddr() << ", message ignored." << LogEnd;
+                        bufsize = 0;
+                        return 0;
+                }
+            #endif
+        } else if (stype==SOCK_STREAM) {
+            fd_new_tcp = accept_tcp(sock->getFD());
+            FD_SET(fd_new_tcp,&fds);
+            sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+        }
+
     } else {
-            Log(Error) << "Seems like internal error. Unable to distinguish socket type." << LogEnd;
-            return 0;
+        Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
+        return 0;
     }
 
 

@@ -429,7 +429,10 @@ bool ReqTransMgr::SendTcpMsg()
             optRemoteId->storeSelf(buf+bufLen,CfgMgr->queryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {
-            Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
+            if(!CfgMgr->remoteId)
+                Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " remote-id." << "It's not present in the server/requestor" <<LogEnd;
+            if(!CfgMgr->enterpriseNumber)
+                Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " entreprise number." << "It's not present in the server/requestor" <<LogEnd;
         }
     break;
 
