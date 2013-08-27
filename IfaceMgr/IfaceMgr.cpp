@@ -211,6 +211,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
         while ( sock = iface->getSocket() ) {
             if (FD_ISSET(sock->getFD(),&fds)) {
                 found = true;
+                Log(Info) << "Socket found:" << sock->getFD() <<LogEnd;
                 break;
             }
         }
@@ -250,10 +251,14 @@ int TIfaceMgr::select(unsigned long time, char *buf,
                         return 0;
                 }
             #endif
+            this->isTcp=false;
         } else if (stype==SOCK_STREAM) {
             fd_new_tcp = accept_tcp(sock->getFD());
+            Log(Info) << "Accept Socket found:" << sock->getFD() <<LogEnd;
+            Log(Info) << "Returned by accept:" << fd_new_tcp << LogEnd;
             FD_SET(fd_new_tcp,&fds);
-            sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+            result = sock_recv_tcp(fd_new_tcp, buf, bufsize, flags);
+            this->isTcp = true;
         }
 
     } else {

@@ -23,6 +23,8 @@
 #include "OptStatusCode.h"
 #include "Logger.h"
 #include "hmac-sha-md5.h"
+#include "hmac.h"
+#include <stdio.h>
 
 class TNotifyScriptParams;
 
@@ -122,6 +124,7 @@ int TMsg::storeSelf(char * buffer)
     int tmp = this->TransID;
     
     if (Bulk) {
+
         int tmpSize = this->MsgSize;
 
         buffer[1]=tmpSize%256; tmpSize/=256;
@@ -131,6 +134,7 @@ int TMsg::storeSelf(char * buffer)
         buffer[5] = tmp%256;  tmp = tmp/256;
         buffer[4] = tmp%256;  tmp = tmp/256;
         buffer[3] = tmp%256;  tmp = tmp/256;
+
     } else {
 
         *(buffer++) = (char)MsgType;

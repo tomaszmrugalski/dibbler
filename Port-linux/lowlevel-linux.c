@@ -994,6 +994,7 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
 
     }
 
+    printf("\nRETURN SOCK FD:%d\n",Insock);
     return Insock;
 
 }
@@ -1072,8 +1073,10 @@ extern int accept_tcp (int fd) {
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
     int iResult;
-    if ((iResult = recv (fd, recvBuffer, bufLength, flags)) == -1) {
-        sprintf (Message,"Cannot receive data, receive function socket error" );
+    iResult = recv (fd, recvBuffer, bufLength, flags);
+    if (iResult < 0) {
+        sprintf (Message,"Cannot receive data, receive function socket error");
+        Rerror("Receive function error:");
         return LOWLEVEL_ERROR_UNSPEC;
     } else {
         return iResult;
@@ -1101,10 +1104,13 @@ extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, i
         buflen=(int)strlen(buf);
     }
     iResult = send (fd,buf,buflen,flags);
+    printf("\n iResult:%d\n",iResult);
     if (iResult)
     {
-        if (iResult < 0);
-        sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+        if (iResult < 0) {
+            sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+            Rerror("Tcp send function error");
+        }
         return LOWLEVEL_ERROR_SOCKET;
     }
 
