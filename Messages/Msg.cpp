@@ -18,6 +18,7 @@
 #include "Opt.h"
 #include "Logger.h"
 #include "hmac.h"
+#include <stdio.h>
 
 class TNotifyScriptParams;
 
@@ -124,6 +125,7 @@ int TMsg::storeSelf(char * buffer)
     enum DigestTypes UsedDigestType;
     
     if (Bulk) {
+
         int tmpSize = this->MsgSize;
 
         buffer[1]=tmpSize%256; tmpSize/=256;
@@ -133,6 +135,7 @@ int TMsg::storeSelf(char * buffer)
         buffer[5] = tmp%256;  tmp = tmp/256;
         buffer[4] = tmp%256;  tmp = tmp/256;
         buffer[3] = tmp%256;  tmp = tmp/256;
+
     } else {
 
         *(buffer++) = (char)MsgType;

@@ -342,6 +342,7 @@ bool ReqTransMgr::SendTcpMsg()
 
         } else {
             Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->addr << " address." <<LogEnd;
+            return false;
         }
 
     break;
@@ -357,6 +358,7 @@ bool ReqTransMgr::SendTcpMsg()
             bufLen = 17;
         } else {
             Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
+            return false;
         }
     break;
 
@@ -378,6 +380,7 @@ bool ReqTransMgr::SendTcpMsg()
 
         } else {
             Log(Debug) << "Cannot creating ClientId-based query for " << CfgMgr->clientId << " RelayId." << "It's not present in the server" <<LogEnd;
+            return false;
         }
     break;
 
@@ -398,6 +401,7 @@ bool ReqTransMgr::SendTcpMsg()
             bufLen += optRelayId->getSize();
         } else {
             Log(Debug) << "Cannot creating RelayId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
+            return false;
         }
     break;
 
@@ -419,10 +423,14 @@ bool ReqTransMgr::SendTcpMsg()
             optRemoteId->storeSelf(buf+bufLen,CfgMgr->queryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {
-            if(!CfgMgr->remoteId)
+            if(!CfgMgr->remoteId  ) {
                 Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " remote-id." << "It's not present in the server/requestor" <<LogEnd;
-            if(!CfgMgr->enterpriseNumber)
+                return false;
+            }
+            if(!CfgMgr->enterpriseNumber) {
                 Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " entreprise number." << "It's not present in the server/requestor" <<LogEnd;
+                return false;
+            }
         }
     break;
 
@@ -606,10 +614,6 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 }
 
 
-
-
-
-
 string ReqTransMgr::BinToString(char * buf, int bufLen)
 {
     std::ostringstream o;
@@ -642,6 +646,15 @@ void ReqTransMgr::TerminateTcpConn()
     this->Socket->terminate_tcp(how);
 
 
+}
+
+bool ReqTransMgr::ValidateMsg(char * msgBuf)
+{
+    int i=0;
+    for (i=0;i< 4 ; i++ ) {
+        //msgBuf[0]
+
+    }
 }
 int ReqTransMgr::GetQueryType()
 {

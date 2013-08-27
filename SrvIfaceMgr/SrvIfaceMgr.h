@@ -29,7 +29,7 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
    SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
                            SPtr<TIPv6Addr> peer,
-                           char * buf, int bufsize, bool isTcp);
+                           char * buf, int bufsize);
 
    SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
                                  SPtr<TIPv6Addr> peer,

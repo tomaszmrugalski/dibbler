@@ -55,6 +55,7 @@ class TIfaceMgr {
 
     std::string XmlFile;
     List(TIfaceIface) IfaceLst; //Interface list
+    bool isTcp;
     bool IsDone;
 };
 

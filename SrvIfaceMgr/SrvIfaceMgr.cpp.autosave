@@ -67,7 +67,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                   << " and you have IPv6 support enabled." << LogEnd;
         return;
     }
-    Log(Debug) << "DDDDDDDDDDDDDDDDD" << LogEnd;
+
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
@@ -166,12 +166,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
             return 0; //NULL
         }
-
-        // check message type
-        /*for (il =0; il < bufsize; il++) {
-            printf("\n byte readed: %s\n ", buf[il]);
-        }
-        */
 
         SPtr<TSrvIfaceIface> ptrIface;
 
