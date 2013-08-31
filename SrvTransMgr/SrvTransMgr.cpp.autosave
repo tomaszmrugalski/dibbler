@@ -171,14 +171,12 @@ long TSrvTransMgr::getTimeout()
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
-    Log(Debug) << "relayMsg calling" << LogEnd;
+
     if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
         return;
     }
-
-    Log(Debug) << "relayMsg calling2" << LogEnd;
 
     // LEASE ASSIGN STEP 1: Evaluate defined expressions (client classification)
     // Ask NodeClietSpecific to analyse the message
@@ -265,13 +263,13 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         }
         case LEASEQUERY_MSG: {
             int iface = msg->getIface();
-            if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
+            if (!SrvCfgMgr().getIfaceByID(iface) || (!SrvCfgMgr().getIfaceByID(iface)->bulkLeaseQuerySupport() || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport() ) ) {
                 Log(Error) << "LQ: LeaseQuery message received on " << iface
                            << " interface, but it is not supported there." << LogEnd;
                 return;
             }
             Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-            SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
+            SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
             a = new TSrvMsgLeaseQueryReply(lq);
             break;
         }

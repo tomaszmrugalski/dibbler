@@ -88,6 +88,10 @@ int allowOptInOptInBulk(int msgType, int parent, int subopt, int pos) {
             return 1;
             break;
         case OPTION_LQ_QUERY:
+            if (parent != OPTION_CLIENTID) {
+                Log(Error)  << "Leasequery message received by server, but the frame doesn't contain OPTION_LEASEQUERY option in appropriate place." << LogEnd;
+                return STATUSCODE_MALFORMEDQUERY;
+            }
             return 1;
             break;
         case OPTION_IAADDR:

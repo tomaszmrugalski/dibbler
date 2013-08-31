@@ -17,8 +17,9 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
-TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize, bool istcp /* =false*/ )
-    :TSrvMsg(iface,addr,buf,bufSize) {
+TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize, int msgType, bool istcp /* =false*/ )
+    :TSrvMsg(iface,addr, buf,bufSize, msgType) {
+    //int iface, SPtr<TIPv6Addr> addr, char *buf,int bufSize, int msgType
     tcp = istcp;
 }
 
@@ -28,6 +29,7 @@ void TSrvMsgLeaseQuery::doDuties() {
 
 bool TSrvMsgLeaseQuery::check() {
     /// @todo: validation
+    Log(Debug) << "Bulk Msg validation calling" << LogEnd;
     if (!getOption(OPTION_CLIENTID)) {
 	Log(Warning) << "LQ: Lease Query message does not contain required CLIENT-ID option." << LogEnd;
 	return false;

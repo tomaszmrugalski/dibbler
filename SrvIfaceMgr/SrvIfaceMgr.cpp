@@ -67,7 +67,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                   << " and you have IPv6 support enabled." << LogEnd;
         return;
     }
-    Log(Debug) << "DDDDDDDDDDDDDDDDD" << LogEnd;
+
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
@@ -154,11 +154,55 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
     int msgtype;
-    int  il =0;
 
     // read data
     //select(unsigned long, char*, int&, SPtr<TIPv6Addr>)
     sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
+    unsigned short tmpl=0;
+    int pos=0;
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos+=1;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos+=1;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos+=1;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos+=1;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos+=1;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
+
+    tmpl = buf[pos];
+    Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+    pos++;
 
     if (sockid>0) {
 
@@ -166,12 +210,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
             return 0; //NULL
         }
-
-        // check message type
-        /*for (il =0; il < bufsize; il++) {
-            printf("\n byte readed: %s\n ", buf[il]);
-        }
-        */
 
         SPtr<TSrvIfaceIface> ptrIface;
 
@@ -238,7 +276,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
             }
         } else {
-            msgtype = buf[3];
+            if (bufsize<6) {
+                Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
+                return 0; //NULL
+            }
+            msgtype = buf[2];
 
             switch (msgtype) {
 
@@ -549,8 +591,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
             return 0; //NULL;;
        }
     } else {
-        if (buf[3] == LEASEQUERY_MSG)
-            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,this->isTcp);
+        if (buf[2] == LEASEQUERY_MSG)
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
     }
 }
 
