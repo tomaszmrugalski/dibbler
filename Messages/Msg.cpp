@@ -51,23 +51,29 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
     }
 
 }
-
+//TMsg(iface, addr, buf, bufSize)
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
     :NotifyScripts(NULL)
 {
     setAttribs(iface,addr,msgType,transID);
 }
 
-TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType, int msgSize)
+TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char * &buf, int msgType, int  &bufSize)
     :pkt(0), NotifyScripts(NULL)
 {
-    long tmp = rand() % (255*255*255);
-    setAttribs(iface,addr,msgType,tmp);
-    MsgSize = msgSize;
+
     this->Bulk = true;
-  //  buf[0]=MsgSize;
-  //  buf[2]=MsgType;
-  //  buf[3]=TransID;
+
+    if (bufSize<6)
+    return;
+    this->MsgType=msgType;
+    this->MsgSize=buf[0]*256+buf[1];
+    unsigned char * buf2 = (unsigned char *)(buf+3);
+    this->TransID= ((long)buf2[0])<<16 | ((long)buf2[1])<<8 | (long)buf2[2];
+    buf+=6; bufSize-=6;
+
+    setAttribs(iface, addr,msgType,this->TransID);
+
 }
 
 
@@ -126,7 +132,7 @@ int TMsg::storeSelf(char * buffer)
     if (Bulk) {
 
         int tmpSize = this->MsgSize;
-
+        Log(Debug) <<"MsgSize - DHCP "<<this->MsgSize<< LogEnd;
         buffer[1]=tmpSize%256; tmpSize/=256;
         buffer[0]=tmpSize%256; tmpSize/=256;
 
@@ -134,6 +140,7 @@ int TMsg::storeSelf(char * buffer)
         buffer[5] = tmp%256;  tmp = tmp/256;
         buffer[4] = tmp%256;  tmp = tmp/256;
         buffer[3] = tmp%256;  tmp = tmp/256;
+        buffer+=6;
 
     } else {
 

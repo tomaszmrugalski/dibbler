@@ -301,6 +301,7 @@ long TSrvTransMgr::getTimeout()
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
+    Log(Debug) << "relayMsg calling" << LogEnd;
     if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;

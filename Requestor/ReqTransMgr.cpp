@@ -194,6 +194,7 @@ bool ReqTransMgr::SendMsg()
 
     Log(Debug) << msg->getSize() << "-byte long LQ_QUERY message prepared." << LogEnd;
 
+
     if (this->Socket->send(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
         Log(Error) << "Message transmission failed." << LogEnd;
         return false;
@@ -471,6 +472,14 @@ bool ReqTransMgr::SendTcpMsg()
     msgbufLen = msg->storeSelf(msgbuf);
 
     Log(Debug) << msg->getSize() << "-byte long LQ_QUERY message prepared." << LogEnd;
+
+    unsigned short tmpl=0;
+    int pos=0;
+    for(pos=0;pos<10;pos++) {
+        tmpl = msgbuf[pos];
+        Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
+        tmpl=0;
+    }
 
     if (this->Socket->send_tcp(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
         Log(Error) << "Message transmission failed." << LogEnd;

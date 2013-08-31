@@ -262,6 +262,7 @@ enum TIAType {
 #define ADDRPARAMS_MASK_MULTICAST 0x04
 
 int allowOptInOpt(int msgType, int optOut, int optIn);
+int allowOptInOptInBulk(int msgType, int optOut, int optIn, int pos);
 int allowOptInMsg(int msgType, int optType);
 
 // Supported authorization protocols

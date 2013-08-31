@@ -43,6 +43,8 @@ size_t TOptGeneric::getSize()
 }
 
 char * TOptGeneric::storeSelf(char* buf) {
+    cout << "storeSelf for TOptGeneric called" << endl;
+    cout << "TOptGeneric data length:" << this->DataLen<< endl;
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, this->DataLen);
     memmove(buf, this->Data, this->DataLen);

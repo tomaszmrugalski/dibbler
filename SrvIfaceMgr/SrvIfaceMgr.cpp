@@ -71,7 +71,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                   << " and you have IPv6 support enabled." << LogEnd;
         return;
     }
-    Log(Debug) << "DDDDDDDDDDDDDDDDD" << LogEnd;
+
     while (ptr!=NULL) {
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
@@ -199,7 +199,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
     int sockid;
     int msgtype;
-    int  il =0;
 
     // read data
     sockid = receive(timeout, buf, bufsize, peer, myaddr);
@@ -217,38 +216,50 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         }
     }
 
+        SPtr<TSrvIfaceIface> ptrIface;
 
-    SPtr<TSrvIfaceIface> ptrIface;
+        // get interface
+        ptrIface = (Ptr*)getIfaceBySocket(sockid);
 
-    // get interface
-    ptrIface = (Ptr*)getIfaceBySocket(sockid);
-
-    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-               << ")." << LogEnd;
+        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+                   << ")." << LogEnd;
 
 
-    // create specific message object
-    SPtr<TSrvMsg> ptr;
-    if (!this->isTcp) {
-        msgtype = buf[0];
-        switch (msgtype) {
+        // create specific message object
+        SPtr<TSrvMsg> ptr;
+        if (!this->isTcp) {
+            msgtype = buf[0];
+            switch (msgtype) {
 
-        case SOLICIT_MSG:
-        case REQUEST_MSG:
-        case CONFIRM_MSG:
-        case RENEW_MSG:
-        case REBIND_MSG:
-        case RELEASE_MSG:
-        case DECLINE_MSG:
-        case INFORMATION_REQUEST_MSG:
-        case LEASEQUERY_MSG:
-            {
-                ptr = decodeMsg(ptrIface, peer, buf, bufsize);
-                if (!ptr->validateReplayDetection() ||
-                    !ptr->validateAuthInfo(buf, bufsize)) {
-                    Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                    return 0;
+                case SOLICIT_MSG:
+                case REQUEST_MSG:
+                case CONFIRM_MSG:
+                case RENEW_MSG:
+                case REBIND_MSG:
+                case RELEASE_MSG:
+                case DECLINE_MSG:
+                case INFORMATION_REQUEST_MSG:
+                case LEASEQUERY_MSG:
+                {
+                    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+                    if (!ptr->validateReplayDetection() ||
+                        !ptr->validateAuthInfo(buf, bufsize)) {
+                        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                        return 0;
+                    }
+                    return ptr;
+                }
+                case RELAY_FORW_MSG:
+                {
+                    ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+                    if (!ptr)
+                        return 0;
+                    if (!ptr->validateReplayDetection() ||
+                        !ptr->validateAuthInfo(buf, bufsize)) {
+                        Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+                        return 0;
+                    }
                 }
                 return ptr;
             }
@@ -261,6 +272,30 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                     !ptr->validateAuthInfo(buf, bufsize)) {
                     Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
                     return 0;
+                default:
+                Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                return 0;
+
+            }
+        } else {
+            if (bufsize<6) {
+                Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
+                return 0; //NULL
+            }
+            msgtype = buf[2];
+
+            switch (msgtype) {
+
+                case LEASEQUERY_MSG:
+                {
+                    Log(Debug) << "[Bulk] Leasequery messege coming" << LogEnd;
+                    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+                    if (!ptr->validateReplayDetection() ||
+                        !ptr->validateAuthInfo(buf, bufsize)) {
+                        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                        return 0;
+                    }
+                    return ptr;
                 }
             }
             return ptr;
@@ -731,8 +766,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
             return 0; //NULL;;
        }
     } else {
-        if (buf[3] == LEASEQUERY_MSG)
-            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,this->isTcp);
+        if (buf[2] == LEASEQUERY_MSG)
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
     }
     return 0;
 }

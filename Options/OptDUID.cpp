@@ -12,6 +12,7 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "OptDUID.h"
+#include "Logger.h"
 
 TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
     :TOpt(type, parent)
@@ -27,6 +28,8 @@ size_t TOptDUID::getSize() {
 
 char * TOptDUID::storeSelf( char* buf)
 {
+    Log(Debug) << "StoreSelf called for ToptDuid" << LogEnd;
+    Log(Debug) << "ToptDuid size:" << DUID->getLen() << LogEnd;
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, DUID->getLen());
     return this->DUID->storeSelf(buf);
