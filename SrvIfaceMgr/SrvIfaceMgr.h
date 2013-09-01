@@ -41,6 +41,8 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
    // ---sends messages---
    bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+   // ---sends messages over TCP---
+   bool sendTcp(int iface, char *msg, int size,SPtr<TIPv6Addr> addr, int port);
 
    // ---receives messages---
    SPtr<TSrvMsg> select(unsigned long timeout);

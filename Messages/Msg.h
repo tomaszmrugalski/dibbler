@@ -85,6 +85,7 @@ class TMsg
 
     // notify scripts stuff
     void* getNotifyScriptParams();
+    bool Bulk;
 
   protected:
     int MsgType;
@@ -92,7 +93,6 @@ class TMsg
 
     //bulk's parameter
     int MsgSize;
-    bool Bulk;
 
     bool delOption(int code);
 
