@@ -32,6 +32,11 @@ bool TSrvCfgIface::leaseQuerySupport() const
     return LeaseQuery_;
 }
 
+bool TSrvCfgIface::bulkLeaseQuerySupport() const
+{
+    return BulkLeaseQuery_;
+}
+
 SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
                                                       TMsg * parent, bool quiet) {
 
@@ -553,6 +558,7 @@ void TSrvCfgIface::setDefaults() {
     ClntMaxLease_ = SERVER_DEFAULT_CLNTMAXLEASE;
     RapidCommit_ = SERVER_DEFAULT_RAPIDCOMMIT;
     LeaseQuery_ = SERVER_DEFAULT_LEASEQUERY;
+    BulkLeaseQuery_ = SERVER_DEFAULT_BULK_LEASEQUERY;
 
     FQDNMode_ = DNSUPDATE_MODE_NONE;
     UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;

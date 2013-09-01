@@ -85,6 +85,7 @@ class TMsg
 
     // notify scripts stuff
     void* getNotifyScriptParams();
+    bool Bulk;
 
     SPtr<TIPv6Addr> getRemoteAddr();
 
@@ -106,7 +107,6 @@ class TMsg
 
     //bulk's parameter
     int MsgSize;
-    bool Bulk;
 
     bool delOption(int code);
 

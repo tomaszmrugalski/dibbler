@@ -181,6 +181,35 @@ int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
     return TIfaceMgr::select(timeout, buf, bufsize, peer, myaddr);
 }
 
+bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port)
+{
+    // find this interface
+    SPtr<TIfaceIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+            Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
+            return false;
+    }
+
+    // find this socket
+    SPtr<TIfaceSocket> sock;
+    ptrIface->firstSocket();
+    while (sock = ptrIface->getSocket()) {
+        if (sock->multicast())
+            continue; // don't send anything via multicast sockets
+        break;
+    }
+    if (!sock) {
+        Log(Error) << "Send failed: interface " << ptrIface->getName()
+                   << "/" << iface << " has no open sockets." << LogEnd;
+        return false;
+    }
+
+    // send it!
+    //return (sock->send(msg,size,addr,port));
+    return (sock->send_tcp(msg,size,addr,port));
+}
+
 // @brief reads messages from all interfaces
 // it's wrapper around IfaceMgr::select(...) method
 //
@@ -247,6 +276,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                         !ptr->validateAuthInfo(buf, bufsize)) {
                         Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
                         return 0;
+
                     }
                     return ptr;
                 }
@@ -295,6 +325,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                         Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
                         return 0;
                     }
+                    ptr->Bulk = true;
                     return ptr;
                 }
             }

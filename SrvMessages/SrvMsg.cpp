@@ -106,7 +106,7 @@ TMsg(iface, addr, buf, msgType,bufSize)
         case OPTION_IAADDR:
             //TOptIAAddress(char* &addr, int& n, TMsg* parent);
             //TODO:
-            ptr= new TOptIAAddress(buf+pos,tmpLength, this);
+           // ptr= new TOptIAAddress(buf+pos,tmpLength, this);
             break;
         default:
             Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
@@ -535,7 +535,14 @@ void TSrvMsg::send(int dstPort /* = 0 */)
         port = dstPort;
     }
 
-    SrvIfaceMgr().send(ptrIface->getID(), buf, offset, PeerAddr_, port);
+    if(!this->Bulk) {
+        SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+    } else {
+        port = 0;
+        Log(Info) <<"Trying to send Bulk Leasequery reply"<<LogEnd;
+        SrvIfaceMgr().sendTcp(ptrIface->getID(),buf,offset,this->PeerAddr,port);
+    }
+
     delete [] buf;
 }
 

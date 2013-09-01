@@ -99,7 +99,11 @@ int TMsg::getSize()
     {
 	pktsize += (*opt)->getSize();
     }
-    return pktsize + 4;
+
+    if(!this->Bulk)
+        return pktsize + 4;
+    else
+        return pktsize + 6;
 }
 
 unsigned long TMsg::getTimeout()

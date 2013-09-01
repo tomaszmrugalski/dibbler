@@ -27,12 +27,22 @@ TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
     :TSrvMsg(query->getIface(), query->getRemoteAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
 {
-  if (!answer(query)) {
-    Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
-        IsDone = true;
+  if(!query->Bulk) {
+      if (!answer(query)) {
+        Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
+            IsDone = true;
+      } else {
+        Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
+        IsDone = false;
+      }
   } else {
-    Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
-    IsDone = false;
+      if (!answer(query)) {
+        Log(Error) << "BLQ: LQ-QUERY response generation failed." << LogEnd;
+            IsDone = true;
+      } else {
+        Log(Debug) << "BLQ: LQ-QUERY response generation successful." << LogEnd;
+        IsDone = false;
+      }
   }
 }
 
@@ -49,8 +59,10 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     int count = 0;
     SPtr<TOpt> opt;
     bool send = false;
-
-    Log(Info) << "LQ: Generating new LEASEQUERY-REPLY message." << LogEnd;
+    if(!queryMsg->Bulk)
+        Log(Info) << "LQ: Generating new LEASEQUERY-REPLY message." << LogEnd;
+    else
+        Log(Info) <<"BLQ: Generating new Bulk LEASEQUERY-REPLY message" << LogEnd;
 
     // copy CLIENT-ID
     opt = queryMsg->getOption(OPTION_CLIENTID);
@@ -61,8 +73,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     }
 
     if (!count) {
-	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY,
-                                             "Required LQ_QUERY option missing.", this));
+        Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
 	return true;
     }
 
@@ -76,7 +87,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     if (opt) {
         count++;
         SPtr<TSrvOptLQ> q = (Ptr*) opt;
-        if (!queryMsg->isTCP() &&
+        if (!queryMsg->Bulk &&
             (q->getQueryType() == QUERY_BY_RELAY_ID ||
              q->getQueryType() == QUERY_BY_LINK_ADDRESS ||
              q->getQueryType() == QUERY_BY_REMOTE_ID) ) {
@@ -119,6 +130,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
         // allocate buffer
         pkt = new char[getSize()];
         this->send();
+
     }
 
     return true;

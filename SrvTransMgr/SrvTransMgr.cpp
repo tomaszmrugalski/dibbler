@@ -301,7 +301,7 @@ long TSrvTransMgr::getTimeout()
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
 {
-    Log(Debug) << "relayMsg calling" << LogEnd;
+
     if (!msg->check()) {
         // proper warnings will be printed in the check() method, if necessary.
         // Log(Warning) << "Invalid message received." << LogEnd;
@@ -348,6 +348,75 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
             }
         } else {
             a = new TSrvMsgAdvertise(msg);
+        }
+        break;
+    }
+        case REQUEST_MSG: {
+            SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case CONFIRM_MSG: {
+            SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case RENEW_MSG: {
+            SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case REBIND_MSG: {
+            SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case DECLINE_MSG: {
+            SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case RELEASE_MSG: {
+            SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case INFORMATION_REQUEST_MSG : {
+            SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
+            a = new TSrvMsgReply(nmsg);
+            break;
+        }
+        case LEASEQUERY_MSG: {
+
+            if(!msg->Bulk) {
+                int iface = msg->getIface();
+                if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport() ) {
+                    Log(Error) << "LQ: LeaseQuery message received on " << iface
+                               << " interface, but it is not supported there." << LogEnd;
+                    return;
+                }
+                Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+                SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
+                a = new TSrvMsgLeaseQueryReply(lq);
+                //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+                //                  int bufSize,int MsgType, bool tcp = false);
+                break;
+            } else {
+                int iface = msg->getIface();
+                if (!SrvCfgMgr().getIfaceByID(iface) || (!SrvCfgMgr().getIfaceByID(iface)->bulkLeaseQuerySupport()) ) {
+                    Log(Error) << "BLQ: LeaseQuery message received on " << iface
+                               << " interface, but it is not supported there." << LogEnd;
+                    return;
+                }
+                Log(Debug) << "BLQ: Bulk LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+                SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
+                a = new TSrvMsgLeaseQueryReply(lq);
+                //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+                //                  int bufSize,int MsgType, bool tcp = false);
+                break;
+
+            }
+
         }
         break;
     }

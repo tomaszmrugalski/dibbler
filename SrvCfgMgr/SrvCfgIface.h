@@ -128,6 +128,7 @@ public:
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     bool supportFQDN() const;
     bool leaseQuerySupport() const;
+    bool bulkLeaseQuerySupport() const;
 
     void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
 
@@ -150,6 +151,7 @@ private:
     bool RapidCommit_;
     List(TSrvCfgAddrClass) SrvCfgAddrClassLst_; // IA_NA list (normal addresses)
     bool LeaseQuery_;
+    bool BulkLeaseQuery_;
 
     // --- Temporary Addresses ---
     List(TSrvCfgTA) SrvCfgTALst_; // IA_TA list (temporary addresses)
