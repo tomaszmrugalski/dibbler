@@ -33,6 +33,7 @@ class TSrvMsgLeaseQueryReply : public TSrvMsg
     bool answer(SPtr<TSrvMsgLeaseQuery> query);
     bool check();
     void doDuties();
+    bool validateMsg(SPtr<TSrvMsgLeaseQuery> queryMsg);
     unsigned long getTimeout();
     std::string getName() const;
     ~TSrvMsgLeaseQueryReply();

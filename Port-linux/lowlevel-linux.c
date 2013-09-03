@@ -1104,14 +1104,14 @@ extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, i
         buflen=(int)strlen(buf);
     }
     iResult = send (fd,buf,buflen,flags);
-    printf("\n iResult:%d\n",iResult);
-    if (iResult)
+
+    if (iResult < 0)
     {
-        if (iResult < 0) {
-            sprintf(Message, "Unable to send data (dst addr: %s)", addr);
-            Rerror("Tcp send function error");
-        }
+        sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+        Rerror("Tcp send function error");
         return LOWLEVEL_ERROR_SOCKET;
+    } else {
+        printf("\n %d bytes has been send\n",iResult);
     }
 
     freeaddrinfo(res);

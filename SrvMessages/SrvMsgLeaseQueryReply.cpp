@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *
+ * changes: Damian Manelski <dm1988air@gmail.com>
  * released under GNU GPL v2 only licence
  *
  */
@@ -58,6 +58,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 
     int count = 0;
     SPtr<TOpt> opt;
+    SPtr<TOpt> subOpt;
     bool send = false;
     if(!queryMsg->Bulk)
         Log(Info) << "LQ: Generating new LEASEQUERY-REPLY message." << LogEnd;
@@ -85,20 +86,24 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 
     opt = queryMsg->getOption(OPTION_LQ_QUERY);
     if (opt) {
+
+    while (count < queryMsg->countOption()+1) {
+
         count++;
-        SPtr<TSrvOptLQ> q = (Ptr*) opt;
+        opt->firstOption();
+        subOpt = opt->getOption();
         if (!queryMsg->Bulk &&
-            (q->getQueryType() == QUERY_BY_RELAY_ID ||
-             q->getQueryType() == QUERY_BY_LINK_ADDRESS ||
-             q->getQueryType() == QUERY_BY_REMOTE_ID) ) {
+            (subOpt->getOptType() == QUERY_BY_RELAY_ID ||
+             subOpt->getOptType() == QUERY_BY_LINK_ADDRESS ||
+             subOpt->getOptType() == QUERY_BY_REMOTE_ID) ) {
             Options.push_back( new TOptStatusCode(STATUSCODE_NOTALLOWED,
                                                   "You tried Bulk Leasequery over UDP. Please use TCP.",
                                                   this) );
             Log(Warning) << "LQ: Tried bulk leasequery query type over UDP. Please use TCP instead." << LogEnd;
             return true;
         }
-
-        switch (q->getQueryType()) {
+        SPtr<TSrvOptLQ> q = (Ptr*) subOpt;
+        switch (subOpt->getOptType()) {
         case QUERY_BY_ADDRESS:
             send = queryByAddress(q, queryMsg);
             break;
@@ -121,16 +126,10 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
         }
     }
 
-    if (!count) {
-        Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
-        return true;
-    }
-
     if (send) {
         // allocate buffer
         pkt = new char[getSize()];
         this->send();
-
     }
 
     return true;
@@ -379,6 +378,40 @@ unsigned long TSrvMsgLeaseQueryReply::getTimeout() {
 }
 void TSrvMsgLeaseQueryReply::doDuties() {
     IsDone = true;
+}
+
+bool TSrvMsgLeaseQueryReply::validateMsg(SPtr<TSrvMsgLeaseQuery> queryMsg)
+{
+    int failCount=0;
+    SPtr<TOpt> opt;
+    opt = queryMsg->getOption(OPTION_LQ_QUERY);
+
+    if (!opt) {
+        Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
+        failCount++;
+    }
+
+    // copy CLIENT-ID
+    opt = queryMsg->getOption(OPTION_CLIENTID);
+    if (!opt) {
+        Log(Error) << "LQ: query does not have client-id. Malformed." << LogEnd;
+        if(!failCount) {
+            Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
+        }
+        IsDone = true;
+        failCount++;
+    }
+    Options.push_back(opt);
+
+    // append SERVERID
+    SPtr<TOptDUID> serverID;
+    serverID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
+    Options.push_back((Ptr*)serverID);
+
+    if(failCount)
+       return false;
+    else
+        return true;
 }
 
 string TSrvMsgLeaseQueryReply::getName() const {

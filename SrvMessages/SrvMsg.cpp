@@ -55,70 +55,21 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, char *buf,int bufSize, int msg
 TMsg(iface, addr, buf, msgType,bufSize)
 {
     setDefaults();
-    int pos=0, prvOpt=0;
-    while (pos<bufSize)	{
-        if (pos+6>bufSize) {
-            Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
-                       << " bytes left to parse. Bytes ignored." << LogEnd;
-            break;
-        }
+    int pos = 0;
+    SPtr<TOpt> ptr;
+    if (bufSize < 6 + pos) {
+        Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
+                   << " bytes left to parse. Bytes ignored." << LogEnd;
+    } else {
 
-        unsigned short code   = buf[pos]*256 + buf[pos+1];
-        pos+=2;
+        //calling bulk contruct
+        ptr = new TSrvOptLQ(buf,bufSize, this, msgType);
 
-        unsigned short length = buf[pos]*256 + buf[pos+1];
-        pos+=2;
-
-        if (pos+length>bufSize) {
-            Log(Error) << "Malformed option (type=" << code << ", len=" << length
-                       << ", offset from beginning of DHCPv6 message=" << pos+6 /* 6=msgSize+msgType+trans-id */
-                       << ") received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
-            IsDone = true;
-            return;
-        }
-
-        SPtr<TOpt> ptr;
-
-
-        if (!allowOptInOptInBulk(msgType,prvOpt,code,pos)) {
-            Log(Warning) <<"Option " << code << " can't be present in message (type="
-                         << MsgType <<") directly. Option ignored." << LogEnd;
-            pos+=length;
-            continue;
-        }
-        ptr= 0;
-        int tmpLength = length;
-        switch (code) {
-        case OPTION_CLIENTID:
-                ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
-                prvOpt = code;
-                break;
-        case OPTION_LQ_QUERY:
-            ptr = new TSrvOptLQ(buf+pos, length, this);
-            prvOpt=0;
-            break;
-        case OPTION_REMOTE_ID:
-            ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
-            break;
-        case OPTION_RELAY_ID:
-            ptr = new TOptDUID(OPTION_RELAY_ID, buf+pos, length, this);
-            break;
-        case OPTION_IAADDR:
-            //TOptIAAddress(char* &addr, int& n, TMsg* parent);
-            //TODO:
-           // ptr= new TOptIAAddress(buf+pos,tmpLength, this);
-            break;
-        default:
-            Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
-            break;
-        }
         if ( (ptr) && (ptr->isValid()) )
             Options.push_back( ptr );
         else
-            Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
-        pos += length;
+            Log(Warning) << "BLQ:Option type invalid. Option ignored." << LogEnd;
     }
-
 }
 
 /**

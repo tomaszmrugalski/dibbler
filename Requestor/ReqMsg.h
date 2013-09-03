@@ -27,6 +27,8 @@ public:
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType,int msgSize);
 
     void addOption(SPtr<TOpt> opt);
+    int ReqMsgType;
+    TContainer< SPtr<TOpt> > SubOptions;
 
     std::string getName() const;
     int getReqMsgType();
