@@ -63,6 +63,69 @@ TSrvOptLQ::TSrvOptLQ(char * buf, int bufsize, TMsg* parent)
 
 }
 
+// --- TSrvOptBLQ ---
+TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
+    :TOpt(OPTION_LQ_QUERY, parent)
+{
+    int pos=0, prvOpt=0;
+    unsigned short code;
+    unsigned short length;
+
+    if (bufSize<17) {
+        Log(Warning) << "Truncated (len=" << bufSize << ", at least 17 required) option OPTION_LQ_QUERY received." << LogEnd;
+        IsValid = false;
+        return;
+    }
+
+
+    while (pos<bufSize)	{
+
+        code   = buf[pos]*256 + buf[pos+1];
+        pos+=2;
+        length = buf[pos]*256 + buf[pos+1];
+        pos+=2;
+        if (pos+length>bufSize) {
+            Log(Error) << "Malformed option (type=" << code << ", len=" << length
+                       << ", offset from beginning of DHCPv6 message." << pos+6 /* 6=msgSize+msgType+trans-id */
+                       << "Message dropped." << LogEnd;
+            return;
+        }
+
+        SPtr<TOpt> ptr;
+
+        if (!allowOptInOptInBulk(msgType,prvOpt,code,pos)) {
+            Log(Warning) <<"Option " << code << " can't be present in message (type="
+                         << msgType <<") directly. Option ignored." << LogEnd;
+            pos+=length;
+            continue;
+        }
+        ptr= 0;
+        int tmpLength = length;
+
+        switch (code) {
+        case OPTION_CLIENTID:
+            SubOptions.append( new TOptDUID(OPTION_CLIENTID, buf+pos, length, Parent));
+            prvOpt = code;
+            break;
+        case OPTION_REMOTE_ID:
+            //SubOptions.append(new TOptVendorSpecInfo(code, buf+pos, length, this));
+            break;
+        case OPTION_RELAY_ID:
+            SubOptions.append( new TSrvOptIAAddress(buf+pos, length, parent));
+            break;
+        case OPTION_IAADDR:
+            SubOptions.append( new TSrvOptIAAddress(buf+pos, length, parent));
+            break;
+        default:
+            Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
+            break;
+        };
+
+
+        pos += length;
+    }
+}
+
 bool TSrvOptLQ::doDuties() {
     return true;
 }

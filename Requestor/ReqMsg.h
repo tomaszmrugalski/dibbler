@@ -28,6 +28,7 @@ public:
 
     void addOption(SPtr<TOpt> opt);
     int ReqMsgType;
+    TContainer< SPtr<TOpt> > SubOptions;
 
     std::string getName() const;
     int getReqMsgType();

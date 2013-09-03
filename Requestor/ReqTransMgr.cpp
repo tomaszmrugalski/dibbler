@@ -296,7 +296,7 @@ bool ReqTransMgr::CreateNewTCPSocket(char *dstAddr)
 bool ReqTransMgr::SendTcpMsg()
 {
 
-    // bulk leasequery assumed three types of queries:
+    // bulk leasequery assumed five types of queries:
 	//by Address
     //by ClientId - include DUID option
     //by Relay Id
