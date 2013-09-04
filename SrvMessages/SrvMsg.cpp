@@ -64,7 +64,7 @@ TMsg(iface, addr, buf, msgType,bufSize)
 
         //calling bulk contruct
         ptr = new TSrvOptLQ(buf,bufSize, this, msgType);
-
+        ptr->countOption();
         if ( (ptr) && (ptr->isValid()) )
             Options.push_back( ptr );
         else

@@ -708,132 +708,211 @@ void fill_random(uint8_t* buffer, int len) {
     }
 }
 
-extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port){
+extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port) {
+
+
+    int on = 1,sResult=0;
 
     int error;
-    int on = 1;
+    WSADATA wsaData;
+    SOCKET Insock = INVALID_SOCKET;
+
+
+    // Initialize Winsock
+    sResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (sResult != 0) {
+        sprintf(Message, "WSAStartup faild. Something is wrong?");
+        return LOWLEVEL_ERROR_SOCK_OPTS;
+    }
+
+    struct addrinfo *res, *rp;
     struct addrinfo hints;
-    struct addrinfo *res;
-    int Insock;
+    fd_set master_set;
+//    int Insock;
     char port_char[6];
     char * tmp;
-    struct sockaddr_in6 bindme;
-    sprintf(port_char,"%d",port);
+    int connectionNumber =1;
+    ifaceid = 6;
 
-
-    int	hops=1;
-    char packedAddr[16];
-
-
-
-#ifdef LOWLEVEL_DEBUG
-    printf("### iface: %s(id=%d), addr=%s, port=%d,
-    ifacename,ifaceid, addr, port);
+//#ifdef LOWLEVEL_DEBUG
+    printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
     fflush(stdout);
-#endif
+//#endif
 
-
-    /* Open a TCP socket for inbound traffic */
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = PF_INET6;
+    hints.ai_family = AF_INET6;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
-
-    if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ){
+    if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ) {
         sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
         return LOWLEVEL_ERROR_GETADDRINFO;
     }
 
-    if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0){
-        sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
-        return LOWLEVEL_ERROR_UNSPEC;
+    if (port > 0) {
+
+        sprintf(port_char,"%d",port);
+        if( (listenSocket = socket(AF_INET6, SOCK_STREAM,0 )) == INVALID_SOCKET) {
+            printf("socket failed with error: %ld\n", WSAGetLastError());
+            freeaddrinfo();
+            WSACleanup();
+            return LOWLEVEL_ERROR_UNSPEC;
+        } else {
+            printf("\n TCP socket has been created correctly\n " );
+        }
+
+        sResult=setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) );
+        if ( sResult== SOCKET_ERROR) {
+            printf("SetSockOpt function failed: %d\n", WSAGetLastError());
+            freeaddrinfo(result);
+            WSACleanup();
+            return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        /* Set the options  to receivce ipv6 traffic */
+        sResult = setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on));
+        if (sResult == SOCKET_ERROR) {
+          printf("Unable to set up socket option IPV6_RECVPKTINFO with error %d\n",WSAGetLastError());
+          freeaddrinfo(result);
+          WSACleanup();
+          return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        // set socket as nonblocking
+        sResult = ioctlsocket(Insock, FIONBIO, (char *)&on);
+        if (sResult == SOCKET_ERROR) {
+           printf("Unable to set up socket as nonblocking - ioctlsocket's failure with error %d\n",WSAGetLastError());
+           freeaddrinfo(result);
+           WSACleanup();
+           return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        freeaddrinfo(res);
+
+        //initialize master fd_set
+        FD_ZERO(&master_set);
+        FD_SET(Insock,&master_set);
     }
+    /* Open a TCP socket for inbound traffic */
 
-    /* Set the options  to receivce ipv6 traffic */
-    if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
-        sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
-        return LOWLEVEL_ERROR_SOCK_OPTS;
-    }
-
-    freeaddrinfo(res);
-
-    /* bind socket to a specified port */
-    bzero(&bindme, sizeof(struct sockaddr_in6));
-    bindme.sin6_family = AF_INET6;
-    bindme.sin6_port   = htons(port);
-    tmp = (char*)(&bindme.sin6_addr);
-    inet_pton6(addr, tmp);
+   // struct sockaddr_in6 bindmeClient;
 
     //TCP client part
     if (port == 0) {
 
-         if (connect(Insock, (struct sockaddr_in6*)&bindme, sizeof(bindme)) != 0) {
-             sprintf(Message, "Unable to connect with DHCP server, connect function failed");
-             return LOWLEVEL_ERROR_CONNECT_FAILED;
+        port=547;
+        sprintf(port_char,"%d",port);
 
+        /* bind socket to a specified port */
+        /*bzero(&bindmeClient, sizeof(struct sockaddr_in6));
+        bindmeClient.sin6_family = AF_INET6;
+        bindmeClient.sin6_port   = htons(port);
+        bindmeClient.sin6_family = IPPROTO_TCP;
+        tmp = (char*)(&bindmeClient.sin6_addr);
+        inet_pton6(addr, tmp);*/
+        //bindmeClient.sin6_addr = addr;
+
+        memset(&hints,0,sizeof(hints));
+        memset(&res,0,sizeof(res));
+
+        hints.ai_flags    = AI_NUMERICSERV;
+        hints.ai_family   = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+
+       /* if ((error = getaddrinfo(hostp->hostname, hostp->port,
+                    &hints, &res)) != 0) */
+
+        printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
+
+        if( (error = getaddrinfo(addr, port_char, &hints, &res)) ) {
+            sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
+            return LOWLEVEL_ERROR_GETADDRINFO;
+        } else {
+            printf ("\n getaddrinfo called correctly\n");
+            //printf("\n addr: %s\n", res->ai_addr);
+        }
+        //(connect(Insock, (struct sockaddr_in6*)&bindmeClient, sizeof(struct sockaddr_in6)) != 0)
+
+        for(rp=res; rp!=NULL;rp->ai_next) {
+            Insock = socket(rp->ai_family,rp->ai_socktype,rp->ai_protocol);
+            if(Insock==-1) {
+                continue;
+            } else {
+                printf("\n TCP socket has been created correctly\n " );
+            }
+            if (connect(Insock, rp->ai_addr, rp->ai_addrlen) != 0) {
+                 Rerror("Unable to connect with DHCP server, connect function failed");
+            } else {
+                 result++;
+                 break;
+            }
+        }
+
+        if (result==0) {
+            printf("\n Can't connect on any interface with specified host");
+            return LOWLEVEL_ERROR_CONNECT_FAILED;
+        } else {
+            printf("\n Connected with host");
+            return Insock;
         }
     }
-
+    result=0;
     //TCP server part
+    struct sockaddr_in6 bindmeServer;
     if ( port > 0) {
-        if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme))) {
-            sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
+
+        /* bind socket to a specified port */
+        bzero(&bindmeServer, sizeof(struct sockaddr_in6));
+        bindmeServer.sin6_family = AF_INET6;
+        bindmeServer.sin6_port   = htons(port);
+        tmp = (char*)(&bindmeServer.sin6_addr);
+        inet_pton6(addr, tmp);
+
+        socklen_t bindmeServerSize;
+        bindmeServerSize= sizeof (struct sockaddr_in6);
+
+        printf("\n Socket FD: %d", Insock );
+       // printf("\n Size of struct passed to bind:%d\n",sizeof(struct sockaddr_in6));
+        //printf("\n Size of struct passed to bind:%d",sizeof(struct sockaddr_in6));
+        result = bind( Insock,(struct sockaddr_in6 *)&bindmeServer,bindmeServerSize);
+        printf("\n Result:%d \n",result);
+
+        if (result == SOCKET_ERROR) {
+            printf("Unable to bind socket: %d\n",WSAGetLastError());
+            freeaddrinfo(result);
+            closesocket(Insock);
+            WSACleanup();
             return LOWLEVEL_ERROR_BIND_FAILED;
         } else {
-
+            sprintf(Message, "Socket has been bind succesfully");
+            printf("\n Socket has been bind succesfully \n");
         }
 
         if (connectionNumber > 0)  {
-             if ( listen_tcp (Insock,connectionNumber) != 0 ){
-                 return LOWLEVEL_ERROR_LISTEN_FAILED
+             sResult=listen (Insock,connectionNumber);
+             if ( sResult == SOCKET_ERROR) {
+                 printf("\n Listen function has NOT been called correctly with error:%d\n", WSAGetLastError());
+                 closesocket(Insock);
+                 WSACleanup();
+                 return LOWLEVEL_ERROR_LISTEN_FAILED;
              } else {
                  sprintf(Message,"Listen function has been called correctly");
+                 printf("\n Listen function has been called correctly \n");
              }
         } else {
             sprintf(Message, "Connection number hasn't been specified");
-            return LOWLEVEL_ERROR_LISTEN_FAILED
+            return LOWLEVEL_ERROR_LISTEN_FAILED;
         }
 
-
-        while ((fd_new = accept(Insock, (struct sockaddr_in6*)&bindme, sizeof(struct sockaddr_in6) )) == 0) {
-            if (fd_new == -1) {
-                sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
-                close(fd_new);
-                return 1;
-            } else {
-                return fd_new;
-            }
-        }
     }
 
-
+    printf("\nRETURN SOCK FD:%d\n",Insock);
     return Insock;
 
+
 }
 
-//extern int bind_tcp_socket(int fd, char * addr, struct socketStruct) {
 
-//    addrLenght=sizeof(socketStruct.sockaddr_in);
-//    if(bind(fd,(struct sockaddr*) &addr,addrLength) < 0){
-//        printf( "Bind failed with error: %ld\n", WSAGetLastError() );
-//        closesocket(fd);
-//        WSACleanup();
-//        return 1;
-//    }
-//}
-
-extern int listen_tcp (int fd,int connectionNumber ) {
-
-    if ( listen( fd, connectionNumber ) == SOCKET_ERROR ) {
-              printf( "Listen failed with error: %ld\n", WSAGetLastError() );
-              closesocket(fd);
-              WSACleanup();
-              return 1;
-    } else {
-        return 0;
-    }
-}
 
 extern int getsOpt(int fd) {
 
@@ -853,19 +932,23 @@ extern int getsOpt(int fd) {
 
 
 
-extern int accept_tcp (int fd,char * addr, struct socketStruct) {
+extern int accept_tcp (int fd) {
 
-    //addrLength = sizeof(struct addr.sockaddr_in;
-    addrLength = sizeof(socketStruct.sockaddr_in);
-    fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
-    if (fd_new == -1) {
-        printf( "Accept function failed with error: %ld\nCannot create net socket descriptor\n", WSAGetLastError() );
-        closesocket(fd_new);
-        WSACleanup();
-        return 1;
-    } else {
-        return fd_new;
+    fd_new = accept(fd,NULL,NULL);
+    if (fd_new < 0) {
+        //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+        //close(fd_new);
+
+        if (errno !=  WSAEWOULDBLOCK) {
+            printf("Cannot create net socket descriptor.Accept function failed with error %d\n",WSAGetLastError());
+            WSACleanup();
+            //Here should be check if client didn't close connection
+            //close(fd_new);
+            return -1;
+        }
+
     }
+    return fd_new;
 
 }
 
@@ -886,8 +969,10 @@ extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
     int iResult;
-    if ((iResult = recv (fd, recvBuffer, bufLength, flags)) == -1) {
-        sprintf ("Cannot receive data, receive function socket error" );
+    iResult = recv (fd, recvBuffer, bufLength, flags);
+    if (iResult < 0) {
+        printf ("Cannot receive data, receive function socket error %d\n",WSAGetLastError());
+        WSACleanup();
         return LOWLEVEL_ERROR_UNSPEC;
     } else {
         return iResult;
@@ -898,7 +983,7 @@ extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 extern int sock_send_tcp(int fd,char *buf, int buflen, int flags, int port ) {
 
     struct addrinfo hints, *res;
-    int iResult = 0;
+    int sResult = 0;
     char cport[10];
 
     sprintf(cport,"%d",port);
@@ -914,17 +999,19 @@ extern int sock_send_tcp(int fd,char *buf, int buflen, int flags, int port ) {
     if (!buflen){
         buflen=(int)strlen(buf);
     }
+    sResult = send (fd,buf,buflen,flags);
 
-    if (iResult = send (fd,buf,buflen,flags))
+    if (sResult == SOCKET_ERROR)
     {
-        if (iResult < 0);
-        displayError(WSAGetLastError());
+        printf(Message, "Unable to send data (dst addr: %s) with error %d\n", addr,WSAGetLastError());
         return LOWLEVEL_ERROR_SOCKET;
+    } else {
+        printf("\n %d bytes has been send\n",iResult);
     }
 
     freeaddrinfo(res);
 
-    return iResult;
+    return sResult;
 }
 
 extern int terminate_tcp_connection(int fd,int how) {

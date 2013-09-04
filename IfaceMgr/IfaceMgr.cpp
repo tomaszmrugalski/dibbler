@@ -153,7 +153,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
 /// @return socket descriptor (or negative values for errors)
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer,
-                      SPtr<TIPv6Addr> myaddr) {
+                      SPtr<TIPv6Addr> myaddr, bool tcpClient) {
     struct timeval czas;
     int result, fd_new_tcp;
     if (time > DHCPV6_INFINITY/2)
@@ -253,11 +253,15 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             #endif
             this->isTcp=false;
         } else if (stype==SOCK_STREAM) {
-            fd_new_tcp = accept_tcp(sock->getFD());
-            Log(Info) << "Accept Socket found:" << sock->getFD() <<LogEnd;
-            Log(Info) << "Returned by accept:" << fd_new_tcp << LogEnd;
-            FD_SET(fd_new_tcp,&fds);
-            result = sock_recv_tcp(fd_new_tcp, buf, bufsize, flags);
+            if(!tcpClient) {
+                fd_new_tcp = accept_tcp(sock->getFD());
+                Log(Info) << "Accept Socket found:" << sock->getFD() <<LogEnd;
+                Log(Info) << "Returned by accept:" << fd_new_tcp << LogEnd;
+                FD_SET(fd_new_tcp,&fds);
+                result = sock_recv_tcp(fd_new_tcp, buf, bufsize, flags);
+            } else {
+                result = sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+            }
             this->isTcp = true;
         }
 

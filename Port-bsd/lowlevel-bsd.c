@@ -575,4 +575,317 @@ int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
     /// @todo: Implement this for BSD
     /// see "/usr/sbin/ndp -a -n"
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+
+extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
+
+
+    int on = 1,result=0;
+
+    int error;
+
+    struct addrinfo *res, *rp;
+    struct addrinfo hints;
+    fd_set master_set;
+    int Insock;
+    char port_char[6];
+    char * tmp;
+    int connectionNumber =1;
+    ifaceid = 6;
+
+//#ifdef LOWLEVEL_DEBUG
+    printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
+    fflush(stdout);
+//#endif
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET6;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = AI_PASSIVE;
+    if( (error = getaddrinfo(NULL,  port_char, &hints, &res)) ) {
+        sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
+        return LOWLEVEL_ERROR_GETADDRINFO;
+    }
+
+    if (port > 0) {
+
+        sprintf(port_char,"%d",port);
+        if( (Insock = socket(AF_INET6, SOCK_STREAM,0 )) < 0) {
+            sprintf(Message, "socket creation failed. Is IPv6 protocol supported by kernel?");
+            return LOWLEVEL_ERROR_UNSPEC;
+        } else {
+            printf("\n TCP socket has been created correctly\n " );
+        }
+
+        if (setsockopt(Insock, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) ) < 0) {
+            sprintf(Message, "Unable to set up socket option SO_REUSEADDR");
+            return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        /* Set the options  to receivce ipv6 traffic */
+        if (setsockopt(Insock, IPPROTO_IPV6, IPV6_RECVPKTINFO, &on, sizeof(on)) < 0) {
+          sprintf(Message, "Unable to set up socket option IPV6_RECVPKTINFO.");
+          return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        // set socket as nonblocking
+        if (ioctl(Insock, FIONBIO, (char *)&on) < 0) {
+           sprintf(Message, "Unable to set up socket as nonblocking - ioctl's failure.");
+           return LOWLEVEL_ERROR_SOCK_OPTS;
+        }
+
+        freeaddrinfo(res);
+
+
+        //initialize master fd_set
+        FD_ZERO(&master_set);
+        FD_SET(Insock,&master_set);
+    }
+    /* Open a TCP socket for inbound traffic */
+
+   // struct sockaddr_in6 bindmeClient;
+
+    //TCP client part
+    if (port == 0) {
+
+        port=547;
+        sprintf(port_char,"%d",port);
+
+        /* bind socket to a specified port */
+        /*bzero(&bindmeClient, sizeof(struct sockaddr_in6));
+        bindmeClient.sin6_family = AF_INET6;
+        bindmeClient.sin6_port   = htons(port);
+        bindmeClient.sin6_family = IPPROTO_TCP;
+        tmp = (char*)(&bindmeClient.sin6_addr);
+        inet_pton6(addr, tmp);*/
+        //bindmeClient.sin6_addr = addr;
+
+        memset(&hints,0,sizeof(hints));
+        memset(&res,0,sizeof(res));
+
+        hints.ai_flags    = AI_NUMERICSERV;
+        hints.ai_family   = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+
+       /* if ((error = getaddrinfo(hostp->hostname, hostp->port,
+                    &hints, &res)) != 0) */
+
+        printf("\n ### iface: %s(id=%d), addr=%s, port=%d \n", ifacename,ifaceid, addr, port);
+
+        if( (error = getaddrinfo(addr, port_char, &hints, &res)) ) {
+            sprintf(Message, "getaddrinfo failed. Is IPv6 protocol supported by kernel?");
+            return LOWLEVEL_ERROR_GETADDRINFO;
+        } else {
+            printf ("\n getaddrinfo called correctly\n");
+            //printf("\n addr: %s\n", res->ai_addr);
+        }
+        //(connect(Insock, (struct sockaddr_in6*)&bindmeClient, sizeof(struct sockaddr_in6)) != 0)
+
+        for(rp=res; rp!=NULL;rp->ai_next) {
+            Insock = socket(rp->ai_family,rp->ai_socktype,rp->ai_protocol);
+            if(Insock==-1) {
+                continue;
+            } else {
+                printf("\n TCP socket has been created correctly\n " );
+            }
+            if (connect(Insock, rp->ai_addr, rp->ai_addrlen) != 0) {
+                 Rerror("Unable to connect with DHCP server, connect function failed");
+            } else {
+                 result++;
+                 break;
+            }
+        }
+
+        if (result==0) {
+            printf("\n Can't connect on any interface with specified host");
+            return LOWLEVEL_ERROR_CONNECT_FAILED;
+        } else {
+            printf("\n Connected with host");
+            return Insock;
+        }
+    }
+    result=0;
+    //TCP server part
+    struct sockaddr_in6 bindmeServer;
+    if ( port > 0) {
+
+        /* bind socket to a specified port */
+        bzero(&bindmeServer, sizeof(struct sockaddr_in6));
+        bindmeServer.sin6_family = AF_INET6;
+        bindmeServer.sin6_port   = htons(port);
+        tmp = (char*)(&bindmeServer.sin6_addr);
+        inet_pton6(addr, tmp);
+
+        socklen_t bindmeServerSize;
+        bindmeServerSize= sizeof (struct sockaddr_in6);
+
+        printf("\n Socket FD: %d", Insock );
+       // printf("\n Size of struct passed to bind:%d\n",sizeof(struct sockaddr_in6));
+        //printf("\n Size of struct passed to bind:%d",sizeof(struct sockaddr_in6));
+        result = bind( Insock,(struct sockaddr_in6 *)&bindmeServer,bindmeServerSize);
+        printf("\n Result:%d \n",result);
+
+        if (result < 0 ) {
+            sprintf(Message, "Unable to bind socket: %s", strerror(errno) );
+            return LOWLEVEL_ERROR_BIND_FAILED;
+        } else {
+            sprintf(Message, "Socket has been bind succesfully");
+            printf("\n Socket has been bind succesfully \n");
+        }
+
+        if (connectionNumber > 0)  {
+             if ( listen (Insock,connectionNumber) != 0 ) {
+                 printf("\n Listen function has NOT been called correctly \n");
+                 return LOWLEVEL_ERROR_LISTEN_FAILED;
+             } else {
+                 sprintf(Message,"Listen function has been called correctly");
+                 printf("\n Listen function has been called correctly \n");
+             }
+        } else {
+            sprintf(Message, "Connection number hasn't been specified");
+            return LOWLEVEL_ERROR_LISTEN_FAILED;
+        }
+
+    }
+
+    printf("\nRETURN SOCK FD:%d\n",Insock);
+    return Insock;
+
+}
+
+//!getsOpt(sock->getFD(), SOL_SOCKET, SO_TYPE, (char*)&stype)
+//int getsockopt(int socket, int level, int option_name,void *restrict option_value, socklen_t *restrict option_len);
+extern int getsOpt(int fd) {
+
+    int len, sockType, result;
+
+    len = sizeof(sockType);
+    result = getsockopt(fd,SOL_SOCKET,SO_TYPE,&sockType,&len);
+    if (result < 0) {
+        Rerror("Getsockopt function failed");
+        return result;
+    } else {
+        sprintf(Message, "Getsockopt OK");
+        return sockType;
+    }
+    return 0;
+}
+
+extern int accept_tcp (int fd) {
+
+    int fd_new;
+    /*
+    if(!master_set) {
+        sprintf(Message, "Master set of file descriptor not defined");
+        return 1;
+    }*/
+
+    /*addrLength = sizeof(socketStruct.sockaddr_in);
+    if (( addr!=NULL) && (addrLength!=0 ) ) {
+        fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
+        if (fd_new == -1) {
+            sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+            close(fd_new);
+            return 1;
+        } else {
+            return fd_new;
+        }
+
+    } */
+
+    fd_new = accept(fd,NULL,NULL);
+    if (fd_new < 0) {
+        //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
+        //close(fd_new);
+
+        if (errno !=  EWOULDBLOCK) {
+            sprintf(Message, "Accept function failed. Cannot create net socket descriptor" );
+
+            //Here should be check if client didn't close connection
+            //close(fd_new);
+            return -1;
+        }
+
+    }
+    return fd_new;
+}
+
+//extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
+
+//    int addrLength;
+//    int fd_new;
+//    addrLength = sizeof(socketStruct.sockaddr_in);
+//     if(getpeername(fd, addr, addrLength) < 0) {
+//         sprintf(Message, "Getpeername function failed. Cannot return peername address");
+//         close(fd_new);
+//         return 1;
+//     } else {
+//         return 0;
+//     }
+//}
+
+extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
+
+    int iResult;
+    iResult = recv (fd, recvBuffer, bufLength, flags);
+    if (iResult < 0) {
+        sprintf (Message,"Cannot receive data, receive function socket error");
+        Rerror("Receive function error:");
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
+        return iResult;
+    }
+}
+
+
+extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, int port) {
+
+    struct addrinfo hints, *res;
+    int iResult = 0;
+    char cport[10];
+
+    sprintf(cport,"%d",port);
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = PF_INET6;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if (getaddrinfo(addr, cport, &hints, &res) < 0) {
+        return -1; /* Error in transmitting */
+    }
+
+    if (!buflen){
+        buflen=(int)strlen(buf);
+    }
+    iResult = send (fd,buf,buflen,flags);
+
+    if (iResult < 0)
+    {
+        sprintf(Message, "Unable to send data (dst addr: %s)", addr);
+        Rerror("Tcp send function error");
+        return LOWLEVEL_ERROR_SOCKET;
+    } else {
+        printf("\n %d bytes has been send\n",iResult);
+    }
+
+    freeaddrinfo(res);
+
+    return iResult;
+}
+
+extern int terminate_tcp_connection(int fd,int how) {
+
+    /*SD_RECEIVE 0
+    SD_SEND    1
+    SD_BOTH    2*/
+    int iResult;
+
+    iResult = shutdown(fd,how);
+    if (iResult < 0) {
+        close(fd);
+        sprintf(Message, "Shutdown failed. Close function called\n");
+        return LOWLEVEL_ERROR_SOCKET;
+    }
+    return iResult;
+
 }

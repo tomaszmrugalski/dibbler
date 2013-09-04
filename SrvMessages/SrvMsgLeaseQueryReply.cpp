@@ -87,11 +87,25 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     opt = queryMsg->getOption(OPTION_LQ_QUERY);
     if (opt) {
 
-    while (count < queryMsg->countOption()+1) {
+
+    queryMsg->firstOption();
+    while (opt = queryMsg->getOption()) {
+        if(opt->getOptType()== OPTION_LQ_QUERY) {
+            subOpt = (Ptr*) queryMsg;
+            break;
+        }
+    }
+    subOpt = queryMsg->getOption(OPTION_LQ_QUERY);
+
+    SPtr<TSrvOptLQ> q = (Ptr*) opt;
+    q->getOptType();
+    subOpt->firstOption();
+
+    while (count < subOpt->countOption()+1) {
 
         count++;
-        opt->firstOption();
-        subOpt = opt->getOption();
+        subOpt = subOpt->getOption();
+        Log(Info) << "Following subOption has benn found:"<< subOpt->getOptType() <<LogEnd;
         if (!queryMsg->Bulk &&
             (subOpt->getOptType() == QUERY_BY_RELAY_ID ||
              subOpt->getOptType() == QUERY_BY_LINK_ADDRESS ||

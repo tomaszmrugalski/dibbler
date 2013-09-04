@@ -80,9 +80,12 @@ TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
 
     while (pos<bufSize)	{
 
+        unsigned short tmpl;
+        Log(Debug) << "pos:"<<pos<<tmpl<<LogEnd;
         code   = buf[pos]*256 + buf[pos+1];
         pos+=2;
         length = buf[pos]*256 + buf[pos+1];
+        Log(Debug) << "pos:"<<pos<<tmpl<<LogEnd;
         pos+=2;
         if (pos+length>bufSize) {
             Log(Error) << "Malformed option (type=" << code << ", len=" << length
@@ -116,6 +119,9 @@ TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
         case OPTION_IAADDR:
             SubOptions.append( new TSrvOptIAAddress(buf+pos, length, parent));
             break;
+        case OPTION_LQ_QUERY:
+            SubOptions.append(this);
+            break;
         default:
             Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
             break;
@@ -124,6 +130,7 @@ TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
 
         pos += length;
     }
+    Log(Debug) << "SubOptCount:" << this->countOption() <<LogEnd;
 }
 
 bool TSrvOptLQ::doDuties() {

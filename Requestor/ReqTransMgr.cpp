@@ -515,6 +515,29 @@ bool ReqTransMgr::WaitForRsp()
     return true;
 }
 
+bool ReqTransMgr::WaitForTcpRsp()
+{
+    char buf[1024];
+    int bufLen = 1024;
+    memset(buf, 0, bufLen);
+    SPtr<TIPv6Addr> sender = new TIPv6Addr();
+
+    int sockFD;
+    Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
+    sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
+
+    Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
+    if (sockFD>0) {
+        Log(Info) << "Received " << bufLen << " bytes response." << LogEnd;
+        PrintRsp(buf, bufLen);
+    } else {
+        Log(Error) << "Response not received. Timeout or socket error." << LogEnd;
+        return false;
+    }
+
+    return true;
+}
+
 void ReqTransMgr::PrintRsp(char * buf, int bufLen)
 {
     if (bufLen < 4) {

@@ -275,9 +275,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                     if (!ptr->validateReplayDetection() ||
                         !ptr->validateAuthInfo(buf, bufsize)) {
                         Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                        return 0;
-
+                        return 0;   
                     }
+
                     return ptr;
                 }
                 case RELAY_FORW_MSG:
