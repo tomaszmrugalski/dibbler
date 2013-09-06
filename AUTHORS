@@ -102,5 +102,8 @@
     2013-08: Client segfault when incomplete/invalid AUTH info specified (bug #289)
     2013-08: Log message fix (bug #292)
 
+  - Patrick Pichon <patrick(dot)pipiche(dot)fr>
+    2013-09: Fedora RPM script
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
