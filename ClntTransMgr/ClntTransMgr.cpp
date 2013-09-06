@@ -683,7 +683,7 @@ void TClntTransMgr::handleReconfigure(SPtr<TClntMsg> reconfMsg) {
     // if yes, send specific message, e.g. call sendRenew(), sendRebind() or sendInfRequest()
 
     if(!ClntCfgMgr().getReconfigure()) {
-        Log(Notice) << "Client does not support reconfigure message." << LogEnd;
+        Log(Notice) << "Client is not configured to support reconfigure message." << LogEnd;
         return;
     }
 
