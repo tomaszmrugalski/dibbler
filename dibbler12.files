@@ -638,3 +638,5 @@
 /home/damo/Studia/Praca_magisterska/dibbler-v-1.2-master/ltmain.sh
 /home/damo/Studia/Praca_magisterska/dibbler-v-1.2-master/README.md
 /home/damo/Studia/Praca_magisterska/dibbler-v-1.2-master/tomaszmrugalski-dibbler-1.1.pro
+RelOptions/RelOptDUID.cpp
+RelOptions/RelOptDUID.h

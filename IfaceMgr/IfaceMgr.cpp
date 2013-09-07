@@ -254,7 +254,11 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             this->isTcp=false;
         } else if (stype==SOCK_STREAM) {
             if(!tcpClient) {
-                fd_new_tcp = accept_tcp(sock->getFD());
+                char peerAddrPacked[16];
+                fd_new_tcp = accept_tcp(sock->getFD(),peerPlainAddr);
+                inet_pton6(peerPlainAddr,peerAddrPacked);
+                peer->setAddr(peerAddrPacked);
+
                 Log(Info) << "Accept Socket found:" << sock->getFD() <<LogEnd;
                 Log(Info) << "Returned by accept:" << fd_new_tcp << LogEnd;
                 FD_SET(fd_new_tcp,&fds);

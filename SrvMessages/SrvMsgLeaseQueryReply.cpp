@@ -152,8 +152,8 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
     SPtr<TOpt> opt;
     q->firstOption();
-    SPtr<TSrvOptIAAddress> addr;
     SPtr<TIPv6Addr> link = q->getLinkAddr();
+    SPtr<TSrvOptIAAddress> addr = 0;
 
     while ( opt = q->getOption() ) {
 	if (opt->getOptType() == OPTION_IAADDR) {

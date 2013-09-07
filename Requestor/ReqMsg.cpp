@@ -29,7 +29,7 @@ TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 
 //TMsg(int iface, SPtr<TIPv6Addr> addr, char *&buf, int msgType, int msgSize)
 TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char *buf, int msgType,int msgSize)
-    :TMsg(iface, addr, buf, msgType,msgSize)
+    :TMsg(iface,addr,msgType)
 {
 
 }

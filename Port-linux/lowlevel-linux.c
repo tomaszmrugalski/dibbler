@@ -629,7 +629,7 @@ int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int 
     inet_ntop6((void*)&peerAddr.sin6_addr, peerPlainAddr);
 
     /* get destination address */
-    for(cm = (struct cmsghdr *) CMSG_FIRSTHDR(&msg); cm; cm = (struct cmsghdr *) CMSG_NXTHDR(&msg, cm)){
+    for(cm = (struct cmsghdr *) CMSG_FIRSTHDR(&msg); cm; cm = (struct cmsghdr *) CMSG_NXTHDR(&msg, cm)) {
 	if (cm->cmsg_level != IPPROTO_IPV6 || cm->cmsg_type != IPV6_PKTINFO)
 	    continue;
 	pktinfo= (struct in6_pktinfo *) (CMSG_DATA(cm));
@@ -1017,42 +1017,30 @@ extern int getsOpt(int fd) {
     return 0;
 }
 
-extern int accept_tcp (int fd) {
+extern int accept_tcp (int fd, char *peerPlainAddr) {
 
+    struct sockaddr_in6 peerStructure;
     int fd_new;
-    /*
-    if(!master_set) {
-        sprintf(Message, "Master set of file descriptor not defined");
-        return 1;
-    }*/
 
-    /*addrLength = sizeof(socketStruct.sockaddr_in);
-    if (( addr!=NULL) && (addrLength!=0 ) ) {
-        fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
-        if (fd_new == -1) {
-            sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
-            close(fd_new);
-            return 1;
-        } else {
-            return fd_new;
-        }
+    bzero(&peerStructure, sizeof(struct sockaddr_in6));
+    size_t peerStructureLen = sizeof(peerStructure);
 
-    } */
-
-    fd_new = accept(fd,NULL,NULL);
+    fd_new = accept(fd,(struct sockaddr_in6 *)&peerStructure,peerStructureLen);
     if (fd_new < 0) {
         //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
         //close(fd_new);
 
         if (errno !=  EWOULDBLOCK) {
-            sprintf(Message, "Accept function failed. Cannot create net socket descriptor" );
-
+            printf("Cannot create net socket descriptor.\n");
+            Rerror("Accept function failed with error:");
             //Here should be check if client didn't close connection
             //close(fd_new);
             return -1;
         }
 
     }
+    /* get source address */
+    inet_ntop6((void*)&peerStructure.sin6_addr, peerPlainAddr);
     return fd_new;
 }
 
@@ -1072,7 +1060,8 @@ extern int accept_tcp (int fd) {
 
 extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
 
-    int iResult;
+    int iResult=0;
+
     iResult = recv (fd, recvBuffer, bufLength, flags);
     if (iResult < 0) {
         sprintf (Message,"Cannot receive data, receive function socket error");

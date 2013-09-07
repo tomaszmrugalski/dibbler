@@ -771,42 +771,30 @@ extern int getsOpt(int fd) {
     return 0;
 }
 
-extern int accept_tcp (int fd) {
+extern int accept_tcp (int fd, char *peerPlainAddr) {
 
+    struct sockaddr_in6 peerStructure;
     int fd_new;
-    /*
-    if(!master_set) {
-        sprintf(Message, "Master set of file descriptor not defined");
-        return 1;
-    }*/
 
-    /*addrLength = sizeof(socketStruct.sockaddr_in);
-    if (( addr!=NULL) && (addrLength!=0 ) ) {
-        fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
-        if (fd_new == -1) {
-            sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
-            close(fd_new);
-            return 1;
-        } else {
-            return fd_new;
-        }
+    bzero(&peerStructure, sizeof(struct sockaddr_in6));
+    size_t peerStructureLen = sizeof(peerStructure);
 
-    } */
-
-    fd_new = accept(fd,NULL,NULL);
+    fd_new = accept(fd,(struct sockaddr_in6 *)&peerStructure,peerStructureLen);
     if (fd_new < 0) {
         //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
         //close(fd_new);
 
         if (errno !=  EWOULDBLOCK) {
-            sprintf(Message, "Accept function failed. Cannot create net socket descriptor" );
-
+            printf("Cannot create net socket descriptor.\n");
+            Rerror("Accept function failed with error:");
             //Here should be check if client didn't close connection
             //close(fd_new);
             return -1;
         }
 
     }
+    /* get source address */
+    inet_ntop6((void*)&peerStructure.sin6_addr, peerPlainAddr);
     return fd_new;
 }
 
