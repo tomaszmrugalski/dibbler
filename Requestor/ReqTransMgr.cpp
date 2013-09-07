@@ -475,14 +475,21 @@ bool ReqTransMgr::SendTcpMsg()
 bool ReqTransMgr::WaitForRsp()
 {
     char buf[1024];
-    int bufLen = 1024;
+    int bufLen = 1024, stype;
     memset(buf, 0, bufLen);
     SPtr<TIPv6Addr> sender = new TIPv6Addr();
-
     int sockFD;
     Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
-    sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
-    
+
+    stype = getsOpt(Socket->getFD());
+    if(stype != -1) {
+        if (stype==SOCK_STREAM) {
+            sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender,true);
+        } else if (stype==SOCK_DGRAM)  {
+            sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
+        }
+    }
+
     Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
     if (sockFD>0) {
         Log(Info) << "Received " << bufLen << " bytes response." << LogEnd;
@@ -495,28 +502,6 @@ bool ReqTransMgr::WaitForRsp()
     return true;
 }
 
-bool ReqTransMgr::WaitForTcpRsp()
-{
-    char buf[1024];
-    int bufLen = 1024;
-    memset(buf, 0, bufLen);
-    SPtr<TIPv6Addr> sender = new TIPv6Addr();
-
-    int sockFD;
-    Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
-    sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
-
-    Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
-    if (sockFD>0) {
-        Log(Info) << "Received " << bufLen << " bytes response." << LogEnd;
-        PrintRsp(buf, bufLen);
-    } else {
-        Log(Error) << "Response not received. Timeout or socket error." << LogEnd;
-        return false;
-    }
-
-    return true;
-}
 
 void ReqTransMgr::PrintRsp(char * buf, int bufLen)
 {
@@ -530,6 +515,21 @@ void ReqTransMgr::PrintRsp(char * buf, int bufLen)
     Log(Info) << "MsgType: " << msgType << ", transID=0x" << hex << transId << dec << LogEnd;
 
     ParseOpts(msgType, 0, buf+4, bufLen-4);
+}
+
+void ReqTransMgr::PrintTcpRsp(char *buf, int bufLen)
+{
+    if (bufLen < 6) {
+        Log(Error) << "Unable to print message: truncated (min. len=6 required)." << LogEnd;
+    }
+
+    int msgSize = buf[0]*256 + buf[0];
+    int msgType = buf[2];
+    int transId = buf[1]*256*256 + 256*buf[2] + buf[3];
+
+    Log(Info) << "MsgType: " << msgType << ", transID=0x" << hex << transId << dec << LogEnd;
+
+    ParseOpts(msgType, 0, buf+6, bufLen-6);
 }
 
 bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen)
@@ -595,7 +595,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	    break;
 	case OPTION_SERVERID:
 	    name = "ServerID";
-	    o = BinToString(buf+pos, length);
+        o = BinToString(buf+pos, length);
 	    break;
 	case OPTION_LQ_QUERY:
 	    name = "LQ Query Option";

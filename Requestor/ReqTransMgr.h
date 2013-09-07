@@ -27,7 +27,6 @@ public:
     bool SendMsg();
     bool SendTcpMsg();
     bool WaitForRsp();
-    bool WaitForTcpRsp();
     bool RetryConnection(); //if server doesn't answer retry attemption
     void TerminateTcpConn();
     bool ValidateMsg(char * msgBuf);
@@ -35,6 +34,7 @@ public:
 
 private:
     void PrintRsp(char * buf, int bufLen);
+    void PrintTcpRsp(char * buf, int bufLen);
     bool ParseOpts(int msgType, int recurseLevel, char * buf, int bufLen);
     std::string BinToString(char * buf, int bufLen);
     TIfaceMgr * IfaceMgr;
