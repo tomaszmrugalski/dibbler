@@ -16,7 +16,7 @@
   - Authentication rewritten (now uses RFC3315 option formats)
   - Auth: support for reconfigure-key added
   - Auth: support for delayed authentication
-  - Linux: support for M,O bits reading from Router Advertisements
+  - Linux: support for M,O bits reading from Router Advertisements (bug #49)
   - Srv: server no longer crashes when options are defined in global scope
     (issue reported by Michael Thorsager, thanks!)
   - Srv: database sanitization now works also for relays (bug #288)
