@@ -37,7 +37,7 @@ TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false)
+    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false), PerformanceMode_(false)
 {
     setDefaults();
 
@@ -1200,4 +1200,12 @@ uint32_t TSrvCfgMgr::getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> c
 
     // no key found
     return 0;
+}
+
+void TSrvCfgMgr::setPerformanceMode(bool mode) {
+    PerformanceMode_ = mode;
+}
+
+bool TSrvCfgMgr::getPerformanceMode() {
+    return PerformanceMode_;
 }

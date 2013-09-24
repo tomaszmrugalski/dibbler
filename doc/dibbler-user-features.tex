@@ -2057,6 +2057,43 @@ Since those mechanisms are non-standard, they are disabled by
 default. To enable them, ,,experimental'' keyword must be placed in
 the \verb+client.conf+ or \verb+server.conf+ files.
 
+\subsubsection{Server Performance mode}
+\label{feature-performance-mode}
+When running in a normal mode, the server rewrites its full database
+every time there is a change. That becomes problematic once the number
+of clients is large and number of packets per second is sufficiently
+high. To somehow eleviate the problem, an experimental
+performance-mode has been implemented. The server will load its
+database at start, then keep it in memory only and will write it again
+to disk during normal shutdown procedure. That should work, but it is
+dangerous! If there is power failure, server crash or other event, the
+server may not be able to write its database to disk and you'll lose
+your database.
+
+To use this feature, use the following config:
+\begin{lstlisting}
+# We want the server to not waste time on logging
+log-level 3
+
+# Enable experimental features
+experimental
+
+# Enable performance mode
+performance-mode 1
+
+iface eth0 {
+    class {
+        pool 2001:db8::/64
+    }
+}
+\end{lstlisting}
+
+If you are not satisfied with Dibbler performance, please submit
+patches or better yet, consider the alternative: Kea (BIND10 DHCP)
+\url{http://bind10.isc.org/wiki/Kea}. It offer tremendous performance,
+is open source and is being actively developed by a professional team.
+Its lead developer happen to be Dibbler author as well :)
+
 \subsubsection{Address Parameters}
 \label{feature-addr-params}
 \textbf{Note: This feature is experimental, i.e. it is not described

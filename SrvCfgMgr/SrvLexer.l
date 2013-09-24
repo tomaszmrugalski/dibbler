@@ -170,7 +170,7 @@ substring	    { return SrvParser::SUBSTRING_; }
 contain	    { return SrvParser::CONTAIN_; }
 string              { return SrvParser::STRING_KEYWORD_; }
 address-list        { return SrvParser::ADDRESS_LIST_; }
-
+performance-mode    { return SrvParser::PERFORMANCE_MODE_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}

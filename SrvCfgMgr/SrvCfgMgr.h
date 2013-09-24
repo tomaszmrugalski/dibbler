@@ -122,6 +122,11 @@ public:
     int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
     int getAnyRelay();
 
+
+    // Sets performance mode (not write whole XML)
+    void setPerformanceMode(bool mode);
+    bool getPerformanceMode();
+
     // used to be private, but we need access in tests
 protected:
     TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
@@ -161,6 +166,8 @@ protected:
     unsigned short BulkLQTcpPort;
     unsigned int BulkLQMaxConns;
     unsigned int BulkLQTimeout;
+
+    bool PerformanceMode_;
 };
 
 #endif /* SRVCONFMGR_H */

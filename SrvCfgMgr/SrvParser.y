@@ -121,7 +121,7 @@ virtual ~SrvParser();
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, LINK_LOCAL_, ADDRESS_, PREFIX_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
-%token AFTR_
+%token AFTR_, PERFORMANCE_MODE_
 %token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_
 %token AUTH_DROP_UNAUTH_, AUTH_REALM_
 %token KEY_, SECRET_, ALGORITHM_, FUDGE_
@@ -193,6 +193,7 @@ GlobalOption
 | ClientClass
 | Key
 | ScriptName
+| PerformanceMode
 ;
 
 InterfaceOptionDeclaration
@@ -1118,6 +1119,18 @@ ScriptName
 {
     CfgMgr->setScriptName($2);
 };
+
+PerformanceMode
+: PERFORMANCE_MODE_ Number
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'performance-mode' defined, but experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+
+    CfgMgr->setPerformanceMode($2);
+}
 
 
 InactiveMode

@@ -9,6 +9,7 @@
   - Log message fixed. Thanks to George Joseph for a patch (bug #292)
   - Client options are now passed to notify scripts (bug #293)
   - Fedora RPM script contributted by Patrick Pichon, thanks!
+  - Srv: Experimental performance-mode added
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

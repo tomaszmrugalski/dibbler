@@ -132,6 +132,10 @@ void TDHCPServer::run()
         }
         SrvTransMgr().relayMsg(msg);
     }
+
+    SrvCfgMgr().setPerformanceMode(false);
+    SrvAddrMgr().dump();
+
     SrvIfaceMgr().closeSockets();
     Log(Notice) << "Bye bye." << LogEnd;
 }

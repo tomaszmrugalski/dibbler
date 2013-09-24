@@ -788,6 +788,10 @@ void TSrvAddrMgr::print(std::ostream & out) {
 
 void TSrvAddrMgr::dump() {
 
+    // Do not write anything to disk if there is performance mode enabled
+    if (SrvCfgMgr().getPerformanceMode())
+        return;
+
     TAddrMgr::dump(); // perform normal dump of the AddrMgr
     cacheDump();
 }
