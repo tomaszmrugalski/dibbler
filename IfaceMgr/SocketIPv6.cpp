@@ -26,6 +26,7 @@ using namespace std;
  */ 
 int TIfaceSocket::Count=0;
 int TIfaceSocket::MaxFD=0;
+int TIfaceSocket::tcpConnnectionCount=0;
 
 /**
  * creates socket bound to specific address on this interface
@@ -70,12 +71,13 @@ TIfaceSocket::TIfaceSocket(char * iface,int ifaceid, int port,bool ifaceonly, bo
     this->Count++;
 }
 
-TIfaceSocket::TIfaceSocket(char *iface, int ifaceid, SPtr<TIPv6Addr> addr, int port)
+TIfaceSocket::TIfaceSocket(char *iface, int ifaceid, SPtr<TIPv6Addr> addr, int port, int baseSocket)
 {
     if (this->Count==0) {
         FD_ZERO(getFDS());
     }
     this->Count++;
+    this->baseFD = baseSocket;
     this->createSocket_TCP(iface, ifaceid, addr, port);
 }
 
@@ -149,27 +151,35 @@ int TIfaceSocket::createSocket_TCP(char *iface, int ifaceid, SPtr<TIPv6Addr> add
     this->IfaceID = ifaceid;
     this->Port = port;
     this->Status = STATE_NOTCONFIGURED;
-    this->Addr   = addr;
 
-    //todo:
-    int connectionNumber = BULKLQ_MAX_CONNS;
+    // create socket using accept
+    if (this->baseFD > 0) {
+        char peerPlainAddr[48];
+        char peerAddrPacked[16];
+        this->accept(addr,peerPlainAddr);
+        inet_pton6(peerPlainAddr,peerAddrPacked);
+        //setting peer address
+        addr->setAddr(peerAddrPacked);
+        this->Status = STATE_CONFIGURED;
+    } else {
 
-    // create socket
-    sock = sock_add_tcp(this->Iface, this->IfaceID, addr->getPlain(),this->Port);
-    if (sock<0) {
-        printError(sock, iface, ifaceid, addr, port);
-        this->Status = STATE_FAILED;
-        return -3;
+        this->Addr = addr;
+        // create socket in standard way
+        sock = sock_add_tcp(this->Iface, this->IfaceID, addr->getPlain(),this->Port);
+        if (sock<0) {
+            printError(sock, iface, ifaceid, addr, port);
+            this->Status = STATE_FAILED;
+            return -3;
+        }
+
+        this->FD = sock;
+        this->Status = STATE_CONFIGURED;
+
+        // add FileDescriptior fd_set using FD_SET macro
+        FD_SET(this->FD,this->getFDS());
+        if (FD>MaxFD)
+            MaxFD = FD;
     }
-
-    this->FD = sock;
-    this->Status = STATE_CONFIGURED;
-
-    // add FileDescriptior fd_set using FD_SET macro
-    FD_SET(this->FD,this->getFDS());
-    if (FD>MaxFD)
-        MaxFD = FD;
-
     return 0;
 }
 
@@ -225,12 +235,34 @@ int TIfaceSocket::recv(char * buf, SPtr<TIPv6Addr> addr) {
     return len;
 }
 
-int TIfaceSocket::terminate_tcp(int how)
+int TIfaceSocket::terminate_tcp(int fd, int how)
 {
-    int fd;
-    fd = this->getFD();
     terminate_tcp_connection(fd,how);
     return 1;
+}
+
+int TIfaceSocket::accept(SPtr<TIPv6Addr> peer,char *peerPlainAddr)
+{
+
+    char peerAddrPacked[16];
+    int fd_new_tcp;
+    fd_new_tcp = accept_tcp(this->baseFD,peerPlainAddr);
+
+    this->FD=fd_new_tcp;
+    if (fd_new_tcp!=0) {
+        inet_pton6(peerPlainAddr,peerAddrPacked);
+        peer->setAddr(peerAddrPacked);
+
+        Log(Info) << "Accept Socket found:" << this->getFD() <<LogEnd;
+
+        // add FileDescriptior fd_set using FD_SET macro
+        FD_SET(this->FD,this->getFDS());
+        if (this->FD>MaxFD)
+            MaxFD = this->FD;
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 /**
@@ -247,7 +279,8 @@ int TIfaceSocket::send_tcp(char *buf, int len, SPtr<TIPv6Addr> addr, int port)
     int flags = 0;
     //extern "C" int sock_send(int fd, char * addr, char * buf, int buflen, int port, int ifaceID);
 
-    result = sock_send_tcp(this->FD, addr->getPlain(), buf, len,flags, port);
+
+    result = sock_send_tcp(this->getMaxFD(), addr->getPlain(), buf, len,flags, port);
 
     if (result<0) {
     printError(result, this->Iface, this->IfaceID, addr, port);

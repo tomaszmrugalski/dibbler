@@ -1009,6 +1009,7 @@ extern int sock_send_tcp(int fd,char *buf, int buflen, int flags, int port ) {
     hints.ai_family = PF_INET6;
     hints.ai_socktype = SOCK_STREAM;
 
+
     if (getaddrinfo(addr, cport, &hints, &res) < 0) {
         return -1; /* Error in transmitting */
     }
@@ -1037,9 +1038,9 @@ extern int terminate_tcp_connection(int fd,int how) {
     //SD_SEND    1
     //SD_BOTH    2
 
-    iResult = shutdown(ConnectSocket,how);
+    iResult = shutdown(fd,how);
     if (iResult == SOCKET_ERROR) {
-        wprintf(L"shutdown failed with error: %d\n", WSAGetLastError());
+        wprintf("shutdown failed with error: %d\n", WSAGetLastError());
         closesocket(ConnectSocket);
         WSACleanup();
         return 1;

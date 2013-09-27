@@ -249,7 +249,7 @@ bool ReqTransMgr::CreateNewTCPSocket(char *dstAddr)
 
     SPtr<TIPv6Addr> dstAddrTmp = new TIPv6Addr(dstAddr,true);
 
-    if(!Iface->addTcpSocket(dstAddrTmp,port)) {
+    if(!Iface->addTcpSocket(dstAddrTmp,port,0)) {
         Log(Crit) << "TCP Socket creation or binding failed (global address)." << LogEnd;
         return false;
     } else {
@@ -707,10 +707,15 @@ bool ReqTransMgr::RetryConnection()
 
 void ReqTransMgr::TerminateTcpConn()
 {
-    int how;
-    how=1;
-    this->Socket->terminate_tcp(how);
 
+    Log(Debug) << "Closing conection..." << LogEnd;
+    int how, sockId;
+    how=2;
+    SPtr<TIfaceSocket> ptr;
+
+    Iface->firstSocket();
+    ptr = Iface->getSocket();
+    this->Socket->terminate_tcp(ptr->getFD(),how);
 
 }
 

@@ -225,7 +225,7 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
     if (SrvCfgMgr().isBulkSupported()) {
         Log(Notice) << "Bulk-leasequery accepted. Creating TCP socket on" << confIface->getName()
                        <<"/" << confIface->getID() << " interface." << LogEnd;
-        if (!iface->addTcpSocket(unicast,DHCPSERVER_PORT)) {
+        if (!iface->addTcpSocket(unicast,DHCPSERVER_PORT,0)) {
             Log(Crit) << "Proper TCP socket creation failed." << LogEnd;
         }
     }

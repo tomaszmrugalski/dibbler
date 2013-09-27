@@ -34,7 +34,7 @@ class TIfaceSocket {
     TIfaceSocket(char * iface,int ifaceid, int port, bool ifaceonly, bool reuse);
 
     //bulk's constructor
-    TIfaceSocket(char * iface, int ifaceid,SPtr<TIPv6Addr> addr, int port);
+    TIfaceSocket(char * iface, int ifaceid,SPtr<TIPv6Addr> addr, int port, int baseSocket);
 
    
     // ---transmission---
@@ -44,7 +44,8 @@ class TIfaceSocket {
     // ---TCP-transmission---
     int send_tcp(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv_tcp(char * buf,SPtr<TIPv6Addr> addr);
-    int terminate_tcp(int how);
+    int terminate_tcp(int fd, int how);
+    int accept(SPtr<TIPv6Addr> peer, char *peerPlainAddr);
 
     // ---get info---
     inline static int getCount() { return Count; }
@@ -72,6 +73,9 @@ class TIfaceSocket {
 
     // FileDescriptor
     int FD;
+
+    //Base Socket FileDescriptor
+    int baseFD;
 
     // bounded port
     int Port;
@@ -101,6 +105,7 @@ class TIfaceSocket {
     // created. It call FD_SET to zero fd_set 
     static int Count;
     static int MaxFD; // needed instead of FD_MAXSIZE on Macs
+    static int tcpConnnectionCount;
 };
 
 

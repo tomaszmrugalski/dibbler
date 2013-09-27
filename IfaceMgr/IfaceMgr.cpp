@@ -38,6 +38,7 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
     this->IsDone  = false;
     struct iface  * ptr;
     struct iface  * ifaceList;
+    this->isTcpSet = false;
 
     if (!getIfaces)
         return;
@@ -155,7 +156,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer,
                       SPtr<TIPv6Addr> myaddr, bool tcpClient) {
     struct timeval czas;
-    int result, fd_new_tcp;
+    int result;
     if (time > DHCPV6_INFINITY/2)
         time /=2;
 
@@ -204,15 +205,20 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     SPtr<TIfaceIface> iface;
     SPtr<TIfaceSocket> sock;
+
     bool found = 0;
+
     IfaceLst.first();
     while ( (!found) && (iface = IfaceLst.get()) ) {
         iface->firstSocket();
         while ( sock = iface->getSocket() ) {
+            sock->getFD();
             if (FD_ISSET(sock->getFD(),&fds)) {
                 found = true;
                 Log(Info) << "Socket found:" << sock->getFD() <<LogEnd;
                 break;
+            } else {
+                Log(Info) << "Socket isn't set but is present" << sock->getFD() <<LogEnd;
             }
         }
     }
@@ -254,19 +260,18 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             this->isTcp=false;
         } else if (stype==SOCK_STREAM) {
             if(!tcpClient) {
-                char peerAddrPacked[16];
-                fd_new_tcp = accept_tcp(sock->getFD(),peerPlainAddr);
-                inet_pton6(peerPlainAddr,peerAddrPacked);
-                peer->setAddr(peerAddrPacked);
-
-                Log(Info) << "Accept Socket found:" << sock->getFD() <<LogEnd;
-                Log(Info) << "Returned by accept:" << fd_new_tcp << LogEnd;
-                FD_SET(fd_new_tcp,&fds);
-                result = sock_recv_tcp(fd_new_tcp, buf, bufsize, flags);
+                if(!this->isTcpSet) {
+                    //add new socket by accept function
+                    if(iface->addTcpSocket(sock->getAddr(),sock->getPort(),sock->getFD()))
+                            this->isTcpSet = true;
+                } else {
+                    result = sock_recv_tcp(iface->getSocket()->getMaxFD(), buf, bufsize, flags);
+                }
             } else {
                 result = sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
             }
             this->isTcp = true;
+
         }
 
     } else {

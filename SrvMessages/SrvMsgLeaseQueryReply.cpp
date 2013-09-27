@@ -38,11 +38,10 @@ TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
   } else {
       if (!answer(query)) {
         Log(Error) << "BLQ: LQ-QUERY response generation failed." << LogEnd;
-            IsDone = true;
       } else {
         Log(Debug) << "BLQ: LQ-QUERY response generation successful." << LogEnd;
-        IsDone = false;
       }
+      IsDone = true;
   }
 }
 

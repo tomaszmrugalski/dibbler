@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
                 Log(Crit) << "Aborted. Cannot receive any data, WaitForResponse function failed." << LogEnd;
                 //transMgr->RetryConnection();
                 return LOWLEVEL_ERROR_SOCKET;
-            }
+            } i++;
         }
 
         transMgr->TerminateTcpConn();

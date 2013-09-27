@@ -23,6 +23,8 @@ class TOpt;
 
 class TIfaceMgr {
   public:
+
+    bool isTcpSet;
     friend std::ostream & operator <<(std::ostream & strum, TIfaceMgr &x);
 
     TIfaceMgr(const std::string& xmlFile, bool getIfaces);

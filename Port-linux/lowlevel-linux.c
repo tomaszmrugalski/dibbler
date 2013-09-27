@@ -1023,9 +1023,9 @@ extern int accept_tcp (int fd, char *peerPlainAddr) {
     int fd_new;
 
     bzero(&peerStructure, sizeof(struct sockaddr_in6));
-    size_t peerStructureLen = sizeof(peerStructure);
+    int peerStructureLen = sizeof(peerStructure);
 
-    fd_new = accept(fd,(struct sockaddr_in6 *)&peerStructure,peerStructureLen);
+    fd_new = accept(fd,(struct sockaddr_in6 *)&peerStructure,&peerStructureLen);
     if (fd_new < 0) {
         //sprintf(Message, "Accept function failed. Cannot create net socket descriptor");
         //close(fd_new);

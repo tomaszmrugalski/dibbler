@@ -118,7 +118,7 @@ void TDHCPServer::run()
                     << ", " << msg->countOption() << " opts:";
         SPtr<TOpt> ptrOpt;
         msg->firstOption();
-        while (ptrOpt = msg->getOption() )
+        while (ptrOpt = msg->getOption())
             Log(Cont) << " " << ptrOpt->getOptType();
         if (msg->RelayInfo_.size()) {
             Log(Cont) << " (" << logicalIface->getFullName() << ", "
@@ -134,7 +134,25 @@ void TDHCPServer::run()
                 << "the stateless mode. Message ignored." << LogEnd;
             continue;
         }
+
         SrvTransMgr().relayMsg(msg);
+
+        //do this to keep TCP session alive
+        if(msg->Bulk) {
+            ptrIface->closeTcpConnection();
+
+            //TODO: this should to keep TCP session alive to receive more data from requestor
+            /*/SPtr<TSrvMsg> ptrMsg;
+            ptrMsg = SrvTransMgr().MsgLst.get();
+            if(ptrMsg->isDone())
+                ptrIface->closeTcpConnection();
+            else {
+                Log(Info) << "Msg has been send but TCP session is still seting up" << LogEnd;
+            } */
+
+            SrvIfaceMgr().isTcpSet = false;
+
+        }
     }
 
     SrvCfgMgr().setPerformanceMode(false);
