@@ -138,7 +138,8 @@ int TSrvTransMgr::checkReconfigures() {
                 PD=true;
                 if(ClientInPool1(prefix->get(),iface,PD))
                 {
-                    Log(Debug) << "Client " << cli->getDUID()->getPlain() << "doesn't need to reconfigure PD (iaid=" << pd->getIAID() << ")." << LogEnd;
+                    Log(Debug) << "Client " << cli->getDUID()->getPlain() << " doesn't need to reconfigure PD (iaid="
+                               << pd->getIAID() << ")." << LogEnd;
                 }
                 else
                 {
