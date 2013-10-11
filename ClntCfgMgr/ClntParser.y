@@ -570,7 +570,10 @@ AuthAcceptMethods
 
 AuthProtocol
 : AUTH_PROTOCOL_ STRING_ {
-    if (!strcasecmp($2,"none")) {
+    if (!strcasecmp($2, "not-supported")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NOT_SUPPORTED);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (!strcasecmp($2,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
     } else if (!strcasecmp($2, "delayed")) {

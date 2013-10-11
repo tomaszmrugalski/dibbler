@@ -247,6 +247,7 @@ int allowOptInMsg(int msgType, int optType);
 
 // Supported authorization protocols
 enum AuthProtocols {
+    AUTH_PROTO_NOT_SUPPORTED = -1, // Don't even mention auth
     AUTH_PROTO_NONE = 0,    // disabled
     AUTH_PROTO_DELAYED = 2, // RFC 3315
     AUTH_PROTO_RECONFIGURE_KEY = 3, // RFC 3315, section 21.5.1
