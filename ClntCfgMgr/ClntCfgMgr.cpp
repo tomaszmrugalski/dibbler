@@ -520,6 +520,7 @@ bool TClntCfgMgr::validateConfig()
 
     // Validate authentication settings
     switch (getAuthProtocol()) {
+    case AUTH_PROTO_NOT_SUPPORTED:
     case AUTH_PROTO_NONE:
         break;
     case AUTH_PROTO_DELAYED: {

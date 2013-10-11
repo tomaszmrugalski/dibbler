@@ -156,6 +156,7 @@ void TMsg::calculateDigests(char* buffer, size_t len) {
         }
         return;
     }
+    case AUTH_PROTO_NOT_SUPPORTED:
     case AUTH_PROTO_NONE: {
         // don't calculate anything
         return;
@@ -293,6 +294,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     bool dt_in_list = false;
 
     switch (proto) {
+    case AUTH_PROTO_NOT_SUPPORTED:
     case AUTH_PROTO_NONE:
         return true;
     case AUTH_PROTO_DELAYED: {

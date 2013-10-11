@@ -2086,7 +2086,10 @@ case 122:
 case 123:
 #line 572 "ClntParser.y"
 {
-    if (!strcasecmp(yyvsp[0].strval,"none")) {
+    if (!strcasecmp(yyvsp[0].strval, "not-supported")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NOT_SUPPORTED);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (!strcasecmp(yyvsp[0].strval,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
     } else if (!strcasecmp(yyvsp[0].strval, "delayed")) {

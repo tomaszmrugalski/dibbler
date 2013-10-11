@@ -445,6 +445,9 @@ void TClntMsg::appendAuthenticationOption()
     string realm;
 
     switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NOT_SUPPORTED: {
+        return;
+    }
     case AUTH_PROTO_NONE: {
         algorithm = 0;
         break;
@@ -1105,6 +1108,7 @@ bool TClntMsg::checkReceivedAuthOption() {
     }
 
     switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NOT_SUPPORTED:
     case AUTH_PROTO_NONE: {
         return true;
     }
