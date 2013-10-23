@@ -147,4 +147,54 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 
 	} // switch
     } // while
+
+#if 0    
+    if (CurrentMsg != msg)
+    {
+        //line below fails at second time
+        CurrentMsg = msg;
+        CurrentMsg.operator =(msg);
+
+
+
+        SPtr<TOpt> ptrOpt;
+        SPtr<TOpt> ptrOpt2;
+
+        stringstream convert;
+        msg->firstOption();
+
+        SPtr<TOptVendorSpecInfo> vendorspec;
+        SPtr<TOptVendorData> vendorclass;
+        //SPtr<TSrvOptVendorSpec> vendorclass;
+
+        while (ptrOpt = msg->getOption()) {
+            switch (ptrOpt->getOptType()) {
+            case OPTION_VENDOR_OPTS:
+            {
+                vendorspec = (Ptr*) ptrOpt;
+                convert<< vendorspec->getVendor();
+                convert>>vendor_spec_num;
+                int len = vendorspec->getSize();
+                char * buf = new char[len+1];
+                buf[len]=0;
+                vendorspec->storeSelf(buf);
+                vendor_spec_data = string(buf);
+                // @todo: This may not work... it is probably better
+                // to convert buf to hex
+                delete [] buf;
+                break;
+            }
+
+            case OPTION_VENDOR_CLASS:
+                vendorclass =  (Ptr*) ptrOpt2;
+                convert<< vendorclass->getVendor();
+                convert>>vendor_class_num;
+                vendor_class_data = vendorclass->getVendorData();
+                break;
+
+            } // switch
+        } // while
+
+    } // if new message
+#endif
 }

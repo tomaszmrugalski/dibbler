@@ -76,7 +76,6 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     int result;
     ifstream f;
 
-    Log(Debug) << "TESTTESTTEST" <<LogEnd;
     // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {

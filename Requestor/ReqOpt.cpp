@@ -16,6 +16,8 @@
 TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent)
   :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
 {
+
+    //use 0x33333333 as preffered lifetime and 0x88888888 as valid lifetime value ?
 }
 
 bool TReqOptAddr::doDuties()

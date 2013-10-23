@@ -15,6 +15,7 @@
 #include "SrvCfgMgr.h"
 #include "SrvTransMgr.h"
 
+
 using namespace std;
 
 volatile int serviceShutdown;
@@ -117,7 +118,9 @@ void TDHCPServer::run()
                     << hex << ", trans-id=0x" << msg->getTransID() << dec
                     << ", " << msg->countOption() << " opts:";
         SPtr<TOpt> ptrOpt;
+
         msg->firstOption();
+
         while (ptrOpt = msg->getOption())
             Log(Cont) << " " << ptrOpt->getOptType();
         if (msg->RelayInfo_.size()) {
@@ -139,7 +142,14 @@ void TDHCPServer::run()
 
         //do this to keep TCP session alive
         if(msg->Bulk) {
-            ptrIface->closeTcpConnection();
+            //msg->IsDone=true;
+
+
+            if(ptrIface->closeTcpConnection())
+                Log(Info) << "Closing OK" << LogEnd;
+            else
+                Log(Info) << "Closing failure" << LogEnd;
+
 
             //TODO: this should to keep TCP session alive to receive more data from requestor
             /*/SPtr<TSrvMsg> ptrMsg;
@@ -149,7 +159,7 @@ void TDHCPServer::run()
             else {
                 Log(Info) << "Msg has been send but TCP session is still seting up" << LogEnd;
             } */
-
+           // msg->IsDone = true;
             SrvIfaceMgr().isTcpSet = false;
 
         }

@@ -579,8 +579,10 @@ void TSrvTransMgr::doDuties()
     {
         if (msg->isDone())
         {
+            msg->getType();
             MsgLst.del();
             deletedCnt++;
+
         }
     }
     if (deletedCnt) {

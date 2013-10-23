@@ -832,7 +832,7 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
     struct addrinfo *res, *rp;
     struct addrinfo hints;
     fd_set master_set;
-    int Insock;
+    int Insock=0;
     char port_char[6];
     char * tmp;
     int connectionNumber =1;
@@ -1003,7 +1003,8 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
 //int getsockopt(int socket, int level, int option_name,void *restrict option_value, socklen_t *restrict option_len);
 extern int getsOpt(int fd) {
 
-    int len, sockType, result;
+    int  sockType, result;
+    socklen_t len;
 
     len = sizeof(sockType);
     result = getsockopt(fd,SOL_SOCKET,SO_TYPE,&sockType,&len);
@@ -1023,7 +1024,7 @@ extern int accept_tcp (int fd, char *peerPlainAddr) {
     int fd_new;
 
     bzero(&peerStructure, sizeof(struct sockaddr_in6));
-    int peerStructureLen = sizeof(peerStructure);
+    socklen_t peerStructureLen = sizeof(peerStructure);
 
     fd_new = accept(fd,(struct sockaddr_in6 *)&peerStructure,&peerStructureLen);
     if (fd_new < 0) {

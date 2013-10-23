@@ -2470,3 +2470,26 @@
 2013.08.05 22:19:34 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
 2013.08.05 22:19:34 Requestor Error     Interface eth0/2 does not have link-layer address. Weird.
 2013.08.05 22:19:34 Requestor Critical  Aborted. TCP socket creation failed.
+2013.10.19 17:12:39 Requestor Info      DstAddr:fe80::a00:27ff:feb4:e6fb
+2013.10.19 17:12:39 Requestor Debug     LOGParseM
+2013.10.19 17:12:39 Requestor Debug     input string:REMOTE_ID
+2013.10.19 17:12:39 Requestor Debug     tmpCode5
+2013.10.19 17:12:39 Requestor Info      multiple: 1requestCount:1
+2013.10.19 17:12:39 Requestor Error     Unable to parse command-line. -bulk used, but actual remoteId is missing.
+2013.10.19 17:12:39 Requestor Debug     Addr:
+2013.10.19 17:12:39 Requestor Debug     Duid:
+2013.10.19 17:12:39 Requestor Debug     Bulk:DESKTOP_SESSION=default
+2013.10.19 17:12:39 Requestor Debug     Iface:vboxnet0
+2013.10.19 17:12:39 Requestor Debug     Timeout:60
+2013.10.19 17:12:39 Requestor Debug     dstAddrfe80::a00:27ff:feb4:e6fb
+2013.10.19 17:12:39 Requestor Debug     LinkAddr:
+2013.10.19 17:12:39 Requestor Debug     remoteId:00:01:00:01:0e:ec:13:db:00:02:02:02:02:02
+2013.10.19 17:12:39 Requestor Debug     enterpriseNumber0
+2013.10.19 17:12:39 Requestor Debug     MultipleQuery:1
+2013.10.19 17:12:39 Requestor Notice    Detected iface tun/10, MAC=.
+2013.10.19 17:12:39 Requestor Notice    Detected iface teredo/4, MAC=.
+2013.10.19 17:12:39 Requestor Notice    Detected iface wlan0/3, MAC=d0:df:9a:65:fe:ea.
+2013.10.19 17:12:39 Requestor Notice    Detected iface eth0/2, MAC=e8:9a:8f:3d:9c:73.
+2013.10.19 17:12:39 Requestor Notice    Detected iface lo/1, MAC=00:00:00:00:00:00.
+2013.10.19 17:12:39 Requestor Critical  Unable to bind sockets: Interface vboxnet0 not found.
+2013.10.19 17:12:39 Requestor Critical  Aborted. TCP socket creation failed.

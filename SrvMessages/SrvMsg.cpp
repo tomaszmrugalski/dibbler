@@ -61,10 +61,9 @@ TMsg(iface, addr, buf, msgType,bufSize)
         Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
                    << " bytes left to parse. Bytes ignored." << LogEnd;
     } else {
-
         //calling bulk contruct
         ptr = new TSrvOptLQ(buf,bufSize, this, msgType);
-        ptr->countOption();
+
         if ( (ptr) && (ptr->isValid()) )
             Options.push_back( ptr );
         else

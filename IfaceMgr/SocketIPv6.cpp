@@ -300,7 +300,7 @@ int TIfaceSocket::send_tcp(char *buf, int len, SPtr<TIPv6Addr> addr, int port)
  */
 int TIfaceSocket::recv_tcp(char *buf, SPtr<TIPv6Addr> addr)
 {
-    char myPlainAddr[48];
+    //char myPlainAddr[48];
     char peerPlainAddr[48];
 
     // maximum DHCPv6 packet size
