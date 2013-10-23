@@ -808,7 +808,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
         if (buf[2] == LEASEQUERY_MSG)
             return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
     }
-    return 0;
 }
 
 /**

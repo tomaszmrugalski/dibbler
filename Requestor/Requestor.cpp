@@ -270,6 +270,13 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
     Log(Debug) << "remoteId:" << a->remoteId <<LogEnd;
     Log(Debug) << "enterpriseNumber"<<a->enterpriseNumber<< LogEnd;
     Log(Debug) << "MultipleQuery:"<< a->multiplyQuery<< LogEnd;
+
+    if(a->remoteId || a->enterpriseNumber) {
+        if(!(a->remoteId && a->enterpriseNumber)) {
+            Log(Error) << "Both of RemoteId or EnterpriseNumber should be defined to send RemoteId query" << LogEnd;
+            return false;
+        }
+    }
     return true;
 }
 
@@ -319,7 +326,6 @@ int initWin()
     return 0;
 }
 
-
 int main(int argc, char *argv[])
 {
     int i=0;
@@ -339,6 +345,7 @@ int main(int argc, char *argv[])
     cout << endl;
 
     if (!parseCmdLine(&a, argc, argv)) {
+
         Log(Crit) << "Aborted. Invalid command-line parameters or help called." << LogEnd;
         printHelp();
         return -1;
@@ -390,6 +397,7 @@ int main(int argc, char *argv[])
 
             if(!transMgr->SendTcpMsg()) {
                 Log(Crit) << "Aborted. TCP message transmission failed." << LogEnd;
+                transMgr->TerminateTcpConn();
                 return LOWLEVEL_ERROR_SOCKET;
             }
 

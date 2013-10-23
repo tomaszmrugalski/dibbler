@@ -728,7 +728,7 @@ extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port) {
     struct addrinfo *res, *rp;
     struct addrinfo hints;
     fd_set master_set;
-//    int Insock;
+
     char port_char[6];
     char * tmp;
     int connectionNumber =1;

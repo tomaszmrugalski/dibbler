@@ -98,10 +98,12 @@ void TDHCPServer::run()
         }
 #endif
 
-        SPtr<TSrvMsg> msg=SrvIfaceMgr().select(timeout);
-        if (!msg)
+        SPtr<TSrvMsg> msg = SrvIfaceMgr().select(timeout);
+        if (!msg) {
             continue;
+        }
         silent = false;
+
         SPtr<TIfaceIface>  physicalIface = SrvIfaceMgr().getIfaceByID(msg->getPhysicalIface());
         SPtr<TSrvCfgIface> logicalIface = SrvCfgMgr().getIfaceByID(msg->getIface());
         if (!physicalIface) {

@@ -434,7 +434,7 @@ bool ReqTransMgr::SendTcpMsg()
             optRemoteId->storeSelf(buf+bufLen,CfgMgr->queryType,CfgMgr->enterpriseNumber);
             bufLen += optRemoteId->getSize();
         } else {
-            if(!CfgMgr->remoteId  ) {
+            if(!CfgMgr->remoteId) {
                 Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " remote-id." << "It's not present in the server/requestor" <<LogEnd;
                 return false;
             }

@@ -114,7 +114,8 @@ size_t TReqOptRemoteId::getSize()
     return len;
 }
 
-TReqOptRelayId::TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg *parent):TOptDUID(type, duid, parent)
+TReqOptRelayId::TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg *parent)
+    :TOptDUID(type, duid, parent)
 {
 
 
