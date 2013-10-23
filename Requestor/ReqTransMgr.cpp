@@ -456,7 +456,7 @@ bool ReqTransMgr::SendTcpMsg()
 
     unsigned short tmpl=0;
     int pos=0;
-    for(pos=0;pos<10;pos++) {
+    for(pos=0;pos<msgbufLen;pos++) {
         tmpl = msgbuf[pos];
         Log(Debug) << "pos"<<pos<<":"<<tmpl <<LogEnd;
         tmpl=0;
@@ -478,7 +478,7 @@ bool ReqTransMgr::WaitForRsp()
     int bufLen = 1024, stype;
     memset(buf, 0, bufLen);
     SPtr<TIPv6Addr> sender = new TIPv6Addr();
-    int sockFD;
+    int sockFD=0;
     Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
 
     stype = getsOpt(Socket->getFD());
@@ -490,7 +490,7 @@ bool ReqTransMgr::WaitForRsp()
         }
     }
 
-    Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
+    //Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
     if (sockFD>0) {
         Log(Info) << "Received " << bufLen << " bytes response." << LogEnd;
         PrintRsp(buf, bufLen);
@@ -523,7 +523,7 @@ void ReqTransMgr::PrintTcpRsp(char *buf, int bufLen)
         Log(Error) << "Unable to print message: truncated (min. len=6 required)." << LogEnd;
     }
 
-    int msgSize = buf[0]*256 + buf[0];
+    //int msgSize = buf[0]*256 + buf[0];
     int msgType = buf[2];
     int transId = buf[1]*256*256 + 256*buf[2] + buf[3];
 
@@ -542,6 +542,16 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
     int pos = 0;
     SPtr<TOpt> ptr;
     bool print = true;
+
+
+    unsigned short tmpl=0;
+    int pos2=0;
+    for(pos2=0;pos2<bufLen;pos2++) {
+        tmpl = buf[pos2];
+        Log(Debug) << "pos"<<pos2<<":"<<tmpl <<LogEnd;
+        tmpl=0;
+    }
+
     while (pos<bufLen) {
 	if (pos+4>bufLen) {
 	    Log(Error) << linePrefix << "Message " << msgType << " truncated. There are " << (bufLen-pos) 
@@ -675,7 +685,7 @@ void ReqTransMgr::TerminateTcpConn()
 {
 
     Log(Debug) << "Closing conection..." << LogEnd;
-    int how, sockId;
+    int how;
     how=2;
     SPtr<TIfaceSocket> ptr;
 
@@ -692,6 +702,8 @@ bool ReqTransMgr::ValidateMsg(char * msgBuf)
         //msgBuf[0]
 
     }
+
+    return true;
 }
 int ReqTransMgr::GetQueryType()
 {

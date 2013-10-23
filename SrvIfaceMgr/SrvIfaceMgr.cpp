@@ -163,6 +163,14 @@ bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr,
         return false;
     }
 
+    unsigned short tmpl=0;
+    int pos2=0;
+    for(pos2=0;pos2<size;pos2++) {
+        tmpl = msg[pos2];
+        Log(Debug) << "pos"<<pos2<<":"<<tmpl <<LogEnd;
+        tmpl=0;
+    }
+
     // send it!
     //return (sock->send(msg,size,addr,port));
     return (sock->send_tcp(msg,size,addr,port));
@@ -580,6 +588,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
         if (buf[2] == LEASEQUERY_MSG)
             return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
     }
+    return 0;
 }
 
 /**

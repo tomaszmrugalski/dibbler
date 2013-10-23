@@ -29,11 +29,9 @@ TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
   if(!query->Bulk) {
       if (!answer(query)) {
         Log(Error) << "LQ: LQ-QUERY response generation failed." << LogEnd;
-            IsDone = true;
       } else {
         Log(Debug) << "LQ: LQ-QUERY response generation successful." << LogEnd;
-        IsDone = false;
-      }
+      }IsDone = true;
   } else {
       if (!answer(query)) {
         Log(Error) << "BLQ: LQ-QUERY response generation failed." << LogEnd;
@@ -137,17 +135,17 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
             addr = (Ptr*) opt;
     }
     if (!addr) {
-	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
-	return true;
+        Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
+        return true;
     }
 
     // search for client
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient( addr->getAddr() );
 
     if (!cli) {
-	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
-	return true;
+        Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
+        Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
+        return true;
     }
 
     appendClientData(cli);
@@ -168,8 +166,8 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
         }
     }
     if (!duid) {
-	Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
-	return true;
+        Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
+        return true;
     }
 
     // search for client

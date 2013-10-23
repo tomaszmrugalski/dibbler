@@ -11,4 +11,5 @@ TRelOptDUID::TRelOptDUID(int type, char* buf, int bufsize, TMsg* parent)
 
 bool TRelOptDUID::doDuties()
 {
+    return true;
 }

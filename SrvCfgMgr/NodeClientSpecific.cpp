@@ -72,7 +72,11 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 {
     if (CurrentMsg != msg)
     {
+        //line below fails at second time
         CurrentMsg = msg;
+        CurrentMsg.operator =(msg);
+
+
 
         SPtr<TOpt> ptrOpt;
         SPtr<TOpt> ptrOpt2;
@@ -84,7 +88,7 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
         SPtr<TOptVendorData> vendorclass;
         //SPtr<TSrvOptVendorSpec> vendorclass;
 
-        while (ptrOpt = msg->getOption())	{
+        while (ptrOpt = msg->getOption()) {
             switch (ptrOpt->getOptType()) {
             case OPTION_VENDOR_OPTS:
             {

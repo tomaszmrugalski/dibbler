@@ -17,6 +17,7 @@
 #include "Portable.h"
 #include "Logger.h"
 
+
 using namespace std;
 /*
  * stores informations about interface
@@ -298,10 +299,6 @@ bool TIfaceIface::addTcpSocket(SPtr<TIPv6Addr> addr, int port, int baseFD)
         return false;
     }
 
-    ptr->baseFD;
-    ptr->FD;
-    ptr->getMaxFD();
-
     SocketsLst.append(ptr);
     return true;
 
@@ -309,7 +306,7 @@ bool TIfaceIface::addTcpSocket(SPtr<TIPv6Addr> addr, int port, int baseFD)
 
 bool TIfaceIface::closeTcpConnection()
 {
-    int sockId, stype;
+    int sockId, stype, failCount=0;
     bool found=false;
     // tricks with FDS macros
 
@@ -327,16 +324,20 @@ bool TIfaceIface::closeTcpConnection()
               found = true;
         } else {
             Log(Error) << "Cannot close TCP connection with:" << sockId << LogEnd;
+            failCount++;
         }
     }
 
     FD_CLR(sockId,&fds);
     sock->terminate_tcp(sockId,2);
     this->delSocket(sockId);
+    if (failCount && found!=true)
+        return false;
+    else
+        return true;
 
-    Log(Debug) << "MAX FD after colse and del:" << sock->getMaxFD() << LogEnd;
-    Log(Debug) << "Binded socket OLD:" << this->getSocketByFD(5) << LogEnd;
-
+   // Log(Debug) << "MAX FD after colse and del:" << sock->getMaxFD() << LogEnd;
+   // Log(Debug) << "Binded socket OLD:" << this->getSocketByFD(5) << LogEnd;
 }
 
 #if 0
