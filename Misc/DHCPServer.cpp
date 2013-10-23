@@ -87,13 +87,14 @@ void TDHCPServer::run()
     #endif
 
         SPtr<TSrvMsg> msg = SrvIfaceMgr().select(timeout);
-        if (!msg)
+        if (!msg) {
             continue;
+        }
         silent = false;
         int iface = msg->getIface();
         SPtr<TIfaceIface> ptrIface;
         ptrIface = SrvIfaceMgr().getIfaceByID(iface);
-        ptrIface->getSocketByFD(5);
+
         Log(Notice) << "Received " << msg->getName() << " on " << ptrIface->getName()
                 << "/" << iface << hex << ",TransID=0x" << msg->getTransID()
                 << dec << ", " << msg->countOption() << " opts:";
