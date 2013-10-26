@@ -1159,6 +1159,7 @@ int TSrvCfgMgr::getAnyRelay() {
     return -1;
 }
 
+#ifndef MOD_DISABLE_AUTH
 /// returns key-id that should be used for a given client-id
 ///
 /// @param clientid client identifier
@@ -1201,6 +1202,7 @@ uint32_t TSrvCfgMgr::getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> c
     // no key found
     return 0;
 }
+#endif
 
 void TSrvCfgMgr::setPerformanceMode(bool mode) {
     PerformanceMode_ = mode;

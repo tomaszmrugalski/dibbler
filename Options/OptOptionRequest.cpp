@@ -122,7 +122,7 @@ void TOptOptionRequest::clearOptions() {
     OptCnt=0;
 }
 
-bool TOptOptionRequest::isValid() {
+bool TOptOptionRequest::isValid() const {
     return Valid_;
 }
 

@@ -261,6 +261,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     if (!ptr)
         return 0;
 
+#ifndef MOD_DISABLE_AUTH
     if (!ptr->validateReplayDetection()) {
         Log(Warning) << "Auth: message replay detection failed, message dropped"
                      << LogEnd;
@@ -282,6 +283,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 		   << " Message dropped." << LogEnd;
       return 0;
     }
+#endif
 
     /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 

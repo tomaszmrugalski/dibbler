@@ -45,14 +45,14 @@ class SPtr
 public:
     SPtr();
     SPtr(T* something);
-        SPtr(Ptr *voidptr) {
-        if(voidptr)
-        {
-            this->ptr=voidptr;
+
+    SPtr(Ptr *voidptr) {
+        if(voidptr) {
+            this->ptr = voidptr;
             this->ptr->refcount++;
+        } else {
+            this->ptr = new Ptr();
         }
-        else
-            this->ptr=new Ptr();
     }
     SPtr(const SPtr & ref);
     SPtr(int onlyNull);
@@ -65,10 +65,19 @@ public:
         return (Ptr*)NULL;
     }
 
+    operator const Ptr*() const {
+      if (this->ptr->ptr)
+        return this->ptr;
+      else
+        return (Ptr*)NULL;
+    }
+
     int refCount();
     ~SPtr();
     T& operator*() const;
     T* operator->() const;
+
+    const T* get() const;
 
  private:
     Ptr * ptr;
@@ -123,6 +132,15 @@ T* SPtr<T>::operator->() const {
     }
     return (T*)(ptr->ptr); //it can return NULL
 }
+
+template <class T>
+const T* SPtr<T>::get() const {
+    if (!ptr) {
+        return 0;
+    }
+    return (T*)(ptr->ptr);
+}
+
 
 //It's is called in eg. instrusction: return NULL;
 //and SPtr is returned in function

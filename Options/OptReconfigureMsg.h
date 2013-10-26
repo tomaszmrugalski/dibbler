@@ -22,7 +22,7 @@ class TOptReconfigureMsg : public TOpt
 
     char* storeSelf(char* buf);
     bool doDuties() { return true; }
-    bool isValid();
+    bool isValid() const;
   protected:
     uint8_t MsgType_;
 };

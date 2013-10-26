@@ -29,7 +29,7 @@ class TOptTA : public TOpt
     int countAddrs();
     
     char * storeSelf( char* buf);
-    bool isValid();
+    virtual bool isValid() const;
     bool doDuties() { return true; }
  protected:
     uint32_t IAID_;

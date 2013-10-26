@@ -53,8 +53,9 @@ class TCfgMgr
     unsigned int getDDNSTimeout() { return DDNSTimeout_; }
 
 
-#ifndef MOD_DISABLE_AUTH
     void addKey(SPtr<TSIGKey> key);
+
+#ifndef MOD_DISABLE_AUTH
     SPtr<TSIGKey> getKey();
 
     void setAuthProtocol(AuthProtocols proto);

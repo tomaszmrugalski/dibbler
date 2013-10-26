@@ -70,7 +70,7 @@ class TOpt
      *
      * @return true if the option is valid.
      */
-    virtual bool isValid();
+    virtual bool isValid() const;
 
     virtual std::string getPlain();
 

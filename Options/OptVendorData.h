@@ -19,7 +19,7 @@ class TOptVendorData : public TOpt
     TOptVendorData(int type, const char * buf,  int n, TMsg* parent);
     size_t getSize();
     char * storeSelf( char* buf);
-    bool isValid();
+    virtual bool isValid() const;
 
     /// @todo: should return uint32_t
     int getVendor();

@@ -37,18 +37,6 @@
 #include <stdint.h>
 #endif
 
-#ifndef uint8_t
-#define uint8_t  unsigned char
-#endif
-
-#ifndef uint16_t
-#define uint16_t unsigned short int
-#endif
-
-#ifndef uint32_t
-#define uint32_t unsigned int
-#endif
-
 #ifdef WIN32
 #ifndef uint64_t
 #define uint64_t unsigned long long int
@@ -258,8 +246,6 @@ struct link_state_notify_t
 #include <windows.h>
 #include <time.h>
 #endif
-
-#define now() (unsigned long) time(NULL)
 
 /* ********************************************************************** */
 /* *** interface/socket low level functions ***************************** */

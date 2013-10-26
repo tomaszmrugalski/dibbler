@@ -28,7 +28,7 @@ class TClntOptTimeZone : public TOptString
     TClntOptTimeZone(char *buf, int bufsize, TMsg* parent);
     bool doDuties();
     void setSrvDuid(SPtr<TDUID> duid);
-    bool isValid();
+    bool isValid() const;
  private:
     SPtr<TDUID> SrvDUID;
 };

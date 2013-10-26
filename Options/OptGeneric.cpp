@@ -54,7 +54,7 @@ std::string TOptGeneric::getPlain()
     return hexToText((uint8_t*)(Data), DataLen, false);
 }
 
-bool TOptGeneric::isValid()
+bool TOptGeneric::isValid() const
 {
     return true;
 }

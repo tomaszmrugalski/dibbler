@@ -36,7 +36,7 @@ class TClntOptTA : public TOptTA
     SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
-    bool isValid();
+    bool isValid() const;
     void setIface(int iface); // used to override interface (e.g. when msg is received via loopback)
 
     void setContext(int iface, SPtr<TIPv6Addr> clntAddr);

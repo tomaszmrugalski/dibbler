@@ -324,8 +324,8 @@ TClntMsg::~TClntMsg() {
 
 void TClntMsg::setDefaults()
 {
-    FirstTimeStamp = now();
-    LastTimeStamp  = now();
+    FirstTimeStamp = (uint32_t)time(NULL);
+    LastTimeStamp  = (uint32_t)time(NULL);
 
     RC  = 0;
     RT  = 0;
@@ -344,7 +344,7 @@ void TClntMsg::setDefaults()
 
 unsigned long TClntMsg::getTimeout()
 {
-    long diff = (LastTimeStamp+RT) - now();
+    long diff = (LastTimeStamp+RT) - (uint32_t)time(NULL);
     return (diff<0) ? 0 : diff;
 }
 
@@ -352,7 +352,7 @@ void TClntMsg::send()
 {
     char* pkt = new char[getSize()];
 
-    srand(now());
+    srand((uint32_t)time(NULL));
     if (!RC)
 	RT=(int)(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     else
@@ -398,7 +398,7 @@ void TClntMsg::send()
 		   << "/" << Iface << " to multicast." << LogEnd;
 	ClntIfaceMgr().sendMulticast(Iface, pkt, getSize());
     }
-    LastTimeStamp = now();
+    LastTimeStamp = (uint32_t)time(NULL);
     delete [] pkt;
 }
 

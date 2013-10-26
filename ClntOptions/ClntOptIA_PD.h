@@ -33,8 +33,8 @@ class TClntOptIA_PD : public TOptIA_PD
     SPtr<TClntOptIAPrefix> getPrefix();
     SPtr<TClntOptIAPrefix> getPrefix(SPtr<TIPv6Addr> prefix);
     void firstPrefix();
-    int countPrefix();
-    bool isValid();
+    int countPrefix() const;
+    bool isValid() const;
 
     bool addPrefixes();
     bool updatePrefixes();

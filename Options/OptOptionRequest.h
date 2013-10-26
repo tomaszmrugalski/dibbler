@@ -31,7 +31,7 @@ class TOptOptionRequest : public TOpt
     size_t getSize();
     char * storeSelf( char* buf);
     int getReqOpt(int optNr);
-    bool isValid();
+    virtual bool isValid() const;
     bool doDuties() { return true; }
     ~TOptOptionRequest();
   protected:

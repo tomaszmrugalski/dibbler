@@ -234,17 +234,22 @@ void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 		     << IAID << ") not present in addrDB." << LogEnd;
 }
 
-bool TClntOptTA::isValid()
+bool TClntOptTA::isValid() const
 {
-    SPtr<TClntOptIAAddress> addr;
-    this->firstAddr();
-    while (addr = this->getAddr()) {
-	if (!addr->getAddr()->linkLocal())
-	    continue;
-	Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_TA (IAID=" 
-		     << IAID_ << ") is link local. The whole IA_TA option is considered invalid."
-		     << LogEnd;
-	return false;
+
+    const TOptList& opts = SubOptions.getSTL();
+
+    for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
+        if ((*it)->getOptType() != OPTION_IAADDR)
+            continue;
+        const TOptIAAddress* addr = (const TOptIAAddress*)it->get();
+
+        if (addr->getAddr()->linkLocal()) {
+            Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_NA (IAID="
+                         << IAID_ << ") is link local. The whole IA option is considered invalid."
+                         << LogEnd;
+            return false;
+        }
     }
 
     return true;

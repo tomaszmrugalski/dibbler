@@ -27,13 +27,15 @@ TCfgMgr::TCfgMgr()
   DUIDType(DUID_TYPE_LLT), /* default DUID type: LLT */
   DUIDEnterpriseNumber(-1),
   DdnsProto(DNSUPDATE_TCP),
-  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT), // default is 1000 ms
+  DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
 
+#ifndef MOD_DISABLE_AUTH
   // Authentication
-  AuthProtocol_(AUTH_PROTO_NONE),
+  ,AuthProtocol_(AUTH_PROTO_NONE),
   AuthAlgorithm_(0),
   AuthReplay_(AUTH_REPLAY_NONE),
   AuthDropUnauthenticated_(false) /// @todo should be true
+#endif
 {
 
 }
@@ -268,7 +270,7 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
         DUID = new char[DUIDlen];
         writeUint16(DUID, this->DUIDType);
         writeUint16(DUID+2, macType);
-        cur_time=now();
+        cur_time = (uint32_t)time(NULL);
 
         writeUint32(DUID+4, (cur_time-946684800) & 0xFFFFFFFF);
         /* 946684800=Number of seconds between midnight (UTC), January
@@ -336,6 +338,7 @@ SPtr<TDUID> TCfgMgr::getDUID()
     return DUID;
 }
 
+#ifndef MOD_DISABLE_AUTH
 void TCfgMgr::addKey(SPtr<TSIGKey> key) {
     Keys_.push_back(key);
 }
@@ -389,3 +392,4 @@ void TCfgMgr::setAuthRealm(const std::string& realm) {
 std::string TCfgMgr::getAuthRealm() {
     return AuthRealm_;
 }
+#endif

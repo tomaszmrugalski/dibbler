@@ -24,7 +24,7 @@ volatile int serviceShutdown;
 TDHCPRelay::TDHCPRelay(const std::string& config)
 {
     serviceShutdown = 0;
-    srand(now());
+    srand((uint32_t)time(NULL));
     IsDone = false;
 
     TRelIfaceMgr::instanceCreate(RELIFACEMGR_FILE);

@@ -54,7 +54,11 @@ public:
     std::string showRequestedOptions(SPtr<TOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
+
+#ifndef MOD_DISABLE_AUTH
     void appendReconfigureKey();
+    bool validateReplayDetection();
+#endif
 
     /// @todo: modify this to use RelayInfo structure
     void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
@@ -64,7 +68,6 @@ public:
 
     bool releaseAll(bool quiet);
 
-    bool validateReplayDetection();
 
     virtual bool check() = 0;
 

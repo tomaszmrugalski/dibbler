@@ -39,7 +39,7 @@
  * \param a The bitmask, a character array
  * \param b Bit index in the bitmask
  */
-#define bitset(a, b) ( (a)[b / 8] |= 1 << (7 - (b % 8)) )
+#define poslib_bitset(a, b) ( (a)[b / 8] |= 1 << (7 - (b % 8)) )
 
 /*!
  * \brief reset a bit in the bitmask
@@ -48,7 +48,7 @@
  * \param a The bitmask, a character array
  * \param b Bit index in the bitmask
  */
-#define bitreset(a, b) ( (a)[b / 8] &= ~(1 << (7 - (b % 8))) )
+#define poslib_bitreset(a, b) ( (a)[b / 8] &= ~(1 << (7 - (b % 8))) )
 
 /*!
  * \brief sets the value of a bit in the bitmask
@@ -60,7 +60,7 @@
  * \param b Bit index in the bitmask
  * \param c Boolean value to set the bit to
  */
-#define bitsetval(a, b, c) ( (c) ? bitset(a, b) : bitreset(a, b) )
+#define bitsetval(a, b, c) ( (c) ? poslib_bitset(a, b) : poslib_bitreset(a, b) )
 
 /*!
  * \brief checks whether a bit is set

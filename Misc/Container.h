@@ -64,6 +64,16 @@ public:
             first();
         }
 
+        /// @brief returns underlying STL container
+        ///
+        /// @return const reference to the STL container
+        const std::list<TYP>& getSTL() const {
+            return (lista);
+        }
+
+        std::list<TYP>& getSTL() {
+            return (lista);
+        }
 private:
         std::list<TYP> lista;
         typename std::list<TYP>::iterator it;

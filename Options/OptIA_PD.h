@@ -30,7 +30,7 @@ class TOptIA_PD : public TOpt
     void setIAID(uint32_t iaid);
 
     char * storeSelf( char* buf);
-    bool isValid();
+    bool isValid() const;
  protected:
     uint32_t IAID_;
     uint32_t T1_;

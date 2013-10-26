@@ -616,10 +616,12 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
+#ifndef MOD_DISABLE_AUTH
     SPtr<TOpt> reconfAccept = request->getOption(OPTION_RECONF_ACCEPT);
     if (reconfAccept) {
         appendReconfigureKey();
     }
+#endif
 
     IsDone = false;
     MRT_ = 330;
@@ -710,10 +712,10 @@ void TSrvMsgReply::doDuties() {
 }
 
 unsigned long TSrvMsgReply::getTimeout() {
-    unsigned long diff = now() - FirstTimeStamp_;
-    if (diff>SERVER_REPLY_CACHE_TIMEOUT)
+    unsigned long diff = (int32_t)time(NULL) - FirstTimeStamp_;
+    if (diff > SERVER_REPLY_CACHE_TIMEOUT)
         return 0;
-    return SERVER_REPLY_CACHE_TIMEOUT-diff;
+    return SERVER_REPLY_CACHE_TIMEOUT - diff;
 }
 
 bool TSrvMsgReply::check() {

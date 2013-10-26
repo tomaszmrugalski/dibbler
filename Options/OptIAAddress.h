@@ -24,12 +24,12 @@ class TOptIAAddress : public TOpt
     size_t getSize();
 
     char * storeSelf( char* buf);
-    SPtr<TIPv6Addr> getAddr();
-    unsigned long getPref();
-    unsigned long getValid();
+    SPtr<TIPv6Addr> getAddr() const;
+    unsigned long getPref() const;
+    unsigned long getValid() const;
     void setPref(unsigned long pref);
     void setValid(unsigned long valid);
-    bool isValid();
+    bool isValid() const;
 
     virtual bool doDuties() { return true; } // does nothing on its own
  private:

@@ -46,8 +46,8 @@ using namespace std;
  * @param transID
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-  :TMsg(iface, addr, msgType, transID), FirstTimeStamp_(now()), MRT_(0),
-   forceMsgType_(0), physicalIface_(iface)
+    :TMsg(iface, addr, msgType, transID), FirstTimeStamp_((uint32_t)time(NULL)),
+     MRT_(0), forceMsgType_(0), physicalIface_(iface)
 {
 }
 
@@ -214,7 +214,7 @@ void TSrvMsg::setDefaults() {
     // AuthKeys = SrvCfgMgr().AuthKeys;
 #endif
 
-    FirstTimeStamp_ = now();
+    FirstTimeStamp_ = (uint32_t)time(NULL);
     MRT_ = 0;
 }
 
@@ -338,8 +338,9 @@ void TSrvMsg::doDuties() {
 }
 
 unsigned long TSrvMsg::getTimeout() {
-    if (FirstTimeStamp_ + MRT_ - now() > 0 )
-        return FirstTimeStamp_ + MRT_ - now();
+    uint32_t now = (uint32_t)time(NULL);
+    if (FirstTimeStamp_ + MRT_ - now > 0 )
+        return FirstTimeStamp_ + MRT_ - now;
     else
         return 0;
 }
@@ -496,6 +497,7 @@ void TSrvMsg::processIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt)
     Options.push_back(optPD);
 }
 
+#ifndef MOD_DISABLE_AUTH
 void TSrvMsg::appendReconfigureKey() {
 
     // Let's see if we have a key for this particular client
@@ -539,6 +541,7 @@ void TSrvMsg::appendReconfigureKey() {
 
     Options.push_back((Ptr*)auth);
 }
+#endif
 
 void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN) {
     /// @todo: Make this method also usable for RELEASE message
@@ -1114,6 +1117,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOp
     return false;
 }
 
+#ifndef MOD_DISABLE_AUTH
 /// verifies if the received packet is a replayed message
 ///
 /// @return true if message is ok (false if it is replayed and should be dropped)
@@ -1160,6 +1164,7 @@ bool TSrvMsg::validateReplayDetection() {
 
     return true; // not really needed
 }
+#endif
 
 void TSrvMsg::setRemoteID(SPtr<TOptVendorData> remoteID)
 {

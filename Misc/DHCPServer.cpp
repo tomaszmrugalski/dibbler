@@ -23,7 +23,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
     :IsDone_(false)
 {
     serviceShutdown = 0;
-    srand(now());
+    srand((uint32_t)time(NULL));
 
     TSrvIfaceMgr::instanceCreate(SRVIFACEMGR_FILE);
     if ( SrvIfaceMgr().isDone() ) {

@@ -635,7 +635,8 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
             stringstream tmp(strstr(buf,"<timestamp>")+11);
             unsigned int ts;
             tmp >> ts;
-            Log(Info) << "DB timestamp:" << ts << ", now()=" << now() << ", db is " << (now()-ts)
+            uint32_t now = (uint32_t)time(NULL);
+            Log(Info) << "DB timestamp:" << ts << ", now()=" << now << ", db is " << (now-ts)
                       << " second(s) old." << LogEnd;
             continue;
         }
@@ -1180,7 +1181,7 @@ uint64_t TAddrMgr::getNextReplayDetectionValue() {
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
-    strum << "  <timestamp>" << now() << "</timestamp>" << endl;
+    strum << "  <timestamp>" << (uint32_t)time(NULL) << "</timestamp>" << endl;
     strum << "  <replayDetection>" << x.ReplayDetectionValue_ << "</replayDetection>" << endl;
     x.print(strum);
 

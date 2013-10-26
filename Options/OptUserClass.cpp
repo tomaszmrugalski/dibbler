@@ -80,6 +80,6 @@ bool TOptUserClass::parseUserData(const char* buf, unsigned short buf_len) {
     return true;
 }
 
-bool TOptUserClass::isValid() {
+bool TOptUserClass::isValid() const {
     return true;
 }

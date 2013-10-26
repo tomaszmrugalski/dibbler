@@ -61,7 +61,7 @@ char * TOptReconfigureMsg::storeSelf( char* buf)
     return buf+1;
 }
 
-bool TOptReconfigureMsg::isValid()
+bool TOptReconfigureMsg::isValid() const
 {
     if ( MsgType_==RENEW_MSG || MsgType_==INFORMATION_REQUEST_MSG || MsgType_==REBIND_MSG )
         return true;
