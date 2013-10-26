@@ -10,6 +10,7 @@
   - Client options are now passed to notify scripts (bug #293)
   - Fedora RPM script contributted by Patrick Pichon, thanks!
   - Srv: Experimental performance-mode added
+  - Compliation fix for Mac OS X 10.9
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

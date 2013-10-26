@@ -3328,12 +3328,16 @@ s_version=`uname -r`
 case $system in
     Darwin)
 	    case $s_version in
-            12*)
+            12*|13*)
 
 $as_echo "#define __APPLE_USE_RFC_3542 1" >>confdefs.h
 
                 NEED_RFC_3542=yes
-            ;;
+		# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
+		;;
+	    *)
+		# Let's hope that madness will go way one day.
+	    ;;
         esac
     ;;
 esac

@@ -20,10 +20,14 @@ s_version=`uname -r`
 case $system in
     Darwin)
 	    case $s_version in
-            12*)
+            12*|13*)
                 AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
                 NEED_RFC_3542=yes
-            ;;
+		# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
+		;;
+	    *)
+		# Let's hope that madness will go way one day.
+	    ;;
         esac
     ;;
 esac
