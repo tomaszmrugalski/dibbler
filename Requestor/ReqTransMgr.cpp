@@ -21,6 +21,7 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "OptVendorSpecInfo.h"
+#include "OptVendorData.h"
 #include "hex.h"
 
 using namespace std;
@@ -413,13 +414,10 @@ bool ReqTransMgr::SendTcpMsg()
             //memset(buf+1, 16, 0);
 			memset(buf+1, 0, 16);
             bufLen = 17;
-            int dataLen = 5; // option-len: 4+ the length, in octets, of the remote-id field. Minimum opt-len is 5 octets
-            char data[5];
-            // add new OPTION_REMOTE_ID option
 
             // TReqOptRemoteId(int type,char * remoteId,int enterprise,char * data, int dataLen, TMsg* parent);
-            SPtr<TReqOptRemoteId> optRemoteId = new TReqOptRemoteId(OPTION_REMOTE_ID,CfgMgr->remoteId, CfgMgr->enterpriseNumber,data, dataLen, msg);
-            optRemoteId->storeSelf(buf+bufLen,CfgMgr->queryType,CfgMgr->enterpriseNumber);
+            SPtr<TOptVendorData> optRemoteId = new TOptVendorData(OPTION_REMOTE_ID, CfgMgr->enterpriseNumber, CfgMgr->remoteId, strlen(CfgMgr->remoteId), msg);
+            optRemoteId->storeSelf(buf+bufLen);
             bufLen += optRemoteId->getSize();
         } else {
             if(!CfgMgr->remoteId) {

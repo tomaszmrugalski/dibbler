@@ -138,8 +138,7 @@ void TDHCPServer::run()
         if(msg->Bulk) {
             //msg->IsDone=true;
 
-
-            if(ptrIface->closeTcpConnection())
+            if(physicalIface->closeTcpConnection())
                 Log(Info) << "Closing OK" << LogEnd;
             else
                 Log(Info) << "Closing failure" << LogEnd;

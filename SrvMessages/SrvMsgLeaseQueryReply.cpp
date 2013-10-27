@@ -18,7 +18,7 @@
 #include "SrvOptIAPrefix.h"
 #include "AddrClient.h"
 #include "SrvCfgMgr.h"
-#include "OptRemoteId.h"
+#include "OptVendorData.h"
 
 using namespace std;
 
@@ -226,14 +226,14 @@ bool TSrvMsgLeaseQueryReply::queryByRemoteID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     SPtr<TOpt> opt;
     q->firstOption();
 
-    SPtr<TOptRemoteID> remotePtr = 0;
-    SPtr<TOptRemoteID> remoteId = 0;
+    SPtr<TOptVendorData> remoteId = 0;
     //SPtr<TIPv6Addr> link = q->getLinkAddr();
 
     while ( opt = q->getOption() ) {
-        if (opt->getOptType() == OPTION_REMOTE_ID)
-            remotePtr = (Ptr*) opt;
-            remoteId = remotePtr->getRemoteId();
+        if (opt->getOptType() != OPTION_REMOTE_ID)
+            continue;
+        remoteId = (Ptr*) opt;
+        break;
     }
     if (!remoteId) {
         Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required RemoteId suboption missing.", this));

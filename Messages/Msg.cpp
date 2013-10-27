@@ -55,7 +55,7 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char * &buf, int msgType, int  &bufSize)
-    :pkt(0), NotifyScripts(NULL)
+    :NotifyScripts(NULL)
 {
 
     this->Bulk = true;

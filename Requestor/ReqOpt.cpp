@@ -57,6 +57,7 @@ bool TReqOptRelayId::doDuties()
 
 
 
+#if 0
 bool TReqOptRemoteId::doDuties()
 {
     return true;
@@ -90,7 +91,8 @@ char *TReqOptRemoteId::storeSelf(char *buf, int queryType, int enterpriseNum)
 }
 
  //TOptVendorSpecInfo(int type, int enterprise, char *data, int dataLen, TMsg* parent);
-TReqOptRemoteId::TReqOptRemoteId(int type, char *remoteId, int enterprise,char * data,  int dataLen, TMsg *parent):TOptVendorSpecInfo(type,  enterprise, data, dataLen, parent) {
+TReqOptRemoteId::TReqOptRemoteId(int type, char *remoteId, int enterprise,char * data,  int dataLen, TMsg *parent)
+ :TOptVendorSpecInfo(type,  enterprise, data, dataLen, parent) {
    this->remoreIdRqOpt=remoteId;
 }
 
@@ -107,6 +109,7 @@ size_t TReqOptRemoteId::getSize()
     }
     return len;
 }
+#endif
 
 TReqOptRelayId::TReqOptRelayId(int type, SPtr<TDUID> duid, TMsg *parent)
     :TOptDUID(type, duid, parent)

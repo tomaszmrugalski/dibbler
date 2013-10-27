@@ -47,7 +47,7 @@ protected:
     bool doDuties();
 };
 
-
+#if 0
 class TReqOptRemoteId : public TOptVendorSpecInfo
 {
 public:
@@ -58,7 +58,7 @@ protected:
     bool doDuties();
     char * remoreIdRqOpt;
 };
-
+#endif
 
 class TReqOptRelayId : public TOptDUID
 {

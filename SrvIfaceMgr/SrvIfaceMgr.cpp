@@ -241,21 +241,35 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     SPtr<TSrvMsg> ptr;
 
+    // check message type
+    int msgtype = buf[0];
+
+    SPtr<TIfaceIface> ptrIface;
+
+    // get interface
+    ptrIface = (Ptr*)getIfaceBySocket(sockid);
+
+    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+               << ")." << LogEnd;
+
     if (this->isTcp) {
         if (bufsize<6) {
             Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
             return 0; //NULL
         }
-        msgtype = buf[2];
+        int msgtype = buf[2];
 
         switch (msgtype) {
 
         case LEASEQUERY_MSG:
         {
             Log(Debug) << "[Bulk] Leasequery messege coming" << LogEnd;
-            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+            ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
             if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
+                !ptr->validateAuthInfo(buf, bufsize,
+                                       SrvCfgMgr().getAuthProtocol(),
+                                       SrvCfgMgr().getAuthDigests())) {
                 Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
                 return 0;
             }
@@ -269,7 +283,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             if (!ptr)
                 return 0;
             if (!ptr->validateReplayDetection() ||
-                !ptr->validateAuthInfo(buf, bufsize)) {
+                !ptr->validateAuthInfo(buf, bufsize,
+                                       SrvCfgMgr().getAuthProtocol(),
+                                       SrvCfgMgr().getAuthDigests())) {
                 Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
                 return 0;
             }
@@ -302,18 +318,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
                      << ") bytes, at least 4 are required." << LogEnd;
         return 0; //NULL
     }
-
-    // check message type
-    int msgtype = buf[0];
-
-    SPtr<TIfaceIface> ptrIface;
-
-    // get interface
-    ptrIface = (Ptr*)getIfaceBySocket(sockid);
-
-    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-               << ")." << LogEnd;
 
     // create specific message object
     switch (msgtype) {
@@ -663,9 +667,17 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
         Log(Warning) << "Truncated message received (len " << bufsize
                      << ", at least 4 is required)." << LogEnd;
         return 0;
+    }
 
     // Leasequery messages
     if (this->isTcp) {
+
+        if (bufsize < 6) {// 6 is the minimum DHCPv6 packet size 2 bytes len + type + 3 bytes for transaction-id
+            Log(Warning) << "Truncated message received (len " << bufsize
+                         << ", at least 4 is required)." << LogEnd;
+            return 0;
+        }
+
         switch (buf[2]) {
         case LEASEQUERY_MSG:
             return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
@@ -693,12 +705,12 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
     case INFORMATION_REQUEST_MSG:
         return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
-        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize, LEASEQUERY_MSG, false);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
         return 0; //NULL;;
     }
-}
+    }
 
 /**
  * Compares current flags of interfaces with old flags. If change is detected,
