@@ -11,7 +11,7 @@ common enough to get into this section.
 
 \subsection{Common Questions}
 
-%% Q1 
+%% Q1
 \Q Why client does not configure routing after assigning addresses, so
 I cannot e.g. ping other hosts?
 
@@ -22,21 +22,66 @@ supposed to be conveyed using Router Advertisements (RA) messages,
 announced periodically by routers. Hosts are supposed to listen to
 those messages and configure their routing appropriately. Note that
 this mechanism is completely separate from DHCPv6. It may sound a bit
-strange, but that's the way it was meant to work. 
+strange, but that's the way it was meant to work.
 
 Properly implemented clients are supposed to configure leased address
 with /128 prefix and learn the actual prefix from RA. As this is
 incovenient, many clients (with dibbler included) bend the rules and
 configure received addresses with /64 prefix. Please note that this
-value is arbitrary chosen and may be improper in many scenarios. 
+value is arbitrary chosen and may be improper in many scenarios.
 
 \Note This behaviour has changed in the 0.5.0 release. Previous
 releases configured received address with /128 prefix. To restore old,
 more RFC conformant behavior, see \emph{strict-rfc-no-routing}
-directive in the \ref{client-cfg-file} section.
+directive in the Section \ref{client-cfg-file}.
 
-\vspace{0.5cm}
+There was a proposed solution in a form of \cite{draft-route-option}
+draft. See section \ref{feature-routing}. Unfortunately, MIF working
+group in IETF decided to abandon this work.
+
 %% Q2
+\Q I would like to have the ability to reserve specific addresses for
+clients with given MAC address. That's a basic and very common feature
+in DHCPv4 server. Why it is not supported in Dibbler? Are there plans
+to implement such feature?
+
+\A No. It is not and will not be supported. For couple of reason. The
+first and most important is that DHCPv6 identifies clients based on
+DUIDs, rathar than MAC addresses. That is a protocol design choice. Of
+course that does not prevent many users from saying ``I don't care, I
+want MAC classification anyway!''. So here are more technical reasons
+why MAC classification is a bad idea. The first technical reason is
+that Dibbler couldn't be extended, because MAC address is often not
+available. There are 3 possible ways a server could possibly
+learn client's MAC address:
+\begin{enumerate}
+\item from Ethernet frame. That won't work if traffic goes through
+relay
+\item from DUID-LL or DUID-LLT. RFC3315 forbids looking into the DUID.
+Besides of being a wrong thing to do, that also won't work, because
+client with a given MAC address can use different DUID type, e.g.
+DUID-EN or DUID-UUID (or others, I saw on the wire some device with DUID
+type 14. Strange, uncommon, but valid).
+\item using source address and extracting MAC from link-local address
+thaty is based on EUI-64 that contains MAC address. That should be
+available for direct traffic (simply src address of the UDP packet) or
+relayed (peer addr field in RELAY-FORW message). This would usually
+work, but there are cases when it won't. First, if client uses privacy
+extensions (RFC4941). The other one if client and server support
+unicast, some traffic will be sent from client global address, not
+using link-local address at all.
+\end{enumerate}
+
+So instead of doing MAC based reservations, Dibbler supports
+link-layer address based reservations. In most cases it will be
+equivalent to MAC reservations. The only case where it won't work will
+be with unicast, but that can be solved easily (don't use link-layer
+reservations and unicast together). Despite this shortcoming,
+link-layer was implemented after Dibbler 0.8.2 was
+released. See \ref{feature-exceptions}
+and \ref{example-server-exceptions} sections.
+
+%% Q3
 \Q Dibbler server receives SOLICIT message, prints information about
 ADVERTISE/REPLY transmission, but nothing is actually transmitted. Is
 this a bug?
@@ -51,7 +96,7 @@ server gives up and doesn't transmit IPv6 packet (DHCPv6 reply, that
 is) at all. Being not able to respond to the Neighbor Discovery
 packets may indicate invalid client behavior.
 
-%% Q3
+%% Q4
 \Q Dibbler sends some options which have values not recognized by the
 Ethereal/Wireshark or by other implementations. What's wrong?
 
@@ -59,7 +104,7 @@ Ethereal/Wireshark or by other implementations. What's wrong?
 specification phase. It means that until standarisation process is
 over, they do not have any officially assigned numbers. Once
 standarization process is over (and RFC document is released), this
-option gets an official number. 
+option gets an official number.
 
 There's pretty good chance that different implementors may choose
 diffrent values for those not-yet officialy accepted options. To
@@ -67,17 +112,47 @@ change those values in Dibbler, you have to modify file
 misc/DHCPConst.h and recompile server or client. See Developer's
 Guide, section \emph{Option Values} for details.
 
-%% Q4
+%% Q5
 \Q I can't get (insert your trouble causing feature here) to
-work. What's wrong? 
+work. What's wrong?
 
-\A Go to the project \url{http://klub.com.pl/dhcpv6/}{homepage} and
+\A Go to the project \href{http://klub.com.pl/dhcpv6/}{homepage} and
 browse \href{http://klub.com.pl/lists/dibbler/}{list archives}. If
 your problem was not reported before, please don't hesitate to write
 to the
 \href{http://klub.com.pl/cgi-bin/mailman/listinfo/dibbler}{mailing
-  list} or \href{mailto:thomson(at)klub.com.pl}{contact author}
-directly. 
+  list}. Author prefers to not be contacted directly, but rather over
+mailing list. The only exception are security reports and confidential
+disucssions. In such case, please \href{mailto:thomson(at)klub.com.pl}{contact author} directly.
+
+%% Q6
+\Q Why is feature X not implemented? I need it!
+
+\Q The short answer is : We do accept patches.
+
+The longer one is more complicated. Dibbler is a hobby project with
+the only developer having very limited time to dedicate. There are
+many requests, bugs and missing features and I have to prioritize
+them. My personal judgement about importance, difficulty, amount of
+work required and and other factors of specific feature decides on
+priority, compared to other features. Personal preference plays a role
+here as well.
+
+If you don't want to wait, get your hands dirty and implement it
+yourself! It is not as difficult as it sounds. Dibbler code is
+reasonably well documented, so understanding how it works is not that
+difficult. See Dibbler Developer's Guide for introduction, code
+overview, architecture etc. You can always as on dibbler-devel mailing
+list.
+
+Finally, if you are disappointed with the pace of progress (or even
+lack of thereof), there are couple of things you can do. First and
+foremost, consider alternatives. There is ISC DHCP implementation that
+supports DHCPv6 \href{http://www.isc.org/software/dhcp}{http://www.isc.org}.
+It is open source as well, but ISC provides paid support for it, if
+you need one. ISC also does custom development contracts, should you
+need it. ISC is a nice non-profit company, so your money will be used
+for a good cause.
 
 \subsection{Linux specific questions}
 
@@ -95,12 +170,30 @@ REQUEST messages. What's wrong?
 
 \A This is a problem with certain kernels. My limited test capabilites
 allowed me to conclude that there's problem with 2.4.20
-kernel. Everything works fine with 2.6.0 with USAGI patches. Patched 
+kernel. Everything works fine with 2.6.0 with USAGI patches. Patched
 kernels with enhanced IPv6 support can be downloaded from
 \url{http://www.linux-ipv6.org/}. Please let me know if your kernel
 works or not.
 
 \subsection{Windows specific questions}
+
+\Q Dibbler doesn't receive anything on Windows 7 or Windows 8. Is it
+broken?
+
+\A Make sure your firewall allows the traffic through. Dibbler server
+must be able to receive traffic on UDP port 547. Dibbler client must
+be able to receive traffic on UDP port 546. If DNS Update mechanism is
+used, Dibbler must be able to send traffic to TCP and/or UDP port 53
+(DNS). There are many ways in which Windows firewall can be configured
+to allow such traffic. For example, in Windows 8, one can use the
+following commands (assuming DNS server is located at 2001:db8:1::1"):
+\begin{lstlisting}
+netsh -c advfirewall
+> firewall
+> add rule name="dhcpv6in" dir=in action=allow localport=547 protocol=udp
+> add rule name="dhcpv6out" dir=out action=allow localport=547 protocol=udp
+> add rule name="ddnsout" dir=out action=allow remoteip="2001:db8:1::1"
+\end{lstlisting}
 
 %% Q1
 \Q After installing \emph{Advanced Networking Pack} or \emph{Windows XP
@@ -110,7 +203,7 @@ working. Is Dibbler compatible with Windows XP SP2?
 \A Both products (Advanced Networking Pack as well as Service Pack 2
 for Windows XP) provide IPv6 firewall. It is configured by default to
 reject all incoming IPv6 traffic. You have to disable this
-firewall. To disable firewall on the ,,Local Area Connection''
+firewall. To disable firewall on the ``Local Area Connection''
 interface, issue following command in a console:
 
 \begin{lstlisting}
@@ -129,4 +222,7 @@ interface is marked as down.
 %% Q3
 \Q Is Microsoft Windows 8 supported?
 
-\A Unfortunately, Windows 8 is not supported yet.
+\A Unfortunately, Windows 8 is not supported yet. I do not have time
+to run tests on Windows8, but if it provides the same API as previous
+versions do, there's pretty good chance that Dibbler will work on
+Windows 8.

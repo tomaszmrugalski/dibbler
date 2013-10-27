@@ -19,7 +19,7 @@ or a specific phrase. Here are more commonly used types:
   0-9 characters, quotes can be omited, e.g. beeblebrox
 \item[DUID identifier] -- hex number starting with 0x,
   e.g. 0x12abcd. In Dibbler version 0.8.0RC1, another format was
-  introduced: 2 hex digits separated by comma, e.g. 12:aa:bb:cc:d5. As
+  introduced: 2 hex digits separated by colon, e.g. 12:aa:bb:cc:d5. As
   this format may in some cases be confused with IPv6 address, the old
   format (starting with 0x) remains to be supported.
 \item[IPv6 address list] -- IPv6 addresses separated with commas,
@@ -334,6 +334,20 @@ parameter. Defines than name, which will be used during logging.
   introduced to solve this DHCPv6 protocol limitation. It is expected
   to be supported in the next Dibbler release.
 
+\item[obey-ra-bits] -- (scope: global). Rounter Advertisements contain
+  two bits that inform what kind of DHCPv6 services are available on
+  link. \b M (Managed) that tells that addresses and prefixes can be
+  obtained using stateful DHCPv6. \b O (OtherConf) tells that other
+  configuration options may be configured. Both bits are defined
+  in \cite{rfc4861}, section 4.2. It should be noted that those bits
+  are informational only. In the default mode
+  (when \emph{obey-ra-bits} is absent), the client will ask for
+  configuration options that it has specified in the configuration
+  file. With \emph{obey-ra-bits}, the client will wait till it
+  receives the RA message and will act according to the received
+  bits. The default is off (\emph{obey-ra-bits}
+  missing). Enabling \emph{obey-ra-bits} implies \emph{inactive-mode}.
+
 \item[experimental] -- (scope: global). Allows enabling experimental
 features. There are some highly-experimental features present in
 Dibbler. To make a clear statement about their experimental nature,
@@ -640,20 +654,32 @@ address is an IPv6 address, address-list is coma separated list of
 IPv6 addresses, string-keyword is a word ``string'' and
 request-keyword is a word ``request''. See Section \ref{feature-custom-options}.
 
- \item[auth-enabled] -- (scope: global). Takes one boolean
-   parameter. The default is 0. This option enables authentication and
-   authorization. When set to true, server support must also be
-   enabled, otherwise all messages will be dropped. See
-   Section \ref{feature-auth} for details.
+\item[auth-protocol] -- (scope: global, type: string, default:
+  none). This is a crucial parameter that specifies which
+  authorization/authentication protocol is used. Allowed values are:
+  \texttt{none}, \texttt{delayed}, \texttt{reconfigure-key} and
+  \texttt{dibbler}. See section \ref{feature-auth} for details.
 
- \item[auth-accept-methods] -- (scope: global). Takes coma separated
+ \item[auth-methods] -- (scope: global). Takes coma separated
    list of accepted authentication methods methods that client will
    accept from server. If this list is empty, any method will be
-   accepted. Possible values
-   are: \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
-   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
-   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
-   and \texttt{digest\_hmac\_sha512}.
+   accepted. The first method on the list is the default one. Possible values
+   are:  \texttt{none}, \texttt{digest-plain}, \texttt{digest-hmac-md5},
+   \texttt{digest-hmac-sha1}, \texttt{digest-hmac-sha224},
+   \texttt{digest-hmac-sha256}, \texttt{digest-hmac-sha384},
+   and \texttt{digest-hmac-sha512}. 
+
+\item[auth-replay] -- (scope: global, type: string, default:
+  none). Specifies which replay detection methods are
+  supported. Currently two values are implemented: \texttt{none} and
+  \texttt{monotonic}.
+
+\item[auth-required] -- (scope: global, type: boolean, default:
+  0). This parameter specifies if the client is required to
+  authenticate itself. When set to 0, any client authentication
+  failures (invalid signature or lack of \opt{AUTH} option) will
+  result in a warning only. When set to 1, such messages will be
+  dropped.
 
  \item[route] -- (scope: interface). Takes one boolean parameter that
  defines if routing information should requested or not. The default
@@ -1048,7 +1074,7 @@ iface "eth0" {
 }
 \end{lstlisting}
 
-\subsubsection{Example 14: Authentication}
+\subsubsection{Example 14: Dibbler Authentication}
 \label{example-client-auth}
 Authentication is enabled. Client will accept HMAC-SHA-512, HMAC-MD5
 and HMAC-SHA-256 as an authentication method.
@@ -1059,8 +1085,10 @@ and HMAC-SHA-256 as an authentication method.
 log-mode short
 log-level 7
 
-auth-enabled true
-auth-accept-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
+auth-protocol dibbler
+auth-replay monotonic
+auth-required 1
+auth-methods digest-hmac-sha512, digest-hmac-md5, digest-hmac-sha256
 
 iface eth0 {
 }
@@ -1122,22 +1150,25 @@ iface "eth0" {
 Client is able to ask for custom options, that are not supported by
 default. Following config file allows client to ask for many
 options. Also, see Section \ref{feature-custom-options} for
-extended explanation.
+extended explanation. Note that the syntax changed slightly
+after Dibbler 0.8.3 was released.
 
 \begin{lstlisting}
 #client.conf
 iface "eth0" {
-  unicast 1
   ia
 
-  option 145 duid 01:02:a3:b4:c5:dd:ea
+  # This will send specified option value  
+  option 145 hex 01:02:a3:b4:c5:dd:ea
   option 146 address 2001:db8:1::dead:beef
   option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
   option 148 string "secretlair.example.org"
 
-  option 149 string request
-  option 150 address request
-  option 151 address-list request
+  # This will request specific options and interpret responses
+  option 149 hex
+  option 150 address
+  option 151 address-list
+  option 152 string
 \end{lstlisting}
 
 \subsubsection{Example 18: Remote Autoconfiguration}

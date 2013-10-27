@@ -6,8 +6,8 @@
  * released under GNU GPL v2 only licence
  */
 
-#ifndef VENDORCLASS_H
-#define VENDORCLASS_H
+#ifndef OPTVENDORDATA_H
+#define OPTVENDORDATA_H
 
 #include "Opt.h"
 //#include "DHCPConst.h"
@@ -16,11 +16,12 @@ class TOptVendorData : public TOpt
 {
   public:
     TOptVendorData(int type, int enterprise, char * data, int dataLen, TMsg* parent);
-    TOptVendorData(int type, char * buf,  int n, TMsg* parent);
+    TOptVendorData(int type, const char * buf,  int n, TMsg* parent);
     size_t getSize();
     char * storeSelf( char* buf);
-    bool isValid();
+    virtual bool isValid() const;
 
+    /// @todo: should return uint32_t
     int getVendor();
     char * getVendorData();      // returns vendor data (binary)
     std::string getVendorDataPlain(); // returns vendor data (as a printable string)

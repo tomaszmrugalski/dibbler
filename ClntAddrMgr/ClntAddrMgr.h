@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntAddrMgr.h,v 1.14 2008-10-12 14:05:25 thomson Exp $
- *
  */
 
 #ifndef CLNTADDRMGR_H
@@ -19,6 +17,7 @@
 #include "AddrMgr.h"
 #include "Portable.h"
 #include "IPv6Addr.h"
+#include "ScriptParams.h"
 
 #define ClntAddrMgr() (TClntAddrMgr::instance())
 
@@ -58,10 +57,12 @@ class TClntAddrMgr : public TAddrMgr
     bool delPD(long IAID);
     int countPD();
     bool addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
-		   int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+		   const std::string& ifacename, int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 		   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		   int length, bool quiet);
+
     bool updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
+                      const std::string& ifname,
 		      int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 		      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		      int length, bool quiet);

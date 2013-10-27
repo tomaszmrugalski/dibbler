@@ -30,12 +30,12 @@ TClntCfgIface::TClntCfgIface(const std::string& ifaceName)
     ID=-1;
 }
 
-TClntCfgIface::TClntCfgIface(int ifaceNr)
+TClntCfgIface::TClntCfgIface(int iface_index)
     :Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1),
      RoutingEnabled(false){
     setDefaults();
     NoConfig=false;
-    ID=ifaceNr;
+    ID=iface_index;
     IfaceName="[unknown]";
 }
 
@@ -376,9 +376,6 @@ EState TClntCfgIface::getVendorSpecState() {
 EState TClntCfgIface::getKeyGenerationState() {
     return KeyGenerationState;
 }
-EState TClntCfgIface::getAuthenticationState() {
-    return AuthenticationState;
-}
 EState TClntCfgIface::getRoutingEnabledState() {
     return RoutingEnabledState;
 }
@@ -480,10 +477,6 @@ void TClntCfgIface::setKeyGenerationState(EState state) {
     this->KeyGenerationState = state;
 }
 
-void TClntCfgIface::setAuthenticationState(EState state) {
-    this->AuthenticationState = state;
-}
-
 void TClntCfgIface::setOnLinkPrefixLength(int len) {
     this->PrefixLength = len;
 }
@@ -541,6 +534,18 @@ SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
             return (*opt); // these are the droids you are looking for
 
     return 0; // not found
+}
+
+void TClntCfgIface::setMbit(bool m_bit) {
+    if (!m_bit) {
+        Stateful_ = false;
+    }
+}
+
+void TClntCfgIface::setObit(bool o_bit) {
+    if (!o_bit) {
+        setDefaults();
+    }
 }
 
 

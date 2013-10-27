@@ -28,6 +28,14 @@ TCfgMgr::TCfgMgr()
   DUIDEnterpriseNumber(-1),
   DdnsProto(DNSUPDATE_TCP),
   DDNSTimeout_(DNSUPDATE_DEFAULT_TIMEOUT) // default is 1000 ms
+
+#ifndef MOD_DISABLE_AUTH
+  // Authentication
+  ,AuthProtocol_(AUTH_PROTO_NONE),
+  AuthAlgorithm_(0),
+  AuthReplay_(AUTH_REPLAY_NONE),
+  AuthDropUnauthenticated_(false) /// @todo should be true
+#endif
 {
 
 }
@@ -137,7 +145,8 @@ bool TCfgMgr::loadDUID(const std::string& duidFile)
     f.open(duidFile.c_str());
     if ( !(f.is_open())  ) {
         // unable to open DUID file
-        Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID." << LogEnd;
+        Log(Notice) << "Unable to open DUID file (" << duidFile << "), generating new DUID."
+                    << LogEnd;
                 return false;
     }
 
@@ -147,7 +156,8 @@ bool TCfgMgr::loadDUID(const std::string& duidFile)
 
         this->DUID = new TDUID(s.c_str());
 
-        Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from " << duidFile << " file." << LogEnd;
+        Log(Debug) << "DUID's value = " << DUID->getPlain() << " was loaded from "
+                   << duidFile << " file." << LogEnd;
 
         int duidLen = s.length();
     int duidLen2 = DUID->getLen();
@@ -206,12 +216,12 @@ bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
             continue;
         }
         if ( !memcmp(realIface->getMac(),buf,realIface->getMacLen()) ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: MAC is all zero. " << LogEnd;
           continue;
         }
         if ( !realIface->flagUp() ) {
-          Log(Debug) << "DUID creation: Interface " << realIface->getName() << "/" << realIface->getID()
+          Log(Debug) << "DUID creation: Interface " << realIface->getFullName()
                      << " skipped: Interface is down." << LogEnd;
           continue;
         }
@@ -223,11 +233,13 @@ bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
         if ( this->generateDUID(filename, realIface->getMac(),
                                 realIface->getMacLen(), realIface->getHardwareType())) {
         if (this->DUIDType!=DUID_TYPE_EN)
-              Log(Notice) << "DUID creation: generated using " << realIface->getFullName() << " interface." << LogEnd;
+              Log(Notice) << "DUID creation: generated using " << realIface->getFullName()
+                          << " interface." << LogEnd;
         Log(Info) << "My DUID is " << this->DUID->getPlain() << "." << LogEnd;
         return true;
         } else {
-            Log(Crit) << "DUID creation: generation attempt based on " << realIface->getFullName() << " interface failed." << LogEnd;
+            Log(Crit) << "DUID creation: generation attempt based on "
+                      << realIface->getFullName() << " interface failed." << LogEnd;
             return false;
         }
     }
@@ -258,7 +270,7 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
         DUID = new char[DUIDlen];
         writeUint16(DUID, this->DUIDType);
         writeUint16(DUID+2, macType);
-        cur_time=now();
+        cur_time = (uint32_t)time(NULL);
 
         writeUint32(DUID+4, (cur_time-946684800) & 0xFFFFFFFF);
         /* 946684800=Number of seconds between midnight (UTC), January
@@ -280,8 +292,8 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
             DUID[i+4]=mac[i];
         break;
     case DUID_TYPE_EN:
-        Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber << ", Enterprise ID=" <<
-            DUIDEnterpriseID->getPlain() << LogEnd;
+        Log(Debug) << "DUID creation: EN: EnterpriseNumber=" << DUIDEnterpriseNumber
+                   << ", Enterprise ID=" << DUIDEnterpriseID->getPlain() << LogEnd;
         duidType="Enterprise Number (duid-en)";
         DUIDlen = 6 + DUIDEnterpriseID->getLen();
         DUID = new char[DUIDlen];
@@ -294,7 +306,8 @@ bool TCfgMgr::generateDUID(const std::string& duidFile, char * mac,int macLen, i
         return false;
     }
 
-    Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long " << duidType << " DUID." << LogEnd;
+    Log(Notice) << "DUID creation: Generating " << DUIDlen << "-bytes long "
+                << duidType << " DUID." << LogEnd;
     this->DUID=new TDUID(DUID,DUIDlen);
     delete [] DUID;
     f << this->DUID->getPlain();
@@ -324,3 +337,61 @@ SPtr<TDUID> TCfgMgr::getDUID()
 {
     return DUID;
 }
+
+#if !defined(MOD_SRV_DISABLE_DNSUPDATE) && !defined(MOD_CLNT_DISABLE_DNSUPDATE)
+void TCfgMgr::addKey(SPtr<TSIGKey> key) {
+    Keys_.push_back(key);
+}
+
+SPtr<TSIGKey> TCfgMgr::getKey() {
+    if (Keys_.empty())
+	return 0;
+    /// @todo: add some parameter that will pick the right key
+
+    return Keys_.front(); // just return first key for now
+}
+#endif
+
+#ifndef MOD_DISABLE_AUTH
+void TCfgMgr::setAuthProtocol(AuthProtocols proto) {
+    Log(Debug) << "Auth: setting auth protocol to " << proto << LogEnd;
+    AuthProtocol_ = proto;
+}
+
+void TCfgMgr::setAuthReplay(AuthReplay replay_detection_mode) {
+    AuthReplay_ = replay_detection_mode;
+}
+
+void TCfgMgr::setAuthAlgorithm(uint8_t algorithm) { // protocol specific value
+    AuthAlgorithm_ = algorithm;
+}
+
+AuthProtocols TCfgMgr::getAuthProtocol() {
+    return AuthProtocol_;
+}
+
+AuthReplay TCfgMgr::getAuthReplay() {
+    return AuthReplay_;
+}
+
+uint8_t TCfgMgr::getAuthAlgorithm() {
+    return AuthAlgorithm_;
+}
+
+void TCfgMgr::setAuthDropUnauthenticated(bool drop) {
+    AuthDropUnauthenticated_ = drop;
+}
+
+bool TCfgMgr::getAuthDropUnauthenticated() {
+    return AuthDropUnauthenticated_;
+}
+
+void TCfgMgr::setAuthRealm(const std::string& realm) {
+    AuthRealm_ = realm;
+    Log(Debug) << "AUTH: Realm set to '" << realm << "'." << LogEnd;
+}
+
+std::string TCfgMgr::getAuthRealm() {
+    return AuthRealm_;
+}
+#endif

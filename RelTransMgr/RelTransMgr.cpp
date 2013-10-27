@@ -24,7 +24,7 @@
 
 TRelTransMgr * TRelTransMgr::Instance = 0; // singleton implementation
 
-TRelTransMgr::TRelTransMgr(const std::string xmlFile)
+TRelTransMgr::TRelTransMgr(const std::string& xmlFile)
     :XmlFile(xmlFile), IsDone(false)
 {
     // for each interface in CfgMgr, create socket (in IfaceMgr)
@@ -314,11 +314,22 @@ TRelTransMgr& TRelTransMgr::instance()
     return *Instance;
 }
 
-
 std::ostream & operator<<(std::ostream &s, TRelTransMgr &x)
 {
     s << "<TRelTransMgr>" << std::endl;
     s << "<!-- RelTransMgr dumps are not implemented yet -->" << std::endl;
     s << "</TRelTransMgr>" << std::endl;
     return s;
+}
+
+// Stub definitions, added because they are called in TMsg::storeSelf()
+extern "C" {
+void *hmac_sha (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf, int type) {
+	return NULL;
+}
+
+void *hmac_md5 (const char *buffer, size_t len, char *key, size_t key_len, char *resbuf) {
+	return NULL;
+}
+
 }

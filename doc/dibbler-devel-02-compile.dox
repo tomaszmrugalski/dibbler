@@ -2,11 +2,11 @@
  * 
  * @page compilation 2. Compilation
  * Currently Dibbler supports several operating systems: Linux (2.4, 2.6, 3.0), Windows (NT4,
- * 2000/XP/2003/Vista/Win7),  Mac OS X, FreeBSD, NetBSD and OpenBSD. Compilation process is system
- * dependent, so it is described for various systems separately.
- * 
+ * 2000/XP/2003/Vista/Win7),  Mac OS X, FreeBSD, NetBSD, OpenBSD and Solaris 11.
+ * Compilation process is system dependent, so it is described for various systems separately.
+ *
  @section compilationPosix 2.1 Posix compilation
- To compile Dibbler, extract sources, and type:
+ To compile Dibbler or Posix complaint systems, extract sources, and type:
 
 @verbatim
 ./configure
@@ -38,7 +38,11 @@ make parser
  * @section compilationBSD 2.4 FreeBSD/NetBSD/OpenBSD Compilation
  * Please follow POSIX complilation guidelines (@ref compilationPosix).
  *
- * @section autotools 2.5 Autoconf and automake
+ * @section compilationSol 2.5 Solaris 11 Compilation
+ * Oracle Solaris 11 support is experimental. Please follow POSIX compilation
+ * guidelines (@ref compilationPosix).
+ *
+ * @section autotools 2.6 Autoconf and automake
  *
  * Starting with 0.8.1RC1, Dibbler uses autotools. Usually developers do not
  * have to use it. However, if you add new file, you need to modify Makefile.am.
@@ -56,7 +60,7 @@ autoreconf --install --force
  * any files left and local version of automake or autoconf is older than the version
  * that was used to generate existing files.
  *
- * @section compilationWin32 2.6 Windows XP/2003/Vista/Win7 compilation
+ * @section compilationWin32 2.7 Windows XP/2003/Vista/Win7 compilation
  * To compile Dibbler under modern Windows systems, MS Visual Studio 2008 was
  * used. Project files are provided in the SVN and source archives.
  * 
@@ -68,11 +72,11 @@ autoreconf --install --force
  * present in Port-win32 directory, but they may disappear anytime.
  * Please upgrade to VS 2008 version.
  *
- * @section compilationWinNT 2.7 Windows NT4/2000 compilation
+ * @section compilationWinNT 2.8 Windows NT4/2000 compilation
  * Those 2 old Windows operating systems are only partially supported. Note that
- * even Microsoft does not support IPv6 on those systems. 
+ * even Microsoft does not support IPv6 on those systems.
  *
- * @section compilationFlexBison 2.8 Flex and bison++ under Windows
+ * @section compilationFlexBison 2.9 Flex and bison++ under Windows
  * Flex and bison++ tools are not required to successfully build Dibbler. They are 
  * only required, if changes are made to the parsers. Lexer and Parser files
  * (ClntCfgMgr/ClntLexer.*, ClntCfgMgr/ClntParser.*, SrvCfgMgr/SrvLexer.*, 
@@ -111,25 +115,24 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * in a painful trial-and-error way. Also, it is strongly recommended to get
  * latest version of Flex/bison++ for Windows.
  * 
- * @section compilationDebRpm 2.9 DEB and RPM Packages
- * There is a possibility to generate RPM (RadHat, Fedora Core, Mandrake,
+ * @section compilationDebRpm 2.10 DEB and RPM Packages
+ * Older Dibbler version allowed to generate RPM (RadHat, Fedora Core, Mandrake,
  * PLD and lots of other distributions) and DEB (Debian, Knoppix and
- * other) packages. Before trying this trick, make sure that you have
- * required tools (rpmbuild for RPM;dpkg-deb for DEB
- * packages). Note that this requires root privileges. 
- * Package generation is done by the following commands:
- * 
- * @verbatim
- * make release-deb
- * make release-rpm
- * @endverbatim
- * 
- * @section compilationOpenWrt 2.10 Cross-compilation for OpenWRT
+ * other) packages. They were not maintained at all, so this obsolete
+ * capability was dropped when build system was rewritten to use autotools.
+ *
+ * There is a debian/ branch in GIT repo that contains older version of the
+ * debian scripts. It is *NOT* maintained. Please use scripts from the Debian
+ * repo directly: http://packages.debian.org/source/sid/dibbler and download
+ * dibbler_X.Y.Z-debian.tar.gz. Debian packages are maintained by Bartosz Fenski
+ * (mailto:fenio(at)debian(dot)org) and Michal Zubryk (mailto:michalz(at)zsl(dot)gda(dot)pl).
+ *
+ * @section compilationOpenWrt 2.11 Cross-compilation for OpenWRT
  * Dibbler is also part of the OpenWRT Linux distribution intended to
  * address broad range of embedded devices, like LinkSys routers and 
  * access points.
  *
- * @section compilationGentoo 2.11 Ebuild script for Gentoo Linux
+ * @section compilationGentoo 2.12 Ebuild script for Gentoo Linux
  * There is also ebuild script prepared for Gentoo users. It is located
  * in the Port-linux/gentoo directory. Dibbler is also part of the
  * Gentoo Linux distribution so make sure that you verify which version
@@ -139,7 +142,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  * to Gentoo community. Author no longer maintains it, but occasionally
  * retrieves latest version from Gentoo repositories.
  * 
- * @section compilationDistros 2.12 Dibbler in Linux distributions
+ * @section compilationDistros 2.13 Dibbler in Linux distributions
  * Dibbler is available in several distributions:
  * 
  *  - <a href="http://debian.org">Debian GNU/Linux</a> -- use standard tools
@@ -152,13 +155,13 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  *  - <a href="http://www.pld-linux.org">PLD GNU/Linux</a> -- use standard
  *     PLD's poldek tool to install dibbler package.
  * 
- * @section compilationEnvironment 2.13 Compilation environment
+ * @section compilationEnvironment 2.14 Compilation environment
  * When compilation is being performed in non-standard envrionment, it is a
  * good idea to examine and modify @c Makefile.inc file. Compiler name,
  * compilation and link options, used libraries and debugging options can
  * be modified there.
  * 
- * @section compilationDefaultValues 2.14 Changing default values
+ * @section compilationDefaultValues 2.15 Changing default values
  * Custom builds might be prepared with different than default
  * compilation options. Here is a list of features, which can be
  * customised:
@@ -166,7 +169,7 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
  *   @c Mish/Logger.h+.
  * - @todo - describe remaining parameters
  * 
- * @section compilationModularFeatures 2.15 Modular features
+ * @section compilationModularFeatures 2.16 Modular features
  * In the 0.5.0 release, so called \e modular features were
  * introduced. Those modules features are replaced by parameters
  * passed to ./configure script in 0.8.1RC1. See output of
@@ -175,7 +178,65 @@ using namespace std;@endcode lines. flex binary included is slightly modified.
 @endverbatim
 for a list of available parameters.
 
- * @subsection compilationCross 2.16 Cross-compilation
+Currently the following features can be enabled (--enable-feature) or
+disabled (--disable-feature):
+
+ - \b --enable-debug - This will change compilation flags, so the binaries will include 
+debugging symbols and are easier to debug. This disables -O2 flag and
+enables -O0 (no optimization) and adds -g (include debugging symbols).
+
+ - \b --enable-efence - This will link the code with <a href="http://en.wikipedia.org/wiki/Electric_Fence">electric fence</a>, a popular memory debugger. Do not use it, unless you
+are a developer or were explicitely asked to enable it. Make sure that
+you have efence library installed in your system.
+
+ - \b --enable-bind-reuse - When creating sockets, it is possible to configure socket
+options to allow binding the same address/port many times (SO_REUSEADDR
+flag passed to setsockopt). In certain cases this is convenient, so it is
+enabled by default.
+
+ - \b --enable-dst-addr-check - When server receives a packet on a socket, it checks
+whether the destination address matches the address the socket is bound to. On some
+systems when there are 2 sockets - one bound to multicast address and second bound
+to unicast address - the packet is received twice. This check can drop the packet
+when received over the wrong interface. Disabled by default. Please enable this if
+you are receiving every packet twice.
+
+- \b --enable-resolvconf - Dibbler client may update /etc/resolv.conf to add, change
+or remove entries for DNS servers and domain names. There may be other
+processes in your system (e.g. pppd) that may do the same. In some cases
+this may cause the /etc/resolv.conf to become currupted. To manage such
+modifications, a 
+<a href="http://alioth.debian.org/projects/resolvconf/">tool called resolvconf</a>
+was developed. If enable-resolvconf is passed, then dibbler will try to
+use that tool to update /etc/resolv.conf file. If resolvconf is not present
+if your PATH or support for it has been disabled, dibbler will update /etc/resolv.conf
+on its own.
+
+- \b --enable-dns-update - Dibbler server and client supports FQDN option that
+informs the client about its hostname. Together with IPv6 address that
+information can be added to the DNS using DNS Update mechanism. If you
+are not planning on using that feature, you may disable DNS Updates as
+it requires additional library called poslib. Disabling DNS Update will
+make the code smaller. Server will be able to assign FQDNs and client will
+be able to receive it, but either will be able to update DNS server.
+
+- \b --enable-auth - Dibbler implements its own custom authentication and
+authorization. It is described in section 4.15 of Dibbler User's Guide.
+If you are not planning on using it and are concerned about binary size,
+you may consider disabling it.
+
+- \b --enable-link-state - Dibbler client running on Linux is able to detect
+link state changes and act based on those changes, i.e. send CONFIRM messages 
+after reconnecting. There is a slight overhard related to this. If you are
+not interested in detecting link changes, you may choose to not link this
+feature into your binary.
+
+- \b --enable-remote-autoconf - Dibbler implements remote autoconf mechanism
+described in (currently expired) draft draft-mrugalski-remote-dhcpv6-01.
+Enable this functionality only if you read that draft, understand it and
+plan to use it.
+
+ * @subsection compilationCross 2.17 Cross-compilation
  * Since 0.6.1 version, dibbler supports cross-compilation. It was
  * possible in previous versions, but with considerable amount of work.
  * 

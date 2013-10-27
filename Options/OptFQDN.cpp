@@ -9,7 +9,9 @@
 *
 */
 
+#include <sstream>
 #include <string.h>
+#include <string>
 #include "Portable.h"
 #include "OptFQDN.h"
 #include "Logger.h"
@@ -24,11 +26,13 @@ TOptFQDN::TOptFQDN(const std::string& domain, TMsg* parent)
     Valid = true;
 }
 
-TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
+TOptFQDN::TOptFQDN(const char * buf, int bufsize, TMsg* parent)
                 :TOpt(OPTION_FQDN, parent) {
     Valid = false;
 
-    if (bufsize < 2) {
+    // empty fqdn field is ok (section 4.2 of RFC4704), but it must have
+    // bits field
+    if (bufsize < 1) {
         Log(Warning) << "Truncated FQDN option received." << LogEnd;
         return;
     }
@@ -43,40 +47,34 @@ TOptFQDN::TOptFQDN(char * &buf, int &bufsize, TMsg* parent)
 
     //Extracting domain name
     fqdn_ = "";
-    if ( bufsize <= 255 ) {
-        unsigned char tmplength = *buf;
-        if (tmplength>bufsize)
-        {
-            Log(Warning) << "Malformed FQDN option: domain name encoding is invalid. "
-                         << "(Is this message sent by Microsoft? Tell them to fix the FQDN option.)" << LogEnd;
-            return;
-        }
-
-        buf++;
-        while (tmplength != 0) {
-            fqdn_.append(buf, tmplength);
-            buf += tmplength;
-            bufsize -= tmplength;
+    if (bufsize <= 255 ) {
+        unsigned char tmplength;
+        while (bufsize>0) {
             tmplength = *buf;
+            buf++;
+            bufsize--;
             if (tmplength>bufsize)
             {
-                Log(Warning) << "Malformed FQDN option: domain name encoding is invalid."
-                             << "(Is this message sent by Microsoft Vista client? Tell them to fix the FQDN option.)" << LogEnd;
+                Log(Warning) << "Malformed FQDN option: domain name encoding is invalid." << LogEnd;
                 return;
             }
-            buf++;
-            if ( tmplength != 0 ) {
-                fqdn_.append(".");
+            if (tmplength == 0) {
+                buf += bufsize;
+                bufsize = 0;
+            } else {
+                if (fqdn_.length())
+                    fqdn_.append(".");
+                fqdn_.append(buf, tmplength);
+                buf += tmplength;
+                bufsize -= tmplength;
             }
         }
-        buf++;
-        bufsize--;
         Valid = true;
     } else {
         Log(Warning) << "Too long FQDN option (len=" << bufsize << ") received." << LogEnd;
         return;
     }
-    Log(Debug) << "FQDN: FQDN option received: fqdn name=" << fqdn_ << LogEnd;
+    Log(Debug) << "FQDN: FQDN option received: fqdn name=" << (fqdn_.length() ? fqdn_ : "[empty]") << LogEnd;
 }
 
 TOptFQDN::~TOptFQDN() {
@@ -110,10 +108,20 @@ std::string TOptFQDN::getFQDN() const {
  * @return size of the option (without option header)
  */
 size_t TOptFQDN::getSize() {
-    if (fqdn_.length())
-        return fqdn_.length() + 7;
+    if (fqdn_.length()) {
+        //the final 0 should be present only for full fqdn, not for partial hostname
+        //we distinguish between them by dot . presence
+        if ((fqdn_.find('.',0) == string::npos) ||
+            (fqdn_[fqdn_.length()-1] == '.') ) //ends with dot => do not add final 0, will be
+                                                //made from existing dot final position
+            return fqdn_.length() + 6;
+        return fqdn_.length() + 7;  //contains '.' => full fqdn
+        }
     else
-        return 6;
+        //the final 0 should be present only for non-empty filed
+        //rfc4704 : A client MAY also leave the Domain Name field empty if it desires the
+        //server to provide a name.
+        return 5;
 }
 
 char * TOptFQDN::storeSelf(char *buffer) {
@@ -131,30 +139,61 @@ char * TOptFQDN::storeSelf(char *buffer) {
     if (flag_O_) {
         *buffer |= FQDN_O;
     }
+
     buffer++;
 
-    //FQDN data :)
-    if ( fqdn_.length() != 0 ) {
-        string copy = "";
-        copy += fqdn_;
-        std::string::size_type dotpos = copy.find('.', 0);
-        while(dotpos != string::npos) {
-            *buffer = dotpos;
-            buffer++;
-            memcpy(buffer, copy.c_str(), dotpos);
-            buffer += dotpos;
-            copy.assign(copy, dotpos + 1, copy.length());
-            dotpos = copy.find('.', 0);
-        }
-
-        *buffer = copy.length();
-        buffer++;
-        memcpy(buffer, copy.c_str(), copy.length());
-        buffer += copy.length();
+    //FQDN field
+    if (fqdn_.empty()) {
+        // no FQDN? Ok, we're done then
+        return buffer;
     }
-    *buffer = 0;
+
+    string copy = fqdn_;
+    bool endzero = false;
+    std::string::size_type dotpos = copy.find('.', 0);
+    while(dotpos != string::npos) {
+        endzero = true; //data is full fqdn, append zero at the end
+
+        // write length
+        *buffer = dotpos;
+        buffer++;
+
+        // write label
+        memcpy(buffer, copy.c_str(), dotpos);
+        buffer += dotpos;
+        copy = copy.substr(dotpos + 1, copy.length()); // substring
+        dotpos = copy.find('.', 0);
+    }
+
+    *buffer = copy.length(); //copy.length()==0 => the data ends with dot. (full fqdn forced)
+    buffer++;
+    if (copy.empty()) {
+        return buffer;
+    }
+    memcpy(buffer, copy.c_str(), copy.length());
+    buffer += copy.length();
+
+    if (endzero) {
+        //add final 0 only if not assigned by converting the dot
+        //i.e. the data is fqdn not already ended with dot.
+        *buffer = 0;
+        buffer++;
+    }
 
     return buffer;
+}
+
+std::string TOptFQDN::getPlain() {
+    stringstream tmp;
+
+    tmp << fqdn_;
+    if (flag_N_)
+        tmp << " N";
+    if (flag_O_)
+        tmp << " O";
+    if (flag_S_)
+        tmp << " S";
+    return tmp.str();
 }
 
 bool TOptFQDN::isValid() const {
@@ -172,4 +211,8 @@ bool TOptFQDN::getSFlag() const {
 
 bool TOptFQDN::getOFlag() const {
     return flag_O_;
+}
+
+bool TOptFQDN::doDuties() {
+    return true;
 }

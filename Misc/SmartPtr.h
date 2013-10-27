@@ -22,13 +22,13 @@ class Ptr {
 public:
     //constructor used in case of NULL SPtr
     Ptr() {
-              ptr=NULL;
-              refcount=1;
+        ptr = NULL;
+        refcount = 1;
     }
     //Constructor used in case of non NULL SPtr
     Ptr(void* object) {
-              ptr=object;
-              refcount=1;
+        ptr = object;
+        refcount = 1;
     }
 
     ~Ptr() {
@@ -45,14 +45,14 @@ class SPtr
 public:
     SPtr();
     SPtr(T* something);
-        SPtr(Ptr *voidptr) {
-        if(voidptr)
-        {
-            this->ptr=voidptr;
+
+    SPtr(Ptr *voidptr) {
+        if(voidptr) {
+            this->ptr = voidptr;
             this->ptr->refcount++;
+        } else {
+            this->ptr = new Ptr();
         }
-        else
-            this->ptr=new Ptr();
     }
     SPtr(const SPtr & ref);
     SPtr(int onlyNull);
@@ -65,10 +65,19 @@ public:
         return (Ptr*)NULL;
     }
 
+    operator const Ptr*() const {
+      if (this->ptr->ptr)
+        return this->ptr;
+      else
+        return (Ptr*)NULL;
+    }
+
     int refCount();
     ~SPtr();
     T& operator*() const;
     T* operator->() const;
+
+    const T* get() const;
 
  private:
     Ptr * ptr;
@@ -89,10 +98,10 @@ SPtr<T>::SPtr(T* something) {
     ptr = new Ptr(something);
 }
 
-#include <typeinfo>
-
 template <class T>
 SPtr<T>::SPtr(const SPtr& old) {
+
+    // #include <typeinfo>
     // std::cout << "### Copy constr " << typeid(T).name() << std::endl;
     old.ptr->refcount++;
     this->ptr = old.ptr;
@@ -104,7 +113,9 @@ SPtr<T>::SPtr(const SPtr& old) {
 template <class T>
 SPtr<T>::~SPtr() {
     if (!(--(ptr->refcount))) {
-        delete (T*)(ptr->ptr);
+        if (ptr->ptr) {
+            delete (T*)(ptr->ptr);
+        }
         delete ptr;
     }
 }
@@ -122,28 +133,43 @@ T* SPtr<T>::operator->() const {
     return (T*)(ptr->ptr); //it can return NULL
 }
 
+template <class T>
+const T* SPtr<T>::get() const {
+    if (!ptr) {
+        return 0;
+    }
+    return (T*)(ptr->ptr);
+}
+
+
 //It's is called in eg. instrusction: return NULL;
 //and SPtr is returned in function
 template <class T>
 SPtr<T>::SPtr(int )
 {
-        ptr=new Ptr(); //this->ptr->ptr is NULL
+    ptr=new Ptr(); //this->ptr->ptr is NULL
 }
 
 template <class T>
 SPtr<T>& SPtr<T>::operator=(const SPtr& old) {
-        if (this==&old)
-                return *this;
-        if (this->ptr)
-                if(!(--this->ptr->refcount))
-                {
-                    delete (T*)(this->ptr->ptr);
-                    delete this->ptr;
-                    this->ptr=NULL;
-                }
-                this->ptr=old.ptr;
-                old.ptr->refcount++;
-                //    cout << "operator=" << endl;
-                return *this;
+    if (this==&old)
+        return *this;
+
+    // If this pointer points to something...
+    if (this->ptr) {
+        if(!(--this->ptr->refcount))
+        {
+            if (this->ptr->ptr) {
+                // delete the object itself
+                delete (T*)(this->ptr->ptr);
+            }
+            // now delete its reference
+            delete this->ptr;
+            this->ptr = NULL;
+        }
+    }
+    this->ptr=old.ptr;
+    old.ptr->refcount++;
+    return *this;
 }
 #endif

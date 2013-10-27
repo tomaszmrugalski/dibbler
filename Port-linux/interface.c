@@ -1,5 +1,3 @@
-/* $Id: interface.c,v 1.1 2009-03-24 23:18:15 thomson Exp $ */
-
 /*
  * This file is part of ifplugd.
  *
@@ -18,12 +16,12 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+#ifdef MOD_CLNT_CONFIRM
+
 #ifdef HAVE_CONFIG_H
 #include <dibbler-config.h>
 #endif
 
-#include <linux/sockios.h>
-#include <linux/if_ether.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -42,8 +40,8 @@
 #include "ethtool-local.h"
 #include "interface.h"
 #include <stdarg.h>
-
-//#include <types.h>
+#include <linux/sockios.h>
+#include <linux/if_ether.h>
 
 void daemon_log(int loglevel, const char *fmt,...)
 {
@@ -144,3 +142,5 @@ interface_status_t interface_detect_beat_iff(int fd, const char *iface) {
 
     return ifr.ifr_flags & IFF_RUNNING ? IFSTATUS_UP : IFSTATUS_DOWN;
 }
+
+#endif

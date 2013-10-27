@@ -21,7 +21,7 @@
 #ifndef __POSLIB_LEXFN_H
 #define __POSLIB_LEXFN_H
 
-/*! \file poslib/lexfn.h
+/** \file poslib/lexfn.h
  * \brief lexical functions
  *
  * Functions for converting free-form text to various types of data.
@@ -32,7 +32,7 @@
 #include "sysstl.h"
 #include "dnsdefs.h"
 
-/*!
+/**
  * \brief convert text to boolean
  *
  * Converts text to a boolean value. The following positive values are
@@ -43,29 +43,29 @@
  */
 bool txt_to_bool(const char *buff);
 
-/*!
+/**
  * \brief convert text to numbers
  *
  * Converts text to a number. This function uses postfix operators, and can
  * also handle negative amounts.
  * \param buff Buffer containing text
  * \return Numeric value of the buffer
- * \sa #txt_to_int
+ * \sa \ref txt_to_int
  */
 int txt_to_negint(const char *buff);
 
-/*!
+/**
  * \brief convert text to numbers
  *
  * Converts text to a number. This function uses postfix operators. It doesn't
  * support negative numbers.
  * \param buff Buffer containing text
  * \return Numeric value of the buffer
- * \sa #txt_to_negint
+ * \sa \ref txt_to_negint
  */
 int txt_to_int(const char *buff);
 
-/*!
+/**
  * \brief convert text to ipv4
  *
  * Converts the text to an IPv4 address. As an extension, Poslib also supports
@@ -78,34 +78,34 @@ int txt_to_int(const char *buff);
  */
 int txt_to_ip(unsigned char ip[4], const char *buff, bool do_portion = false);
 
-/*!
+/**
  * \brief Size of an IP range buffer
  *
  * The size, in characters, of an IP range buffer.
  */
 #define sz_iprange 8
 
-/*!
+/**
  * \brief Convert text to an IP range
  *
  * Converts the buffer to an IPv4 IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_iprange).
+ * \param iprange Result buffer (should be of size \ref sz_iprange).
  * \param val String value describing the range
  */
 void txt_to_iprange(unsigned char *iprange, const char *val);
 
-/*!
+/**
  * \brief Checks for IPv4 ranges
  *
  * Returns \p true if the given IP number is in the given IP range.
  * \param iprange The IP range
  * \param ip The IPv4 number
  * \return \p true if the ip is within the range
- * \sa #txt_to_ip, #txt_to_iprange
+ * \sa \ref txt_to_ip, \ref txt_to_iprange
  */
 bool iprange_matches(const unsigned char *iprange, const unsigned char *ip);
 
-/*!
+/**
  * \brief convert text to ipv6
  *
  * Converts the text to an IPv6 address. As an extension, Poslib also supports
@@ -120,66 +120,66 @@ bool iprange_matches(const unsigned char *iprange, const unsigned char *ip);
 int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion = false);
 
 
-/*!
+/**
  * \brief Size of an IPv6 range buffer
  *
  * The size, in characters, of an IPv6 range buffer.
  */
 #define sz_ip6range 32
 
-/*!
+/**
  * \brief Convert text to an IPv6 range
  *
  * Converts the buffer to an IPv6 IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_ip6range).
+ * \param iprange Result buffer (should be of size \ref sz_ip6range).
  * \param val String value describing the range
  */
 void txt_to_ip6range(const char *iprange, const char *val);
 
-/*!
+/**
  * \brief Checks for IPv6 ranges
  *
  * Returns \p true if the given IPv6 number is in the given IP range.
  * \param iprange The IPv6 range
  * \param ip The IPv6 number
  * \return \p true if the ip is within the range
- * \sa #txt_to_ipv6, #txt_to_ip6range
+ * \sa \ref txt_to_ipv6, \ref txt_to_ip6range
  */
 bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip);
 
-/*!
+/**
  * \brief Size of an generic address range buffer
  *
  * The size, in characters, of an generic address range buffer.
  */
 #define sz_addrrange 33
 
-/*!
+/**
  * \brief Convert text to an address range
  *
  * Converts the buffer to an address IP range, in the form of ip[/nsig].
- * \param iprange Result buffer (should be of size #sz_addrrange).
+ * \param iprange Result buffer (should be of size \ref sz_addrrange).
  * \param val String value describing the range
  */
 void txt_to_addrrange(unsigned char *iprange, const char *val);
 
-/*!
+/**
  * \brief Checks for range matches
  *
  * Returns \p true if the given address number is in the given IP range.
  * \param iprange The address range
  * \param a The address
  * \return \p true if the ip is within the range
- * \sa #txt_to_addrrange
+ * \sa \ref txt_to_addrrange
  */
 bool addrrange_matches(const unsigned char *iprange, _addr *a);
 
-/*!
+/**
  * \brief Address range class
  */
 class addrrange { public: unsigned char range[sz_addrrange]; };
 
-/*!
+/**
  * \brief looks item up in match list
  *
  * This function returns true if the given address matches one of the address
@@ -191,7 +191,7 @@ class addrrange { public: unsigned char range[sz_addrrange]; };
 bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a);
 
 #ifdef HAVE_SLIST
-/*!
+/**
  * \brief looks item up in match list
  *
  * This function returns true if the given address matches one of the address
@@ -203,7 +203,7 @@ bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a);
 bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a);
 #endif
 
-/*!
+/**
  * \brief looks item up in address list
  *
  * This function returns true if the given address is one of the addresses
@@ -216,7 +216,7 @@ bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a);
 bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port = false);
 
 #ifdef HAVE_SLIST
-/*!
+/**
  * \brief looks item up in address list
  *
  * This function returns true if the given address is one of the addresses
@@ -229,7 +229,7 @@ bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port = false);
 bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port = false);
 #endif
 
-/*!
+/**
  * \brief convert e-mail address to binary domain name
  *
  * Converts the domain name or email address in src to a binary domain name.
@@ -239,7 +239,7 @@ bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port = false);
  */
 void txt_to_email(_domain target, const char *src, _cdomain origin = NULL);
 
-/*!
+/**
  * \brief convert text domain name to binary domain name
  *
  * Converts the domain name or in src to a binary domain name.
@@ -249,42 +249,30 @@ void txt_to_email(_domain target, const char *src, _cdomain origin = NULL);
  */
 void txt_to_dname(_domain target, const char *src, _cdomain origin = NULL);
 
-/*!
- * \brief convert text to address
- *
- * Converts the text pointed to by addr to an _addr address structure. If
- * the \p client parameter is set to true, the default IP is \p 127.0.0.1, else
- * it is \p 0.0.0.0 . Addresses can be given by only an address, only a port,
- * or a combination separated by a \p # . Being based on the #txt_to_ip and
- * #txt_to_ipv6 functions, this function also supports the literval values
- * \c any , \c local, \c :any and \c :local .
- * \param ret Memory to store result in
- * \param addr Text describing the address
- * \param default_port Default port if none is given
- * \param client Influences default address
- */
-void txt_to_addr(_addr *ret, const char *addr, int default_port = DNS_PORT, bool is_client = true);
+void txt_to_addr(_addr *ret, const char *addr, int default_port = DNS_PORT,
+                 bool is_client = true);
 
 /*!
  * \brief convert text to LOC RR
  *
  * Converts the text pointed to by rr to LOC information as described in
  * RFC 1876.
- * \param ret Memory to store result in (should be >= 16 bytes)
- * \param rr String containing the data (after processing, this will point to the
- *           end of the RR)
+ * \param res (used to be: Memory to store result in (should be >= 16 bytes))
+ * \param src
+ *
  */
 void txt_to_loc(unsigned char *res, char *&src);
 
 /*!
  * \brief convert text to DNS class
  *
- * Converts text to one of the class constants supported by DNS (#CLASS_IN,
- * #CLASS_HS, #CLASS_CH, #CLASS_CS), or, if #allow_q is set, possibly to a
- * supported QCLASS (#CLASS_NONE or #CLASS_ANY). Only symbolic constants are
+ * Converts text to one of the class constants supported by DNS (CLASS_IN,
+ * CLASS_HS, CLASS_CH, CLASS_CS), or, if allow_q is set, possibly to a
+ * supported QCLASS (CLASS_NONE or CLASS_ANY). Only symbolic constants are
  * allowed; numeric values result in an exception.
  * \param str String to convert
  * \param allow_q Whether to allow QCLASSes (defaults to true)
+ *
  * \return A DNS CLASS or QCLASS constant
  */
 uint16_t txt_to_qclass(const char *str, bool allow_q = true);

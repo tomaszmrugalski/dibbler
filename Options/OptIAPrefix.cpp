@@ -71,21 +71,22 @@ char * TOptIAPrefix::storeSelf(char* buf)
     return buf;
 }
 
-SPtr<TIPv6Addr> TOptIAPrefix::getPrefix() {
+SPtr<TIPv6Addr> TOptIAPrefix::getPrefix() const {
     return Prefix_;
 }
 
-unsigned long TOptIAPrefix::getPref() {
+unsigned long TOptIAPrefix::getPref() const {
         return PrefLifetime_;
 }
 
-unsigned long TOptIAPrefix::getValid() {
+unsigned long TOptIAPrefix::getValid() const {
     return ValidLifetime_;
 }
-char TOptIAPrefix::getPrefixLength(){
+
+uint8_t TOptIAPrefix::getPrefixLength() const {
     return PrefixLength_;
 }
-bool TOptIAPrefix::isValid()
-{
+
+bool TOptIAPrefix::isValid() const {
     return Valid_;
 }

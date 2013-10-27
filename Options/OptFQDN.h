@@ -43,7 +43,7 @@ class TOptFQDN : public TOpt
      * @param bufsize the size of the buffer
      * @param parent the message in which this option is included
      */
-    TOptFQDN(char * &buf, int &bufsize, TMsg* parent);
+    TOptFQDN(const char* buf, int bufsize, TMsg* parent);
     
     /**
      * Destructor - Does actually nothing
@@ -61,7 +61,8 @@ class TOptFQDN : public TOpt
     void setOFlag(bool flag);
     void setSFlag(bool flag);
     std::string getFQDN() const;
-
+    virtual std::string getPlain();
+    bool doDuties();
   	
   private:
     std::string fqdn_;

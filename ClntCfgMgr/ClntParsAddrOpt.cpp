@@ -16,8 +16,8 @@
 
 TClntParsAddrOpt::TClntParsAddrOpt()
 {
-    Pref=ULONG_MAX;
-    Valid=ULONG_MAX;
+    Pref=UINT_MAX;
+    Valid=UINT_MAX;
 }
 
 long TClntParsAddrOpt::getPref()

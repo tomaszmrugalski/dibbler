@@ -1,18 +1,19 @@
-/*                                                                           *
- * Dibbler - a portable DHCPv6                                               *
- *                                                                           *
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           *
- *          Marek Senderski  <msend@o2.pl>                                   *
- *                                                                           *
- * released under GNU GPL v2 only licence                                */
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski  <msend@o2.pl>
+ *
+ * released under GNU GPL v2 only licence
+ */
 
 #include "ClntParsIAOpt.h"
 #include <limits.h>
 
 TClntParsIAOpt::TClntParsIAOpt() : TClntParsAddrOpt()
 {
-    T1=ULONG_MAX;
-    T2=ULONG_MAX;
+    T1=UINT_MAX;
+    T2=UINT_MAX;
     IAIDCnt=0;
     AddrHint=true;
     AddrParams = false;

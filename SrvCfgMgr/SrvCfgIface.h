@@ -20,6 +20,7 @@ class TSrvCfgIface;
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include "OptVendorSpecInfo.h"
 #include "SrvCfgOptions.h"
 
@@ -66,6 +67,18 @@ public:
     bool delClntPrefix(SPtr<TIPv6Addr> ptrPD, bool quiet = false);
     bool supportPrefixDelegation() const;
 
+    // CONFIRM support
+    EAddrStatus confirmAddress(TIAType type, SPtr<TIPv6Addr> addr);
+    bool addrInPool(SPtr<TIPv6Addr> addr);
+    bool addrInTaPool(SPtr<TIPv6Addr> addr);
+    bool prefixInPdPool(SPtr<TIPv6Addr> addr);
+
+    // subnet management
+    void addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length);
+    void addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max);
+    bool addrInSubnet(SPtr<TIPv6Addr> addr);
+    bool subnetDefined();
+
     // other
     SPtr<TIPv6Addr> getUnicast();
     void setNoConfig();
@@ -95,6 +108,7 @@ public:
     void setRelayID(int id);
 
     // per-client parameters (exceptions)
+    unsigned int removeReservedFromCache();
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
     SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, TMsg* message, bool quiet=true);
     bool checkReservedPrefix(SPtr<TIPv6Addr> pfx,
@@ -146,10 +160,13 @@ private:
     // --- Prefix Delegation ---
     List(TSrvCfgPD) SrvCfgPDLst_;
 
+    // --- subnets ---
+    std::vector<THostRange> Subnets_;
+
     // --- relay ---
     bool Relay_;
     std::string RelayName_;     // name of the underlaying physical interface (or other relay)
-    int RelayID_;          // ifindex
+    int RelayID_;          // ifindex (-1 means this is not a relay)
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_; // value of interface-id option (optional)
 
     // --- option: FQDN ---

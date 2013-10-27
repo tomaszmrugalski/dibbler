@@ -3,9 +3,7 @@
 %%
 %% authors: Tomasz Mrugalski <thomson@klub.com.pl>
 %%
-%%
 %% released under GNU GPL v2 licence
-%%
 
 \newpage
 \section{Installation and usage}
@@ -87,9 +85,10 @@ Currently support for Mac OS X is usable, but there is still one
 notable limitation. Client is not able to configure DNS servers or
 domain name informations.
 
-\subsection{FreeBSD, NetBSD, OpenBSD}
+\subsection{FreeBSD, NetBSD, OpenBSD, Solaris 11}
 As of 0.8.1RC1 release, support for FreeBSD, NetBSD and OpenBSD has
-been added. There are no prebuilt binary packages available. Please
+been added. Solaris 11 support is implemented after 0.8.2 and will be included
+in 0.8.3. There are no prebuilt binary packages available. Please
 follow Section \ref{compile} for generic Dibbler compilation that applies to
 all 3 mentioned OSes.
 
@@ -149,9 +148,10 @@ want to tune several Dibbler aspects during compilation. See \emph{
 Dibbler Developer's Guide} for information about various compilation
 parameters.
 
-\subsection{Linux/Mac OS X/FreeBSD/NetBSD/OpenBSD Compilation}
+\subsection{Linux/Mac OS X/FreeBSD/NetBSD/OpenBSD/Solaris Compilation}
 The following descriptions applies to Linux, Mac OS X, FreeBSD, NetBSD
-and OpenBSD. Other POSIX systems may work, but were never tested by
+and OpenBSD. Solaris 11 support has been added since 0.8.3.
+Other POSIX systems may work, but were never tested by
 author. If you would like to install Dibbler from sources, you will need all
 required dependencies. In particular, you need a typical C++
 environment: a C and C++ compilers (most probably gcc and g++), make,
@@ -179,10 +179,12 @@ better bugreport), you can do this:
 ./configure --enable-debug
 \end{lstlisting}
 
+See Dibbler Developer's Guide, section 2 for details on compilation switches.
+
 Once configure completes its operation, it prints out details of its
 configuration and source are ready for compilation. To build all
 components, just type make. If you want to make specific component
-only, you may use it as parameter to make, e.g. 
+only, you may use it as parameter to make, e.g.
 \verb+make server+. After successful compilation type \verb+make install+ to
 install compiled code in your system.
 
@@ -200,15 +202,16 @@ Configure script was added in 0.8.1RC1. Earlier versions do not not
 need that step.
 
 Dibbler was compiled using gcc 2.95, 3.0, 3.2, 3.3, 3.4, 4.0, 4.1,
-4.2, 4.3, 4.4 and 4.5 versions. Note that many older compilers are is
-now considered obsolete and ware not tested for some time. Lexer files
-(grammar defined config file) were generated using flex 2.5.33. Parser
+4.2, 4.3, 4.4, 4.5, 4.6 and 4.7 versions. Note that many older compilers are
+now considered obsolete and were not tested for some time. Lexer files
+(grammar defined config file) were generated using flex 2.5.35. Parser
 file were created using bison++ 1.21.9. Flex and bison++ tools are not
 required to compile Dibbler. Generated files are placed in GIT and in
 tar.gz archives. Dibbler requires also make. Autoconf and automake
 tools (autotools) were used for regeneration of the Makefiles and
-configure script.
- 
+configure script, but those generated files are shipped with the code,
+so autotools should not be required.
+
 \subsection{Modern Windows (XP...Win7) compilation}
 Download dibbler-\version-src.tar.gz and extract it. In
 \verb+Port-win32+ there are several project files (for server, client

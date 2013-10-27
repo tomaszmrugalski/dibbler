@@ -331,21 +331,19 @@ int main(int argc, char *argv[])
 {
     int i=0;
     ReqCfgMgr a;
-    //memset(&a, 0 sizeof(a));
 
     initWin();
 
-    // srandom(time(NULL)); // Linux
-    srand(time(NULL));      // Windows
+    srand(static_cast<unsigned int>(time(NULL))); // Windows
 
     logger::setLogName("Requestor");
         logger::Initialize((char*)REQLOG_FILE);
 
-        cout << DIBBLER_COPYRIGHT1 << " (REQUESTOR)" << endl;
-        cout << DIBBLER_COPYRIGHT2 << endl;
-        cout << DIBBLER_COPYRIGHT3 << endl;
-        cout << DIBBLER_COPYRIGHT4 << endl;
-        cout << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (REQUESTOR)" << endl;
+    cout << DIBBLER_COPYRIGHT2 << endl;
+    cout << DIBBLER_COPYRIGHT3 << endl;
+    cout << DIBBLER_COPYRIGHT4 << endl;
+    cout << endl;
 
     if (!parseCmdLine(&a, argc, argv)) {
         Log(Crit) << "Aborted. Invalid command-line parameters or help called." << LogEnd;

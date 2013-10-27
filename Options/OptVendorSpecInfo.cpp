@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: OptVendorSpecInfo.cpp,v 1.10 2008-03-02 19:19:43 thomson Exp $
- *
  */
 
 #include <string.h>
@@ -23,18 +21,17 @@
 #include <arpa/inet.h>
 #endif
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* parent)
-    :TOpt(type, parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t type, char * buf,  int n, TMsg* parent)
+    :TOpt(type, parent), Vendor_(0)
 {
     int optionCode = 0, optionLen = 0;
     if (n<4) {
 	Log(Error) << "Unable to parse truncated vendor-spec info option." << LogEnd;
-	this->Vendor = 0;
         Valid = false;
 	return;
     }
 
-    this->Vendor = readUint32(buf); // enterprise number
+    Vendor_ = readUint32(buf); // enterprise number
     buf += sizeof(uint32_t);
     n   -= sizeof(uint32_t);
 
@@ -64,14 +61,13 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(int type, char * buf,  int n, TMsg* paren
     Valid = true;
 }
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(int enterprise, int optionCode, 
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise,
+				       uint16_t sub_option_code,
                                        char *data, int dataLen, TMsg* parent)
-    :TOpt(OPTION_VENDOR_OPTS, parent)
+    :TOpt(code, parent), Vendor_(enterprise)
 {
-    this->Vendor = enterprise;
-    if (optionCode) 
-    {
-        SPtr<TOptGeneric> opt = new TOptGeneric(optionCode, data, dataLen, parent);
+    if (sub_option_code) {
+        SPtr<TOptGeneric> opt = new TOptGeneric(sub_option_code, data, dataLen, parent);
         addOption( (Ptr*) opt);
     }
 }
@@ -99,11 +95,10 @@ char * TOptVendorSpecInfo::storeSelf( char* buf)
     buf = writeUint16(buf, getSize()-4);
 
     // enterprise-number (4 bytes long)
-    buf = writeUint32(buf, this->Vendor);
+    buf = writeUint32(buf, Vendor_);
 
     SPtr<TOpt> opt;
     firstOption();
-
     while (opt = getOption())
     {
         buf = opt->storeSelf(buf);
@@ -112,12 +107,26 @@ char * TOptVendorSpecInfo::storeSelf( char* buf)
     return buf;
 }
 
-bool TOptVendorSpecInfo::isValid()
+std::string TOptVendorSpecInfo::getPlain() {
+    std::stringstream tmp;
+    tmp << "vendor=" << Vendor_ << " ";
+
+    SPtr<TOpt> opt;
+    firstOption();
+    while (opt = getOption())
+    {
+	tmp << opt->getOptType() << "=";
+	tmp << opt->getPlain() << " ";
+    }
+    return tmp.str();
+}
+
+bool TOptVendorSpecInfo::isValid() const
 {
     return true;
 }
 
-unsigned int TOptVendorSpecInfo::getVendor()
+uint32_t TOptVendorSpecInfo::getVendor()
 {
-    return Vendor;
+    return Vendor_;
 }

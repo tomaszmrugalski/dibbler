@@ -18,15 +18,15 @@ TWinService* TWinService::ServicePtr= NULL;
 TWinService::TWinService(const char* serviceName, const char* dispName,
                          DWORD serviceType, char* dependencies, char * descr)
 {
-    ServicePtr= this;
+    ServicePtr = this;
     strncpy(ServiceName, serviceName, sizeof(ServiceName)-1);
-    ServiceType=serviceType;
-    Dependencies=dependencies;
+    ServiceType = serviceType;
+    strncpy(Dependencies, dependencies, sizeof(Dependencies)-1);
     MajorVersion = 1;
     MinorVersion = 0;
     EventSource = NULL;
 
-        this->descr = descr;
+    this->descr = descr;
 
     // set service status
     hServiceStatus = NULL;
@@ -76,9 +76,9 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 }
 
 void TWinService::Handler(DWORD dwOpcode) {
-        //DebugBreak();
-    // Get a pointer to the object
-        TWinService* pService = ServicePtr;
+
+        // Get a pointer to the object
+    TWinService* pService = ServicePtr;
 
     switch (dwOpcode) {
     case SERVICE_CONTROL_STOP: // 1
@@ -86,33 +86,29 @@ void TWinService::Handler(DWORD dwOpcode) {
         pService->OnStop();
         pService->SetStatus(SERVICE_STOPPED);
         pService->IsRunning = FALSE;
-        break;
+    break;
 
     case SERVICE_CONTROL_PAUSE: // 2
         pService->OnPause();
-        break;
+    break;
 
     case SERVICE_CONTROL_CONTINUE: // 3
         pService->OnContinue();
-        break;
+    break;
 
     case SERVICE_CONTROL_INTERROGATE: // 4
         pService->OnInterrogate();
-        break;
+    break;
 
     case SERVICE_CONTROL_SHUTDOWN: // 5
         pService->OnShutdown();
-        break;
+    break;
 
     default:
-        if (dwOpcode >= SERVICE_CONTROL_USER)
-                {
-            if (!pService->OnUserControl(dwOpcode))
-                        {
+        if (dwOpcode >= SERVICE_CONTROL_USER) {
+            if (!pService->OnUserControl(dwOpcode)) {
             }
-        }
-                else
-                {
+        } else {
         }
         break;
     }
@@ -468,27 +464,31 @@ bool TWinService::verifyPort() {
     verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
     GetVersionEx(&verinfo);
     bool ok=false;
-        if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
-          Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-          ok = true;
+    if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
+        Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==2)) {
-         Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==0)) {
-         Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-         Log(Warning) << "Support for Vista is considered experimental." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==1)) {
-         Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
-          << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
-         Log(Warning) << "Support for Win7 is considered experimental." << LogEnd;
-          ok = true;
+        Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
+    }
+
+    if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==2)) {
+        Log(Notice) << "Windows 8 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+        ok = true;
     }
 
     if (!ok) {
@@ -501,50 +501,8 @@ bool TWinService::verifyPort() {
          Log(Notice) << "Windows XP:    major=5 minor=1" << LogEnd;
          Log(Notice) << "Windows 2003:  major=5 minor=2" << LogEnd;
          Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
-                 Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
+         Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
+         Log(Notice) << "Windows 8:     major=6 minor=2" << LogEnd;
     }
     return ok;
 }
-
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.18  2008-06-22 11:43:18  thomson
- * Win32 changes for 0.7.1. Vista is now supported. Yay!
- *
- * Revision 1.17  2005-08-07 18:10:59  thomson
- * 0.4.1 release.
- *
- * Revision 1.16  2005/07/26 00:03:02  thomson
- * Preparation for relase 0.4.1
- *
- * Revision 1.15  2005/07/24 16:00:03  thomson
- * Port WinNT/2000 related changes.
- *
- * Revision 1.14  2005/02/01 22:39:20  thomson
- * Command line service support greatly improved.
- *
- * Revision 1.13  2005/02/01 22:08:04  thomson
- * start, stop commands implemented.
- *
- * Revision 1.12  2005/02/01 18:36:53  thomson
- * IsRunning implemented, Install/Uninstall cleanup.
- *
- * Revision 1.11  2005/02/01 18:26:45  thomson
- * no message
- *
- * Revision 1.10  2004/12/02 00:51:06  thomson
- * Log files are now always created (bugs #34, #36)
- *
- * Revision 1.9  2004/09/28 21:49:32  thomson
- * no message
- *
- * Revision 1.8  2004/06/21 23:08:49  thomson
- * Minor fixes.
- *
- * Revision 1.7  2004/05/24 21:16:37  thomson
- * Various fixes.
- *
- * Revision 1.6  2004/04/15 23:53:45  thomson
- * Pathname installation fixed, run-time error checks disabled, winXP code cleanup.
- *
- */

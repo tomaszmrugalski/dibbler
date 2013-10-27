@@ -23,24 +23,24 @@
 
 using namespace std;
 
-TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> solicit)
+TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
     :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
 	     solicit->getTransID())
 {
-    getORO( (Ptr*)solicit );
-    copyClientID( (Ptr*)solicit );
-    copyRelayInfo( (Ptr*)solicit );
-    copyAAASPI( (Ptr*)solicit );
-    copyRemoteID( (Ptr*)solicit );
+    getORO((Ptr*)solicit);
+    copyClientID((Ptr*)solicit);
+    copyRelayInfo(solicit);
+    copyAAASPI(solicit);
+    copyRemoteID(solicit);
 
     if (!handleSolicitOptions(solicit)) {
-	IsDone = true;
-	return;
+        IsDone = true;
+        return;
     }
     IsDone = false;
 }
 
-bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
+bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
 
     processOptions((Ptr*)solicit, true); // quietly
 
@@ -57,7 +57,6 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit) {
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     MRT_ = 0;
     send();
     return true;

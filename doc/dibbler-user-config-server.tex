@@ -14,6 +14,14 @@ Server configuration is stored in \verb+server.conf+ file in the
 \verb+/etc/dibbler+ (Linux systems) or in current (Windows systems)
 directory.
 
+\subsection{Scopes}
+
+Configuration file can be logically split into separate ``sections''
+that are called \emph{scopes}, for example interface scope contains
+parameters related to configuration served over a given interface.
+Some scopes can contain other scopes. Some commands are specific to a
+given a given scope.
+
 \subsubsection{Global scope}
 \label{server-global-scope}
 Every option can be declared in a global scope. Global options can be
@@ -96,7 +104,7 @@ That is an equivalent of address class for temporary addresses. It
 contains definition of temporary addresses that are going to be
 assigned to clients that request temporary addresses. Only ta-class
 scoped parameters can be defined here. Prefix class is declared as
-follows: 
+follows:
 \begin{lstlisting}
 ta-class {
     pool 2001:db8:1::1-2001:db81:1::ffff
@@ -122,9 +130,9 @@ next-hop address-of-a-router
 \subsubsection{Client scope}
 \label{server-scope-client}
 Server allows defining custom parameters on a per-host basis. See
-Sections \ref{feature-exceptions} and \ref{example-server-exceptions} 
-for details. There are two types of reservations: DUID-based and 
-remote-id based. Following syntax can be used:
+Sections \ref{feature-exceptions} and \ref{example-server-exceptions}
+for details. There are three types of reservations: DUID-based,
+remote-id based and link-local based. Following syntax can be used:
 
 \begin{lstlisting}
 client duid 00:00:00:00:00
@@ -148,7 +156,33 @@ client remote-id 5-0x01020304
 }
 \end{lstlisting}
 
-\subsubsection{Server options}
+\begin{lstlisting}
+client link-local fe80::1234:56ff:fe78:9abc
+{
+    [address 2001:db8:1::]
+    [prefix 2001:db8:1::/64]
+    option1
+    option2
+    ...
+}
+\end{lstlisting}
+
+\subsubsection{Key scope}
+Dibbler 0.8.3 introduced support for secure DNS Updates using TSIG
+mechanism. Since this key is expected to be also used in DNS server
+software, syntax is kept very similar to syntax accepted in
+\href{http://www.isc.org/software/bind}{ISC BIND9} software. Note
+semicolons at the end of each statement.
+
+\begin{lstlisting}
+key key-name {
+   secret "base64encodedSecretHere==";
+   algorithm algorithm-type;
+   ...
+};
+\end{lstlisting}
+
+\subsection{Server options}
 
 So called standard options are defined by the base DHCPv6 specification,
 a so called RFC 3315 document \cite{rfc3315}. Those options are
@@ -186,7 +220,7 @@ OptionName option-value
   the DHCPv6 autoconfiguration process. Syslog works under POSIX
   systems (Linux, Mac OS X, BSD family) and allows default POSIX
   logging functions.
-  
+
 \item[log-colors] -- (scope: global). Takes one boolean parameter.
   Defines if logs printed to console should use colors. That feature
   is used to enhance logs readability.  As it makes the log files
@@ -250,11 +284,15 @@ is absent.
 %%% TODO bulk-leasequery-timeout
 
 \item[guess-mode] -- (scope: global, type: present or missing,
-  default: missing). When this option is enabled, server will not pay
-  close attention to the interface-id option in relayed messages. If
-  interface-id has a value other than specified in server.conf or even
-  when there is no interface-id option at all, it will use first relay
-  defined.
+  default: missing). Server tries to match incoming relayed messages
+  based on interface-id first. If that fails, it tries to match based
+  on linkaddr field in the RELAY-FORW message (see \emph{subnet}
+  keyword definition). Normally, when both of those match attempts
+  fail, the server will drop the packet. When guess-mode option is
+  enabled, server will will use first relay defined. It may save the
+  day, if you have only one relay in your network, but it will almost
+  certainly do a wrong thing if you have more than one. This is as
+  its name states: just a guess. Use with caution!
 
 \item[script] -- (scope: global). Takes one string parameter that
   specifies name of a script that will be called every time something
@@ -275,6 +313,14 @@ retried over TCP. See Section \ref{feature-dns-update}.
 that specifies timeout in milliseconds. Defines how long client should
 wait for DNS server response during DNS Update before declaring
 update a failure. See Section \ref{feature-dns-update}.
+
+\item[subnet] -- (scope: interface). This definition must be followed
+by a IPv6 address followed by slash followed prefix length
+(e.g. 2001:db8::/32). It defines all IPv6 addresses that are valid on
+a given interface. It is used mainly for matching relayed traffic and
+responding to confirm messages. Server will not use that whole range
+to assign addresses. That is specified with \emph{class}, \emph{ta-class}
+or \emph{pd-class}.
 
 \item[class] -- (scope: interface). This definition must be followed by
 curly braces and creates a new address class scope. See
@@ -424,9 +470,17 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
             accept-only list is defined, only client from that list
             will be supported.
 
-\item[addr-params] -- (scope: class). Experimental feature that takes 
+\item[addr-params] -- (scope: class). Experimental feature that takes
   one boolean parameter. It defines prefix length that is configured
-  in addr-params option. See Section \ref{feature-addr-params}.
+  in addr-params option. See Section \ref{feature-addr-params} for
+  details and warnings.
+
+\item[performance-mode] -- (scope: global). Experimental
+    feature that boosts server performance. It takes one integer
+    parameter with 0 or 1 control whether performance mode is to be
+    enabled or disabled. The default is 0 (disabled). Use with
+    caution. See Section \ref{feature-performance-mode} for details
+    and warnings.
 
 \item[allow] -- (scope: class). Specifies that clients that belong to
   a specific client class are allowed to use that address class. Takes
@@ -511,13 +565,13 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
    parameters that are followed by FQDN list. Additional integer
    parameters designate fqdn-mode and reverse zone length in DNS
    Update. FQDN-mode can have 3 values: 2 (both AAAA and PTR record
-   will be updated by server), 1 (server will update PTR only) or 
+   will be updated by server), 1 (server will update PTR only) or
    0 (server will not update anything). Reverse zone length is an
    integer between 0 and 128 and designates reverse zone length. FQDN
    list is a coma separated list of fully qualified domain names, with
    possible reservations for DUIDs or addresses. FQDN mechanism is
    defined in \cite{rfc4704}. See Section \ref{feature-dns-update}.
-   
+
 \item[accept-unknown-fqdn] -- (scope: Interface). Takes one integer
   parameter, possibly followed by second string parameter that
   designated domain name. It specifies how server should react to
@@ -529,7 +583,7 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
   name). Choices 3 and 4 require additional string parameter that
   defines domain suffix. See Sections \ref{feature-dns-update}
   and \label{example-server-fqdn}.
- 
+
 \item[option] -- (scope: interface). Takes one integer number followed
   by several possible parameter combinations. It defines custom
   option that server may send out to clients. Supported formats are:
@@ -558,21 +612,35 @@ string is any string enclosed in single or double quotes. See Section
    option requires \emph{experimental} mode to be enabled. See Section
    \ref{feature-remote-autoconf}.
 
- \item[auth-method] -- (scope: global, type: string, default:
-   empty). Set it to one of the following values to enable
+\item[auth-protocol] -- (scope: global, type: string, default:
+  none). This is a crucial parameter that specifies which
+  authorization/authentication protocol is used. Allowed values are:
+  \texttt{none}, \texttt{delayed}, \texttt{reconfigure-key} and
+  \texttt{dibbler}. See section \ref{feature-auth} for details.
+
+ \item[auth-methods] -- (scope: global, type: string, default:
+   empty). This a coma separated list of one or more methods. The
+   first one on the list will specify the default method, while the
+   others list accepted methods when receiving data from clients.
+   Set it to one or more of the following values to enable
    authentication on ther server side, using selected method of
    generating authentication information:
-   \texttt{none}, \texttt{digest\_plain}, \texttt{digest\_hmac\_md5},
-   \texttt{digest\_hmac\_sha1}, \texttt{digest\_hmac\_sha224},
-   \texttt{digest\_hmac\_sha256}, \texttt{digest\_hmac\_sha384},
-   and \texttt{digest\_hmac\_sha512}.
+   \texttt{none}, \texttt{digest-plain}, \texttt{digest-hmac-md5},
+   \texttt{digest-hmac-sha1}, \texttt{digest-hmac-sha224},
+   \texttt{digest-hmac-sha256}, \texttt{digest-hmac-sha384},
+   and \texttt{digest-hmac-sha512}. 
 
- \item[auth-lifetime] -- (scope: global, type: integer, default:
-   0). Authentication lifetime. Currently not supported.
+\item[auth-replay] -- (scope: global, type: string, default:
+  none). Specifies which replay detection methods are
+  supported. Currently two values are implemented: \texttt{none} and
+  \texttt{monotonic}.
 
- \item[auth-key-len] -- (scope: global, type: integes, default:
-   32). Key generation nonce length (see \cite{draft-aaa} for
-   details).
+\item[auth-required] -- (scope: global, type: boolean, default:
+  0). This parameter specifies if the client is required to
+  authenticate itself. When set to 0, any client authentication
+  failures (invalid signature or lack of \opt{AUTH} option) will
+  result in a warning only. When set to 1, such messages will be
+  dropped.
 
 \item[client-class] -- (scope: global). Takes one string parameter
   that defines name of a client class. Client class name is followed
@@ -593,6 +661,25 @@ string is any string enclosed in single or double quotes. See Section
    specified prefix for defined client. See Sections \ref{feature-exceptions}
    and \ref{example-server-exceptions} for details.
 
+\item[key] -- (scope: global). Take one string parameter that
+   specifies key name. This keyword instructs server to create a key
+   with a specified name. This key will be used for TSIG in DNS
+   Updates. It is followed by curly braces that open up a new key
+   scope. Closing curly brace is followed by a semicolon.
+
+\item[secret] -- (scope: key). Takes one string parameter and is
+   followed by a semicolon. That parameter is a base64-encode secret
+   value of the key. It is mandatory if key scope is defined.
+\item[algorithm] -- (scope: key). Takes one enum argument that is
+   followed by a semicolon. This parameter is mandatory if the key
+   scope is present. It specifies agorithm for the key. Currently the
+   supported value is hmac-md5.
+\item[fudge] -- (scope: key). Takes one integer parameter that is
+   followed by a semicolon. Each TSIG signature is valid for a
+   specified amount of time only. This optional parameter specifies
+   period in which TSIG is valid, expressed in seconds. If missing,
+   the default value of 300 is used. The allowed values are between 0
+   and 65535.
 \end{description}
 
 \subsubsection{Client class quantifiers}
@@ -601,7 +688,7 @@ Additional parameters are used during client class definition. See
 Section \ref{feature-client-class} for details and examples.
 
 \begin{description}
-\item[match-if] -- (scope: client-class). 
+\item[match-if] -- (scope: client-class).
 \item[contain] -- (scope: client-class).
 \item[substring] -- (scope: client-class).
 \item[==] -- (scope: client-class).
@@ -812,7 +899,22 @@ and information about DNS servers. Also see section
 Note that although eth1 interface is mentioned in the configuration file,
 direct traffic from clients located on the eth1 interface will not be
 supported. In this example, eth1 is used only to support requests
-relayed from remote link identified with interface-id value 5020.
+relayed from remote link identified with interface-id value
+``relay1:en1''. That value is what relay inserts into its packets. I
+may sometimes not be configurable on hardware relays, so the best
+approach is to configure your server to match whatever the relay
+inserts there.
+
+Server will try to match incoming packet based on exact match of
+interface-id value. If that fails, there is another method. Relay sets
+linkaddr field and server may find a match based on that
+information. For this mechanism to work, the admin must provide
+information about valid subnet available on specified link. Note the
+different between subnet definition (all possible addresses that are
+valid for a given link) and class definition (the actual dynamic range
+of addresses that is governed by the DHCPv6 server). Subnet
+specification is currently optional, but much encouraged.
+
 Of course it is possible to support both local and remote traffic. In
 such case, normal eth1 definition should be present in the server
 configuration file. Also note that real (physical) interfaces should
@@ -822,15 +924,56 @@ be specified before logical ones.
 # server.conf
 iface relay1 {
   relay eth1
+
+  // This relay1 actually represents a network that the
+  // physical device relays packets from. The relay device should
+  // have a global address assigned on its client-facing interface.
+  // That address should belong to this subnet.
+  subnet 2001:db8:1111::/48
+
+  // There are 3 ways of specifying interface-id content
+
+  // Way 1: As a text string
+  interface-id "relay1:en1"
+
+  // Way 2: As unsigned integer coded on 32 bits
   // interface-id 5020
-  // interface-id "some interface name"
+
+  // Way 3: As a hex string
   interface-id 0x427531264361332f3000001018680f980000
 
   class {
-    pool 2000::1-2000::ff
+    pool 2001:db8:1111::1-2001:db8:1111::ff
   }
-  option dns-server 2000::100,2000::101
+  option dns-server 2001:db8::100,2001:db8::101
 }
+
+iface relay2 {
+  relay eth1
+
+  // This relay1 actually represents a network that the
+  // physical device relays packets from. The relay device should
+  // have a global address assigned on its client-facing interface.
+  // That address should belong to this subnet.
+  subnet 2001:db8:2222::/48
+
+  // There are 3 ways of specifying interface-id content
+
+  // Way 1: As a text string
+  interface-id "relay1:en2"
+
+  // Way 2: As unsigned integer coded on 32 bits
+  // interface-id 5020
+
+  // Way 3: As a hex string
+  interface-id 0x427531264361332f3000001018680f980000
+
+  class {
+    pool 2001:db8:2222::1-2001:db8:2222::ff
+  }
+  option dns-server 2001:db8::100,2001:db8::101
+}
+
 \end{lstlisting}
 
 \subsubsection{Example 9: Cascade 2 relays}
@@ -1073,6 +1216,22 @@ example in this section.
 Note that per client reservation was significantly refactored after
 0.8.2, so its stability is not yet confirmed.
 
+\textbf{Warning:} Reservation by link-local address is not always
+reliable and DUID reservations should be used instead, if
+possible. Typically for directly connected clients (i.e. without using
+relays) server can obtain client's link local address. For relayed
+traffic, that information is recorded by the first (closest to the
+client) relay and stored in \msg{RELAY-FORW}, so in most cases this
+should work. However, there are two cases when link-local address
+reservation will fail. The first one is when client is using IPv6
+privacy extensions (\cite{rfc4941}). With privacy extensions enabled,
+client may use its temporary random addresses that are changing over
+time. Another case when such reservation could fail is when server
+allows unicast traffic. Once clients get their addresses, they can
+send \msg{RENEW} messages over unicast, using their global address as
+a source address. In such case link-local address will not ever be
+used in the transmission, so the server can get confused.
+
 \begin{lstlisting}
 # server.conf
 # Example server configuration file: per-client configuaration
@@ -1080,7 +1239,7 @@ Note that per client reservation was significantly refactored after
 # In this example, some clients receive different parameters than others.
 
 # Logging level range: 1(Emergency)-8(Debug)
-# 
+#
 log-level 8
 
 # Don't log full date
@@ -1094,7 +1253,7 @@ iface "eth0" {
 
     pd-class {
         pd-pool 2001:db8:2::/48
-	pd-length 64
+        pd-length 64
     }
 
   # common configuration options, provided for all clients
@@ -1102,34 +1261,36 @@ iface "eth0" {
   option domain example.com
   option vendor-spec 5678-2-0xaaaa,1234-3-0x0102
 
-  # special parameters for client with DUID 00:01:02:03:04:06      
+  # special parameters for client with DUID 00:01:02:03:04:06
   client duid 00:01:02:03:04:06
   {
         address 2001:db8:1::123
-	prefix 2001:db8:abcd::/64
-	option domain second.client.biz
-	option dns-server 2001:db8::5678:abcd
-	option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
+        prefix 2001:db8:abcd::/64
+        option domain second.client.biz
+        option dns-server 2001:db8::5678:abcd
+        option vendor-spec 5678-2-0xbbbb, 1234-5-0x222222
   }
 
-  # this client should receive default domain and dns-server, 
+  # this client should receive default domain and dns-server,
   # but different vendor-spec info
+  # Both DUID forms are accepted (0x1234... and 12:34...)
   client duid 0x0001000044e8ef3400085404a324
   {
-	option vendor-spec 1111-57-0x01020304
+        option vendor-spec 1111-57-0x01020304
   }
-  
+
+  # Parameters can be reserved based on remote-id option
   client remote-id 5-0x01020304
   {
-	address 2001:db8:1::0102:0304
-	option domain our.special.remoteid.client.org
+        address 2001:db8:1::0102:0304
+        option domain our.special.remoteid.client.org
   }
 
-  #  client link-local fe80::1:2:3:4
-  #  {
-  #      option domain link.local.detected.interop.test.com
-  #  } 
-
+  # Parameters can be reserved based on link-local address
+  client link-local fe80::1:2:3:4
+  {
+       option domain link.local.detected.interop.test.com
+  }
 }
 
 \end{lstlisting}
@@ -1138,7 +1299,7 @@ The following example shows out of pool reservation. Regular clients
 will get addresses from the 2001:db8:123::/64 pool. However, the
 client with DUID 00:01:00:0a:0b:0c:0d:0e:0f will get an 2002::babe
 address that does not belong to any configured pool. That particular
-client with get parameters from the interface on which this 
+client with get parameters from the interface on which this
 exception was defined. In this discussed example, what will be
 t1=1000, t2=2000, preferred-lifetime=3000 and valid-lifetime=4000.
 
@@ -1265,24 +1426,24 @@ iface "eth0" {
 \end{lstlisting}
 
 
-\subsubsection{Example 17: Authentication}
+\subsubsection{Example 17: Dibbler Authentication}
 \label{example-server-auth}
-It is possible to configure server to require authentication. In this
+It is possible to configure server to require Dibbler authentication. In this
 example, HMAC-SHA-512 will be used as an authentication method.
 Key Generation Nonce will have 64 bytes.
 
 \begin{lstlisting}
 # server.conf
 
-auth-method digest-hmac-sha512
-auth-key-len 64
+auth-protocol dibbler
+auth-replay monotonic
+auth-methods digest-hmac-sha512
+auth-required 1
 
-iface eth0
-{
-  class
-  {
-    pool 2000::100-2000::10f
-  }
+iface eth0 {
+    class {
+        pool 2000::100-2000::10f
+    }
 }
 \end{lstlisting}
 
@@ -1353,3 +1514,47 @@ autoconfiguration, as defined in \cite{draft-remote-autoconf}. See
 Section \ref{feature-remote-autoconf} for details and configuration
 examples.
 
+\subsubsection{Example 21: Subnet declaration}
+\label{example-server-subnet}
+Typically a network has only a subset of all its addresses managed by
+the DHCPv6 server. Let's assume that we have a network that uses
+2001:db8::/64 prefix, so there may be $2^{64}$ addresses in
+it. Usually the server has information about a dynamic range of
+addresses that it can manage. Let's assume that this pool is defined
+as 2001:db8::1 to 2001:db8::ff, so the server is responsible for only
+only 256 addresses.
+
+There are two cases where it is useful for the server to know the
+whole subnet, even though it manages only small subset of it. The
+first case is subnet selection. When receiving a packet from relay,
+there are several mechanisms that server uses to find appropriate
+subnet. One of them is matching based on link-addr field that was set
+up by the relay. As DHCP relays themselves are never configured with
+DHCP, the address used by the relay will always be outside of dynamic
+pool that the server manages, but within the whole subnet that is
+defined on a given link.
+
+The second case is useful when the server tries to respond
+to \msg{CONFIRM} message. CONFIRM has a special meaning. It is a
+question whether specified addresses are topologically correct in a
+given place, not whether the server has bindings for them. If there
+are 2 servers on a given link and each of them manages their own pool,
+both can potentially respond to CONFIRM to any clients, even those
+served by the other server. The server can only do so if they have
+information about available subnet.
+
+\begin{lstlisting}
+#server.conf
+iface eth0 {
+
+    # This is the prefix used on a given link
+    subnet 2001:db8:1::/64
+
+    class {
+
+        # This is the small part of that prefix that is
+        # managed by the DHCPv6 server
+        pool 2001:db8:1::/96
+    }
+}
+\end{lstlisting}

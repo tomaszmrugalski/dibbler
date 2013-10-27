@@ -47,6 +47,7 @@ class TIfaceSocket {
     int accept(SPtr<TIPv6Addr> peer, char *peerPlainAddr);
 
     // ---get info---
+    inline static int getCount() { return Count; }
     int getFD();
     int getPort();
     int getIfaceID();

@@ -74,7 +74,7 @@ bool TClntOptIAPrefix::doDuties()
     return false;
 }
 
-bool TClntOptIAPrefix::isValid()
+bool TClntOptIAPrefix::isValid() const
 {
     if (TOptIAPrefix::isValid())
         return this->getValid()>=this->getPref();

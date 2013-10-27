@@ -253,7 +253,7 @@ int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
     char buf[64];
     int result;
 
-    sprintf(buf,"%d/%d",valid,pref);
+    sprintf(buf,"%u/%u",valid,pref);
     sprintf(addr2,"%d/%s", ifindex, addr);
     result = spawnl(_P_WAIT,cmdPath,cmdPath,"/C",ipv6Path,
                         "adu",addr2,"lifetime",buf,">",tmpFile,NULL);
@@ -492,7 +492,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
 
     sprintf(arg2, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg3,"%d", ifindex);
-    sprintf(arg5,"%d/%d", valid, prefered);
+    sprintf(arg5,"%u/%u", valid, prefered);
 
     i=_spawnl(_P_WAIT,cmdPath,cmdPath, "/C", ipv6Path, arg1, arg2, arg3, arg4, arg5, arg6, arg7, NULL);
 
@@ -556,7 +556,6 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
     char * retval;
     int offset = 0;
     int fd;
-    int ret;
 
     filename = getAAAKeyFilename(SPI);
 
@@ -568,11 +567,13 @@ char * getAAAKey(uint32_t SPI, uint32_t *len) {
         return NULL;
 
     retval = malloc(st.st_size);
-    if (!retval)
+    if (!retval) {
+        close(fd);
         return NULL;
+    }
 
     while (offset < st.st_size) {
-        ret = read(fd, retval + offset, st.st_size - offset);
+        int ret = read(fd, retval + offset, st.st_size - offset);
         if (!ret) break;
         if (ret < 0) {
             free(retval);

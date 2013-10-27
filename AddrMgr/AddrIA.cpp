@@ -10,17 +10,14 @@
  */
 
 #include <limits.h>
+#include <string.h>
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "AddrIA.h"
 #include "AddrAddr.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
-#include <string.h>
-
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 using namespace std;
 
@@ -29,7 +26,8 @@ using namespace std;
  *
  * used for creation of IA, a container for addresses
  *
- * @param iface interface index (ifindex)
+ * @param ifacename, name of the interface
+ * @param ifindex interface index (ifindex)
  * @param type specifies container type (IA, PD or TA)
  * @param addr address
  * @param duid DUID (client DUID in server's database and server DUID in client's database)
@@ -38,11 +36,11 @@ using namespace std;
  * @param id IAID (if this is really IA) or PDID (if this is PD, not IA)
  *
  */
-TAddrIA::TAddrIA(int iface, TIAType type, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
-		 unsigned long t1, unsigned long t2,unsigned long id)
+TAddrIA::TAddrIA(const std::string& ifacename, int ifindex, TIAType type, SPtr<TIPv6Addr> addr,
+                 SPtr<TDUID> duid, unsigned long t1, unsigned long t2,unsigned long id)
     :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
-     Tentative(TENTATIVE_UNKNOWN), Timestamp(now()), 
-     Unicast(false), Iface(iface), Type(type)
+     Tentative(ADDRSTATUS_UNKNOWN), Timestamp((unsigned long)time(NULL)),
+     Unicast(false), Iface_(ifacename), Ifindex_(ifindex), Type(type)
 {
     this->setDUID(duid);
     if (addr)
@@ -65,9 +63,13 @@ void TAddrIA::reset()
     setState(STATE_NOTCONFIGURED);
 }
 
-int TAddrIA::getIface()
+const std::string& TAddrIA::getIfacename() {
+    return Iface_;
+}
+
+int TAddrIA::getIfindex()
 {
-    return this->Iface;
+    return Ifindex_;
 }
 
 void TAddrIA::setT1(unsigned long T1)
@@ -93,21 +95,21 @@ void TAddrIA::setT2(unsigned long T2)
 void TAddrIA::addAddr(SPtr<TAddrAddr> x)
 {
     AddrLst.append(x);
-    Tentative = TENTATIVE_UNKNOWN;
+    Tentative = ADDRSTATUS_UNKNOWN;
 }
 
 void TAddrIA::addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid)
 {
     SPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid);
     AddrLst.append(ptr);
-    Tentative = TENTATIVE_UNKNOWN;
+    Tentative = ADDRSTATUS_UNKNOWN;
 }
 
 void TAddrIA::addAddr(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, int prefix)
 {
     SPtr<TAddrAddr> ptr = new TAddrAddr(addr, pref, valid, prefix);
     AddrLst.append(ptr);
-    Tentative = TENTATIVE_UNKNOWN;
+    Tentative = ADDRSTATUS_UNKNOWN;
 }
 
 enum EState TAddrIA::getState()
@@ -283,7 +285,7 @@ unsigned long TAddrIA::getT1Timeout() {
 	return DHCPV6_INFINITY;
     }
     
-    x  = now();
+    x  = (unsigned long)time(NULL);
     if (ts>x)  
         return ts-x;
     else
@@ -297,7 +299,7 @@ unsigned long TAddrIA::getT2Timeout() {
 	return DHCPV6_INFINITY;
     }
 
-    x  = now();
+    x  = (unsigned long)time(NULL);
     if (ts>x) 
         return ts-x;
     else 
@@ -305,7 +307,7 @@ unsigned long TAddrIA::getT2Timeout() {
 }
 
 unsigned long TAddrIA::getPrefTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -338,7 +340,7 @@ unsigned long TAddrIA::getMaxValidTimeout() {
 }
 
 unsigned long TAddrIA::getValidTimeout() {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
 
     SPtr<TAddrAddr> ptr;
     this->AddrLst.first();
@@ -371,7 +373,7 @@ void TAddrIA::setTimestamp(unsigned long ts)
 }
 
 void TAddrIA::setTimestamp() {
-    this->setTimestamp(now());
+    this->setTimestamp((unsigned long)time(NULL));
 }
 
 unsigned long TAddrIA::getTimestamp()
@@ -391,19 +393,19 @@ unsigned long TAddrIA::getTentativeTimeout()
     unsigned long min = DHCPV6_INFINITY;
     switch (this->getTentative()) 
     {
-    case TENTATIVE_YES:
+    case ADDRSTATUS_YES:
         return 0;
-    case TENTATIVE_NO:
+    case ADDRSTATUS_NO:
         return DHCPV6_INFINITY;
-    case TENTATIVE_UNKNOWN:
+    case ADDRSTATUS_UNKNOWN:
         SPtr <TAddrAddr> ptrAddr;
         AddrLst.first();
         while ( ptrAddr = AddrLst.get() )
         {
-            if (ptrAddr->getTentative()==TENTATIVE_UNKNOWN)
-                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-now() ) 
+            if (ptrAddr->getTentative()==ADDRSTATUS_UNKNOWN)
+                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL) )
                 {
-                    min = ptrAddr->getTimestamp()+DADTIMEOUT-now();
+                    min = ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL);
                 }
         }
     }
@@ -415,11 +417,11 @@ unsigned long TAddrIA::getTentativeTimeout()
  *
  * checks if DAD procedure is finished and returns tentative status
  *
- * @return Tentative status (TENTATIVE_YES/TENTATIVE_NO/TENTATIVE_UNKNOWN)
+ * @return Tentative status (ADDRSTATUS_YES/ADDRSTATUS_NO/ADDRSTATUS_UNKNOWN)
  */
-enum ETentative TAddrIA::getTentative()
+enum EAddrStatus TAddrIA::getTentative()
 {
-    if (Tentative != TENTATIVE_UNKNOWN)
+    if (Tentative != ADDRSTATUS_UNKNOWN)
     	return Tentative;
 
     SPtr<TAddrAddr> ptrAddr;
@@ -429,32 +431,32 @@ enum ETentative TAddrIA::getTentative()
 
     while ( ptrAddr = AddrLst.get() ) {
 	switch (ptrAddr->getTentative()) {
-	case TENTATIVE_YES:
+	case ADDRSTATUS_YES:
 	    Log(Warning) << "DAD failed. Address " << ptrAddr->get()->getPlain() 
 			 << " was detected as tentative." << LogEnd;
-	    this->Tentative = TENTATIVE_YES;
-	    return TENTATIVE_YES;
-	case TENTATIVE_NO:
+	    this->Tentative = ADDRSTATUS_YES;
+	    return ADDRSTATUS_YES;
+	case ADDRSTATUS_NO:
 	    continue;
-	case TENTATIVE_UNKNOWN:
-        if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
+	case ADDRSTATUS_UNKNOWN:
+        if ( ptrAddr->getTimestamp()+DADTIMEOUT < (unsigned long)time(NULL) )
         {
 
-            switch (is_addr_tentative(NULL, this->Iface, ptrAddr->get()->getPlain()) ) 
+            switch (is_addr_tentative(NULL, Ifindex_, ptrAddr->get()->getPlain()) ) 
             {
 	    case LOWLEVEL_TENTATIVE_YES:  
-		ptrAddr->setTentative(TENTATIVE_YES);
-		this->Tentative=TENTATIVE_YES;
-		return TENTATIVE_YES;
+		ptrAddr->setTentative(ADDRSTATUS_YES);
+		this->Tentative=ADDRSTATUS_YES;
+		return ADDRSTATUS_YES;
 	    case LOWLEVEL_TENTATIVE_NO:
-		ptrAddr->setTentative(TENTATIVE_NO);
+		ptrAddr->setTentative(ADDRSTATUS_NO);
 		Log(Debug) << "DAD finished successfully. Address " << ptrAddr->get()->getPlain()
 			   << " is not tentative." << LogEnd;
 		break;
 	    default:
 		Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
 			   << " address state. Assuming NOT TENTATIVE." << LogEnd;
-		ptrAddr->setTentative(TENTATIVE_NO);
+		ptrAddr->setTentative(ADDRSTATUS_NO);
 		break;
             }
         } 
@@ -463,10 +465,10 @@ enum ETentative TAddrIA::getTentative()
 	}
     }
     if (allChecked) {
-        this->Tentative = TENTATIVE_NO;
-	    return TENTATIVE_NO;
+        this->Tentative = ADDRSTATUS_NO;
+	    return ADDRSTATUS_NO;
     } else {
-	    return TENTATIVE_UNKNOWN;
+	    return ADDRSTATUS_UNKNOWN;
     }
 }
 
@@ -481,19 +483,19 @@ void TAddrIA::setTentative()
 {
     SPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
-    Tentative = TENTATIVE_NO;
+    Tentative = ADDRSTATUS_NO;
 
     while ( ptrAddr = AddrLst.get() ) 
     {
         switch (ptrAddr->getTentative()) 
         {
-            case TENTATIVE_YES:
-                Tentative = TENTATIVE_YES;
+            case ADDRSTATUS_YES:
+                Tentative = ADDRSTATUS_YES;
                 return;
-            case TENTATIVE_NO:
+            case ADDRSTATUS_NO:
                 continue;
-            case TENTATIVE_UNKNOWN:
-                Tentative = TENTATIVE_UNKNOWN;
+            case ADDRSTATUS_UNKNOWN:
+                Tentative = ADDRSTATUS_UNKNOWN;
                 break;
         }
     }
@@ -551,13 +553,13 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
     
     switch (x.Type)
     {
-    case TAddrIA::TYPE_IA:
+    case IATYPE_IA:
 	name="AddrIA";
 	break;
-    case TAddrIA::TYPE_TA:
+    case IATYPE_TA:
 	name="AddrTA";
 	break;
-    case TAddrIA::TYPE_PD:
+    case IATYPE_PD:
 	name="AddrPD";
 	break;
     }
@@ -567,19 +569,10 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
     strum << "\" T1=\"" << x.T1 << "\""
 	  << " T2=\"" << x.T2 << "\"";
 
-    switch (x.Type)
-    {
-    case TAddrIA::TYPE_IA:
-    case TAddrIA::TYPE_TA:
-	strum << " IAID=\"";
-	break;
-    case TAddrIA::TYPE_PD:
-	strum << " PDID=\"";
-	break;
-    }
-    strum << x.IAID << "\""
-	  << " state=\"" << StateToString(x.State) 
-	  << "\" iface=\"" << x.Iface << "\"" << ">" << endl;
+    strum << " IAID=\"" << x.IAID << "\""
+	  << " state=\"" << StateToString(x.State)
+          << "\" ifacename=\"" << x.Iface_
+	  << "\" iface=\"" << x.Ifindex_ << "\"" << ">" << endl;
     if (x.getDUID() && x.getDUID()->getLen())
         strum << "      " << *x.DUID;
 
@@ -597,15 +590,16 @@ std::ostream & operator<<(std::ostream & strum, TAddrIA &x) {
     }
 
     // FQDN
-    if (x.Type!=TAddrIA::TYPE_PD) {
+    if (x.Type != IATYPE_PD) {
         // it does not make sense to mention FQDN in PD
         if (x.fqdnDnsServer) {
-            strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain() << "</fqdnDnsServer>" << endl;
+            strum << "      <fqdnDnsServer>" << x.fqdnDnsServer->getPlain()
+                  << "</fqdnDnsServer>" << endl;
         } else {
             strum << "      <!--<fqdnDnsServer>-->" << endl;
         }
         if (x.fqdn) {
-            strum << "      " << *x.fqdn << endl;
+            strum << "      " << *x.fqdn;
         } else {
             strum << "      <!-- <fqdn>-->" << endl;
         }

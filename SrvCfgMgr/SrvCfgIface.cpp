@@ -90,10 +90,26 @@ bool TSrvCfgIface::addrReserved(SPtr<TIPv6Addr> addr)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (*x->getAddr() == *addr)
+        if ( (x->getAddr()) && (*x->getAddr() == *addr) )
             return true;
     }
     return false;
+}
+
+/// @brief removes reserved addresses/prefixes from cache
+///
+/// @return number of removed entries
+unsigned int TSrvCfgIface::removeReservedFromCache() {
+    unsigned int cnt = 0;
+    SPtr<TSrvCfgOptions> x;
+    ExceptionsLst_.first();
+    while (x=ExceptionsLst_.get()) {
+        if (x->getAddr())
+            cnt += SrvAddrMgr().delCachedEntry(x->getAddr(), IATYPE_IA);
+        if (x->getPrefix())
+            cnt += SrvAddrMgr().delCachedEntry(x->getPrefix(), IATYPE_PD);
+    }
+    return cnt;
 }
 
 /// @brief Checks if prefix is reserved.
@@ -108,7 +124,7 @@ bool TSrvCfgIface::prefixReserved(SPtr<TIPv6Addr> prefix)
     SPtr<TSrvCfgOptions> x;
     ExceptionsLst_.first();
     while (x=ExceptionsLst_.get()) {
-        if (x->getAddr() == prefix)
+        if (x->getPrefix() && (*x->getPrefix() == *prefix) )
             return true;
     }
     return false;
@@ -512,7 +528,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     } else {
         Relay_ = false;
         RelayName_ = "";
-        RelayID_ = 0;
+        RelayID_ = -1;
         RelayInterfaceID_ = 0;
     }
 
@@ -639,15 +655,17 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
 
         if (foo->isUsed()) {
             // client sent a hint, but it is used currently
-            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) && (*foo->getAddr() == *addr)) {
+            if ( (foo->getDuid()) && (*foo->getDuid() == *duid) &&
+                 (foo->getAddr()) && (*foo->getAddr() == *addr)) {
                 Log(Debug) << "FQDN: This client (DUID=" << duid->getPlain()
                            << ") has already assigned name " << foo->getName()
                            <<" to its address " << foo->getAddr()->getPlain() << "." << LogEnd;
                 return foo;
             }
 
-            if (foo->getName() == hint) {
-                Log(Debug) << "FQDN: Client requested " << hint << ", but it is currently used." << LogEnd;
+            if ( (foo->getName() == hint) && (*foo->getDuid() == *duid) ) {
+                Log(Debug) << "FQDN: Client requested " << hint << ", it is already assinged to this client. Reusing." << LogEnd;
+                return foo;
             }
             continue;
         }
@@ -687,7 +705,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         Log(Info) << "FQDN: Client sent valid hint (" << hint << ") that is not "
                   << "mentioned in server configuration. Server is configured to "
                   << "drop such hints. To accept them, please "
-                  << "'add accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
+                  << "add 'accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
         return 0;
     }
     case UNKKOWN_FQDN_ACCEPT_POOL:
@@ -700,9 +718,9 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     case UNKNOWN_FQDN_ACCEPT:
     {
         Log(Info) << "FQDN: Accepting unknown (" << hint <<") FQDN requested by client." <<LogEnd;
-        SPtr<TFQDN> newEntry = new TFQDN(hint,false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, hint, false);
         FQDNLst_.append(newEntry);
-        Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
+        // Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
         return newEntry;
     }
     case UKNNOWN_FQDN_APPEND:
@@ -720,7 +738,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         }
 
         assignedDomain += "." + FQDNDomain_;
-        SPtr<TFQDN> newEntry = new TFQDN(assignedDomain, false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, assignedDomain, false);
         FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assigning (" << assignedDomain << ")." <<LogEnd;
         return newEntry;
@@ -734,7 +752,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         while ( (j = tmp.find(':')) != std::string::npos)
             tmp.replace(j, 1, "-");
         tmp = tmp + "." + FQDNDomain_;
-        SPtr<TFQDN> newEntry = new TFQDN(tmp, false);
+        SPtr<TFQDN> newEntry = new TFQDN(duid, tmp, false);
         FQDNLst_.append(newEntry);
         Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << tmp << ")." <<LogEnd;
         return newEntry;
@@ -806,6 +824,28 @@ void TSrvCfgIface::delTAAddr() {
     ta->decrAssigned();
 }
 
+// subnet management
+void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length) {
+    Subnets_.push_back(THostRange(prefix, length));
+}
+
+void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max) {
+    Subnets_.push_back(THostRange(min, max));
+}
+
+bool TSrvCfgIface::addrInSubnet(SPtr<TIPv6Addr> addr) {
+    for (std::vector<THostRange>::const_iterator range = Subnets_.begin();
+         range != Subnets_.end(); ++range) {
+        if (range->in(addr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TSrvCfgIface::subnetDefined() {
+    return !Subnets_.empty();
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
@@ -831,6 +871,13 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
         out << "    <!-- <relay/> -->" << std::endl;
     }
 
+    out << "    <!--" << iface.Subnets_.size() << " subnet(s) -->" << std::endl;
+    for (std::vector<THostRange>::const_iterator range = iface.Subnets_.begin();
+         range != iface.Subnets_.end(); ++range) {
+        out << "    <subnet>" << range->getAddrL()->getPlain() << "-"
+            << range->getAddrR()->getPlain() << "</subnet>" << std::endl;
+    }
+
     out << "    <preference>" << (int)iface.Preference_ << "</preference>" << std::endl;
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease_ << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease_ << "</clntMaxLease>" << std::endl;
@@ -852,7 +899,8 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     // print IA objects
     SPtr<TSrvCfgAddrClass>	ia;
     iface.SrvCfgAddrClassLst_.first();
-    out << "    <!-- IA: non-temporary addr class count: " << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
+    out << "    <!-- IA: non-temporary addr class count: "
+        << iface.SrvCfgAddrClassLst_.count() << "-->" << endl;
     while( ia=iface.SrvCfgAddrClassLst_.get() ) {
         out << *ia;
     }
@@ -926,7 +974,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
           << " unknownFqdnMode=\"" << iface.UnknownFQDN_ << "\""
           << ">" << endl;
       lst->first();
-      while (f=lst->get()) {
+      while ((f = lst->get())) {
             out << "       " << *f;
       }
       out << "    </fqdnOptions>" << endl;
@@ -994,3 +1042,112 @@ uint32_t TSrvCfgIface::getPref(uint32_t proposal) {
 uint32_t TSrvCfgIface::getValid(uint32_t proposal) {
     return chooseTime(ValidMin_, ValidMax_, proposal);
 }
+
+/// checks if given address/prefix is valid on this interface
+///
+/// @param type IA, TA or PD
+/// @param addr address or prefix to be confirmed
+///
+/// @return YES, NO or UNKNOWN (if no subnet is defined and addr is outside of pool)
+EAddrStatus TSrvCfgIface::confirmAddress(TIAType type, SPtr<TIPv6Addr> addr) {
+
+    string what = "address";
+    if (type == IATYPE_PD)
+        what = "prefix";
+
+    Log(Debug) << "Confirm that " << what << addr->getPlain()
+               << " is on-link:";
+
+    if (subnetDefined()) {
+        // this is easy to check - client defined subnet
+        // we just check if the addres is in subnet and we're done
+
+        if (addrInSubnet(addr)) {
+            Log(Cont) << "yes (belongs to defined subnet)." << LogEnd;
+            return ADDRSTATUS_YES;
+        } else {
+            Log(Cont) << "no (outside of defined subnet)." << LogEnd;
+            return ADDRSTATUS_NO;
+        }
+
+    } else {
+
+        // Ok, admin was lazy enough and did not specify subnet
+        // parameter for us. We have to check it the hard way
+        bool inPool;
+        switch (type) {
+        case IATYPE_IA:
+            inPool = addrInPool(addr);
+            break;
+        case IATYPE_TA:
+            inPool = addrInTaPool(addr);
+            break;
+        case IATYPE_PD:
+            inPool = prefixInPdPool(addr);
+            break;
+        default:
+            // should never happen
+            inPool = false;
+        }
+
+        if (inPool) {
+            Log(Cont) << "yes (belongs to defined class)." << LogEnd;
+            return ADDRSTATUS_YES;
+        } else {
+            Log(Cont) << "unknown (outside of defined class)." << LogEnd;
+            return ADDRSTATUS_UNKNOWN;
+        }
+    }
+}
+
+/// checks if address is in NA pool
+///
+/// @param addr address to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::addrInPool(SPtr<TIPv6Addr> addr) {
+    firstAddrClass();
+    SPtr<TSrvCfgAddrClass> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getAddrClass()) {
+        inPool = ptrClass->addrInPool(addr);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+
+/// checks if address is in TA pool
+///
+/// @param addr address to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::addrInTaPool(SPtr<TIPv6Addr> addr) {
+    firstTA();
+    SPtr<TSrvCfgTA> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getTA()) {
+        inPool = ptrClass->addrInPool(addr);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+
+/// checks if prefix is in PD pool
+///
+/// @param prefix prefix to be checked
+///
+/// @return true if in pool, false otherwise
+bool TSrvCfgIface::prefixInPdPool(SPtr<TIPv6Addr> prefix) {
+    firstPD();
+    SPtr<TSrvCfgPD> ptrClass;
+    bool inPool = false;
+    while (ptrClass = getPD()) {
+        inPool = ptrClass->prefixInPool(prefix);
+        if (!inPool)
+            return false;
+    }
+    return inPool;
+}
+

@@ -19,7 +19,7 @@
 #include "ClntParsIAOpt.h"
 #include "HostID.h"
 #include "IPv6Addr.h"
-#include "ClntOptVendorSpec.h"
+#include "OptVendorSpecInfo.h"
 
 class TClntParsIfaceOpt : public TClntParsIAOpt
 {

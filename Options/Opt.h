@@ -18,10 +18,16 @@
 #include "DUID.h"
 
 class TMsg;
+class TOpt;
+
+typedef std::list< SPtr<TOpt> > TOptList;
 
 class TOpt
 {
   public:
+
+    /// length of a DHCPv6 option header
+    const static size_t OPTION6_HDR_LEN = 4;
 
     /* this is required to specify, what is the format of expected options.
        This cannot be class field or method, because there is no object
@@ -64,7 +70,7 @@ class TOpt
      *
      * @return true if the option is valid.
      */
-    virtual bool isValid();
+    virtual bool isValid() const;
 
     virtual std::string getPlain();
 
@@ -92,6 +98,8 @@ class TOpt
                              std::string place = "option" // "option" or "message"
                              );
 
+    static SPtr<TOpt> getOption(const TOptList& list, uint16_t opt_type);
+
  protected:
     char* storeHeader(char* buf);
     char* storeSubOpt(char* buf);
@@ -103,7 +111,5 @@ class TOpt
     SPtr<TDUID> DUID;
     bool Valid;
 };
-
-typedef std::list< SPtr<TOpt> > TOptList;
 
 #endif

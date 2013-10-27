@@ -4,7 +4,7 @@
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
  * changes: Krzysztof Wnuk <keczi@poczta.onet.pl>
- *          Micha³ Kowalczuk <michal@kowalczuk.eu>
+ *          Michal Kowalczuk <michal@kowalczuk.eu>
  *          Grzegorz Pluto <g.pluto(at)u-r-b-a-n(dot)pl>
  *
  * released under GNU GPL v2 only licence
@@ -19,12 +19,15 @@
 #include <limits.h>
 #include "AddrMgr.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
+#include "hex.h"
 
 using namespace std;
 
-TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
+TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile)
+    :ReplayDetectionValue_(0) {
+
     this->IsDone = false;
     this->XmlFile = xmlFile;
 
@@ -62,6 +65,9 @@ void TAddrMgr::dbLoad(const char * xmlFile)
 {
     Log(Info) << "Loading old address database (" << xmlFile
               << "), using built-in routines." << LogEnd;
+
+    // Ignore status code. Missing server-AddrMgr.xml is ok if running
+    // for the first time
     xmlLoadBuiltIn(xmlFile);
 }
 
@@ -183,13 +189,91 @@ bool TAddrMgr::delClient(SPtr<TDUID> duid)
     return false;
 }
 
+
+/// @brief tries to update interface name/index information (if required)
+///
+/// @param nameToIndex network interface name to index mapping
+/// @param indexToName network interface index to name mapping
+///
+/// @return true if successful
+bool TAddrMgr::updateInterfacesInfo(const NameToIndexMapping& nameToIndex,
+                                    const IndexToNameMapping& indexToName) {
+    firstClient();
+    while (SPtr<TAddrClient> client = getClient()) {
+
+        client->firstIA();
+        while (SPtr<TAddrIA> ia = client->getIA()) {
+            if (!updateInterfacesInfoIA(ia, nameToIndex, indexToName))
+                return false;
+        }
+
+        client->firstTA();
+        while (SPtr<TAddrIA> ta = client->getTA()) {
+            if (!updateInterfacesInfoIA(ta, nameToIndex, indexToName))
+                return false;
+        }
+
+        client->firstPD();
+        while (SPtr<TAddrIA> pd = client->getPD()) {
+            if (!updateInterfacesInfoIA(pd, nameToIndex, indexToName))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool TAddrMgr::updateInterfacesInfoIA(SPtr<TAddrIA> ia,
+                                      const NameToIndexMapping& nameToIndex,
+                                      const IndexToNameMapping& indexToName) {
+
+    // check if ifacename is empty. If it is, then this is an
+    // old (pre 0.8.4) database that didn't store interface names
+    // info.
+    if (ia->getIfacename().length() == 0) {
+        IndexToNameMapping::const_iterator i = indexToName.find(ia->getIfindex());
+        if ( i == indexToName.end() ) {
+            Log(Crit) << "Loaded old (pre 0.8.4?) database contains only "
+                      << "interface index and that index " << ia->getIfindex()
+                      << " is not present in the OS now. Can't fix this database."
+                      << LogEnd;
+            return false;
+        }
+
+        ia->setIfacename(i->second);
+        Log(Debug) << "Updated old (pre 0.8.4?) database: IA with ifindex=" << ia->getIfindex()
+                   << " and no ifacename, updated to " << i->second << LogEnd;
+        return true;
+    }
+
+    // Check if name is present in the system
+    NameToIndexMapping::const_iterator n = nameToIndex.find(ia->getIfacename());
+    if (n == nameToIndex.end()) {
+        Log(Crit) << "Loaded database mentions interface "
+                  << ia->getIfacename() << ", which is not present in the OS."
+                  << "Can't use this database." << LogEnd;
+        return false;
+    }
+
+    // check if ifindex is valid. If it changed, update it.
+    if (ia->getIfindex() != n->second) {
+        Log(Warning) << "Interface index for " << n->first << " has changed: was "
+                     << ia->getIfindex() << ", but it is now " << n->second
+                     << ", updating database." << LogEnd;
+        ia->setIfindex(n->second);
+    }
+
+    return true;
+}
+
+
 // --------------------------------------------------------------------
 // --- time related methods -------------------------------------------
 // --------------------------------------------------------------------
 
 unsigned long TAddrMgr::getT1Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -201,7 +285,7 @@ unsigned long TAddrMgr::getT1Timeout()
 
 unsigned long TAddrMgr::getT2Timeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -213,7 +297,7 @@ unsigned long TAddrMgr::getT2Timeout()
 
 unsigned long TAddrMgr::getPrefTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -225,7 +309,7 @@ unsigned long TAddrMgr::getPrefTimeout()
 
 unsigned long TAddrMgr::getValidTimeout()
 {
-    unsigned long ts = ULONG_MAX;
+    unsigned long ts = UINT_MAX;
     SPtr<TAddrClient> ptr;
     ClntsLst.first();
     while (ptr = ClntsLst.get() ) {
@@ -254,8 +338,8 @@ unsigned long TAddrMgr::getValidTimeout()
  *
  * @return true if adding was successful
  */
-bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
-                         int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr, const std::string& ifname,
+                         int ifindex, unsigned long IAID, unsigned long T1, unsigned long T2,
                          SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
                          int length, bool quiet) {
     // find this client
@@ -273,11 +357,12 @@ bool TAddrMgr::addPrefix(SPtr<TDUID> clntDuid , SPtr<TIPv6Addr> clntAddr,
         ptrClient = new TAddrClient(clntDuid);
         this->addClient(ptrClient);
     }
-    return addPrefix(ptrClient, clntDuid, clntAddr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
+    return addPrefix(ptrClient, clntDuid, clntAddr, ifname, ifindex, IAID, T1, T2, prefix, pref, valid, length, quiet);
 }
 
 bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
-                         int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+                          const std::string& ifname, int ifindex, unsigned long IAID,
+                         unsigned long T1, unsigned long T2,
                          SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
                          int length, bool quiet) {
     if (!prefix) {
@@ -300,8 +385,11 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
 
     // have we found this PD?
     if (!ptrPD) {
-        ptrPD = new TAddrIA(iface, TAddrIA::TYPE_PD, addr, duid, T1, T2, IAID);
+        ptrPD = new TAddrIA(ifname, ifindex, IATYPE_PD, addr, duid, T1, T2, IAID);
+
+        /// @todo: This setState() was used on reconfigure branch, but not on master
         ptrPD->setState(STATE_CONFIGURED);
+
         client->addPD(ptrPD);
         if (!quiet)
             Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
@@ -334,8 +422,8 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
     return true;
 }
 
-bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
-                            int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
+bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr, const std::string& ifname,
+                           int ifindex, unsigned long IAID, unsigned long T1, unsigned long T2,
                             SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
                             int length, bool quiet)
 {
@@ -351,7 +439,7 @@ bool TAddrMgr::updatePrefix(SPtr<TDUID> duid , SPtr<TIPv6Addr> addr,
         return false;
     }
 
-    return updatePrefix(client, duid, addr, iface, IAID, T1, T2, prefix, pref, valid, length, quiet);
+    return updatePrefix(client, duid, addr, ifindex, IAID, T1, T2, prefix, pref, valid, length, quiet);
 }
 
 bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6Addr> clntAddr,
@@ -508,12 +596,6 @@ bool TAddrMgr::prefixIsFree(SPtr<TIPv6Addr> x)
 }
 
 // --------------------------------------------------------------------
-// --- XML-related methods (libxml2) ----------------------------------
-// --------------------------------------------------------------------
-#ifdef MOD_LIBXML2
-#else
-
-// --------------------------------------------------------------------
 // --- XML-related methods (built-in) ---------------------------------
 // --------------------------------------------------------------------
 /**
@@ -553,8 +635,15 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
             stringstream tmp(strstr(buf,"<timestamp>")+11);
             unsigned int ts;
             tmp >> ts;
-            Log(Info) << "DB timestamp:" << ts << ", now()=" << now() << ", db is " << (now()-ts)
+            uint32_t now = (uint32_t)time(NULL);
+            Log(Info) << "DB timestamp:" << ts << ", now()=" << now << ", db is " << (now-ts)
                       << " second(s) old." << LogEnd;
+            continue;
+        }
+        if (strstr(buf,"<replayDetection>")) {
+            stringstream tmp(strstr(buf,"<replayDetection>") + 17);
+            tmp >> ReplayDetectionValue_;
+            Log(Debug) << "Auth: Replay detection value loaded " << ReplayDetectionValue_ << LogEnd;
             continue;
         }
         if (AddrMgrTag && strstr(buf,"<AddrClient")) {
@@ -602,14 +691,16 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 {
     char buf[256];
     char * x = 0;
-    int t1 = 0, t2 = 0, iaid = 0, pdid = 0, iface = 0;
+    int t1 = 0, t2 = 0, iaid = 0, pdid = 0, ifindex = 0;
 
     SPtr<TAddrClient> clnt = 0;
     SPtr<TDUID> duid = 0;
     SPtr<TAddrIA> ia = 0;
-    SPtr<TAddrIA> ptrpd=0;
+    SPtr<TAddrIA> ptrpd = 0;
     SPtr<TAddrIA> ta = 0;
     SPtr<TIPv6Addr> unicast;
+    string ifacename;
+    std::vector<uint8_t> reconfKey;
 
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
@@ -619,7 +710,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
         if (strstr(buf,"<duid")) {
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
@@ -627,8 +719,20 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
             continue;
         }
+        
+        if (strstr(buf, "<ReconfigureKey")) {
+            x = strstr(buf, ">") + 1;
+            char* end;
+            if (x) {
+                end = strstr(x, "</ReconfigureKey>");
+                if (end)
+                    *end = 0;
+            }
+            reconfKey = textToHex(string(x));
+        }
+
         if(strstr(buf,"<AddrIA ")){
-            t1 = 0; t2 = 0; iaid = 0; iface = 0;
+            t1 = 0; t2 = 0; iaid = 0; ifindex = 0; ifacename = "";
             if ((x=strstr(buf,"T1"))) {
                 t1=atoi(x+4);
                 // Log(Debug) << "Parsed AddrIA::T1=" << t1 << LogEnd;
@@ -641,23 +745,36 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 iaid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrIA::IAID=" << iaid << LogEnd;
             }
-            if ((x=strstr(buf,"iface"))) {
-                iface=atoi(x+7);
+            if ((x=strstr(buf,"iface="))) {
+                ifindex = atoi(x+7);
                 // Log(Debug) << "Parsed AddrIA::iface=" << iface << LogEnd;
+            }
+            if ((x=strstr(buf,"ifacename"))) {
+                char* end = strstr(x + 11, "\"");
+                if (end) {
+                    ifacename = string(x + 11, end);
+                }
             }
             if ((x=strstr(buf,"unicast"))) {
                 char *end = strstr(x+9, "\"");
-                string uni(x+9, end);
-                unicast = new TIPv6Addr(uni.c_str(), true);
+                if (end) {
+                    string uni(x+9, end);
+                    if (uni.size()) {
+                        unicast = new TIPv6Addr(uni.c_str(), true);
+                    }
+                }
             }
-            if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, iface)) {
-                if (!ia)
+            if (ia = parseAddrIA(xmlFile, f, t1, t2, iaid, ifacename, ifindex)) {
+                if (!ia || !clnt)
                     continue;
-                clnt->addIA(ia);
-                Log(Debug) << "Parsed IA, iaid=" << iaid;
-                if (unicast) {
+		if (ia->countAddr()) { // we don't want empty IAs here
+		    clnt->addIA(ia);
+		} else {
+		    Log(Debug) << "IA with iaid=" << iaid << " has no valid addresses." << LogEnd;
+		    continue;
+		}
+		if (unicast) {
                     ia->setUnicast(unicast);
-                    Log(Cont) << ", unicast=" << unicast->getPlain();
                     unicast = 0;
                 }
                 Log(Cont) << LogEnd;
@@ -668,7 +785,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
             ta = parseAddrTA(xmlFile, f);
         }
         if(strstr(buf,"<AddrPD ")){
-            t1 = 0; t2 = 0; pdid = 0; iface = 0;
+            t1 = 0; t2 = 0; pdid = 0; ifindex = 0; ifacename = "";
             if ((x=strstr(buf,"T1"))) {
                 t1=atoi(x+4);
                 // Log(Debug) << "Parsed AddrPD::T1=" << t1 << LogEnd;
@@ -677,21 +794,33 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 t2=atoi(x+4);
                 // Log(Debug) << "Parsed AddrPD::T2=" << t2 << LogEnd;
             }
-            if ((x=strstr(buf,"PDID"))) {
+            if ((x=strstr(buf,"IAID"))) {
                 pdid=atoi(x+6);
                 // Log(Debug) << "Parsed AddrPD::PDID=" << pdid << LogEnd;
             }
-            if ((x=strstr(buf,"iface"))) {
-                iface=atoi(x+7);
+            if ((x=strstr(buf,"iface="))) {
+                ifindex = atoi(x+7);
                 // Log(Debug) << "Parsed AddrPD::iface=" << iface << LogEnd;
             }
-            if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, iface)) {
-                if (!ptrpd)
+            if (strstr(buf,"unicast")) {
+                x = strstr(buf,"=")+2;
+                if (x)
+                    x = strstr(x," ")-1;
+                if (x)
+                    *x = 0; // remove trailing xml tag
+                unicast = new TIPv6Addr(strstr(buf,"=")+2, true);
+            }
+            if ((x=strstr(buf,"ifacename"))) {
+                char* end = strstr(x + 11, "\"");
+                if (end) {
+                    ifacename = string(x + 11, end);
+                }
+            }
+            if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, ifacename, ifindex, unicast)) {
+                if (!ptrpd || !clnt)
                     continue;
                 if (ptrpd->countPrefix()) {
                     clnt->addPD(ptrpd);
-                    Log(Debug) << "Parsed PD, pdid=" << pdid << ", t1=" << t1
-                               << ", t2=" << t2 << LogEnd;
                 } else {
                     Log(Debug) << "PD with iaid=" << pdid << " has no valid prefixes." << LogEnd;
                 }
@@ -699,6 +828,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
         }
         if (strstr(buf,"</AddrClient>"))
             break;
+    }
+
+    if (clnt) {
+        clnt->ReconfKey_ = reconfKey;
     }
 
     return clnt;
@@ -742,7 +875,9 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(const char * xmlFile, FILE *f) {
  *
  * @return pointer to newly created TAddrIA object
  */
-SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface) {
+SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,
+                                    int iaid, const string& ifacename, int ifindex,
+                                    SPtr<TIPv6Addr> unicast /* =0 */) {
     // IA paramteres
     char buf[256];
     char * x = 0;
@@ -758,15 +893,21 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"duid")) {
             //char * x;
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
             // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
             Log(Debug) << "Loaded PD from a file: t1=" << t1 << ", t2="<< t2
-                       << ", iaid=" << iaid << ", iface=" << iface << LogEnd;
+                       << ", iaid=" << iaid << ", iface=" << ifacename << "/" 
+                       << ifindex << LogEnd;
 
-            ptrpd = new TAddrIA(iface, TAddrIA::TYPE_PD, 0, duid, t1, t2, iaid);
+            ptrpd = new TAddrIA(ifacename, ifindex, IATYPE_PD, 0, duid, t1, t2, iaid);
+
+            // @todo: Why are we always setting CONFIRMME state? What if the address/prefix
+            // hasn't changed?
+            ptrpd->setState(STATE_CONFIRMME);
             continue;
         }
         if (strstr(buf,"<AddrPrefix")) {
@@ -774,7 +915,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
             if (ptrpd && pr) {
                 if (verifyPrefix(pr->get())) {
                     ptrpd->addPrefix(pr);
-                    pr->setTentative(TENTATIVE_NO);
+                    pr->setTentative(ADDRSTATUS_NO);
                     //Log(Debug) << "Parsed prefix " << pr->getPlain() << LogEnd;
                 } else {
                     Log(Debug) << "Prefix " << pr->get()->getPlain() 
@@ -805,12 +946,13 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
  * @return pointer to newly created TAddrIA object
  */
 
-SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,int iaid,int iface)
+SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,
+                                    int iaid, const string& ifacename, int ifindex,
+                                    SPtr<TIPv6Addr> unicast)
 {
     // IA paramteres
     char buf[256];
     char * x = 0;
-    //int t1 = 0, t2 = 0, iaid = 0, iface = 0;
     SPtr<TAddrIA> ia = 0;
     SPtr<TAddrAddr> addr;
     SPtr<TDUID> duid = 0;
@@ -819,34 +961,82 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
             Log(Error) << "Failed to parse AddrIA entry. File " << xmlFile << " truncated." << LogEnd;
             return 0;
         }
-        if (strstr(buf,"duid")) {
-                  //char * x;
-                  x = strstr(buf,">")+1;
-                  x = strstr(x,"</duid>");
-                  if (x)
-                      *x = 0; // remove trailing xml tag
-                  duid = new TDUID(strstr(buf,">")+1);
-                  // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+        if (strstr(buf,"<duid")) {
+	    //char * x;
+	    x = strstr(buf,">")+1;
+            if (x)
+                x = strstr(x,"</duid>");
+	    if (x)
+		*x = 0; // remove trailing xml tag
+	    duid = new TDUID(strstr(buf,">")+1);
+	    // Log(Debug) << "Parsed IA: duid=" << duid->getPlain() << LogEnd;
+	    
+	    Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
+		       << ",iaid=" << iaid << ", iface=" << ifacename << "/"
+                       << ifindex << LogEnd;
+	    
+	    ia = new TAddrIA(ifacename, ifindex, IATYPE_IA, 0, duid, t1,t2, iaid);
+	    continue;
+	}
+	if (strstr(buf,"<fqdnDnsServer>")) {
+	    char * beg = strstr(buf, ">")+1;
+	    if (!beg)
+		continue; // malformed line, ignore it
+	    char * end = strstr(beg, "</fqdnDnsServer>");
+	    if (!end)
+		continue; // malformed line, ignore it
+	    *end = 0;
+	    SPtr<TIPv6Addr> dns = new TIPv6Addr(beg, true);
+	    if (ia)
+		ia->setFQDNDnsServer(dns);
+	    continue;
+	}
+	if (strstr(buf, "<fqdn ")) {
+	    /// @todo parse DUID
+	    char * beg = strstr(buf, "duid=\"") + 6;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    char * end = strstr(beg, "\"");
+	    string duidTxt(beg, end);
 
-                  Log(Debug) << "Loaded IA from a file: t1=" << t1 << ", t2="<< t2
-                             << ",iaid=" << iaid << ", iface=" << iface << LogEnd;
+	    SPtr<TDUID> duid = new TDUID(duidTxt.c_str());
 
-                  ia = new TAddrIA(iface, TAddrIA::TYPE_IA, 0, duid, t1,t2, iaid);
-                  continue;
-              }
-              if (strstr(buf,"<AddrAddr")) {
-                  addr = parseAddrAddr(xmlFile, buf,false);
-                  if (ia && addr) {
-                      if (verifyAddr(addr->get())) {
-                              ia->addAddr(addr);
-                              addr->setTentative(TENTATIVE_NO);
-                      } else {
-                          Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
-                      }
-                  }
-              }
-              if (strstr(buf,"</AddrIA>"))
-                  break;
+	    beg = strstr(buf, "used=\"") + 6;
+	    if (!beg) {
+		continue;
+	    }
+	    end = strstr(beg, "\"");
+	    string usedTxt(beg, end);
+	    bool used = false;
+	    if (usedTxt == "TRUE")
+		used = true;
+
+	    beg = strstr(buf, ">") + 1;
+	    if (!beg)
+		continue; // malformed line: "<fqdn" tag missing >
+	    end = strstr(beg, "<");
+	    if (!end)
+		continue;
+	    *end = 0;
+	    SPtr<TFQDN> fqdn = new TFQDN(duid, string(beg, end), used);
+	    if (ia)
+		ia->setFQDN(fqdn);
+	    continue;
+	}
+	if (strstr(buf,"<AddrAddr")) {
+	    addr = parseAddrAddr(xmlFile, buf,false);
+	    if (ia && addr) {
+		if (verifyAddr(addr->get())) {
+		    ia->addAddr(addr);
+		    addr->setTentative(ADDRSTATUS_NO);
+		} else {
+		    Log(Debug) << "Address " << addr->get()->getPlain()
+                               << " is no longer supported. Lease dropped." << LogEnd;
+		}
+	    }
+	}
+	if (strstr(buf,"</AddrIA>"))
+	    break;
     }
     if (ia)
         ia->setTentative();
@@ -870,9 +1060,9 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
     int prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrAddr> addraddr;
-    char * x = 0;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = 0;
         uint32_t timestamp = 0;
         uint32_t pref = 0;
         uint32_t valid = 0;
@@ -885,7 +1075,7 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
         if ((x=strstr(buf,"valid"))) {
             valid = atoi(x+7);
         }
-        if(pd==false) {
+        if(!pd) {
             if ((x=strstr(buf,"prefix="))) {
                 prefix = atoi(x+8);
             }
@@ -920,9 +1110,9 @@ SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bo
     // address parameters
     SPtr<TIPv6Addr> addr = 0;
     SPtr<TAddrPrefix> addraddr;
-    char * x;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
+        char * x = NULL;
         unsigned long timestamp = 0, pref = 0, valid = 0, length = 0;
         addr = 0;
         if ((x=strstr(buf,"timestamp"))) {
@@ -964,12 +1154,6 @@ SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bo
     return addraddr;
 }
 
-
-
-
-
-#endif
-
 /**
  * @brief returns if shutdown is complete
  *
@@ -986,13 +1170,19 @@ TAddrMgr::~TAddrMgr() {
 
 }
 
+uint64_t TAddrMgr::getNextReplayDetectionValue() {
+    return ++ReplayDetectionValue_;
+}
+
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
-    strum << "  <timestamp>" << now() << "</timestamp>" << endl;
+    strum << "  <timestamp>" << (uint32_t)time(NULL) << "</timestamp>" << endl;
+    strum << "  <replayDetection>" << x.ReplayDetectionValue_ << "</replayDetection>" << endl;
     x.print(strum);
 
     SPtr<TAddrClient> ptr;

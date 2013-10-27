@@ -57,7 +57,7 @@
     2011-04: MacOSX debugging/improvements.
 
   - Christopher Small <chsmall(at)grnoc(dot)iu(dot)edu>
-    2009-05: MaxOSX fixes.
+    2009-05: Max OS X fixes.
 
   - Wojciech Guminski <wojciech.guminski(at)eti(dot)pg(dot)gda(dot)pl>
     2010-11: Windows/Linux compilation fixes
@@ -82,6 +82,35 @@
 
   - Mickael Marchand <mikmak(at)freenux(dot)org>
     2012-03: link-local client reservation, several fixes
+
+  - Tao Cui <Cuit(at)ihep(dot)ac(dot)cn>
+    2013-01: interface-id shorter than 4 bytes are now handled ok
+
+  - Grzegorz Pluto
+    200?-2012: reconfigure support
+
+  - Jean-Jacques Sarton <jj(dot)sarton(at)web(dot)de>
+    2013-03: Patch for double free in file read error handling
+    2013-03: Patch for stop command not working on Linux
+    2013-04: Patch for socket descriptor == 0 in daemon mode
+
+  - Vaclav Michalek <vaclav(dot)michalek(at)upol(dot)cz>
+    2013-03: Various WIN32 fixes
+    2013-03: gethostname for WIN32
+    2013-03: Inactive-mode for Win32
+    2013-04: OptFQDN improvements
+
+  - George Joseph <george(dot)joseph(at)fairview5(dot)com>
+    2013-08: Fixed leases are now kept in the database (bug #291)
+    2013-08: Client segfault when incomplete/invalid AUTH info specified (bug #289)
+    2013-08: Log message fix (bug #292)
+
+  - Patrick Pichon <patrick(dot)pipiche(dot)fr>
+    2013-09: Fedora RPM script
+
+  - Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
+    2013-10: Service dependency for Windows Vista and newer fix
+    2013-10: Script calling fix.
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

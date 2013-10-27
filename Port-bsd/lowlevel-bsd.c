@@ -136,6 +136,18 @@ struct iface * if_list_get() {
     /* First pass through entire addrs_lst: collect unique interface names and flags */
     addr_ptr = addrs_lst;
     while (addr_ptr != NULL) {
+
+#ifdef LOWLEVEL_DEBUG
+        if (addr_ptr->ifa_addr->sa_family == AF_INET6) {
+            char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
+
+            printf("Link-local addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x"
+                   ":%02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+                   ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
+                   ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15]);
+        }
+#endif
+
         // check if this interface name is already on target list
         iface_ptr = iface_lst;
         while (iface_ptr!=NULL) {
@@ -179,6 +191,21 @@ struct iface * if_list_get() {
                 case AF_INET6:
                     {
                         char * ptr = (char*)(&((struct sockaddr_in6 *) addr_ptr->ifa_addr)->sin6_addr);
+
+                        /// @todo: Ugly workaround. Please remove one BSD guys fix their kernel.
+
+			// This is ugly. OpenBSD returns interface index on the 4th byte. Link-local
+			// addresses are supposed to be in format fe80:[6 zeros here]:EUI-64
+                        // This problem also appears on pfSense
+			memset(ptr+2, 0, 6);
+
+#ifdef LOWLEVEL_DEBUG
+			printf("Link-local addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x:"
+                               "%02x%02x:%02x%02x:%02x%02x:%02x%02x\n",
+			       ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
+			       ptr[8], ptr[9], ptr[10], ptr[11], ptr[12], ptr[13], ptr[14], ptr[15]);
+#endif
+
                         if (ptr[0] == 0xfe && ptr[1] == 0x80) { // link-local IPv6 address
                             char * addrs = malloc( (iface_ptr->linkaddrcount+1)*16);
                             memcpy(addrs, iface_ptr->linkaddr, 16*iface_ptr->linkaddrcount);
@@ -458,27 +485,6 @@ int is_addr_tentative(char * ifacename, int iface, char * addr) {
     return 0;
 }
 
-uint32_t getAAASPIfromFile() {
-    char filename[1024];
-    struct stat st;
-    uint32_t ret;
-    FILE *file;
-
-    strcpy(filename, "/var/lib/dibbler/AAA/AAA-SPI");
-
-    if (stat(filename, &st))
-        return 0;
-
-    file = fopen(filename, "r");
-    if (!file)
-        return 0;
-
-    fscanf(file, "%9x", &ret);
-    fclose(file);
-
-    return ret;
-}
-
 char * getAAAKeyFilename(uint32_t SPI) {
     static char filename[1024];
     if (SPI != 0)
@@ -518,6 +524,7 @@ char * getAAAKey(uint32_t SPI, unsigned *len) {
             break;
         if (ret < 0) {
             free(retval);
+            close(fd);
             return NULL;
         }
         offset += ret;
@@ -859,4 +866,9 @@ extern int terminate_tcp_connection(int fd,int how) {
     }
     return iResult;
 
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement this for BSD
+    /// see "/usr/sbin/ndp -a -n"
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }

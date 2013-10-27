@@ -1,7 +1,7 @@
 bin_PROGRAMS = bison++
 AUTOMAKE_OPTIONS = foreign 
 
-bison___SOURCES = closure.cc \
+bison___SOURCES = closure.cc alloca.c\
 			derives.cc \
 			getargs.cc \
 			getopt1.cc \
@@ -22,9 +22,18 @@ bison___SOURCES = closure.cc \
 			output.cc \
 			reader.cc \
 			symtab.cc\
-			old.c 
+			old.c \
+	files.h FlexLexer.h getopt.h gram.h lex.h machine.h new.h \
+	state.h symtab.h system.h types.h
 
 dist_noinst_DATA = bison.cc bison.hairy bison.h
+dist_noinst_DATA += bison++.1 bison++.1.dman bison.cld
+dist_noinst_DATA += bison.info bison.info-1 bison.info-2
+dist_noinst_DATA += bison.info-3 bison.info-4 bison.info-5
+dist_noinst_DATA += bison_pp.mak bison.ps.gz
+dist_noinst_DATA += bison.rnh bison.texinfo
+dist_noinst_DATA += bison++.yacc bison++.yacc.1
+dist_noinst_DATA += README++ REFERENCES version.texi
 
 #info_TEXINFOS = bison.texinfo
 #man_MANS = bison++.1 bison.1 bison++.yacc.1
@@ -33,7 +42,7 @@ CXX=g++
 PFILE = bison.cc
 PFILE1 = bison.hairy
 HFILE = bison.h
-INCLUDES = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
+AM_CPPFLAGS = -DXPFILE=\"$(datadir)/bison++/$(PFILE)\" \
 	 -DXHFILE=\"$(datadir)/bison++/$(HFILE)\" \
 	 -DXPFILE1=\"$(datadir)/bison++/$(PFILE1)\"
 

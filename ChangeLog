@@ -1,0 +1,502 @@
+
+  Dibbler changelog
+ -------------------
+1.0.0 [not-released-yet]
+  - Cli: segfault when invalid or incomplete auth parameters are specified
+    Thanks to George Joseph for a patch (bug #289)
+  - Srv: fixed leases are not added to AddrMgr. Thanks to George Joseph for
+    a patch (bug #291)
+  - Log message fixed. Thanks to George Joseph for a patch (bug #292)
+  - Client options are now passed to notify scripts (bug #293)
+  - Fedora RPM script contributted by Patrick Pichon, thanks!
+  - Srv: Experimental performance-mode added
+  - Compliation fix for Mac OS X 10.9/Apple LLVM 5.0 (clang-500)
+  - The code compiles again with --disable-auth
+  - Cli: does not send or expect AUTH option by default.
+  - Win: Service dependency fixed for Vista and above
+  - Notify script called only when non-empty script name specified.
+    (thanks to Hernan Martinez for contributed patches)
+
+1.0.0RC1 [2013-07-30]
+  - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
+  - Authentication rewritten (now uses RFC3315 option formats)
+  - Auth: support for reconfigure-key added
+  - Auth: support for delayed authentication
+  - Linux: support for M,O bits reading from Router Advertisements (bug #49)
+  - Srv: server no longer crashes when options are defined in global scope
+    (issue reported by Michael Thorsager, thanks!)
+  - Srv: database sanitization now works also for relays (bug #288)
+    (issue reported by Michael Thorsager, thanks!)
+  - After 10 years of development, all features from RFC3315 are now supported!
+    (there are outstanding bugs, though...)
+
+0.8.4 [2013-06-27]
+  - Rel: Unknown message types are now relayed (as a forward compatibility
+    feature)
+  - Cli: DOWNLINK_PREFIX_IFACES and DOWNLINK_PREFIXES variables are now passed
+    to the notify script (bug #265)
+  - AC_FUNC_MALLOC/AC_FUNC_REALLOC are no longer used
+  - OpenBSD bug workaround for invalid link-local addresses reported is now
+    extended to all other BSDs as this affects pfSense as well
+  - Cli/Srv: interface names are stored in *-AddrMgr.xml
+  - Srv: Database is now checked against missing or interface index changes
+    (bugs #192, #247, #250)
+  - Cli: Database is now checked against missing or interface index changes
+    (bugs #192, #247, #250)
+  - Srv: Temporary addresses are now stored in the database (bug #284)
+  - Cli: Temporary addresses are now expired and removed properly (bug #285)
+  - Linux: pthreads is now linked only when --enable-link-state is used
+    (bug #249)
+  - Srv: Buffer for incoming UDP packets increased to 64k
+  - Srv: incoming packet destination address check is disabled by default and
+    can be enabled with --enable-dst-addr-check parameter (bug #286)
+
+0.8.4RC1 [2013-04-27]
+  - Inteface-ids shorter than 4 bytes are not handled properly
+    (patch by Tao Cui)
+  - It is now possible to send custom options (hex, string, address or address-list
+    is supported for now, but other data formats may be added in the future)
+  - Responses to packets sent from global addresses are now sent via sockets
+    bound to global addresses
+  - Server now properly calculates number of available addresses and prefixes
+    after expiration (bug #264)
+  - Srv: info about second and following relays are now passed to the
+    script properly
+  - Cli: fix for a double free in error handing (if file read failed).
+    Thanks to Jean-Jacques Sarton for reporting and providing patch (bug #266)
+  - client.vendor-class.en and client.vendor-class.data expressions are now
+    supported (but not tested yet)
+  - Srv: Relay support refactored. Unknown options are now handled better
+    and any development related to relays will be easier
+  - Srv: logical relay interfaces are no longer present in server-IfaceMgr.xml
+  - Classes for USER_CLASS and VENDOR_CLASS options implemented.
+  - Linux: stop command fix (bug #268)
+  - Win32: dibbler waits for netsh.exe execution completion, because netsh.exe
+    does not seem to be reentrant
+  - Win32: DNS configuration is now flushed during the first DNS configuration
+  - Win32: Client no longer crashes when expired addresses is used with confirm
+    support enabled
+  - Cli: "option fqdn" now contains hostname by default (bug #267)
+  - Win32: Client inactive-mode improvements (patch by Vaclav Michalek)
+  - Compilation fix for Mac OS X 10.8.0 (bug #277), patch by Michael Thorsager
+  - Linux: cosmetic low-level Linux improvements (bug #276)
+  - FQDN option improvements (fully qualified, hostname only and empty options)
+    are now supported
+  - Daemon mode should now be able to read sockets properly (bug #275)
+    (patch by Jean-Jacques Sarton)
+  - Linux compilation fixes (bug #282)
+  - Srv: Confirm support improved, now also using subnet declaration (bug #240,
+    bug #259)
+
+0.8.3 [2013-01-20]
+  - Cli: workaround for odd link-local interface detection code on OpenBSD
+  - AFTR option on-wire encoding fixed
+  - Compilation fix in Port-linux/interface.c on CentOS 5.x
+  - DUID is now written properly on 64 bit Windows
+  - Resource leak (socket not closed) in iterface detection fixed (bug #255)
+
+0.8.3RC1 [2012-08-17]
+  - Srv: address and prefix assignment rewritten
+  - Srv: implemented per-client prefix configuration
+  - Cli: Reasons for rejecting IA_NA/IA_PD are now logged (i.e. T1>T2)
+  - Cli: client no longer crashes when server's reply does not included expected IA_PD
+  - gcc4.6 compilation warnings removed
+  - added missing header in ClntIfaceIface.h (debian #672003)
+  - debian/ directory is moved to debian branch and no longer available on master
+  - Many cppcheck/doxygen warnings removed
+  - Srv: Refactoring continues another 11 classes removed.
+  - Srv: NIS, NIS+, SIP, DNS, Domain, NTP and Lifetime options are now handled through
+    unified option handling mechanism. Server code should be smaller now.
+  - Cli: support for resolvconf tool added (see --enable-resolvconf parameter)
+  - Srv: out-of-pool reservations now use T1,T2,preferred,valid times from the interface
+  - Rel: Recent regression (complain about server and client on the same link) fixed
+  - Srv: relays parameters (link, peer address) are now passed to the notify script
+  - Cli: client no longer crashes, when client-AddrMgr.xml is empty (bug #245)
+  - Srv: Secure DNS Update (using TSIG) is now supported
+  - Srv: Expired leases are now removed from the DNS (using DNS Update)
+  - Srv: Many smaller FQDN related fixes
+  - Srv: Support for FQDN-related data in server-AddrMgr.xml improved
+  - Srv: Server no longer loads empty IAs or empty clients from server-AddrMgr.xml
+  - Experimental port to Solaris 11
+  - Srv: Cached entries for reserved address/prefix will no longer cause server to assign
+    reserved address/prefix to another client
+  - Srv: Fixed problem when reserved address/prefix was assigned to different client when
+    nearing addresses/prefixes depletion
+  - Cli: Script can now be called in stateless mode (inf-request)
+  - Cli: Script for MacOS dns and domain setting added
+  - Cli: Silent address expiration (T1>valid lifetime) is now supported properly
+  - Cli/Srv: FQDN, Vendor options are now passed to script correctly
+  - Cli: IAID is now parsed properly in PD definitions in client-AddrMgr.xml
+  - Cli: Silent prefix expiration (T1>valid lifetime) is now supported properly
+  - Srv: Skeleton functions for logging MAC address added
+
+0.8.2 [2012-02-29]
+  - Cli: code refactoring. Code is now a bit smaller. Removed classes: ClntOpt*Servers,
+    ClntOpt*Domain. Client binary is now smaller by 36kb (exact size is architecture dependent)
+  - Srv: code refactoring, similar to client. Code is now a bit smaller. Removed classes:
+    SrvOpt*Server, SrvOpt*Domain.
+  - Cli/Srv: NIS, NIS+ domains are now encoded properly by client and server (bug #223, #227)
+  - Example configs are now using 2001:db8:1:: prefix dedicated to testing and example purposes
+  - Cli: Fix for prefix delegation segfault (bug #236)
+  - Srv: CONFIRM messages are now supported properly (partial fix for bug #240)
+  - Cli: Prefix split is now done properly, even for prefix lengths not divisible by 8
+  - Cli: It is now possible to specify downlink interfaces for prefix delegation (downlink-prefix-ifaces)
+  - Cli: prefixes are now refreshed properly, even when system prefix configuration failed (bug #238)
+  - Cli: client no longer segfaults when temporary addresses are requested (bug #241, debian 659476)
+  - Cli: client no longer transmits SOLICIT every second if some requested (addresses or prefixes)
+    are not available, but rather uses exponential back-off (bug #238)
+  - Cli/Srv: syntax for custom options defined using hex notation has changed (bug #235)
+  - Doc: Developer's guide now generates properly (bug #215)
+  - Cli: When using fqdn, client by default requests server to do DNS Update (S bit = 1)
+
+0.8.1 [2011-12-31]
+  - Srv: Prefixes are now expired properly.
+  - Cli/Srv: IFINDEX variable is now set properly in notify scripts.
+  - Srv: Notify script is now called when lease is expired. (bug #216)
+  - Srv: Existing prefix lease is now assigned to returning clients if exists (bug #224)
+
+0.8.1RC1 [2011-11-11]
+  - Fixed socket binding problem on server that may affect relay scenarios
+  - Fixed segmentation fault when interface-id was not defined on relay interface.
+  - Makefiles reworked
+  - Srv/Cli: Implemented support for DNS Update over UDP (ddns-protocol directive)
+  - Srv/Cli: Implemented support for DNS Update timeout (ddns-timeout directive)
+  - Fixed problem with possible PD crash
+  - Linux: radvd.conf generation improved in PD
+  - Fix: server/client will no longer load DUID empty file (bug #209)
+  - Cli: no longer confused when receiving delegated prefix, but there are no suitable interfaces
+  - Srv: server now caches assinged prefixes (bug #217)
+  - Cli: support for notify script execution reimplemented (bugs #207, #216)
+  - Makefile system rewritten (using autotools now for better portability)
+  - Srv: server now calls external script when assigning or releasing delegated prefix (bug #205)
+  - FreeBSD,NetBSD,OpenBSD compilation successful (not tested yet, consider it experimental)
+  - Google test framework added for unittests. There are only handful tests implemented now,
+    but the number is expected to grow
+  - Fix: alignment memory reads, tested on ARMv5 (bug #221)
+  - Changed default number of addresses allowed per client from millions to 10
+  - Srv: number of currently allocated prefixes is set correctly after restart and database reload
+  - Several server and client fixes for DNS Update
+  - Cli: Obsolete "no-ia" statement removed. Corrected spelling of "preferred" in config parser.
+  - It is now possible to specify IAID for PD
+  - Doc: Rather large User's Guide update
+  - Support for RFC6334 (DS-Lite tunnels) added
+  - Support for routing configuration added (draft-ietf-mif-dhcpv6-route-option-03)
+
+0.8.0 [2011-05-11]
+  - Fixed compilation problems
+  - Fix: client, server and relay no longer leave PID file after failed start
+  - Fix: error in detecting MAC addresses on Mac
+  - Fix: several crashes introduced in 0.8.0RC1 fixed
+  - Fix: client no longer gets confused when requesting IA, TA and PD
+  - Fix: Server now sends back rapid-commit option
+  - Srv: It is now possible to specify how server should handle unknown FQDNs from clients
+  - Srv: It is now possible to specify DDNS server address, used during DNS Updates
+  - Doc: Fixed bug in example in server man page
+  - Srv: answers to RENEW are now constructed properly (single SERVERID is enough)
+  - All: Inteface link address is now detected properly on Mac OS X
+  - All: Many Mac OS port fixes. It should be operational now.
+  - Linux: client now adds addresses with proper preferred/valid lifetimes
+  - Linux: client now properly updates addresses during renew/rebind
+  - Cli: Client now properly copies prefixes from ADVERTISE to REQUEST (bug #197)
+  - Cli: RELEASE is now sent properly if there are only prefixes, and no addresses (bug #196)
+  - Cli: It is now possible to define serveral prefixes in one pd
+  - Cli: It is now possible to define specific prefix in pd as a hint
+  - Cli: T1,T2 are now properly set for PD
+  - Cli: Duplicate IA,TA and PD are no longer created in database, when
+    restarting client with existing leases.
+  - Cli: Client no longer silently quits, if adding/updating prefix failed.
+  - Linux/Mac OS: daemonizing should close stdin/stdout/stderr (bug #188)
+  - Linux: detecting link state change no longer takes 100% CPU
+  - All: Vendor spec support improved (new definition format is simpler) (bug #173)
+  - Cli: client now waits for longer periods, rather than 1 s
+  - Srv: Server now creates separate socket for transmission and not use multicast socket (bug #200)
+  - Rel: TRelOptRemoteID compilation fix
+  - Srv/Cli: DS-List draft updated to latest, approved version (ds-lite-tunnel-10) (bugs #203, #204)
+
+0.8.0RC1 [2010-09-17]
+  - Linux: CONFIRM support added
+  - Support for Windows 7 added
+  - Server reloads its database after shutdown/start sequence
+  - Client with enabled unicast now uses global source addresses
+  - Linux: console logging now has color support
+  - Srv/Cli: DUID in format 00:01:02:03 is now supported in config files (0x010203 format is still supported)
+  - It is now possible to configure IAID
+  - Support for Mac OS X added (experimental, of course)
+  - Server: DS-Lite tunnel options added
+  - Client: Partial support for DS-Lite tunnel option added
+  - Experimental support for Remote Autoconf added
+  - Fixed problem with not populating AddrMgr correctly
+  - Fix: after restart, server no longer refuses to handle adresses after first RELEASE.
+  - Fix: Notify scripts are now executed, even when no IA received (bug #193)
+  - Code cleanup: Singleton managers implemented
+  - Code cleanup: Server REPLY generation refactored
+  - Code cleanup: Many obsolete classes removed
+  - Code cleanup: Obsolete tunnel endpoint removed
+  - Code cleanup: Obsolete VS2003 and VS2005 files removed
+
+ 0.7.3 [2009-03-09]
+  - Linux: Fix for compilation with libc6, version 2.8
+  - New timezone option support added (by Petr Pisar) (bug #185)
+  - Linux: Syslog support added (by Petr Pisar) (bug #184)
+  - Double timezone removal fixed (by Petr Pisar) (bug #183)
+  - Timezone support implemented in Linux systems (by Petr Pisar) (bug #182)
+  - Interface-ids other than 4 bytes long are now supported (bug #179)
+  - Cli/Srv: Empty FQDN option problem fixed (bug #186 and #187)
+  - Srv: Client classification implemented
+  - Linux: Pid is now stored in pid_t type (bug #180)
+  - Cli: /etc/resolv.conf support improved
+  - Linux: Race condition in stop/start fixed (bug #181)
+
+ 0.7.2 [2008-08-31]
+  - Cli: external scripts may now be executed
+  - Cli: addresses are now added properly in autodetect-mode
+  - Cli: DNS server is now configured properly under Windows XP/Vista
+  - Srv: client's FQDN hints may now be honored
+  - Srv: support for extra options added
+  - Experimental CONFIRM support added (+extra fixes)
+  - Cli: requested options are now sent in RENEW messages
+  - Cli: elapsed option is now sent in all messages
+  - Cli: client does not get confused when running in autodetect mode and there are no suitable interfaces
+
+ 0.7.1 [2008-06-18]
+  - Linux: Prefixes starting with a-f are now supported properly (bug #171)
+  - /etc/resolv.conf update bug fixed (bug #161)
+  - Srv/Cli: Experimental authentication and authorization added (bugs #79, #80)
+  - All: Return codes are now proper under Linux (bug #175)
+  - Srv: supports out of addresses scenario properly (bug #177)
+  - Cli: ADVERTISE with empty IAs are now discarded properly
+  - Cli: supports TA properly
+  - Cli: stateless insist-mode implemented
+  - Srv/Rel: RemoteID support added
+  - Srv/Rel: Echo Request Option support added
+  - Srv: Prefixes with lengths not divisible by 8 are now supported properly
+  - Srv: Guess-mode implemented (relay's interface-id don't have to be specified anymore)
+  - Cli: FQDN S bit is now configurable
+  - Srv: reply for CONFIRM now contains server-id (fixed long time ago, probably
+    in 0.6.1) (bug #163)
+  - Numerous fixes after 3rd bakeoff meeting (Philadelphia)
+
+ 0.7.0 [was never properly released]
+
+ 0.7.0RC1 [2007-12-31]
+  - Leasequery support (new entity: requestor added)
+  - Numerous fixes after 2nd bakeoff meeting (Vancouver)
+  - CLI: REQUEST is sent to multicast when unicast option is supported
+    (because client does not have address with sufficient scope)
+  - Fix in all string options (like domain name or nis domain)
+  - Fix in DNS Update (memory corruption fixed)
+  - Documentation updated.
+
+ 0.6.1 [2007-09-09]
+  - Srv: Inactive mode implemented (bug #168)
+  - Srv: When assigning fewer address than requested, status is now set to success
+  - Srv: proper status code is returned when temporary addresses are not supported
+  - cross-compilation is now possible (bug #169)
+  - Make -j2 now works (bug #130)
+  - gcc 4.3.0 conformance
+  - Security: Possible segfault in REBIND processing fix
+  - Srv: CONFIRM message contents are now validated properly (bug #165)
+  - Security: Vendor-specific information Option possible segfault
+  - Srv: Option Request Option parsing fixed (bug #166)
+  - Security: Option Request Option possible segfault (bug #167)
+  - Security: invalid length field parsing fixed (bug #164)
+  - Security: world writable files are no longer created (bug #160)
+
+ 0.6.0 [2007-05-05]
+  - Configuration file examples are now described better
+  - Documentation update (Dibbler User's Guide is now 60+ pages long)
+  - Clnt: false positive DECLINE fixed (bug #153)
+  - Srv: Does not go into infinite loop when there are no more prefixes to assign
+  - Clnt: supports REBIND with prefixes (IA_PD) included
+  - Srv: supports REBIND with prefixes (IA_PD) included
+  - Srv: Sends the same addresses if client still has valid bindings (i.e. REQUEST retransmission) (bug #154)
+  - Srv: Prefix delegation now supports more than one client properly
+  - Srv: Support for more than 1 relay fixed (bug #156)
+  - Srv: interface-id option location in the RELAY-REPL is now configurable
+  - Relay: interface-id option parsing improved
+  - Relay: interface-id option location in the RELAY-FORW is now configurable
+  - Fix for print invalid MAC addresses.
+  - Decline procedure is now working as expected
+  - NTP is now removed properly (bug #159)
+  - Fix for compilation in RedHat Enterprise Linux 4
+  - Fixes for gcc 4.3 compilation
+  - Clnt: Cause of bind failure is now reported in Linux
+  - Clnt: Another fix for not operational interface (bug #133)
+  - Clnt: client-CfgMgr.xml is now formed properly (bug #158)
+
+ 0.6.0RC4 [2007-03-31]
+  - Clnt: Preliminary support for inactive-mode (bug #133)
+  - Clnt: Preliminary support for insist-mode (bug #146)
+  - Clnt: Support for DUID type 2 (Enterprise number) added (bug #148)
+  - Clnt: T1=T2=0 is now handled properly (bug #145)
+  - Clnt: REQUEST now contains addresses offered in ADVERTISE (bug #152)
+  - Clnt: Received advertise(s) + preference are now printed (sorted).
+  - Clnt: No longer gets confused if there is no reply to REQUEST message (bug #147)
+  - Clnt: Chooses server properly when there are more then one server (bug #151)
+  - Clnt: Prefixes are split properly when forwarding is enabled
+  - Clnt: /etc/resolv.conf update improved
+  - Clnt/Srv: Time is now used properly during DUID-LLT creation (bug #149)
+  - Srv: Does not complain anymore, when receives message addressed to a different server (bug #157)
+  - Srv: No longer crashes when is unable to find relay (bug #144)
+  - Relay: Global peer-addr field was not set properly in RELAY-FORw (bug #143)
+
+ 0.6.0RC3 [2007-03-14]
+  - Relay: Global address fix
+  - Relay: Guess mode implemented
+  - All: Support for anonymous INF-REQUEST added
+  - Server: Does not crash during DNS Update, when DNS are not defined (bug #142)
+  - Client: Large timeouts does not confuse client anymore (bug #141)
+  - Client: Prefix deletation support in REBIND improved
+
+ 0.6.0RC2 [2007-02-25]
+  - Linux: fixed segfault on interfaces with no link-local addresses, e.g. tun devices (bug #136, #140)
+  - Linux: NTP servers are now set up properly (bug #138, #139)
+
+ 0.6.0RC1 [2007-02-03]
+  - All: Server, client and relay no longer crash, when run on Windows with IPv6 disabled. (Bug #134)
+  - All: Prefix-delegation is now supported (still some work is needed, e.g. docs and bugfixes)
+  - All: Support for multiple prefixes has been added
+  - Vendor-spec information option is now supported
+  - Clnt: renewal works ok, if client wakes up "late" (bug #125)
+  - Srv: Per-client configuration is now possible (so called exceptions)
+  - Clnt: DUID type change (preliminary support)
+  - All: DUID bug fixed (resulted in changing duid in each srv/cli execution)
+  - All: Elapsed option has now correct length (issue introduced in 0.5.0) (bug #127)
+  - Clnt: Elapsed option increases its value, when message is retransmitted.
+  - All: Required/not allowed options check improved (now you will know why message is dropped)
+  - Linux: iproute2 package update to version 20051007 (latest stable available in Debian and Ubuntu)
+  - Lots of memory fixes (found by using Valgrind)
+  - Linux: multiple domains are now added and removed properly to /etc/resolv.conf
+  - Linux: NTP servers are now set up properly. (bug #138, #139)
+  - All: Messages with reconfigure-accept or vendor-class options are now accepted
+
+ 0.5.0 [2006-10-05]
+  - FQDN fixes
+  - Documentation update and cleanup
+
+ 0.5.0-RC1 [2006-08-30]
+  - FQDN Support (DNS Updates) support added
+  - Support for temporary addresses (TA) added
+  - Server cache added
+  - log-mode PRECISE added
+  - log entries are appended (previously log files were overwritten at startup)
+  - Modular features (optional compilation of additional features) added
+  - Clnt: Addresses are added with /64 prefix by default (use strict-rfc-no-routing to use previous behavior, i.e. /128 prefix)
+
+ 0.4.2 [2006-02-03] (DSFG cleanup release)
+  - No bugfixes or new features
+  - Debian Free Software Guidelines (i.e. headers in source files, removed non-free files)
+  - Unnecessary files removed
+
+ 0.4.1 [2005-08-07]
+  - Windows NT/2000 support added.
+  - Numerous examples added to User's Guide.
+  - Srv: Class/prefix syntax is now supported (bug #121)
+  - White list support improved (bug #120)
+  - Win32: -d parameter is now optional
+  - Greatly improved relay support: 2 relay cascade connection, Cisco interoperability etc. (bug #107)
+  - Win32: apps no longer die quietly during interface detection (bug #117)
+  - Linux: Stale PID file no longer confuses server,client or relay.
+
+ 0.4.0 [2005-03-15]
+  - white list (accept-only) works ok (bug #106)
+
+ 0.4.0-RC2 [2005-03-08]
+  - Domain List option is now properly built and parsed (bug #104)
+  - Srv/Clnt/Relay no longer crash when invalid interface is specified (bug #105)
+  - Server stateless mode fixed (bug #103)
+  - /etc/init.d scripts are provided for Debian,PLD and Gentoo (bug #94, #95)
+
+ 0.4.0-RC1 [2005-02-03]
+  - Relay implemented
+  - Win32: start/stop command are now working (bug #27)
+  - Win32: status command now shows if service is running (bug #28)
+  - Server now supports relays (bug #70)
+  - Working directories are not properly stored in the *-CfgMgr.xml files (bug #100)
+  - Linux: Paths to config files fixed (bugs #96, #97)
+
+ 0.3.1 [2004-12-27] (bugfix release)
+  - Documenatation (PDF files) now should look ok on all systems
+  - Linux: URLs in the manual are now visible (bugs #92, #93)
+  - Problem with interfaces without link local address (e.g. downed sit0) fixed (bugs #90, #91)
+  - Linux: DEB packages are now generated (bugs #65, #66)
+
+ 0.3.0 [2004-12-16]
+  - Linux: make install was implemented (bugs #86, #87)
+  - Linux: man pages were created (buf #61, #62)
+  - Linux: RPM package prepared (bugs #63, #64)
+  - Windows installer (bugs #59, #60)
+  - Client now can handle denied REPLY for RENEW in a sanite way (bug #53)
+  - Client now removes expired addresses (bug #15)
+  - Server and client no longer supports link local addresses (bug #38, #39)
+  - Linux: Fixed issue with running server and client on the same host (bug #56)
+  - Server now supports stateless mode (bug #71)
+  - Developer's guide (bugs #42, #43)
+  - Log files are now created, even when run in the console (bugs #34, #36)
+  - DAD timeout was decreased to 1 second
+  - NIS options values are changed to meet recently published RFC3898
+  - Server now supports domains containing - (bug #73)
+  - Linux: /etc/resolv.conf no longer gets corrupted if not ended with CR (bug #74)
+  - Multiple instantions are no longer allowed (bug #2)
+  - Client requests for Lifetime option only if explicitly told to do so (bug #75)
+  - Server now properly retransmits messages.
+  - Client no longer sends RapidCommit unless told to do so (bug #55)
+  - Client no longer retrasmits indefinetly INF-REQUEST message.
+
+ 0.3.0-RC2
+  - Fixed bug found by PCSS team regarding improper socket initialization in ClntTransMgr.
+  - Server now properly supports clients which send IA without IAADDR included.
+
+ 0.3.0-RC1
+  - Socket binding has changes (no more REUSE_ADDR). See RELNOTES for details.
+  - New options: SIP-SERVERS, SIP-DOMAINS, NIS-SERVERS, NIS-DOMAIN, NIS+-SERVERS, NIS+-DOMAIN, LIFETIME
+  - Option renewal mechanism (Lifetime option)
+  - Fixed issues with large timeouts (signed/unsigned problem)
+  - Assigned options are now stored in files in working directory (besides of setting them up in the system)
+  - Parsers are now more robust and more verbose in case of invalid config files.
+  - Server granting incorrect valid lifetime values fixed (bug #57)
+
+ 0.2.1 was never released
+
+ 0.2.1-RC1
+  - Windows2003 is now supported.
+  - WIN32: netsh.exe is used instead of depreciated ipv6.exe (bug #24, #48)
+  - First version of Developer's guide is included (bug #42, #43)
+  - WIN32: DNS is now properly added to interface. (Adv.NetworkingPack or SP2 might be necessary)
+  - Unicast communication support (bug #30,#31)
+  - RAPID-COMMIT support fixed (bug #50, #51, #52)
+  - DECLINE infinite loop fixed.
+  - DECLINE and RELEASE does no longer contain addrs with non-zero pref/valid lifetimes (bug #32)
+  - Invalid address parsing fixed.
+  - YES,NO,TRUE and FALSE can now be used in config files instead of 0 or 1.
+
+ 0.2.0
+  - WinXP: client displays help when command line parameters are incorrect.
+  - Windows 2000 is no longer supported.
+
+ 0.2.0-RC2
+  - Linux server send replies on proper interface.
+  - Windows server/client no longer loops when interface is down.
+
+ 0.2.0-RC1
+  - Console commands are common on WindowsXP and Linux
+  - Parsers are now a lot more reliable
+  - Full (without ::) addresses are now parsed properly
+  - Srv: Address management rewritten (removed that nasty bug)
+  - Srv: No longer ingores IA when client didn't include IAADDR option.
+  - Srv: Now properly creates DUID (bug #45, #46)
+  - Doc: a real documentation included
+  - Srv: class-max-lease, iface-max-lease parameters added
+  - Client: config file logic changed, no-config is no longer needed.
+  - Client: No more stupid "Interface is loopback, down, not multicast-capable or
+    not present in the system" message.
+  - Linux: Sending through wrong interface problem fixed
+  - Linux: build process rewritten
+
+ 0.1.1
+  - Hmmm... don't remember :)
+
+ 0.1.0
+  - First release
+
+ For details regarding bugs and requested features, see http://klub.com.pl/bugzilla/

@@ -47,7 +47,7 @@
 				AdditionalOptions="/MP"
 				Optimization="0"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr"
-				PreprocessorDefinitions="WIN32;_DEBUG"
+				PreprocessorDefinitions="WIN32;MOD_DISABLE_AUTH;_DEBUG"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
@@ -129,9 +129,10 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr"
-				PreprocessorDefinitions="WIN32;NDEBUG"
+				PreprocessorDefinitions="WIN32;MOD_DISABLE_AUTH"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
+				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -512,7 +513,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Misc\hmac-sha-md5.c"
+					RelativePath="..\Misc\hex.cpp"
 					>
 				</File>
 				<File
@@ -532,23 +533,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Misc\md5.c"
-					>
-				</File>
-				<File
 					RelativePath="..\Misc\ScriptParams.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Misc\sha1.c"
-					>
-				</File>
-				<File
-					RelativePath="..\Misc\sha256.c"
-					>
-				</File>
-				<File
-					RelativePath="..\Misc\sha512.c"
 					>
 				</File>
 			</Filter>
@@ -614,6 +599,10 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptInteger4.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorData.h"
 					>
 				</File>
 			</Filter>
@@ -756,10 +745,6 @@
 		</Filter>
 		<File
 			RelativePath="..\Changelog"
-			>
-		</File>
-		<File
-			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File

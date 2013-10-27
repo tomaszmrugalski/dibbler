@@ -38,6 +38,8 @@ class TClntTransMgr
     void sendRebind(TOptList ptrIA, int iface);
     void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
     bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
+    void handleReconfigure(SPtr<TClntMsg> reconfMsg);
+    void sendRenew();
 
     void shutdown();
     bool isDone();
@@ -55,6 +57,8 @@ class TClntTransMgr
     int getMaxPreference();
     int getAdvertiseLstCount();
     void printAdvertiseLst();
+
+    bool sanitizeAddrDB();
 
 #ifdef MOD_REMOTE_AUTOCONF
     struct TNeighborInfo {
@@ -112,8 +116,8 @@ class TClntTransMgr
 
     bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
 
-    int ctrlIface;
-    char ctrlAddr[48];
+    int CtrlIface_;
+    char CtrlAddr_[48];
 
     List(TMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
 

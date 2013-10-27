@@ -14,6 +14,7 @@
 #include "Portable.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "hex.h"
 
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
@@ -21,7 +22,15 @@
 
 using namespace std;
 
-TOptVendorData::TOptVendorData(int type, char * buf,  int n, TMsg* parent)
+TOptVendorData::TOptVendorData(int type, int enterprise, char * data, int dataLen, TMsg* parent) 
+    :TOpt(type, parent) {
+    Vendor = enterprise;
+    VendorData = new char[dataLen];
+    memcpy(VendorData, data, dataLen);
+    VendorDataLen = dataLen;
+}
+
+TOptVendorData::TOptVendorData(int type, const char * buf,  int n, TMsg* parent)
     :TOpt(type, parent)
 {
     if (n<4) {
@@ -72,7 +81,7 @@ char * TOptVendorData::storeSelf( char* buf)
     return buf;    
 }
 
-bool TOptVendorData::isValid()
+bool TOptVendorData::isValid() const
 {
     return true;
 }
@@ -84,21 +93,16 @@ int TOptVendorData::getVendor()
 
 char * TOptVendorData::getVendorData()
 {
-    return this->VendorData;
+    return VendorData;
 }
 
 std::string TOptVendorData::getVendorDataPlain()
 {
-    std::ostringstream tmp;
-    tmp << "0x";
-    for (int i=0; i<this->VendorDataLen; i++) {
-	tmp << setfill('0') << setw(2) << hex << (unsigned int) this->VendorData[i];
-    }
-    return tmp.str();
+    return hexToText((uint8_t*)&VendorData[0], VendorDataLen);
 }
 
 int TOptVendorData::getVendorDataLen()
 {
-    return this->VendorDataLen;
+    return VendorDataLen;
 }
 

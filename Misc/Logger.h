@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include "DHCPConst.h"
+#include <stdint.h>
 
 #define Log(X) logger :: log##X ()
 #define LogEnd logger :: endl
@@ -58,6 +59,6 @@ std::string StatusCodeToString(int status);
 std::string MsgTypeToString(int msgType);
 
 // for debugging purposes
-void PrintHex(const std::string& message, char *buf, unsigned len);
+void PrintHex(const std::string& message, const uint8_t *buf, unsigned len);
 
 #endif

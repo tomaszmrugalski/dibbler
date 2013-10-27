@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <stdlib.h>
 #include "Portable.h"
 #include "ClntCfgMgr.h"
 
@@ -29,39 +30,36 @@
 #include "ClntOptTA.h"
 #include "ClntOptOptionRequest.h"
 #include "ClntOptPreference.h"
+#include "OptReconfigureMsg.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptStatusCode.h"
 #include "ClntOptTimeZone.h"
 #include "ClntOptFQDN.h"
 #include "OptAddrLst.h"
 #include "ClntOptLifetime.h"
-
-#ifndef MOD_DISABLE_AUTH
-#include "ClntOptAAAAuthentication.h"
-#include "ClntOptKeyGeneration.h"
-#include "ClntOptAuthentication.h"
-#endif
+#include "OptAuthentication.h"
+#include "hex.h"
 
 #include "Logger.h"
 
 using namespace std;
 
 static string msgs[] = { "",
-		  "SOLICIT",
-		  "ADVERTISE",
-		  "REQUEST",
-		  "CONFIRM",
-		  "RENEW",
-		  "REBIND",
-		  "REPLY",
-		  "RELEASE",
-		  "DECLINE",
-		  "RECONFIGURE",
-		  "INF-REQUEST",
-		  "RELAY-FORWARD"
-		  "RELAY-REPLY",
-	  "LEASEQUERY",
-	  "LEASEQUERY-REPLY"};
+                         "SOLICIT",
+                         "ADVERTISE",
+                         "REQUEST",
+                         "CONFIRM",
+                         "RENEW",
+                         "REBIND",
+                         "REPLY",
+                         "RELEASE",
+                         "DECLINE",
+                         "RECONFIGURE",
+                         "INF-REQUEST",
+                         "RELAY-FORWARD"
+                         "RELAY-REPLY",
+                         "LEASEQUERY",
+                         "LEASEQUERY-REPLY"};
 
 void TClntMsg::invalidAllowOptInMsg(int msg, int opt) {
     string name;
@@ -183,30 +181,32 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptLifetime(buf+pos, length, this);
 	    break;
 	case OPTION_AFTR_NAME:
-	    ptr = new TOptString(code, buf+pos, length, this);
+	    ptr = new TOptDomainLst(code, buf+pos, length, this);
 	    break;
 	case OPTION_IA_TA: {
 	    ptr = new TClntOptTA(buf+pos, length, this);
 	    break;
 	}
 #ifndef MOD_DISABLE_AUTH
-	case OPTION_AAAAUTH:
-	    Log(Warning) << "Client is not supposed to receive OPTION_AAAAUTH, ignoring." << LogEnd;
-	    break;
-	case OPTION_KEYGEN:
-	    ptr = new TClntOptKeyGeneration(buf+pos, length, this);
-	    break;
 	case OPTION_AUTH:
-	    if (ClntCfgMgr().getAuthEnabled()) {
-		this->DigestType = ClntCfgMgr().getDigest();
-		ptr = new TClntOptAuthentication(buf+pos, length, this);
+	    if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_DIBBLER) {
+		DigestType_ = ClntCfgMgr().getDigest();
 	    }
+            ptr = new TOptAuthentication(buf+pos, length, this);
 	    break;
 #endif
 	case OPTION_VENDOR_OPTS: {
 	    ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
 	    break;
 	}
+	case OPTION_RECONF_MSG: {
+	    ptr = new TOptReconfigureMsg(buf+pos, length, this);
+	    break;
+	}
+	case OPTION_RECONF_ACCEPT: {
+            ptr = new TOptEmpty(OPTION_RECONF_ACCEPT, buf+pos, length, this);
+            break;
+        }
         case OPTION_NEXT_HOP: {
             ptr = new TOptAddr(code, buf+pos, length, this);
             break;
@@ -215,10 +215,8 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
             ptr = new TOptRtPrefix(buf+pos, length, this);
             break;
         }
-	case OPTION_RECONF_ACCEPT:
 	case OPTION_USER_CLASS:
 	case OPTION_VENDOR_CLASS:
-	case OPTION_RECONF_MSG:
 	case OPTION_RELAY_MSG:
 	case OPTION_INTERFACE_ID:
 	    Log(Warning) << "Option " << code<< " in message "
@@ -256,6 +254,8 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     SPtr<TOpt> opt;
     while ( opt = getOption() )
 	opt->setDUID(optSrvID->getDUID());
+
+    // @todo: confirm verification here
 
 }
 
@@ -321,15 +321,12 @@ TClntMsg::TClntMsg(int iface,
 }
 
 TClntMsg::~TClntMsg() {
-    if (pkt)
-	delete [] pkt;
-    pkt = 0;
 }
 
 void TClntMsg::setDefaults()
 {
-    FirstTimeStamp = now();
-    LastTimeStamp  = now();
+    FirstTimeStamp = (uint32_t)time(NULL);
+    LastTimeStamp  = (uint32_t)time(NULL);
 
     RC  = 0;
     RT  = 0;
@@ -339,25 +336,24 @@ void TClntMsg::setDefaults()
     MRD = 0;
 
 #ifndef MOD_DISABLE_AUTH
-    DigestType = ClntCfgMgr().getDigest();
-    AuthKeys = ClntCfgMgr().AuthKeys;
+    DigestType_ = ClntCfgMgr().getDigest();
 #endif
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
+
+    /// @todo: This should be moved to TMsg
+    PeerAddr = 0;
 }
 
 unsigned long TClntMsg::getTimeout()
 {
-    long diff = (LastTimeStamp+RT) - now();
+    long diff = (LastTimeStamp+RT) - (uint32_t)time(NULL);
     return (diff<0) ? 0 : diff;
 }
 
 void TClntMsg::send()
 {
-    if (!pkt)
-	pkt = new char[getSize()];
+    char* pkt = new char[getSize()];
 
-    srand(now());
+    srand((uint32_t)time(NULL));
     if (!RC)
 	RT=(int)(0.5+IRT+IRT*(0.2*(double)rand()/(double)RAND_MAX-0.1));
     else
@@ -368,16 +364,18 @@ void TClntMsg::send()
 
     if ((MRD != 0) && (RT>MRD))
 	RT = MRD;
-    if (MRD) MRD-=RT;
+    if (MRD) 
+      MRD -= RT;
 
     RC++;
 
-    this->storeSelf(this->pkt);
+    this->storeSelf(pkt);
 
     SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(Iface);
     if (!ptrIface) {
         Log(Error) << "Unable to find interface with ifindex=" << Iface
                    << ". Message not sent." << LogEnd;
+        delete [] pkt;
         return;
     }
     if (PeerAddr) {
@@ -401,13 +399,13 @@ void TClntMsg::send()
 		   << "/" << Iface << " to multicast." << LogEnd;
 	ClntIfaceMgr().sendMulticast(Iface, pkt, getSize());
     }
-    LastTimeStamp = now();
+    LastTimeStamp = (uint32_t)time(NULL);
+    delete [] pkt;
 }
 
 void TClntMsg::copyAAASPI(SPtr<TClntMsg> q) {
-    AAASPI = q->getAAASPI();
-    SPI = q->getSPI();
-    AuthInfoKey = q->getAuthInfoKey();
+    SPI_ = q->SPI_;
+    AuthKey_ = q->AuthKey_;
 }
 
 void TClntMsg::setIface(int iface) {
@@ -439,27 +437,69 @@ void TClntMsg::setIface(int iface) {
 void TClntMsg::appendAuthenticationOption()
 {
 #ifndef MOD_DISABLE_AUTH
-    if (!ClntCfgMgr().getAuthEnabled() || ClntCfgMgr().getDigest() == DIGEST_NONE) {
-	Log(Debug) << "Authentication is disabled, not including auth options in message." << LogEnd;
-	DigestType = DIGEST_NONE;
-	return;
+    uint8_t algorithm = 0; // algorithm is protocol specific
+
+    DigestType_ = DIGEST_NONE;
+
+    // ClntAddrMgr().firstClient();
+    // SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+    string realm;
+
+    switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NONE: {
+        algorithm = 0;
+
+        // Do not sent AUTH with proto=0.
+        return;
+    }
+    case AUTH_PROTO_DELAYED: {
+        algorithm = 1;
+        realm = ClntCfgMgr().getAuthRealm();
+        break;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: { // RFC 3315, section 21.5.1
+        // When reconfigure-key is enabled, client does not send anything
+        return;
+    }
+    case AUTH_PROTO_DIBBLER: { // Mechanism proposed by Kowalczuk
+        DigestType_ = ClntCfgMgr().getDigest();
+        algorithm = static_cast<uint8_t>(DigestType_);
+        setSPI(ClntCfgMgr().getSPI());
+
+        SPtr<TClntOptOptionRequest> optORO = (Ptr*) getOption(OPTION_ORO);
+
+        if (optORO) {
+          // request Authentication
+          optORO->addOption(OPTION_AUTH);
+        }
+
+        break;
+    }
+    default: {
+        Log(Error) << "Auth: Invalid protocol specified. Can't sent AUTH option." << LogEnd;
+        return;
+    }
     }
 
-    this->DigestType = ClntCfgMgr().getDigest();
+    SPtr<TOptAuthentication> auth =
+        new TOptAuthentication(ClntCfgMgr().getAuthProtocol(),
+                               algorithm,
+                               ClntCfgMgr().getAuthReplay(), this);
 
-    if (!getOption(OPTION_AUTH)) {
-	ClntAddrMgr().firstClient();
-	SPtr<TAddrClient> client = ClntAddrMgr().getClient();
-	if (client && client->getSPI())
-	    this->setSPI(client->getSPI());
-	if (client)
-	    this->ReplayDetection = client->getNextReplayDetectionSent();
-	else
-	    this->ReplayDetection = 1;
-	Options.push_back(new TClntOptAuthentication(this));
-	if (client)
-	    client->setSPI(this->getSPI());
+    // Realm is used by delayed-auth only. Even fro delayed-auth, it is set
+    // only for non-SOLICIT messages
+    if (MsgType != SOLICIT_MSG && !realm.empty()) {
+        auth->setRealm(realm);
     }
+
+    // replay detection
+    if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_MONOTONIC) {
+        auth->setReplayDetection(ClntAddrMgr().getNextReplayDetectionValue());
+    }
+
+    addOption((Ptr*)auth);
+
+    // otherwise replay value is zero
 #endif
 }
 
@@ -480,7 +520,6 @@ void TClntMsg::appendRequestedOptions() {
 	Log(Error) << "Unable to find interface with ifindex=" << this->Iface << LogEnd;
 	return;
     }
-
 
     if ( (MsgType==SOLICIT_MSG || MsgType==REQUEST_MSG) &&
 	 ClntCfgMgr().getReconfigure())
@@ -692,33 +731,6 @@ void TClntMsg::appendRequestedOptions() {
 	}
     }
 
-#ifndef MOD_DISABLE_AUTH
-    if (this->MsgType == SOLICIT_MSG) {
-	    if (ClntCfgMgr().getAuthEnabled()) {
-		    // --- option: AAAAUTH ---
-		    Options.push_back(new TClntOptAAAAuthentication(this));
-
-		    // request KeyGeneration
-		    optORO->addOption(OPTION_KEYGEN);
-		    // request Authentication
-		    optORO->addOption(OPTION_AUTH);
-	    }
-    } else {
-	/*
-	    // --- option: AUTH ---
-	    if (ClntCfgMgr().getAuthEnabled() && ClntCfgMgr().getDigest()!=DIGEST_NONE) {
-		    Log(Debug) << "Authentication enabled, adding AUTH option." << LogEnd;
-		    ClntAddrMgr->firstClient();
-		    SPtr<TAddrClient> client = ClntAddrMgr->getClient();
-		    if (client && client->getSPI())
-			this->setSPI(client->getSPI());
-		    Options.push_back(new TClntOptAuthentication(this));
-		    client->setSPI(this->getSPI());
-	    }
-	    */
-    }
-#endif
-
 #ifdef MOD_REMOTE_AUTOCONF
     if (ClntCfgMgr().getRemoteAutoconf())
 	optORO->addOption(OPTION_NEIGHBORS);
@@ -787,7 +799,6 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
  *
  * @param reply
  */
-
 void TClntMsg::answer(SPtr<TClntMsg> reply)
 {
     SPtr<TOptDUID> ptrDUID;
@@ -812,8 +823,14 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     // analyse all options received
     SPtr<TOpt> option;
 
+    // Check authentication first. If the checks fail, we need to drop the whole message
+    // without using its contents.
+    if (!reply->checkReceivedAuthOption()) {
+        Log(Warning) << "AUTH: AUTH option verification failed. Ignoring message." << LogEnd;
+        return;
+    }
+
     // find ORO in received options
-    reply->firstOption();
     SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
     
     reply->firstOption();
@@ -1079,35 +1096,177 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     return;
 }
 
-bool TClntMsg::validateReplayDetection() {
-    if (this->MsgType == SOLICIT_MSG)
-	return true;
+bool TClntMsg::checkReceivedAuthOption() {
 
+#ifdef MOD_DISABLE_AUTH
+    return true;
+#else
+
+  // Note that this method does not verify digests. That is verified elsewhere
+  // see TMsg::validateAuthInfo() from TClntIfaceMgr::select() and from
+  // TSrvIfaceMgr::select()
+  // This method checks additional things.
+
+    // If replay detection fails, we don't bother to try anything fancy
+    if (!validateReplayDetection()) {
+        return false;
+    }
+
+    switch (ClntCfgMgr().getAuthProtocol()) {
+    case AUTH_PROTO_NONE: {
+        return true;
+    }
+    case AUTH_PROTO_DELAYED: {
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            return false;
+        }
+        if (auth->getProto() != AUTH_PROTO_DELAYED) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 2(delayed-auth), but got "
+                         << int(auth->getProto()) << ", auth option ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1 (HMAC-MD5), but got "
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+
+        return true;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+
+        bool optional = (MsgType != RECONFIGURE_MSG);
+
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            // there's no auth option. We can't store anything
+            return optional;
+        }
+        if (auth->getProto() != AUTH_PROTO_RECONFIGURE_KEY) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 3(reconfigure-key), but got "
+                         << auth->getProto() << ", key ignored." << LogEnd;
+            return optional;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1, but got "
+                         << auth->getAlgorithm() << ", key ignored." << LogEnd;
+            return optional;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+
+        vector<uint8_t> key;
+        auth->getPayload(key);
+
+        if (key.size() != RECONFIGURE_KEY_AUTHINFO_SIZE) {
+            Log(Warning) << "AUTH: Invalid authentication information length, expected "
+                         << RECONFIGURE_KEY_AUTHINFO_SIZE
+                         << "(1 for type, 16 for reconfigure-key value), got "
+                         << key.size() << LogEnd;
+            return optional;
+        }
+
+        switch (MsgType) {
+        case RECONFIGURE_MSG: {
+            /// @todo calculate HMAC-MD5 checksum and compare it against stored key
+            Log(Error) << "Support for reconfigure-key in RECONFIGURE message not implementd yet."
+                       << LogEnd;
+            return false;
+        }
+
+        case REPLY_MSG: {
+            if (key[0] != 1) { // see RFC3315, section 21.5.1
+                Log(Warning) << "AUTH: Invalid type " << key[0] << " in AUTH for reconfigure-key"
+                             << " protocol, expected 1, key ingored." << LogEnd;
+                return true;
+            }
+
+            key.erase(key.begin()); // delete first octect (it is type 1)
+
+            // Store the reconfigure-key
+            ClntAddrMgr().firstClient();
+            SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+            if (!client) {
+                Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
+                return false;
+            }
+            client->ReconfKey_ = key;
+            Log(Info) << "AUTH: Received reconfigure-key " << hexToText(key, true, false)
+                      << LogEnd;
+            return true;
+        }
+        default:
+            Log(Warning) << "AUTH: AUTH option not expected in message " << MsgType << LogEnd;
+            return true;
+        }
+    } 
+    case AUTH_PROTO_DIBBLER: {
+      return true;
+    }
+    }
+#endif
+
+    return false;
+}
+
+void TClntMsg::getReconfKeyFromAddrMgr() {
     ClntAddrMgr().firstClient();
     SPtr<TAddrClient> client = ClntAddrMgr().getClient();
-
     if (!client) {
-	Log(Crit) << "Something is wrong, VERY wrong. Info about this client (myself) is not found." << LogEnd;
+        Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
+        return;
+    }
+    AuthKey_ = client->ReconfKey_;
+}
+
+bool TClntMsg::validateReplayDetection() {
+
+#ifdef MOD_DISABLE_AUTH
+    return true;
+#else
+    if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_NONE) {
+        // we don't care about replay detection
+        return true;
+    }
+
+    // get the client's (ours) information
+    ClntAddrMgr().firstClient();
+    SPtr<TAddrClient> client = ClntAddrMgr().getClient();
+    if (!client) {
+	Log(Crit) << "Auth: internal error. Info about this client (myself) is not found." << LogEnd;
 	return false;
     }
 
-    if (!client->getReplayDetectionRcvd() && !this->ReplayDetection)
-	return true;
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth) {
+        // there's no auth option. We can't protect against replays
+        return true;
+    }
 
-    if (client->getReplayDetectionRcvd() < this->ReplayDetection) {
-	Log(Debug)
-	    << "Replay detection field should be greater than "
-	    << client->getReplayDetectionRcvd()
-	    << " and it actually is "
-	    << this->ReplayDetection << LogEnd;
-	client->setReplayDetectionRcvd(this->ReplayDetection);
+    uint64_t received = auth->getReplayDetection();
+    uint64_t last_received = client->getReplayDetectionRcvd();
+
+    if (last_received < received) {
+	Log(Debug) << "Auth: Replay detection field should be greater than "
+                   << last_received << " and it actually is ("
+                   << received << ")" << LogEnd;
+	client->setReplayDetectionRcvd(received);
 	return true;
     } else {
-	Log(Warning) << "Replayed message detected: Replay detection field should be greater than "
-		     << client->getReplayDetectionRcvd()
-		     << ", but "
-		     << this->ReplayDetection
-		     << " received." << LogEnd;
+	Log(Warning) << "Auth: Replayed message detected: previously received: "
+                     << last_received << ", now received " << received << LogEnd;
 	return false;
     }
+
+    return true; // not really needed
+#endif
 }

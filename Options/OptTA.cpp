@@ -79,7 +79,7 @@ unsigned long TOptTA::getMaxValid() {
     return maxValid;
 }
 
-bool TOptTA::isValid() {
+bool TOptTA::isValid() const {
     return this->Valid;
 }
 
@@ -96,9 +96,3 @@ int TOptTA::countAddrs() {
     }
     return cnt;
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.1.2.1  2006/02/05 23:39:52  thomson
- * Initial revision.
- *
- */

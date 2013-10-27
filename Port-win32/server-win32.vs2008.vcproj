@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
+				AdditionalIncludeDirectories="..;.;..\nettle;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -129,11 +129,13 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib"
+				AdditionalIncludeDirectories="..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib;..\nettle"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
+				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -401,10 +403,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SrvIfaceMgr\SrvIfaceIface.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvIfaceMgr\SrvIfaceMgr.cpp"
 					>
 				</File>
@@ -502,6 +500,10 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptUserClass.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptVendorClass.cpp"
 					>
 				</File>
 				<File
@@ -649,6 +651,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\base64.c"
+					>
+				</File>
+				<File
 					RelativePath="..\misc\DHCPConst.cpp"
 					>
 				</File>
@@ -665,11 +671,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\hex.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Misc\hmac-sha-md5.c"
 					>
 				</File>
 				<File
 					RelativePath="..\misc\IPv6Addr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\Key.cpp"
 					>
 				</File>
 				<File
@@ -685,7 +699,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Misc\md5.c"
+					RelativePath="..\Misc\md5-coreutils.c"
 					>
 				</File>
 				<File
@@ -730,6 +744,10 @@
 				>
 				<File
 					RelativePath="..\poslib\dnsmessage.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\poslib\dnssec-sign.cpp"
 					>
 				</File>
 				<File
@@ -842,6 +860,42 @@
 				</File>
 				<File
 					RelativePath="..\SrvCfgMgr\SrvParsIfaceOpt.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="nettle"
+				>
+				<File
+					RelativePath="..\nettle\base64-decode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\base64-encode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\base64-meta.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac-md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5-meta.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\memxor.c"
 					>
 				</File>
 			</Filter>
@@ -1134,6 +1188,10 @@
 				Name="misc"
 				>
 				<File
+					RelativePath="..\Misc\base64.h"
+					>
+				</File>
+				<File
 					RelativePath="..\misc\Container.h"
 					>
 				</File>
@@ -1155,6 +1213,10 @@
 				</File>
 				<File
 					RelativePath="..\misc\IPv6Addr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\KeyList.h"
 					>
 				</File>
 				<File
@@ -1181,6 +1243,10 @@
 			<Filter
 				Name="port-win32"
 				>
+				<File
+					RelativePath=".\dibbler-config.h"
+					>
+				</File>
 				<File
 					RelativePath="SrvService.h"
 					>
@@ -1279,6 +1345,50 @@
 				>
 				<File
 					RelativePath="..\SrvTransMgr\SrvTransMgr.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="nettle"
+				>
+				<File
+					RelativePath="..\nettle\base64.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\cbc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\macros.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\memxor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-internal.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-meta.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-types.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\sha.h"
 					>
 				</File>
 			</Filter>

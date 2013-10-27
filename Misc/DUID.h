@@ -11,34 +11,31 @@
 class TDUID;
 #ifndef DUID_H_
 #define DUID_H_
-#include <iostream>
-#include <iomanip>
+#include <vector>
 #include <string>
+#include <stdint.h>
 
 class TDUID
 {
     friend std::ostream& operator<<(std::ostream& out,TDUID &range);
  public:
-    TDUID();
+    TDUID(); // @todo: remove this
     TDUID(const char* DUID,int DUIDlen); // packed
-    TDUID(const char* Plain); // plain
+    TDUID(const char* text); // plain
     TDUID(const TDUID &duid);
     TDUID& operator=(const TDUID& duid);
     bool operator==(const TDUID &duid);
     bool operator<=(const TDUID &duid);
-    int getLen();
+    size_t getLen() const;
     char * storeSelf(char* buf);
-    const std::string getPlain();
-    const char * get();
+    const std::string getPlain() const;
+    const char * get() const;
 
     ~TDUID();
 
 private:
-    void packedToPlain();
-    void plainToPacked();
-    char* DUID;
-    std::string Plain;
-    int	len;	
+    std::vector<uint8_t> DUID_;
+    std::string Plain_;
 };
 
 #endif

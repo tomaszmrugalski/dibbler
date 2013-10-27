@@ -54,53 +54,26 @@ class TClntIfaceIface: public TIfaceIface {
     void setString(const char * filename, const char * str);
 
     List(TIPv6Addr) DNSServerLst;
-    SPtr<TIPv6Addr> DNSServerLstAddr;
-    SPtr<TDUID>     DNSServerLstDUID;
-
     List(std::string)    DomainLst;
-    SPtr<TIPv6Addr> DomainLstAddr;
-    SPtr<TDUID>     DomainLstDUID;
-
     List(TIPv6Addr) NTPServerLst;
-    SPtr<TIPv6Addr> NTPServerLstAddr;
-    SPtr<TDUID>     NTPServerLstDUID;
-
     std::string Timezone;
-    SPtr<TIPv6Addr> TimezoneAddr;
-    SPtr<TDUID>     TimezoneDUID;
-
     std::string FQDN;
-    SPtr<TIPv6Addr> FQDNAddr;
-    SPtr<TDUID>     FQDNDUID;
-
     List(TIPv6Addr) SIPServerLst;
-    SPtr<TIPv6Addr> SIPServerLstAddr;
-    SPtr<TDUID>     SIPServerLstDUID;
-
     List(std::string)    SIPDomainLst;
-    SPtr<TIPv6Addr> SIPDomainLstAddr;
-    SPtr<TDUID>     SIPDomainLstDUID;
-
     List(TIPv6Addr) NISServerLst;
-    SPtr<TIPv6Addr> NISServerLstAddr;
-    SPtr<TDUID>     NISServerLstDUID;
-
     std::string     NISDomain;
-    SPtr<TIPv6Addr> NISDomainAddr;
-    SPtr<TDUID>     NISDomainDUID;
-
     List(TIPv6Addr) NISPServerLst;
-    SPtr<TIPv6Addr> NISPServerLstAddr;
-    SPtr<TDUID>     NISPServerLstDUID;
-
     std::string     NISPDomain;
-    SPtr<TIPv6Addr> NISPDomainAddr;
-    SPtr<TDUID>     NISPDomainDUID;
-
     SPtr<TIPv6Addr> TunnelEndpoint;
     
     unsigned int LifetimeTimeout;
     unsigned int LifetimeTimestamp;
+
+    /// @brief specifies if the DNS configuration should be wiped out during
+    ///        first configuration
+    ///
+    /// Controlled with FLUSH_OTHER_CONFIGURED_DNS_SERVERS in Misc/Portable.h
+    bool DnsConfigured;
 
 };
 

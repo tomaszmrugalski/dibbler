@@ -24,7 +24,6 @@ class TSrvCfgMgr;
 #include "KeyList.h"
 #include "SrvCfgClientClass.h"
 
-
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
 class SrvParser;
@@ -43,6 +42,7 @@ public:
     void firstIface();
     SPtr<TSrvCfgIface> getIface();
     SPtr<TSrvCfgIface> getIfaceByID(int iface);
+    SPtr<TSrvCfgIface> getIfaceByName(const std::string& name);
     long countIface();
     void addIface(SPtr<TSrvCfgIface> iface);
     void makeInactiveIface(int ifindex, bool inactive);
@@ -55,6 +55,9 @@ public:
 
     //Address assignment connected methods
     void setCounters();
+
+    void removeReservedFromCache();
+
     long countAvailAddrs(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr, int iface);
     SPtr<TSrvCfgAddrClass> getClassByAddr(int iface, SPtr<TIPv6Addr> addr);
     SPtr<TSrvCfgPD> getClassByPrefix(int iface, SPtr<TIPv6Addr> prefix);
@@ -69,9 +72,6 @@ public:
     // class' usage management
     void delClntAddr(int iface, SPtr<TIPv6Addr> addr);
     void addClntAddr(int iface, SPtr<TIPv6Addr> addr);
-
-    bool isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
-    bool isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr);
 
     void addTAAddr(int iface);
     void delTAAddr(int iface);
@@ -105,10 +105,10 @@ public:
     //Authentication
 #ifndef MOD_DISABLE_AUTH
     SPtr<KeyList> AuthKeys;
-    unsigned int getAuthLifetime();
-    unsigned int getAuthKeyGenNonceLen();
-    List(DigestTypes) getDigestLst();
+    void setAuthDigests(const DigestTypesLst& digests);
+    DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
+    uint32_t getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid);
 #endif
 
     void setDefaults();
@@ -117,6 +117,16 @@ public:
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
+
+    // Used to find specific relay
+    int getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
+    int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
+    int getAnyRelay();
+
+
+    // Sets performance mode (not write whole XML)
+    void setPerformanceMode(bool mode);
+    bool getPerformanceMode();
 
     // used to be private, but we need access in tests
 protected:
@@ -146,7 +156,7 @@ protected:
 #ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;
     unsigned int AuthKeyGenNonceLen;
-    List(DigestTypes) DigestLst;
+    DigestTypesLst DigestTypesLst_;
 #endif
 
     // DDNS address
@@ -157,6 +167,8 @@ protected:
     unsigned short BulkLQTcpPort;
     unsigned int BulkLQMaxConns;
     unsigned int BulkLQTimeout;
+
+    bool PerformanceMode_;
 };
 
 #endif /* SRVCONFMGR_H */

@@ -8,6 +8,8 @@ libRelCfgMgr_a_CPPFLAGS += -I$(top_srcdir)/@PORT_SUBDIR@
 
 libRelCfgMgr_a_SOURCES = RelCfgIface.cpp RelCfgIface.h RelCfgMgr.cpp RelCfgMgr.h RelLexer.cpp RelLexer.h RelParser.cpp RelParser.h RelParsGlobalOpt.cpp RelParsGlobalOpt.h RelParsIfaceOpt.cpp RelParsIfaceOpt.h
 
+dist_noinst_DATA = RelLexer.l RelParser.y
+
 parser: RelParser.y RelLexer.l 
 	echo "[BISON++] $(SUBDIR)/RelParser.y"
 	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d RelParser.y -o RelParser.cpp

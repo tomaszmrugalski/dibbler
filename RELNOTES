@@ -1,20 +1,58 @@
 
-  Dibbler 0.8.2 release notes [2011-02-29]
- ---------------------------------------------------------
+  Dibbler 1.0.0 Release Candidate 1 [2013-07-30]
+ ------------------------------------------------
 
- This is the 0.8.2 release of the Dibbler software.
+ This is a first Release Candidate for 1.0.0 release of the Dibbler software.
 
- This is a maintenance release and includes number of bug fixes, without any
- significant new functionalities. If you are happy with 0.8.1 operation, you do
- not need to upgrade.
+ This version is being released today to celebrate 10th anniversary
+ of the DHCPv6 protocol. The RFC3315 that defines it was published exactly
+ 10 years ago - on 30th July of 2003.
+
+ According to the author's knowledge, Dibbler is currently the only
+ implementation that implements every feature mentioned in the RFC3315.
+ Please note that feature complete does not mean bug free ;-)
+
+ This release brings in all outstanding RFC3315 features that used to
+ be missing in previous releases. In particular:
+
+ - Reconfigure support. Server is now able to load database, check it against
+   existing configuration and send reconfigure to clients that have 
+   configuration out of date. Clients are able to accept incoming reconfigure
+   messages and initiate reconfiguration.
+ - Reconfigure-key authentication. Server is now able to generate
+   reconfigure-key when responding to clients and later use that key to
+   sign reconfigure messages. Clients are able to store received key and
+   later confirm that incoming reconfigure message is properly signed.
+ - Delayed authentication - clients and server are able to leverage
+   pre-configured keys to sign later parts of the messages exchange.
+ - Dibbler authentication - it is a rewritten mechanism used in earlier
+   versions. It has number of advantages compared to delayed
+   authentication, but has a number of advantages over it. First, it
+   secures the whole transmission, including initial SOLICIT
+   message. Second, it offers much stronger digests: HMAC-MD5, HMAC-SHA1,
+   HMAC-SHA224, HMAC-SHA256, HMAC-SHA384 and HMAC-SHA512. As this is
+   Dibbler specific extension, it is not expected to inter-operate with
+   any other implementations. Third, it does not require to maintain
+   strict client DUID-key-id bindings on the server side, as clients send
+   ID of the key they used to protect their transmissions. 
+ - Replay detection - both client and server can now detect whether
+   receiving message is a new one or it is replayed by attacker.
+ - Client is now able to act according to received M(managed) and O(Other
+   configuration options) in Router Advertisements, if configured to
+   do so.
+ - Server and client now checks database against changes in the network
+   interfaces and tries to update it if possible. That should be helpful
+   if you happen to lost and recreated an interface (e.g. broken ppp
+   connection).
 
  See CHANGELOG for a complete list of changes.
 
- If you find bugs, please report them on http://klub.com.pl/bugzilla/ or
- send bug report to the directly to the author. Appropriate links are
- on project website: http://klub.com.pl/dhcpv6/. If you need help or
- want to share your thoughts, take a look at one of the
- Dibbler-related mailing lists: dibbler or dibbler-devel.
+ If you find bugs, please report them on http://klub.com.pl/bugzilla/.
+ Appropriate links are on project website: http://klub.com.pl/dhcpv6/.
+ If you need help or want to share your thoughts, take a look at one
+ of two mailing lists: dibbler or dibbler-devel. Please do not contact
+ author directly, unless you want to report security issues or discuss
+ confidential matters.
 
-                               Tomasz Mrugalski,
-                               author
+			       Tomek Mrugalski,
+			       author

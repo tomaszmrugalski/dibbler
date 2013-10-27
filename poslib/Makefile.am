@@ -1,9 +1,17 @@
-noinst_LIBRARIES = libposlib.a
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/Misc
+SUBDIRS = .
 
-libposlib_a_SOURCES = \
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
+noinst_LIBRARIES = libPoslib.a
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/nettle -I$(top_srcdir)/Misc
+
+libPoslib_a_SOURCES = \
   dnsmessage.cpp \
   domainfn.cpp \
+  dnssec-sign.cpp \
+  dnssec-sign.h \
   exception.cpp \
   lexfn.cpp \
   masterfile.cpp \

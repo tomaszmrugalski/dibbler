@@ -26,7 +26,7 @@ class TDHCPServer
     ~TDHCPServer();
 
   private:
-    bool IsDone;
+    bool IsDone_;
 };
 
 #endif

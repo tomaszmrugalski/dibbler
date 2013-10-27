@@ -81,7 +81,8 @@ char * TOptIA_PD::storeSelf( char* buf) {
     return buf;
 }
 
-bool TOptIA_PD::isValid() {
+bool TOptIA_PD::isValid() const {
+    /// @todo check if suboptions are valid
     return this->Valid;
 }
 

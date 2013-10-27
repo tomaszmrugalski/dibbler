@@ -92,56 +92,57 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
     int sockid;
-    int msgtype;
 
     // read data
     sockid = TIfaceMgr::select(timeout, data, dataLen, peer);
-    if (sockid>0) {
-	if (dataLen<4) {
-	    Log(Warning) << "Received message is truncated (" << dataLen << " bytes)." << LogEnd;
-	    return 0; //NULL
-	}
-	
-	// check message type
-	msgtype = data[0];
+    if (sockid < 0) {
+        Log(Warning) << "Socket read error: " << sockid << LogEnd;
+        return 0;
+    }
 
-        if (msgtype > LEASEQUERY_REPLY_MSG) {
-            Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
-            return 0;
-        }
-	SPtr<TMsg> ptr;
-	SPtr<TIfaceIface> iface;
-	SPtr<TIfaceSocket> sock;
+    if (dataLen<4) {
+        Log(Warning) << "Received message is truncated (" << dataLen << " bytes)." << LogEnd;
+        return 0; //NULL
+    }
 
-	// get interface
-	iface = this->getIfaceBySocket(sockid);
+    // check message type
+    int msgtype = data[0];
 
-	sock = iface->getSocketByFD(sockid);
+    if (msgtype > LEASEQUERY_REPLY_MSG) {
+        Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
+        return 0;
+    }
+    SPtr<TMsg> ptr;
+    SPtr<TIfaceIface> iface;
+    SPtr<TIfaceSocket> sock;
 
-	Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/" 
-		   << iface->getID() << " interface (socket=" << sockid << ", addr=" << peer->getPlain() 
-		   << ", port=" << sock->getPort() << ")." << LogEnd;
-	
-	if (sock->getPort()!=DHCPSERVER_PORT) {
-	    Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
-	    return 0;
-	}
+    // get interface
+    iface = this->getIfaceBySocket(sockid);
 
-	return this->decodeMsg(iface, peer, data, dataLen);
-    } 
-    return 0;
+    sock = iface->getSocketByFD(sockid);
+
+    Log(Debug) << "Received " << dataLen << " bytes on the " << iface->getName() << "/"
+               << iface->getID() << " interface (socket=" << sockid << ", addr="
+               << peer->getPlain() << ", port=" << sock->getPort() << ")." << LogEnd;
+
+    if (sock->getPort()!=DHCPSERVER_PORT) {
+        Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
+        return 0;
+    }
+
+    return decodeMsg(iface, peer, data, dataLen);
 }
 
-SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface, 
-						SPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> iface,
+						SPtr<TIPv6Addr> peer,
 						char * data, int dataLen) {
     int ifindex = iface->getID();
     SPtr<TRelMsg> msg = new TRelMsgRelayForw(ifindex, peer, data, dataLen);
     return msg;
 }
 
-SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface, 
-					      SPtr<TIPv6Addr> peer, 
+SPtr<TRelMsg> TRelIfaceMgr::decodeGeneric(SPtr<TIfaceIface> iface,
+					      SPtr<TIPv6Addr> peer,
 					      char * buf, int bufsize) {
     int ifindex = iface->getID();
     return new TRelMsgGeneric(ifindex, peer, buf, bufsize);
@@ -278,6 +279,10 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     
     // create specific message object
     switch (data[0]) {
+    default: {
+	Log(Warning) << "Unknown message type " << (int)(data[0]) << ", relaying anyway." << LogEnd;
+        // no break here
+    }
     case SOLICIT_MSG:
     case REQUEST_MSG:
     case CONFIRM_MSG:
@@ -288,19 +293,17 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     case INFORMATION_REQUEST_MSG:
     case ADVERTISE_MSG:
     case REPLY_MSG:
-	return this->decodeGeneric(iface, peer, data, dataLen);
+	return decodeGeneric(iface, peer, data, dataLen);
     case RELAY_FORW_MSG: 
-	return this->decodeRelayForw(iface, peer, data, dataLen);
+	return decodeRelayForw(iface, peer, data, dataLen);
     case RELAY_REPL_MSG:
-	return this->decodeRelayRepl(iface, peer, data, dataLen);
+	return decodeRelayRepl(iface, peer, data, dataLen);
     case RECONFIGURE_MSG:
-    default:
-	Log(Warning) << "Message type " << (int)(data[0]) << " is not supported." << LogEnd;
 	return 0;
     }
 }
 
-void TRelIfaceMgr::instanceCreate( const std::string xmlFile )
+void TRelIfaceMgr::instanceCreate(const std::string& xmlFile)
 {
     if (Instance)
       Log(Crit) << "RelIfaceMgr instance already created. Application error!" << LogEnd;

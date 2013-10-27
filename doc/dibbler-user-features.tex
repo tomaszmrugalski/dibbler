@@ -21,8 +21,8 @@ Prefix delegation is a mechanism that allows two routers to delegate
   the subscriber's internal network and the service provider's core
   network.}
 
-To configure server to provide prefixes, a pool must be defined and
-also client prefixes' length. For example section below assigns
+To configure server to provide prefixes, a PD pool and a client
+prefixes' length must be defined. An example section below assigns
 2001:db8::/32 pool to be managed by this server. From this pool,
 server will assign /48 prefixes to the clients. For example, client
 can receive prefix 2001:db8:7c34::/48.
@@ -115,14 +115,31 @@ encapsulated. Also each message forwarded from server to a client is
 decapsulated. Therefore additional server configuration is required to
 deal with encapsulated (i.e. relayed) traffic.
 
-To avoid confusion during reference to a specific link (i.e. eth0 on
-the relay may be different link than eth0 on the server), each link
-must be referred to using its unique interface-id. It is essential to 
-use the same indentifier in the relay
-configuration as well as in the server, so both will refer to the same
-link using the same number. See section \ref{example-server-relay1} for
-example how to configure server and section \ref{example-relay-1} for
-corresponding relay configuration.
+There are 2 ways in which server can select apropriate set of
+addresses, prefixes and other configuration options. The first one is
+based on addresses. Relay that forwards packets from client-facing
+interface (e.g. eth0) must set link-addr field in RELAY-FORW message
+to an address that identifies that link. Please note that this is NOT
+a link-local address, it is typically a global address that identifies
+a link. Server can select appropriate set of parameters if the
+``subnet'' clause is defined. This recent addition was added after
+0.8.3 release and will be included in 0.8.4. 
+
+The second way to refer to a specific link (i.e. eth0 on the relay may
+be different link than eth0 on the server), each link is referred to
+using its unique interface-id. It is essential to use the same
+indentifier in the relay configuration as well as in the server, so
+both will refer to the same link using the same number. See
+section \ref{example-server-relay1} for example how to configure
+server and section \ref{example-relay-1} for corresponding relay
+configuration.
+
+It is essential to understand that the ``iface relayX'' in the
+configuration represents a link accessible via a relay, not the relay
+itself. These are not the same. One obvious example is a relay thay
+has 2 customer facing interfaces and one for relaying data to the
+server. This requires two separate ``iface relayX'' defintions in the
+server.conf file.
 
 \begin{figure}[ht]
 \begin{center}
@@ -175,6 +192,12 @@ prefixes. It is not supported for temporary addresses.
 
 \subsection{Routing configuration}
 \label{feature-routing}
+
+\textbf{Warning:} Due to objections in IETF by a small, but vocal group
+of opponents, further standardization process
+of \cite{draft-route-option} draft in IETF was abandoned. It will not
+be published as RFC document. Consider this feature a private extension.
+
 Until recently, DHCPv6 protocol did not define a way to provision
 routing configuration information to clients. The only way to deliver
 this information to hosts was to use Router Advertisment mechanism in
@@ -207,7 +230,7 @@ default route, any reasonable number of specific routes and routes
 available on link. This feature was introduced in Dibbler
 0.8.1RC1. Both server and client support it. Dibbler sources come with
 examples config files. See \verb+doc/example/server-route.conf+
-and \verb+doc/example/client-route.conf+ for details. 
+and \verb+doc/example/client-route.conf+ for details.
 
 \Note This specification is not approved yet. It will change in the
 future. In particular, IANA have not assigned specific option values
@@ -330,22 +353,24 @@ request for an option using \opt{ORO} option or even send the option
 in its messages.
 
 Note that in 0.8.2 formatting of DUID-style options has
-changed. ``DUID'' keyword is now required.
+changed. ``hex'' keyword is now required.
 
 \begin{lstlisting}
 #client.conf
 iface "eth0" {
-  unicast 1
   ia
 
-  option 145 duid 01:02:a3:b4:c5:dd:ea
+  # This will send specified option value  
+  option 145 hex 01:02:a3:b4:c5:dd:ea
   option 146 address 2001:db8:1::dead:beef
   option 147 address-list 2001:db8:1::aaaa,2001:db8:1::bbbb
   option 148 string "secretlair.example.org"
 
-  option 149 string request
-  option 150 address request
-  option 151 address-list request
+  # This will request specific options and interpret responses
+  option 149 hex
+  option 150 address
+  option 151 address-list
+  option 152 string
 \end{lstlisting}
 
 A word of warning: There are no safety checks regarding option codes,
@@ -357,11 +382,12 @@ feature. Use with caution!
 During normal operation, DHCPv6 client receives one or more IPv6
 address(es) from DHCPv6 server. If configured to do so, it can also
 receive information about DNS server addresses. As an additional
-service, DNS Update can be performed. This feature, sometimes known as
-Dynamic DNS, keeps DNS entries up to date. When client boots, it gets
-its fully qualified domain name and this name can be used to reach
-this particular client by other nodes. Details of this mechanism is
-described in \cite{rfc4704}.
+service, DNS Update (RFC2136, \cite{rfc2136}) can be performed. This
+feature known as Dynamic DNS, or DNS Update, keeps the DNS entries
+synced up with DHCP. When client boots, it gets its fully qualified
+domain name and this name can be used to reach this particular client
+by other nodes. Details of this mechanism is described
+in \cite{rfc2136} and \cite{rfc4704}.
 
 \Note In this section, we will assume that hostnames will be used from
 the example.com domain and that addresses will be provided from the
@@ -560,6 +586,104 @@ $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.ip6.arpa.
 \Note Due to page width limitation, if the example above, two lines were
 split.
 %% $
+
+\subsubsection{Secure DDNS}
+
+Earlier Dibbler versions do not provide security for DNS Updates. This
+capability has been added in 0.8.3. It is possible to protect your
+updates using TSIG (Transaction Signatures), defined in RFC2845
+(\cite{rfc2845}). For this feature to work, your DNS server and
+Dibbler server must be both configured with the same key. The first
+step to use this feature is to generate a key. Currently only HMAC-MD5
+keys are supported. Please ask on dibbler-devel mailing list if you
+are interested in other key types. See section \ref{mailing-list} for
+details. To generate HMAC-MD5 key, a \emph{dnssec-keygen} tool from
+\href{http://www.isc.org/software/bind}{ISC BIND9} can be used:
+
+\begin{lstlisting}
+dnssec-keygen -a hmac-md5 -b 128 -n HOST my-ddns-secret-key
+\end{lstlisting}
+
+For ease of configuration, dibbler uses the same key syntax in its
+config file as \href{http://www.isc.org/software/bind}{ISC BIND9}
+does. In particular, all statements are finished with a semicolon. For
+example, the minimal set of commands to configure a key look like the
+following:
+
+\begin{lstlisting}
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+};
+\end{lstlisting}
+
+Please keep in mind that TSIG signatures are time sensitive and they
+are valid only for specified amount of time. Therefore it is essential
+that your Dibbler server and your DNS server have well synchronized
+clocks. It is recommented to use NTP for that purpose. By default, the
+signature is valid for 300 seconds. This parameter is called a
+fudge. It can be modified to a different value, if needed. Shorter
+value is better from the security perspective as it shortens the
+window of potential replay attack. Longer values are better from the
+convenience perspective, as they are more ``forgiving'' to clock
+skew. The maximum allowed value here is 65535 seconds. Please note
+that such a large value is not reasonable.
+
+An example with the fudge value set to 250 is presented below:
+
+\begin{lstlisting}
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+    fudge 250;
+};
+\end{lstlisting}
+
+Any DNS server that supports DNS Updates (\cite{rfc2136}) and TSIG
+(\cite{rfc2845}) must support HMAC-MD5 signatures. Following paragraph
+explains how to configure HMAC-MD5 key
+for \href{http://www.isc.org/software/bind}{ISC BIND9}. There are at
+least three steps that has to be done to achieve forward (AAAA) and
+reverse (PTR) updates to function properly.
+
+First step is to add a key. Use the same key definition that was included in your
+Dibbler server.conf. Add it to BIND9 config file. Its location varies
+between systems, but it often /etc/bind/named.conf or similar. You should also
+modify your zone and reverse zone to accept updates from this new
+key. Make sure that you do not define \emph{fudge} parameter, as it is
+not supported by BIND9. Part of the named.conf that contains related
+changes looks as follows:
+
+\begin{lstlisting}
+
+key "DDNS\_UPDATER" {
+    secret "9SYMLnjK2ohb1N/56GZ5Jg==";
+    algorithm hmac-md5;
+};
+
+... (other configuration options here)
+
+zone "example.org" {
+     type master;
+     file "/path/to/your/zonefile";
+     allow-update { key DDNS\_UPDATER; };
+     allow-query  { any; };
+};
+
+zone "0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "/path/to/your/zonefile";
+     allow-update { key DDNS\_UPDATER; };
+     allow-query  { any; };
+}
+
+... (other zones and configuration options here)
+\end{lstlisting}
+
+In case of any problems, please refer to \emph{BIND 9 Administrator
+Reference Manual}, available
+on \href{http://www.isc.org/software/bind}{Internet Systems
+Consortium} website.
 
 \subsubsection{Dynamic DNS Testing and tips}
 Proper configuration of the DNS Update mechanism is not an easy
@@ -904,6 +1028,15 @@ for additional options is in progress. Options are passed as
 environment variables. For example client DUID (conveyed in option
 code 1), will be passed as OPTION1.
 
+In 0.8.4 additional variables were added: DOWLINK\_PREFIX\_IFACES that
+defines a list of downlink interfaces when splitting delegated prefix.
+Typically it contains (sanitized) list defined
+in \verb+downlink-prefix-ifaces+ in \verb+client.conf+ or detected
+automatically by the client. The accompanying variable
+DOWNLINK\_PREFIXES contains the actual prefixes that were configured
+on specified interfaces. Those two variables are set on the client
+side only, for obvious reasons.
+
 To enable script execution, \verb+script+ global option must
 be added to \verb+client.conf+ file. For example:
 
@@ -916,7 +1049,102 @@ iface eth0 {
 }
 \end{lstlisting}
 
-\subsection{Confirm}
+\subsection{Reconfiguration}
+
+Once DHCPv6 clients receive their configuration, they are not
+communicating with the server until T1 timer expires. If the
+network configuration changes before that time, it may be useful in
+some cases to inform that the clients should start reconfiguration
+process now, rather than wait till T1. To address this problem, DHCPv6
+offers reconfigure mechanism.
+
+First, clients are informing the server that they are supporting
+reconfiguration process by sending \opt{RECONFIGURE-ACCEPT} in their
+\msg{SOLICIT} messages. Configuration then proceeds as usual, but the
+server includes \opt{AUTH} option in the \msg{REPLY} message with a
+randomly generated reconfigure-key. The client then knows that if it
+receives any \msg{RECONFIGURE} message, it will be signed using
+HMAC-MD5 generate with that particular key. That is a protection
+against rogue DHCPv6 servers, as the only server that is allows to
+trigger reconfiguration is the one who originally provided the
+configuration.
+
+The aforementioned example assumes that the default reconfigure-key
+authentication is used. It is also possible to sign \msg{RECONFIGURE}
+using delayed auth or Dibbler authentication protocol.
+
+During start-up, the server will load its lease database and will
+check whether loaded database matches existing configuration. In
+particular, it will check if the addresses clients have still belong
+to the configured subnets. If the server detects and outdated
+configuration, it will send \msg{RECONFIGURE} informing the client
+that it must start reconfiguration process.
+
+Clients by default have reconfigure support disabled. To enable it,
+use \emph{reconfigure-accept} directive. When enabling reconfigure
+support, it is strongly recommended to enable one of authentication
+methods, e.g. reconfigure-key. See section \ref{feature-auth} for
+detailed discussion about authentication. A short example that has
+reconfigure enabled looks like this:
+
+\begin{lstlisting}
+# client.conf - with reconfigure and reconfigure-key enabled
+reconfigure-accept 1
+
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+\subsection{Following M, O bits from Router Advertisements}
+
+Rounter Advertisements contain two bits that inform what kind of
+DHCPv6 services are available on link. \b M (Managed) that tells that
+addresses and prefixes can be obtained using stateful DHCPv6. \b O
+(OtherConf) tells that other configuration options may be
+configured. Both bits are defined in \cite{rfc4861}, section 4.2. It
+should be noted that those bits are informational only. In the default
+mode (when \emph{obey-ra-bits} is absent), the client will ask for
+configuration options that are specified specified in its configuration
+file. With \emph{obey-ra-bits}, the client will wait till it receives
+the RA message and will act according to the received bits. The
+default is off (\emph{obey-ra-bits}
+missing). Enabling \emph{obey-ra-bits} implies \emph{inactive-mode}.
+
+Let's take this simple client configuration:
+\begin{lstlisting}
+# client.conf - example that takes care of M,O bits from Router Adv.
+obey-ra-bits
+
+iface eth0 {
+   ia
+   option dns-server
+}
+\end{lstlisting}
+Without obey-ra-bits enabled, it would simply send \msg{SOLICIT} with
+one IA\_NA option (i.e. requesting non-temporary address)
+and \opt{ORO} requesting \opt{DNS-SERVER} configuration. If there is
+RA received with M=0, O=0, then Dibbler will not send anything and
+will simply wait till RA with at least one of M or O bits is received.
+If RA is received with M=0, O=1, then Dibbler will request ``other''
+configuration options, i.e. all those that are not stateful or in
+other words any type of IA will not be sent. Dibbler will
+send \msg{INFORMATION-REQUEST} with \opt{ORO}
+requesting \opt{DNS-SERVERS}. With M=1, O=0 Dibbler will send
+a \msg{SOLCIT} only request an address, but will not ask
+for \opt{DNS-SERVERS}. Finally, with M=1, O=1 Dibbler will
+send \msg{SOLICIT} asking for both an address and \opt{DNS-SERVERS}.
+
+It should be noted that Dibbler will assess M,O bits only during
+start-up or while enabling an interface. It will not monitor any
+possible future changes in those bits (e.g. as a result of receiving
+Router Advertisement with updated flags).
+
+\subsection{CONFIRM message}
 \label{feature-confirm}
 Client detects if previous client instance was not shutdown properly
 (due to power outage, client crash, forceful shutdown or similar
@@ -926,10 +1154,50 @@ confirm those addresses by using \msg{CONFIRM} message.
 
 If you want to provoke this kind of scenario on purpose, you can run
 dibbler-client normally, then forcefully kill the procss (by sending
-kill -9 signal, or pressing ctrl-\\ under Linux). Make sure that you
-rerun client before address valid lifetime expires.
+kill -9 signal, or pressing ctrl-backslash under Linux). Make sure
+that you rerun client before address valid lifetime expires.
 
 Currently, client does support only IAs in the \msg{CONFIRM}.
+
+You can force the client to not send CONFIRM message by adding the
+following clause to your \verb+client.conf+:
+
+\begin{lstlisting}
+# Uncomment following line to skip confirm sending
+skip-confirm
+\end{lstlisting}
+
+It is important to understand the meaning of the CONFIRM message. It
+is a question whether specified addresses are topologically valid for
+a given link, not if the server has bindings for them. The server can
+be provided with the information which addresses are valid on a given
+link using \emph{subnet} clause. This directive was introduced in
+Dibbler 0.8.4RC1. See section \ref{example-server-subnet} for server
+configuration examples.
+
+Server will try to respond to CONFIRM messages, even when subnet is
+not defined. In that case it will check if the addresses are within
+configured address pool. If they are, the server will respond with
+success status code. Otherwise it will not respond (as required by
+RFC3315, section 18.2.2). It is important to understand the difference
+between address pool (or class) and subnet. Imagine the case of a
+network that uses 2001:db8::/32 prefix. Out of that prefix only small
+pool (2001:db8::1-2001:db8::ff) was assigned for server
+allocation. Without subnet definition, the server will be able to
+respond to CONFIRM messages only for that small pool. With subnet
+specified in its config file, the server will be able to respond to
+addresses from the whole subnet.
+
+The exact algorithm is as follows. If there is subnet defined, check
+if all addresses and prefixes sent in \msg{CONFIRM} are within that
+subnet. If yes, respond with success status. If any of the servers is
+not within the subnet, respond with NotOnLink status. If there were no
+addresses or prefixes specified, do not respond. If there is not
+subnet defined, check if all addresses and prefixes sent
+in \msg{CONFIRM} are present in respective class, ta-class or pd-class
+ranges. If they are, respond with Success status. If any of them is
+not within the pools, do not respond (because the server does not have
+enough knowledge to authoritatively say that they are not valid).
 
 \subsection{Mobility}
 Client can also be compiled with support for link change detection.
@@ -1128,38 +1396,321 @@ description for server only:
       information about previously assigned addresses.
 \end{itemize}
 
-
 \subsection{Authentication and Authorization}
 \label{feature-auth}
 
-Implementation of authentication and authorization in Dibbler is
-loosely based on \cite{draft-aaa}. Mainly option formats have been
-used, for interoperability purposes. This means that there should be
-no reasonable expectation of interoperability with other
-implementations.
+Implementation of authentication and authorization in Dibbler in
+versions 0.8.4 and earlier was loosely based
+on \cite{draft-aaa}. The implementation in 1.0.0 has
+been rewritten and is now based on standard \cite{rfc3315} format and
+mechanism, with custom extensions. Dibbler supports several
+mechanisms:
 
-Draft does not specify how to communicate with home and foreign AAA
-servers (AAAH and AAAF) using Diameter or Radius protocol, so Dibbler
-uses a different, simpler approach. Keys are stored locally in
-files. (see Fig. \ref{fig-aaa}).
+\begin{enumerate}
+\item Replay detection -- Dibbler is able to detect whether the
+messages are being new or replayed. It implements the Replay Detection
+mechanism described in Section 21.3 of \cite{rfc3315}.
+\item Reconfigure Key Authentication protocol -- Dibbler supports
+reconfiguration mechanism since 1.0.0. Reconfiguration requires that
+the server generates a random key when configuring clients. That key
+is later used by server and client to verify if the reconfigure
+request really comes from the ligit server, not a rogue one. This
+mechanism uses HMAC-MD5 digests. This mechanism is described in
+Section 21.5 of \cite{rfc3315}.
+\item Delayed Authentication protocol -- It is possible to
+pre-provision clients with keys and configure the server to use them
+to sign its messages. Client informs the server that it is capable of
+using this method by sending empty AUTH option in its SOLICIT
+message. The server then selects a key and sends its key id to the
+client and signs its response. Then the client checks if it has a key
+with matching key-id and then uses it to verify incoming packets and
+sign its own transmissions. This mechanism uses HMAC-MD5
+digests. That follows the mechanism specified in Section 21.4
+of \cite{rfc3315}
+\item Dibbler protocol -- Dibbler also supports its own, custom
+authentication extension. It is somewhat similar to the delayed
+authentication, but has a number of advantages over it. First, it
+secures the whole transmission, including initial \msg{SOLICIT}
+message. Second, it offers much stronger digests: HMAC-MD5, HMAC-SHA1,
+HMAC-SHA224, HMAC-SHA256, HMAC-SHA384 and HMAC-SHA512. As this is
+Dibbler specific extension, it is not expected to inter-operate with
+any other implementations. Third, it does not require to maintain
+strict client DUID-key-id bindings on the server side, as clients send
+ID of the key they used to protect their transmissions. 
+\end{enumerate}
 
-\begin{figure}[ht]
-\begin{center}
-\label{fig-aaa}
-\includegraphics[width=0.65\textwidth]{dibbler-aaa}
-\caption{\emph{Simplified model of AAA}}
-\end{center}
-\end{figure}
+The authentication/authorization implementation in Dibbler is highly
+flexible. That is both blessing and a curse. You can tweak it to match
+your specific needs, but if you don't know what you are doing, you may
+get only an impression of security and complicate your deployment a
+lot.
 
-For each pair of client and server three files are needed. Client uses
-a file \texttt{AAA-SPI}, which contains 32-bit AAA-SPI (AAA Security
-Parameter Index) --- eight hexadecimal digits, to properly introduce
-himself (authorize) to server. Also it needs file named
-\texttt{AAA-key-\textit{AAASPI}}, which contains a key that is used to
-generate authentication information in AAAAUTH and AUTH options. The
-AAA-key is any number of arbitrary chosen bytes and is generated by
-administrator of DHCPv6 server. The server needs only one file per
-client to properly communicate using authentication. The file is named
+Both delayed authentication and Dibbler protocols are dynamic. It
+means that the server and the client reads its key files every time
+packet is sent or received. It means that the keys can be updated in
+real-time without any need for restarts.
+
+The following subsections explain how to take advantage of each
+mechanisms.
+
+\subsubsection{Replay Detection}
+\label{auth-replay}
+One of the possible attacks in DHCPv6 is a replay detection. In
+particular, the attacker could capture \msg{RECONFIGURE} message and
+then replay it frequently to cause the client to transmit \msg{RENEW}
+or other messages many times. To prevent such an attack, a mechanism 
+called replay detection was implemented. It's basic principle is that
+the server includes a value in replay-detection field in \opt{AUTH}
+option. That value must be strictly increasing, i.e. the server must
+use greater value in any next message. Since the message is also
+protected using digest, attacker can't simply increase the value, as
+it would invalidate the digest.
+
+This parameter is configured using \emph{auth-replay}. The only
+allowed values are \emph{none} and \emph{monotonic}. It should be
+noted that this mechanism is useless on its own and must be used with
+one of other authentication mechanisms.
+
+The example for server configuration:
+\begin{lstlisting}
+# server.conf - example with enabled auth-replay protection
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+This is an example client configuration:
+\begin{lstlisting}
+# client.conf - with replay protection enabled
+auth-protocol reconfigure-key
+
+# This specifies replay detection mechanism.
+# Available modes: none, monotonic
+auth-replay monotonic
+
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+\subsubsection{Reconfigure Key Authentication}
+\label{auth-reconf-key}
+Reconfigure key is a mechanism that protects only \msg{RECONFIGURE}
+message that the server sends to clients to force them to initiate
+reconfiguration procedure. The major benefit of Reconfigure key
+algorithm is that it does not require any preconfigured key. The
+server randomly generates keys on the fly when sending \msg{REPLY}
+message back to a client that reported support for
+reconfiguration. The major flaw of the Reconfigure key algorithm is
+that it sends the key value as a plain text, so client is only
+moderately confident that the entity that sent \msg{RECONFIGURE} is
+indeed the server. It is sufficient to sniff the initial client
+configuration procedure to obtain the key to later
+spoof \msg{RECONFIGURE} message to trick the client to initiate
+reconfiguration process.
+
+To take advantage of reconfigure key authentication, the client must
+do a couple things. First, it must support reconfiguration. Second, it
+must set its authentication protocol to reconfigure-key. Third, it
+must discard messages that are not authenticated. Finally, it should
+accept authentication method HMAC-MD5, as this is the method used by
+reconfigure key authentication. The minimal configuration file for
+client looks like this:
+
+\begin{lstlisting}
+# client.conf - reconfigure-key authentication
+reconfigure-accept 1
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+Server's configuration is modified in the similar way:
+\begin{lstlisting}
+# server.conf - reconfigure-key authentication
+auth-protocol reconfigure-key
+auth-replay monotonic
+auth-methods digest-hmac-md5
+auth-required 0
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+For a more fully featured example, see
+\verb+doc/examples/client-auth-reconf-key.conf+ for client
+and \verb+doc/examples/server-auth-reconf-key.conf+ for server.
+
+\subsubsection{Delayed Authentication}
+\label{auth-delayed}
+Delayed authentication assumes that there are shared keys. Those keys
+must be somehow installed on the client and server machines, using an
+out of band mechanisms, e.g. using scp, manually copying keys using
+USB sticks etc.
+
+Dibbler assumes that the keys are stored in
+\verb+/var/lib/dibbler/AAA+ directory. See section \ref{keygen} below
+for details on how to generate and deploy keys. Let's assume that the
+client and server shares a key with key-id 0x01020304. In such case
+both client and server much name the key file \verb+AAA-key-01020304+
+and place it in \verb+/var/lib/dibbler/AAA+ directory.
+
+In the delayed authentication keys belong to a given realm, which is
+really an administrative domain. Each realm must have a unique
+name. For the examples we use 'dibbler test realm' as the realm name.
+
+Once this is done, both client and server should be configured to use
+delayed authentication. Here's minimal client's example:
+
+\begin{lstlisting}
+# client.conf - delayed auth
+auth-protocol delayed
+auth-realm 'dibbler test realm'
+auth-replay monotonic
+auth-methods digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+Server's configuration is similar:
+\begin{lstlisting}
+# server.conf - delayed auth
+auth-protocol delayed
+auth-replay monotonic
+auth-methods digest-hmac-md5
+auth-realm "dibbler test realm"
+auth-required 1
+
+iface eth0 {
+   class {
+        pool 2001:db8:1::/64
+    }
+
+}
+\end{lstlisting}
+
+There is one additional step required. Server must be told which keys
+are to be used when communicating with specific clients. That is
+specified using a separate file \verb+keys-mapping+, which should
+be placed in \verb+/var/lib/dibbler/AAA+ directory. The format of the
+file is simple. It is a text file. Each line consists of a DUID
+followed by a coma, followed by key-id in hex notation. For example:
+
+\begin{lstlisting}
+# Comments starting with # are ignored.
+# So are empty lines
+
+00:01:02:03:04:06:07:08:09, 0x010203ff
+00:04:ff:ab:cd:ef:09:87:65:a1:bc, 0xabcdef00
+\end{lstlisting}
+
+\subsubsection{Dibbler Authentication Protocol}
+\label{auth-dibbler}
+This is a mechanism that evolved from master thesis done by Michal
+Kowalczuk. It was rewritten by Tomek Mrugalski to use standard \opt{AUTH}
+option as defined in \cite{rfc3315}, rather then using its own non-standard
+\opt{AUTH}, \opt{KEYGENERATION} and \opt{AAAAUTHENTICATION} options.
+
+This authentication protocol provides strong protection against
+message tampering, can be used to authenticate the server (i.e. client
+is confident that it is talking to ligitimate server) by the clients
+and vice versa (i.e. the server is confident that it is providing
+configuration to the legitimate client).
+
+The first step is to deploy shared keys on the clients and the
+server. That is explained in details in \ref{keygen}. The server needs
+only one key per client. It is possible to share the same key among
+multiple clients, but that somewhat defeats the purpose of
+authentication. The client side requires two files: the key itself and
+a \texttt{AAA-SPI}, which contains 32-bit key identifier. That extra
+mechanism is needed for cases where client has multiple keys
+provisioned. That can come in handy for doing key rollover or using
+different keys for different visited networks.
+
+Both client and server can specify a list of accepted digests, using
+\emph{auth-methods} list. The first method on the list will be used as
+a default, but the server can later override it and use different
+method. Care should be taken to configure client and server with at
+least one common method, otherwise the authentication will fail.
+
+Once client is provided with key and AAA-SPI file that points to that
+key, the client sends \msg{SOLICIT} that includes \opt{AUTH} option
+with used key-id and digest using the first method specified on
+auth-methods list. The server will use specified key-id to select
+appropriate key and will validate the signature. Server will then know
+that the client is legitimate as it used known secret key. The server
+will then send \opt{ADVERTISE} option that will be protected by digest
+generated with the same key. Once client receives the message, it will
+do exactly the same verification as the server. Client will then know
+that the response was sent by legitimate server. Both sides have
+established their validity and the configuration process will
+continue.
+
+Depending on the intended outcome, the server may require clients to
+authenticate and drop packets from non-authenticated users. That is
+convenient for high-security networks where only known (registered)
+clients are able to get a service.
+
+An example client configuration file looks as follows:
+\begin{lstlisting}
+auth-protocol dibbler
+auth-replay monotonic
+auth-methods digest-hmac-sha256, digest-hmac-sha1, digest-hmac-md5
+
+iface eth0 {
+   ia
+}
+\end{lstlisting}
+
+An example server configuration file looks as follows:
+\begin{lstlisting}
+auth-protocol dibbler
+auth-replay monotonic
+auth-required 1
+
+iface eth0 {
+    class {
+        pool 2001:db8:1::/64
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Key generation}
+\label{keygen}
+
+Delayed authentication and Dibbler authentication require secret key
+to be generated and shared between the server and the client.
+
+
+For each pair of client and server three (two for delayed
+authentication) files are needed. Client uses a file \texttt{AAA-SPI},
+which contains 32-bit AAA-SPI (AAA Security Parameter Index) --- eight
+hexadecimal digits, to properly introduce himself (authorize) to
+server. This file is needed only for Dibbler authentication.
+
+Also it needs file named \texttt{AAA-key-\textit{AAASPI}},
+which contains a key that is used to generate authentication
+information in \opt{AUTH} options. The AAA-key is any number of
+arbitrary chosen bytes and is generated by administrator of DHCPv6
+server. The server needs only one file per client to properly
+communicate using authentication. The file is named
 \texttt{AAA-key-\textit{AAASPI}}, where \textit{AAASPI} is the same
 value, that client has in \texttt{AAA-SPI} file. This file contains
 the same AAA-key, that client has in \texttt{AAA-key} file. Dibbler
@@ -1214,17 +1765,7 @@ b9a6452c
 When configuration files are prepared and stored in client's and
 server's \textit{AAA directory} you are ready to use
 authentication. For detailed description of possible options see
-\ref{client-conf-reference}. For quick start:
-\begin{itemize}
- \item set ``\texttt{auth-enabled true}'' in \texttt{client.conf}
-
- \item set ``\texttt{auth-method digest-hmac-sha256}'' in
-   \texttt{server.conf}
-
-\end{itemize}
-
-See section \ref{example-client-auth} for example client configuration
-and \ref{example-server-auth} for server configuration.
+\ref{client-conf-reference}.
 
 \subsection{Exceptions: per client configuration}
 \label{feature-exceptions}
@@ -1237,10 +1778,10 @@ configuration parameters. For example computers from the accouting
 department in a corporate network may be configured to be in a
 different subdomain. Is is possible to specify that for particular
 client different configuration options should be provided. Each client
-is identified by its DUID. This mechanism is called \emph{per client
-  configuration}, but it is sometimes referred to as
-\emph{exceptions}. Support for per client prefix configuration has
-been added in 0.8.2RC1.
+is identified by its DUID, by Remote-ID or by link-local address. This
+mechanism is called \emph{per client configuration}, but it is
+sometimes referred to as \emph{exceptions}. Support for per client
+prefix configuration has been added in 0.8.2RC1.
 
 See section \ref{example-server-exceptions} for server configuration
 examples.
@@ -1515,6 +2056,43 @@ and not documented properly. You have been warned.
 Since those mechanisms are non-standard, they are disabled by
 default. To enable them, ,,experimental'' keyword must be placed in
 the \verb+client.conf+ or \verb+server.conf+ files.
+
+\subsubsection{Server Performance mode}
+\label{feature-performance-mode}
+When running in a normal mode, the server rewrites its full database
+every time there is a change. That becomes problematic once the number
+of clients is large and number of packets per second is sufficiently
+high. To somehow eleviate the problem, an experimental
+performance-mode has been implemented. The server will load its
+database at start, then keep it in memory only and will write it again
+to disk during normal shutdown procedure. That should work, but it is
+dangerous! If there is power failure, server crash or other event, the
+server may not be able to write its database to disk and you'll lose
+your database.
+
+To use this feature, use the following config:
+\begin{lstlisting}
+# We want the server to not waste time on logging
+log-level 3
+
+# Enable experimental features
+experimental
+
+# Enable performance mode
+performance-mode 1
+
+iface eth0 {
+    class {
+        pool 2001:db8::/64
+    }
+}
+\end{lstlisting}
+
+If you are not satisfied with Dibbler performance, please submit
+patches or better yet, consider the alternative: Kea (BIND10 DHCP)
+\url{http://bind10.isc.org/wiki/Kea}. It offer tremendous performance,
+is open source and is being actively developed by a professional team.
+Its lead developer happen to be Dibbler author as well :)
 
 \subsubsection{Address Parameters}
 \label{feature-addr-params}

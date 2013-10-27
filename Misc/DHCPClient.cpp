@@ -25,39 +25,48 @@ volatile int serviceShutdown;
 volatile int linkstateChange;
 
 TDHCPClient::TDHCPClient(const std::string& config)
-  :IsDone(false)
+  :IsDone_(false)
 {
     serviceShutdown = 0;
     linkstateChange = 0;
-    srand(now());
+    srand((uint32_t)time(NULL));
 
     TClntIfaceMgr::instanceCreate(CLNTIFACEMGR_FILE);
     if ( ClntIfaceMgr().isDone() ) {
         Log(Crit) << "Fatal error during IfaceMgr initialization." << LogEnd;
-        IsDone = true;
+        IsDone_ = true;
         return;
     }
 
     TClntCfgMgr::instanceCreate(config);
     if ( ClntCfgMgr().isDone() ) {
         Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
-        this->IsDone = true;
+        IsDone_ = true;
         return;
     }
 
-        TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(), CLNTADDRMGR_FILE, false);
+        TClntAddrMgr::instanceCreate(ClntCfgMgr().getDUID(), ClntCfgMgr().useConfirm(),
+                                     CLNTADDRMGR_FILE, false);
     if ( ClntAddrMgr().isDone() ) {
         Log(Crit) << "Fatal error during AddrMgr initialization." << LogEnd;
-            IsDone = true;
+            IsDone_ = true;
             return;
     }
 
     TClntTransMgr::instanceCreate(CLNTTRANSMGR_FILE);
     if ( TClntTransMgr::instance().isDone() ) {
         Log(Crit) << "Fatal error during TransMgr initialization." << LogEnd;
-        this->IsDone = true;
+        IsDone_ = true;
         return;
     }
+
+    if ( !ClntTransMgr().sanitizeAddrDB() ) {
+        Log(Crit) << "Loaded address database failed sanitization checks."
+                  << LogEnd;
+        IsDone_ = true;
+        return;
+    }
+
 
     if (ClntCfgMgr().useConfirm())
         initLinkStateChange();
@@ -99,6 +108,11 @@ void TDHCPClient::stop() {
 
 #ifdef WIN32
     // just to break select() in WIN32 systems
+
+    if (ClntTransMgr().getCtrlIface() < 0) {
+        return; // no interfaces configured yet
+    }
+
     SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(ClntTransMgr().getCtrlIface());
     Log(Warning) << "Sending SHUTDOWN packet on the " << iface->getName()
         << "/" << iface->getID() << " (addr=" << ClntTransMgr().getCtrlAddr() << ")." << LogEnd;
@@ -166,7 +180,7 @@ void TDHCPClient::run()
             SPtr<TIfaceIface> ptrIface;
             ptrIface = ClntIfaceMgr().getIfaceByID(iface);
             Log(Info) << "Received " << msg->getName() << " on " << ptrIface->getName()
-                      << "/" << iface	<< hex << ",TransID=0x" << msg->getTransID()
+                      << "/" << iface	<< hex << ",trans-id=0x" << msg->getTransID()
                       << dec << ", " << msg->countOption() << " opts:";
             SPtr<TOpt> ptrOpt;
             msg->firstOption();
@@ -181,7 +195,7 @@ void TDHCPClient::run()
 }
 
 bool TDHCPClient::isDone() const {
-    return IsDone;
+    return IsDone_;
 }
 
 bool TDHCPClient::checkPrivileges() {

@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include "SmartPtr.h"
@@ -26,7 +27,6 @@
 #include "IfaceMgr.h"
 #include "SrvIfaceMgr.h"
 #include "AddrMgr.h"
-#include "TimeZone.h"
 #include "SrvParser.h"
 #include "OptDUID.h"
 
@@ -37,7 +37,7 @@ TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false)
+    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false), PerformanceMode_(false)
 {
     setDefaults();
 
@@ -85,7 +85,7 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     SrvParser parser(&lexer);
-    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still 
+    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still
                           // in constructor, so instance() singleton method can't be called
     result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
@@ -150,12 +150,6 @@ bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
     this->InactiveMode     = opt->getInactiveMode(); // should the client accept not ready interfaces?
     this->GuessMode        = opt->getGuessMode();
 
-#ifndef MOD_DISABLE_AUTH
-    this->DigestLst        = opt->getDigest();
-    this->AuthKeyGenNonceLen = opt->getAuthKeyLen();
-    this->AuthLifetime = opt->getAuthLifetime();
-#endif
-
     return true;
 }
 
@@ -180,11 +174,28 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
 
         // relay interface
         if (cfgIface->isRelay()) {
+
             cfgIface->setID(this->NextRelayID++);
-            if (!this->setupRelay(cfgIface)) {
+
+            // let's find physical interface underneath
+            SPtr<TSrvCfgIface> under_relay = cfgIface;
+            ifaceIface = SPtr<TIfaceIface>();
+            while (!ifaceIface && under_relay && under_relay->getRelayName() != "") {
+                ifaceIface = SrvIfaceMgr().getIfaceByName(under_relay->getRelayName());
+                if (!ifaceIface) {
+                    under_relay = getIfaceByName(under_relay->getRelayName());
+                }
+            }
+
+            if (!ifaceIface) {
+                Log(Crit) << "Interface " << cfgIface->getFullName()
+                          << " defined physical interface as " << cfgIface->getRelayName()
+                          << ", but there is no such interface present." << LogEnd;
                 return false;
             }
-            this->addIface(cfgIface);
+            cfgIface->setRelayID(ifaceIface->getID());
+
+            addIface(cfgIface);
 
             continue; // skip physical interface checking part
         }
@@ -209,7 +220,6 @@ bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
         // method names.
         cfgIface->setName(ifaceIface->getName());
         cfgIface->setID(ifaceIface->getID());
-
 
         // Check for link scope address presence
         if (!ifaceIface->countLLAddress()) {
@@ -367,48 +377,6 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::checkInactiveIfaces() {
 
 TSrvCfgMgr::~TSrvCfgMgr() {
     Log(Debug) << "SrvCfgMgr cleanup." << LogEnd;
-}
-
-/**
- * checks if the specified address belongs to the currently supported TA pool
- * (used in CONFIRM message)
- *
- * @param iface
- * @param addr
- *
- * @return
- */
-bool TSrvCfgMgr::isTAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
-    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
-    if (!ptrIface)
-        return false;
-    ptrIface->firstTA();
-    SPtr<TSrvCfgTA> ta = ptrIface->getTA();
-    if (!ta)
-        return false;
-    return ta->addrInPool(addr);
-}
-
-/**
- * checks if this Addr is already configured in that IA belonging to that client
- * (used in CONFIRM message)
- *
- * @param iface
- * @param addr
- *
- * @return true, if address is supported
- */
-bool TSrvCfgMgr::isIAAddrSupported(int iface, SPtr<TIPv6Addr> addr) {
-    SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
-    if (!ptrIface)
-        return false;
-    ptrIface->firstAddrClass();
-    SPtr<TSrvCfgAddrClass> addrClass;
-    while (addrClass = ptrIface->getAddrClass()) {
-        if (addrClass->addrInPool(addr))
-            return true;
-    }
-    return false;
 }
 
 /**
@@ -657,7 +625,7 @@ bool TSrvCfgMgr::prefixReserved(SPtr<TIPv6Addr> prefix) {
     SPtr<TSrvCfgIface> iface;
     SrvCfgIfaceLst.first();
     while (iface = SrvCfgIfaceLst.get()) {
-        if (prefixReserved(prefix))
+        if (iface->prefixReserved(prefix))
             return true;
     }
     return false;
@@ -685,10 +653,7 @@ bool TSrvCfgMgr::validateConfig() {
 
 bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
 {
-    bool dummyRelay = false;
-    SPtr<TSrvIfaceIface> iface = (Ptr*)SrvIfaceMgr().getIfaceByID(ptrIface->getID());
-    if (iface && ptrIface->isRelay() && iface->getRelayCnt())
-        dummyRelay = true;
+    SPtr<TIfaceIface> iface = SrvIfaceMgr().getIfaceByID(ptrIface->getID());
 
     if (ptrIface->countAddrClass() && stateless()) {
         Log(Crit) << "Config problem: Interface " << ptrIface->getFullName()
@@ -697,20 +662,20 @@ bool TSrvCfgMgr::validateIface(SPtr<TSrvCfgIface> ptrIface)
     }
     if (!ptrIface->countAddrClass() && !ptrIface->countPD()
         && !ptrIface->getTA() && !stateless()) {
-        if (!dummyRelay) {
+        if (!ptrIface->isRelay()) {
             Log(Crit) << "Config problem: Interface " << ptrIface->getName() << "/" << ptrIface->getID()
                       << ": No class definitions (IA,TA or PD) present, but stateless mode not set." << LogEnd;
             return false;
         } else {
-            Log(Warning) << "Interface " << ptrIface->getFullName() << " has no addrs defined, working as cascade relay interface."
-                         << LogEnd;
+            Log(Notice) << "Interface " << ptrIface->getFullName() << " has no address or prefix pools defined."
+                        << LogEnd;
         }
     }
 
     if (ptrIface->supportFQDN() && !ptrIface->getExtraOption(OPTION_DNS_SERVERS)) {
-	Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
-		  << " Please disable FQDN support or add DNS servers." << LogEnd;
-	return false;
+        Log(Crit) << "FQDN defined on the " << ptrIface->getFullName() << ", but no DNS servers defined."
+                  << " Please disable FQDN support or add DNS servers." << LogEnd;
+        return false;
     }
 
     SPtr<TSrvCfgAddrClass> ptrClass;
@@ -754,13 +719,26 @@ bool TSrvCfgMgr::validateClass(SPtr<TSrvCfgIface> ptrIface, SPtr<TSrvCfgAddrClas
 
 SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
     SPtr<TSrvCfgIface> ptrIface;
-    this->firstIface();
-    while ( ptrIface = this->getIface() ) {
+    firstIface();
+    while ( ptrIface = getIface() ) {
         if ( ptrIface->getID()==iface )
             return ptrIface;
     }
-    Log(Error) << "Invalid interface (id=" << iface
-               << ") specifed, cannot get address." << LogEnd;
+    Log(Error) << "Invalid interface (ifindex=" << iface
+               << ") specifed: no such interface." << LogEnd;
+    return 0; // NULL
+}
+
+SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
+    SPtr<TSrvCfgIface> ptrIface;
+    firstIface();
+    while ( ptrIface = getIface() ) {
+        if ( ptrIface->getName()==name ) {
+            return ptrIface;
+        }
+    }
+    Log(Error) << "Invalid interface (name=" << name
+               << ") specifed: no such interface." << LogEnd;
     return 0; // NULL
 }
 
@@ -829,16 +807,11 @@ bool TSrvCfgMgr::setupRelay(SPtr<TSrvCfgIface> cfgIface) {
 
     iface = SrvIfaceMgr().getIfaceByName(name);
     if (!iface) {
-        Log(Crit) << "Underlaying interface for " << cfgIface->getName() << "/" << cfgIface->getID()
+        Log(Crit) << "Underlaying interface for " << cfgIface->getFullName()
                   << " with name " << name << " is missing." << LogEnd;
         return false;
     }
     cfgIface->setRelayID(iface->getID());
-
-    if (!SrvIfaceMgr().setupRelay(cfgIface->getName(), cfgIface->getID(), iface->getID(), cfgIface->getRelayInterfaceID())) {
-        Log(Crit) << "Relay setup for " << cfgIface->getName() << "/" << cfgIface->getID() << " interface failed." << LogEnd;
-        return false;
-    }
 
     return true;
 }
@@ -887,32 +860,23 @@ bool TSrvCfgMgr::incrPrefixCount(int ifindex, SPtr<TIPv6Addr> prefix)
 }
 
 #ifndef MOD_DISABLE_AUTH
-List(DigestTypes) TSrvCfgMgr::getDigestLst() {
-    return this->DigestLst;
+
+/// @todo move this to CfgMgr and unify with TClntCfgMgr::setAuthAcceptMethods
+void TSrvCfgMgr::setAuthDigests(const DigestTypesLst& types) {
+  DigestTypesLst_ = types;
+}
+
+DigestTypesLst TSrvCfgMgr::getAuthDigests() {
+    return DigestTypesLst_;
 }
 
 enum DigestTypes TSrvCfgMgr::getDigest() {
-    SPtr<DigestTypes> dt;
-
-    if (0 == DigestLst.count())
+    if (DigestTypesLst_.empty())
         return DIGEST_NONE;
 
-    dt = DigestLst.getFirst();
-    if (!dt || *dt >= DIGEST_INVALID)
-        return DIGEST_NONE;
-
-    return *dt;
+    return DigestTypesLst_[0];
 }
 
-unsigned int TSrvCfgMgr::getAuthLifetime()
-{
-    return AuthLifetime;
-}
-
-unsigned int TSrvCfgMgr::getAuthKeyGenNonceLen()
-{
-    return AuthKeyGenNonceLen;
-}
 #endif
 
 // --------------------------------------------------------------------
@@ -949,23 +913,11 @@ ostream & operator<<(ostream &out, TSrvCfgMgr &x) {
     out << "</InterfaceIDOrder>" << endl;
 
 #ifndef MOD_DISABLE_AUTH
-    out << "  <auth count=\"" << x.DigestLst.count() << "\">";
-    x.DigestLst.first();
-    SPtr<DigestTypes> dig;
-    while (dig=x.DigestLst.get()) {
-        switch (*dig) {
-        case DIGEST_NONE:
-            out << "digest-none ";
-            break;
-        case DIGEST_HMAC_SHA1:
-            out << "digest-hmac-sha1";
-            break;
-        default:
-            break;
-        }
-        out << "X";
+    out << "  <auth count=\"" << x.DigestTypesLst_.size() << "\">";
+    for (DigestTypesLst::const_iterator dig = x.DigestTypesLst_.begin();
+	 dig != x.DigestTypesLst_.end(); ++dig) {
+      out << getDigestName(*dig) << " ";
     }
-
     out << "</auth>" << endl;
 #endif
 
@@ -1006,6 +958,18 @@ bool TSrvCfgMgr::reconfigureSupport()
     return reconfigure;
 }
 
+/// @brief removes reserved entries from the cache
+void TSrvCfgMgr::removeReservedFromCache() {
+    SPtr<TSrvCfgIface> iface;
+    SrvCfgIfaceLst.first();
+    unsigned int cnt = 0;
+    while (iface = SrvCfgIfaceLst.get()) {
+        cnt += iface->removeReservedFromCache();
+    }
+    if (cnt) {
+        Log(Info) << "Removed " << cnt << " leases from cache that are reserved." << LogEnd;
+    }
+}
 
 /**
  * sets pool usage counters (used during bringup, after AddrDB is loaded from file)
@@ -1023,7 +987,7 @@ void TSrvCfgMgr::setCounters()
         SPtr<TAddrIA> ia;
         client->firstIA();
         while ( ia=client->getIA() ) {
-            iface = getIfaceByID(ia->getIface());
+            iface = getIfaceByID(ia->getIfindex());
             if (!iface)
                 continue;
 
@@ -1038,7 +1002,7 @@ void TSrvCfgMgr::setCounters()
         // prefixes
         client->firstPD();
         while (ia = client->getPD() ) {
-            iface = getIfaceByID(ia->getIface());
+            iface = getIfaceByID(ia->getIfindex());
             if (!iface)
                 continue;
             SPtr<TAddrPrefix> prefix;
@@ -1138,4 +1102,117 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
 bool TSrvCfgMgr::isBulkSupported()
 {
     return BulkLQAccept;
+}
+
+/// @brief returns ifindex of an interface with specified interface-id
+///
+/// @param interfaceID pointer to TSrvOptInterfaceID
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID) {
+    if (!interfaceID) {
+        return -1;
+    }
+
+    firstIface();
+    while (SPtr<TSrvCfgIface> cfgIface = getIface()) {
+        SPtr<TSrvOptInterfaceID> cfgIfaceID = cfgIface->getRelayInterfaceID();
+        if (cfgIfaceID && (*cfgIfaceID == *interfaceID)) {
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
+}
+
+
+/// @brief returns ifindex of an interface with matched address
+///
+/// @param addr address to be matched
+///
+/// @return interface index (or -1 if not found)
+int TSrvCfgMgr::getRelayByLinkAddr(SPtr<TIPv6Addr> addr) {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->addrInSubnet(addr)) {
+            Log(Debug) << "Address " << addr->getPlain() << " matched on interface "
+                       << cfgIface->getFullName() << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    Log(Warning) << "Finding RELAYs using link address failed." << LogEnd;
+    return -1;
+}
+
+/// @brief return any relay (used with guess-mode on)
+///
+/// @return interface index of the first relay (or -1 if there are no relays)
+int TSrvCfgMgr::getAnyRelay() {
+    SPtr<TSrvCfgIface> cfgIface;
+
+    firstIface();
+    while (cfgIface = getIface()) {
+        if (cfgIface->isRelay()) {
+            Log(Debug) << "Guess-mode: Picked " << cfgIface->getFullName() << " as relay." << LogEnd;
+            return cfgIface->getID();
+        }
+    }
+
+    return -1;
+}
+
+#ifndef MOD_DISABLE_AUTH
+/// returns key-id that should be used for a given client-id
+///
+/// @param clientid client identifier
+///
+/// @return Key ID to be used (or 0)
+uint32_t TSrvCfgMgr::getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid) {
+
+    ifstream f(mapping_file, ios::in);
+
+    if (!f.is_open()) {
+        Log(Error) << "Can't open keys mapping file: " << mapping_file << LogEnd;
+        // map not found or is inaccessible
+        return 0;
+    }
+
+    string lookingfor = clientid->getPlain();
+
+    for( std::string line; getline( f, line ); )
+    {
+        if (line.empty())
+            continue;
+        if (!line.empty() && (line[0] == '#') )
+            continue;
+
+        std::istringstream iss(line);
+        string duid;
+        uint32_t keyid;
+
+        // parse the line. We don't really care if it is malformed.
+        // If it is, server will not use the right key
+        iss >> duid >> hex >> keyid;
+
+        duid = duid.substr(0, duid.find(","));
+
+        if (duid == lookingfor) {
+            return keyid;
+        }
+    }
+
+    // no key found
+    return 0;
+}
+#endif
+
+void TSrvCfgMgr::setPerformanceMode(bool mode) {
+    PerformanceMode_ = mode;
+}
+
+bool TSrvCfgMgr::getPerformanceMode() {
+    return PerformanceMode_;
 }

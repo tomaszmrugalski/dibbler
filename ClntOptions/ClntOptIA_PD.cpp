@@ -26,7 +26,8 @@ using namespace std;
  * @param parent
  */
 TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
-    :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent)
+    :TOptIA_PD(addrPD->getIAID(),addrPD->getT1(),addrPD->getT2(), parent),
+     Unicast(false), Iface(-1)
 {
 
     bool zeroTimes = false;
@@ -53,7 +54,8 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
 /// @param cfgPD
 /// @param parent
 TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
-    :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent)
+    :TOptIA_PD(cfgPD->getIAID(), cfgPD->getT1(), cfgPD->getT2(), parent),
+     Unicast(false), Iface(-1)
 {
     cfgPD->firstPrefix();
     SPtr<TClntCfgPrefix> cfgPrefix;
@@ -74,7 +76,7 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg* parent)
  * @param parent
  */
 TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
-:TOptIA_PD(buf,bufsize, parent)
+    :TOptIA_PD(buf,bufsize, parent), Unicast(false)
 {
     int pos=0;
     while(pos<bufsize)
@@ -117,6 +119,7 @@ TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
     clearContext();
 }
 
+
 void TClntOptIA_PD::firstPrefix()
 {
     SubOptions.first();
@@ -134,15 +137,17 @@ SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix()
     return SPtr<TClntOptIAPrefix>();
 }
 
-int TClntOptIA_PD::countPrefix()
+int TClntOptIA_PD::countPrefix() const
 {
-    SPtr< TOpt> ptr;
-    SubOptions.first();
+    const TOptList& opts = SubOptions.getSTL();
+
     int count = 0;
-    while ( ptr = SubOptions.get() ) {
-        if (ptr->getOptType() == OPTION_IAPREFIX)
-            count++;
+    for (TOptList::const_iterator opt = opts.begin(); opt != opts.end(); ++opt) {
+        if ((*opt)->getOptType() != OPTION_IAPREFIX)
+            continue;
+        count++;
     }
+
     return count;
 }
 
@@ -201,14 +206,17 @@ bool TClntOptIA_PD::doDuties()
 
 SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
 {
-   SPtr<TClntOptIAPrefix> optPrefix;
-    this->firstPrefix();
-    while(optPrefix=this->getPrefix())
-    {
-        //!memcmp(optAddr->getAddr(),addr,16)
-        if ((*prefix)==(*optPrefix->getPrefix()))
-            return optPrefix;
+    TOptList& opts = SubOptions.getSTL();
+
+    for (TOptList::iterator opt = opts.begin(); opt != opts.end(); ++opt) {
+        if ((*opt)->getOptType() != OPTION_IAPREFIX)
+            continue;
+        SPtr<TClntOptIAPrefix> iaprefix = (Ptr*) *opt;
+
+        if ((*prefix) == (*iaprefix->getPrefix()))
+            return iaprefix;
     }
+        //if ((*prefix)==(*optPrefix->getPrefix()))
     return 0;
 }
 
@@ -249,45 +257,58 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
     }
 
     if ( (mode==TClntIfaceMgr::PREFIX_MODIFY_ADD) || (mode==TClntIfaceMgr::PREFIX_MODIFY_UPDATE) ) {
-      if ( (T1_ == 0) && (T2_ == 0) ) {
-        firstPrefix();
-        if (prefix = getPrefix()) {
-            T1_ = prefix->getPref()/2;
-            T2_ = (int)((prefix->getPref())*0.7);
-            Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, 70% * prefered-lifetime): T1=" << T1_
-                      << ", T2=" << T2_ << LogEnd;
+        if ( (T1_ == 0) && (T2_ == 0) ) {
+            TOptList& opts = SubOptions.getSTL();
+            for (TOptList::iterator it = opts.begin(); it != opts.end(); ++it) {
+                if ((*it)->getOptType() != OPTION_IAPREFIX)
+                    continue;
+                prefix = (Ptr*)(*it);
+                T1_ = prefix->getPref()/2;
+                T2_ = (int)((prefix->getPref())*0.7);
+                Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, "
+                    "70% * prefered-lifetime): T1=" << T1_ << ", T2=" << T2_ << LogEnd;
+            }
         }
-      }
+    }
+
+    SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(this->Iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable to set PD state for iaid=" << getIAID() << " received on interface "
+                   << "ifindex=" << Iface << ": No such interface in CfgMgr found." << LogEnd;
+        return false;
     }
 
     this->firstPrefix();
     while (prefix = this->getPrefix() ) {
         switch (mode) {
         case TClntIfaceMgr::PREFIX_MODIFY_ADD:
-            ClntAddrMgr().addPrefix(this->DUID, this->Prefix, this->Iface, IAID_, T1_, T2_,
+            ClntAddrMgr().addPrefix(this->DUID, this->Prefix, cfgIface->getName(), this->Iface, IAID_, T1_, T2_,
                                     prefix->getPrefix(), prefix->getPref(), prefix->getValid(),
                                     prefix->getPrefixLength(), false);
             status = ClntIfaceMgr().addPrefix(this->Iface, prefix->getPrefix(),
                                               prefix->getPrefixLength(),
-                                              prefix->getPref(), prefix->getValid());
+                                              prefix->getPref(), prefix->getValid(),
+                                              static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                    << T2_ << " seconds." << LogEnd;
             action = "addition";
             break;
         case TClntIfaceMgr::PREFIX_MODIFY_UPDATE:
-            ClntAddrMgr().updatePrefix(this->DUID, this->Prefix, this->Iface, IAID_, T1_, T2_,
+            ClntAddrMgr().updatePrefix(this->DUID, this->Prefix, cfgIface->getName(), this->Iface, IAID_, T1_, T2_,
                                        prefix->getPrefix(), prefix->getPref(),
                                        prefix->getValid(), prefix->getPrefixLength(), false);
             status = ClntIfaceMgr().updatePrefix(this->Iface, prefix->getPrefix(),
                                                  prefix->getPrefixLength(),
-                                                 prefix->getPref(), prefix->getValid());
+                                                 prefix->getPref(), prefix->getValid(),
+                                                 static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             Log(Debug) << "RENEW(IA_PD) will be sent (T1) after " << T1_ << ", REBIND (T2) after "
                        << T2_ << " seconds." << LogEnd;
             action = "update";
             break;
         case TClntIfaceMgr::PREFIX_MODIFY_DEL:
             ClntAddrMgr().delPrefix(ClntCfgMgr().getDUID(), IAID_, prefix->getPrefix(), false);
-            status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength() );
+            status = ClntIfaceMgr().delPrefix(this->Iface, prefix->getPrefix(), prefix->getPrefixLength(),
+                                              static_cast<TNotifyScriptParams*>(Parent->getNotifyScriptParams()));
             action = "delete";
             break;
         }
@@ -310,13 +331,17 @@ void TClntOptIA_PD::setIface(int iface) {
 }
 
 
-bool TClntOptIA_PD::isValid()
+bool TClntOptIA_PD::isValid() const
 {
-    SPtr<TClntOptIAPrefix> prefix;
-    this->firstPrefix();
-    while (prefix = this->getPrefix()) {
+    const TOptList& opts = SubOptions.getSTL();
+    
+    for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
+        if ((*it)->getOptType() != OPTION_IAPREFIX)
+            continue;
+        const TOptIAPrefix* prefix = (const TOptIAPrefix*)it->get();
+
         if (prefix->getPrefix()->linkLocal()) {
-            Log(Warning) << "Address " << prefix->getPrefix()->getPlain() << " used in IA (IAID="
+            Log(Warning) << "Prefix " << prefix->getPrefix()->getPlain() << " used in IA_PD (IAID="
                          << IAID_ << ") is link local. The whole IA option is considered invalid."
                          << LogEnd;
             return false;
@@ -340,6 +365,11 @@ bool TClntOptIA_PD::isValid()
 void TClntOptIA_PD::setState(EState state)
 {
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(this->Iface);
+    if (!cfgIface) {
+        Log(Error) << "Unable to set PD state for iaid=" << getIAID() << " received on interface "
+                   << "ifindex=" << Iface << ": No such interface in CfgMgr found." << LogEnd;
+        return;
+    }
 
     SPtr<TClntCfgPD> cfgPD = cfgIface->getPD(getIAID());
     if (!cfgPD) {

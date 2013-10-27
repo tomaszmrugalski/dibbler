@@ -1,9 +1,15 @@
 *.o
+*.obj
 *.a
 *.Po
 *.lo
 *.la
 *~
+*.log
+*.trs
+TAGS
+dibbler-?.?.?
+dibbler-?.?.?-git
 dibbler-client
 dibbler-server
 dibbler-relay
@@ -40,6 +46,26 @@ Port-win32/Debug*
 Port-win32/*.user
 Port-win32/dibbler-win32.vs2008.ncb
 Port-win32/dibbler-win32.vs2008.suo
+ClntCfgMgr/ClntParser.output
+RelCfgMgr/RelParser.output
+SrvCfgMgr/SrvParser.output
+autom4te.cache
+bison++/bison++
+bison++/config.log
+bison++/config.status
+bison++/configure.log
+config.log
+config.status
+doc/doxygen.cfg
+include/dibbler-config.h
+AddrMgr/tests/AddrMgr_tests
+CfgMgr/tests/CfgMgr_tests
+IfaceMgr/tests/DnsUpdate_tests
+Misc/tests/Misc_tests
+Options/tests/Opt_tests
+SrvCfgMgr/tests/SrvCfgMgr_tests
+poslib/tests/tsig_tests
+tests/Srv/Srv_tests
 
 # Compiled Object files
 *.slo

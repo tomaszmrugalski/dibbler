@@ -36,7 +36,7 @@ using namespace std;
 /// @param T1 T1 timer value to be used.
 /// @param T2 T2 timer value to be used.
 /// @param parent Pointer to parent message.
-TSrvOptIA_NA::TSrvOptIA_NA( long IAID, long T1, long T2, TMsg* parent)
+TSrvOptIA_NA::TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent)
     :TOptIA_NA(IAID, T1, T2, parent), Iface(parent->getIface()) {
 }
 
@@ -118,8 +118,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     ClntAddr = queryMsg->getAddr();
     ClntDuid  = queryMsg->getClientDUID();
 
-    /// @todo: SOLICIT with RAPID COMMIT should set this to true
-    bool quiet = false;
+    // true for advertise, false for everything else
+    bool quiet = (parent->getType()==ADVERTISE_MSG);
 
     // --- LEASE ASSIGN STEP 3: check if client already has binding
     if (renew(queryOpt, false)) {
@@ -129,7 +129,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     }
 
     // --- LEASE ASSIGN STEP 4: Try to find fixed lease
-    if (assignFixedLease(queryOpt)) {
+    if (assignFixedLease(queryOpt, quiet)) {
         return;
     }
 
@@ -208,23 +208,24 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 /// @return true, if address was assigned
 bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
     SPtr<TIPv6Addr> candidate;
-    if (candidate = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_IA)) {
+    if (candidate = SrvAddrMgr().getCachedEntry(ClntDuid, IATYPE_IA)) {
         SPtr<TSrvCfgAddrClass> pool = SrvCfgMgr().getClassByAddr(Iface, candidate);
         if (pool) {
 	    Log(Info) << "Cache: Cached address " << *candidate << " found. Welcome back." << LogEnd;
-	    if (SrvAddrMgr().addrIsFree(candidate)) {
+
+	    if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate)) {
                 if (assignAddr(candidate, pool->getPref(), pool->getValid(), quiet))
                     return true;
                 // WTF? Address is free, buy we can't assign it?
-                Log(Error) << "Failed to assign cached address that is empty. Strange." << LogEnd;
+                Log(Error) << "Failed to assign cached address that seems unused. Strange." << LogEnd;
 		return false;
             }
-	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used." << LogEnd;
-	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
+	    Log(Info) << "Unfortunately, " << candidate->getPlain() << " is already used or reserved." << LogEnd;
+	    SrvAddrMgr().delCachedEntry(candidate, IATYPE_IA);
             return false;
 	} else {
 	    Log(Warning) << "Cache: Cached address " << *candidate << " found, but it is no longer valid." << LogEnd;
-	    SrvAddrMgr().delCachedEntry(candidate, TAddrIA::TYPE_IA);
+	    SrvAddrMgr().delCachedEntry(candidate, IATYPE_IA);
             return false;
 	}// else
     }
@@ -232,13 +233,12 @@ bool TSrvOptIA_NA::assignCachedAddr(bool quiet) {
     return false;
 }
 
-
 /// @brief Tries to assign fixed (reserved) lease.
 ///
 /// @param req client's IA_NA (used for trying to assign as close T1,T2,pref,valid values as possible)
 ///
 /// @return true, if assignment was successful, false if there are no fixed-leases reserved
-bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
+bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet) {
     // is there any specific address reserved for this client? (exception mechanism)
     SPtr<TIPv6Addr> reservedAddr = getExceptionAddr();
     if (!reservedAddr) {
@@ -283,6 +283,9 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
         
         SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
         
+        SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+        SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
+
         return true;
     }
     
@@ -296,6 +299,8 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req) {
     SubOptions.append(optAddr);
     
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
+    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+    SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
     
     return true;
 }
@@ -370,7 +375,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
     return 0;
 }
 
-// constructor used only in RENEW, REBIND, CONFIRM,DECLINE and RELEASE
+// constructor used only in RENEW, REBIND, DECLINE and RELEASE
 TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
                  SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> clntDuid,
                  int iface, unsigned long &addrCount, int msgType , TMsg* parent)
@@ -397,9 +402,6 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
         break;
     case RELEASE_MSG:
         this->release(queryOpt, addrCount);
-        break;
-    case CONFIRM_MSG:
-        this->confirm(queryOpt, addrCount);
         break;
     case DECLINE_MSG:
         this->decline(queryOpt, addrCount);
@@ -523,49 +525,6 @@ void TSrvOptIA_NA::release(SPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount) {
 }
 
-void TSrvOptIA_NA::confirm(SPtr<TSrvOptIA_NA> queryOpt,
-                           unsigned long &addrCount)
-{
-    SPtr<TSrvOptIA_NA> ia = queryOpt;
-    SPtr<TOpt> subOpt;
-    bool NotOnLink = false;
-
-    ia->firstOption();
-    while ( subOpt = ia->getOption() ) {
-        if (subOpt->getOptType() != OPTION_IAADDR)
-            continue;
-
-        SPtr<TSrvOptIAAddress> optAddr = (Ptr*)subOpt;
-
-        /// @todo: proper check if the addresses are valid or not should be performed
-        SPtr<TSrvCfgAddrClass> ptrClass;
-        ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, optAddr->getAddr());
-        if (!ptrClass)
-        {
-            NotOnLink = true;
-            break;
-        }
-
-        // set IA Address suboptions and IA
-        optAddr->setPref( ptrClass->getPref(DHCPV6_INFINITY) );
-        optAddr->setValid( ptrClass->getValid(DHCPV6_INFINITY) );
-
-        this->setT1( ptrClass->getT1(DHCPV6_INFINITY) );
-        this->setT2( ptrClass->getT2(DHCPV6_INFINITY) );
-
-        SPtr<TOptIAAddress> myOptAddr;
-        myOptAddr = new TSrvOptIAAddress(optAddr->getAddr(), optAddr->getPref(),
-                                       optAddr->getValid(),this->Parent);
-        SubOptions.append( (Ptr*)myOptAddr );
-    }
-
-
-    if (NotOnLink)
-        SubOptions.append(new TOptStatusCode(STATUSCODE_NOTONLINK,
-                                             "Those addresses are not valid on this link.",this->Parent ));
-
-}
-
 void TSrvOptIA_NA::decline(SPtr<TSrvOptIA_NA> queryOpt,
                            unsigned long &addrCount)
 {
@@ -662,7 +621,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
 
 bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     // worst case: address does not belong to supported class
-    // or specified hint is invalid
+    // or specified hint is invalid (or there was no hint at all)
     SPtr<TIPv6Addr> candidate;
     SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
     if (!iface) {
@@ -672,19 +631,30 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
     SPtr<TSrvCfgAddrClass> pool = iface->getRandomClass(ClntDuid, ClntAddr);
 
     if (!pool) {
-	Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
-	return 0;
+        Log(Warning) << "Unable to find any suitable (allowed, non-full) class for this client." << LogEnd;
+        return 0;
     }
 
     if (pool->clntSupported(ClntDuid, ClntAddr, queryMsg) &&
         pool->getAssignedCount() < pool->getClassMaxLease() ) {
 
-        do {
-            candidate = pool->getRandomAddr();
-        } while (!SrvAddrMgr().addrIsFree(candidate));
-        return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
-    }
+        int safety = 0;
 
+        while (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            candidate = pool->getRandomAddr();
+
+            if (SrvAddrMgr().addrIsFree(candidate) && !SrvCfgMgr().addrReserved(candidate))
+                break;
+
+            safety++;
+        }
+        if (safety < SERVER_MAX_IA_RANDOM_TRIES) {
+            return assignAddr(candidate, pool->getPref(), pool->getValid(), quiet);
+        } else {
+            Log(Error) << "Unable to randomly choose address after " << SERVER_MAX_IA_RANDOM_TRIES << " tries." << LogEnd;
+            return false;
+        }
+    }
     return false;
 }
 

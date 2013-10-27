@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
@@ -27,7 +28,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
 #include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
@@ -48,10 +48,10 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-List(DigestTypes)   DigestLst;                                              \
+DigestTypesLst      DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(THostID) PresentStationLst;                                         \
+List(THostID) PresentStationLst;                                            \
 List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;                                         \
@@ -299,7 +299,7 @@ typedef
 #define	IA_	283
 #define	TA_	284
 #define	IAID_	285
-#define	ADDRESS_	286
+#define	ADDRESS_KEYWORD_	286
 #define	NAME_	287
 #define	IPV6ADDR_	288
 #define	WORKDIR_	289
@@ -316,37 +316,41 @@ typedef
 #define	DUID_	300
 #define	STRICT_RFC_NO_ROUTING_	301
 #define	SKIP_CONFIRM_	302
-#define	PD_	303
-#define	PREFIX_	304
-#define	DOWNLINK_PREFIX_IFACES_	305
-#define	DUID_TYPE_	306
-#define	DUID_TYPE_LLT_	307
-#define	DUID_TYPE_LL_	308
-#define	DUID_TYPE_EN_	309
-#define	AUTH_ENABLED_	310
-#define	AUTH_ACCEPT_METHODS_	311
-#define	DIGEST_NONE_	312
-#define	DIGEST_PLAIN_	313
-#define	DIGEST_HMAC_MD5_	314
-#define	DIGEST_HMAC_SHA1_	315
-#define	DIGEST_HMAC_SHA224_	316
-#define	DIGEST_HMAC_SHA256_	317
-#define	DIGEST_HMAC_SHA384_	318
-#define	DIGEST_HMAC_SHA512_	319
-#define	STATELESS_	320
-#define	ANON_INF_REQUEST_	321
-#define	INSIST_MODE_	322
-#define	INACTIVE_MODE_	323
-#define	EXPERIMENTAL_	324
-#define	ADDR_PARAMS_	325
-#define	REMOTE_AUTOCONF_	326
-#define	AFTR_	327
-#define	ROUTING_	328
-#define	ADDRESS_LIST_	329
-#define	STRING_KEYWORD_	330
-#define	DUID_KEYWORD_	331
-#define	REQUEST_	332
-#define	RECONFIGURE_	333
+#define	OBEY_RA_BITS_	303
+#define	PD_	304
+#define	PREFIX_	305
+#define	DOWNLINK_PREFIX_IFACES_	306
+#define	DUID_TYPE_	307
+#define	DUID_TYPE_LLT_	308
+#define	DUID_TYPE_LL_	309
+#define	DUID_TYPE_EN_	310
+#define	AUTH_METHODS_	311
+#define	AUTH_PROTOCOL_	312
+#define	AUTH_ALGORITHM_	313
+#define	AUTH_REPLAY_	314
+#define	AUTH_REALM_	315
+#define	DIGEST_NONE_	316
+#define	DIGEST_PLAIN_	317
+#define	DIGEST_HMAC_MD5_	318
+#define	DIGEST_HMAC_SHA1_	319
+#define	DIGEST_HMAC_SHA224_	320
+#define	DIGEST_HMAC_SHA256_	321
+#define	DIGEST_HMAC_SHA384_	322
+#define	DIGEST_HMAC_SHA512_	323
+#define	STATELESS_	324
+#define	ANON_INF_REQUEST_	325
+#define	INSIST_MODE_	326
+#define	INACTIVE_MODE_	327
+#define	EXPERIMENTAL_	328
+#define	ADDR_PARAMS_	329
+#define	REMOTE_AUTOCONF_	330
+#define	AFTR_	331
+#define	ROUTING_	332
+#define	ADDRESS_LIST_KEYWORD_	333
+#define	STRING_KEYWORD_	334
+#define	DUID_KEYWORD_	335
+#define	HEX_KEYWORD_	336
+#define	RECONFIGURE_	337
 
 
 #line 169 "../bison++/bison.h"
@@ -423,7 +427,7 @@ static const int PREFERRED_SERVERS_;
 static const int IA_;
 static const int TA_;
 static const int IAID_;
-static const int ADDRESS_;
+static const int ADDRESS_KEYWORD_;
 static const int NAME_;
 static const int IPV6ADDR_;
 static const int WORKDIR_;
@@ -440,6 +444,7 @@ static const int INTNUMBER_;
 static const int DUID_;
 static const int STRICT_RFC_NO_ROUTING_;
 static const int SKIP_CONFIRM_;
+static const int OBEY_RA_BITS_;
 static const int PD_;
 static const int PREFIX_;
 static const int DOWNLINK_PREFIX_IFACES_;
@@ -447,8 +452,11 @@ static const int DUID_TYPE_;
 static const int DUID_TYPE_LLT_;
 static const int DUID_TYPE_LL_;
 static const int DUID_TYPE_EN_;
-static const int AUTH_ENABLED_;
-static const int AUTH_ACCEPT_METHODS_;
+static const int AUTH_METHODS_;
+static const int AUTH_PROTOCOL_;
+static const int AUTH_ALGORITHM_;
+static const int AUTH_REPLAY_;
+static const int AUTH_REALM_;
 static const int DIGEST_NONE_;
 static const int DIGEST_PLAIN_;
 static const int DIGEST_HMAC_MD5_;
@@ -466,10 +474,10 @@ static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
 static const int ROUTING_;
-static const int ADDRESS_LIST_;
+static const int ADDRESS_LIST_KEYWORD_;
 static const int STRING_KEYWORD_;
 static const int DUID_KEYWORD_;
-static const int REQUEST_;
+static const int HEX_KEYWORD_;
 static const int RECONFIGURE_;
 
 
@@ -507,7 +515,7 @@ static const int RECONFIGURE_;
 	,IA_=283
 	,TA_=284
 	,IAID_=285
-	,ADDRESS_=286
+	,ADDRESS_KEYWORD_=286
 	,NAME_=287
 	,IPV6ADDR_=288
 	,WORKDIR_=289
@@ -524,37 +532,41 @@ static const int RECONFIGURE_;
 	,DUID_=300
 	,STRICT_RFC_NO_ROUTING_=301
 	,SKIP_CONFIRM_=302
-	,PD_=303
-	,PREFIX_=304
-	,DOWNLINK_PREFIX_IFACES_=305
-	,DUID_TYPE_=306
-	,DUID_TYPE_LLT_=307
-	,DUID_TYPE_LL_=308
-	,DUID_TYPE_EN_=309
-	,AUTH_ENABLED_=310
-	,AUTH_ACCEPT_METHODS_=311
-	,DIGEST_NONE_=312
-	,DIGEST_PLAIN_=313
-	,DIGEST_HMAC_MD5_=314
-	,DIGEST_HMAC_SHA1_=315
-	,DIGEST_HMAC_SHA224_=316
-	,DIGEST_HMAC_SHA256_=317
-	,DIGEST_HMAC_SHA384_=318
-	,DIGEST_HMAC_SHA512_=319
-	,STATELESS_=320
-	,ANON_INF_REQUEST_=321
-	,INSIST_MODE_=322
-	,INACTIVE_MODE_=323
-	,EXPERIMENTAL_=324
-	,ADDR_PARAMS_=325
-	,REMOTE_AUTOCONF_=326
-	,AFTR_=327
-	,ROUTING_=328
-	,ADDRESS_LIST_=329
-	,STRING_KEYWORD_=330
-	,DUID_KEYWORD_=331
-	,REQUEST_=332
-	,RECONFIGURE_=333
+	,OBEY_RA_BITS_=303
+	,PD_=304
+	,PREFIX_=305
+	,DOWNLINK_PREFIX_IFACES_=306
+	,DUID_TYPE_=307
+	,DUID_TYPE_LLT_=308
+	,DUID_TYPE_LL_=309
+	,DUID_TYPE_EN_=310
+	,AUTH_METHODS_=311
+	,AUTH_PROTOCOL_=312
+	,AUTH_ALGORITHM_=313
+	,AUTH_REPLAY_=314
+	,AUTH_REALM_=315
+	,DIGEST_NONE_=316
+	,DIGEST_PLAIN_=317
+	,DIGEST_HMAC_MD5_=318
+	,DIGEST_HMAC_SHA1_=319
+	,DIGEST_HMAC_SHA224_=320
+	,DIGEST_HMAC_SHA256_=321
+	,DIGEST_HMAC_SHA384_=322
+	,DIGEST_HMAC_SHA512_=323
+	,STATELESS_=324
+	,ANON_INF_REQUEST_=325
+	,INSIST_MODE_=326
+	,INACTIVE_MODE_=327
+	,EXPERIMENTAL_=328
+	,ADDR_PARAMS_=329
+	,REMOTE_AUTOCONF_=330
+	,AFTR_=331
+	,ROUTING_=332
+	,ADDRESS_LIST_KEYWORD_=333
+	,STRING_KEYWORD_=334
+	,DUID_KEYWORD_=335
+	,HEX_KEYWORD_=336
+	,RECONFIGURE_=337
 
 
 #line 215 "../bison++/bison.h"

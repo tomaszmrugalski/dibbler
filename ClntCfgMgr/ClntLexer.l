@@ -53,10 +53,11 @@ namespace std {
 [ \t]    ; // ignore TABs and spaces
 iface                 { return ClntParser::IFACE_;}
 no-config             { return ClntParser::NO_CONFIG_;}
-address               { return ClntParser::ADDRESS_;}
+address               { return ClntParser::ADDRESS_KEYWORD_;}
 string                { return ClntParser::STRING_KEYWORD_; }
 duid                  { return ClntParser::DUID_KEYWORD_; }
-address-list          { return ClntParser::ADDRESS_LIST_; }
+hex                   { return ClntParser::HEX_KEYWORD_; }
+address-list          { return ClntParser::ADDRESS_LIST_KEYWORD_; }
 name                  { return ClntParser::NAME_; }
 ia                    { return ClntParser::IA_;}
 ta                    { return ClntParser::TA_; }
@@ -99,6 +100,7 @@ rapid-commit          { return ClntParser::RAPID_COMMIT_;}
 reconfigure-accept    { return ClntParser::RECONFIGURE_; }
 unicast               { return ClntParser::UNICAST_; }
 strict-rfc-no-routing { return ClntParser::STRICT_RFC_NO_ROUTING_; }
+obey-ra-bits          { return ClntParser::OBEY_RA_BITS_; }
 prefix-delegation     { return ClntParser::PD_; }
 pd                    { return ClntParser::PD_; }
 prefix                { return ClntParser::PREFIX_; }
@@ -110,8 +112,11 @@ vendor-spec           { return ClntParser::VENDOR_SPEC_; }
 anonymous-inf-request { return ClntParser::ANON_INF_REQUEST_; }
 insist-mode           { return ClntParser::INSIST_MODE_; }
 inactive-mode         { return ClntParser::INACTIVE_MODE_; }
-auth-enabled          { return ClntParser::AUTH_ENABLED_; }
-auth-accept-methods   { return ClntParser::AUTH_ACCEPT_METHODS_; }
+auth-methods          { return ClntParser::AUTH_METHODS_; }
+auth-protocol         { return ClntParser::AUTH_PROTOCOL_; }
+auth-algorithm        { return ClntParser::AUTH_ALGORITHM_; }
+auth-replay           { return ClntParser::AUTH_REPLAY_; }
+auth-realm            { return ClntParser::AUTH_REALM_; }
 digest-none           { return ClntParser::DIGEST_NONE_; }
 digest-plain          { return ClntParser::DIGEST_PLAIN_; }
 digest-hmac-md5       { return ClntParser::DIGEST_HMAC_MD5_; }
@@ -126,7 +131,6 @@ downlink-prefix-ifaces { return ClntParser::DOWNLINK_PREFIX_IFACES_; }
 
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
-request               { return ClntParser::REQUEST_; }
 
 #.* ;
 

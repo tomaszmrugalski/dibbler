@@ -1,6 +1,10 @@
 AUTOMAKE_OPTIONS = foreign
 
-CODE_SUBDIRS = @PORT_SUBDIR@ Misc Options AddrMgr CfgMgr IfaceMgr Messages poslib
+CODE_SUBDIRS = @PORT_SUBDIR@ nettle 
+if HAVE_GTEST
+  CODE_SUBDIRS += tests/utils 
+endif
+CODE_SUBDIRS += Misc poslib Messages Options AddrMgr CfgMgr IfaceMgr
 CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
 CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
@@ -40,7 +44,8 @@ dibbler_client_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_client_LDADD += -L$(top_builddir)/ClntAddrMgr -lClntAddrMgr
 dibbler_client_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_client_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
-dibbler_client_LDADD += -L$(top_builddir)/poslib -lposlib
+dibbler_client_LDADD += -L$(top_builddir)/poslib -lPoslib
+dibbler_client_LDADD += -L$(top_builddir)/nettle -lNettle
 dibbler_client_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_client_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_client_LDADD +=                  -lOptions -lMessages
@@ -68,14 +73,15 @@ dibbler_server_LDADD += -L$(top_builddir)/SrvTransMgr -lSrvTransMgr
 dibbler_server_LDADD += -L$(top_builddir)/SrvAddrMgr -lSrvAddrMgr
 dibbler_server_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_server_LDADD += -L$(top_builddir)/AddrMgr -lAddrMgr
-dibbler_server_LDADD += -L$(top_builddir)/poslib -lposlib
+dibbler_server_LDADD += -L$(top_builddir)/poslib -lPoslib
 dibbler_server_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_server_LDADD += -L$(top_builddir)/Messages -lMessages
 dibbler_server_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_server_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_server_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_server_LDADD += -lSrvCfgMgr -lSrvMessages -lCfgMgr -lSrvOptions -lOptions
-dibbler_server_LDADD += -lIfaceMgr -lposlib -lMisc
+dibbler_server_LDADD += -lIfaceMgr -lPoslib -lMisc
+dibbler_server_LDADD += -L$(top_builddir)/nettle -lNettle
 
 relay: dibbler-relay
 
@@ -98,9 +104,9 @@ dibbler_relay_LDADD += -lRelCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/RelOptions -lRelOptions
 dibbler_relay_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
-dibbler_relay_LDADD += -L$(top_builddir)/poslib -lposlib
-dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
+dibbler_relay_LDADD += -L$(top_builddir)/poslib -lPoslib
 dibbler_relay_LDADD += -L$(top_builddir)/Messages -lMessages
+dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_relay_LDADD += -L$(top_builddir)/Misc -lMisc
 
@@ -119,9 +125,12 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
-nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
-nobase_dist_doc_DATA += scripts/notify-scripts/client-notify.sh scripts/notify-scripts/server-notify.sh
-nobase_dist_doc_DATA += scripts/bison-sanitizer.py scripts/remote-autoconf scripts/xtract_version
+nobase_dist_doc_DATA = ChangeLog LICENSE RELNOTES
+nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-linux.sh
+nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-macos.sh
+nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-bsd.sh
+nobase_dist_doc_DATA += scripts/notify-scripts/server-notify.sh
+nobase_dist_doc_DATA += scripts/bison-sanitizer.py scripts/remote-autoconf
 
 dist_noinst_DATA = m4/libtool.m4 m4/lt~obsolete.m4 m4/ltoptions.m4 m4/ltsugar.m4 m4/ltversion.m4
 dist_noinst_DATA += scripts

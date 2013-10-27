@@ -38,7 +38,6 @@ class TSrvOptIA_NA : public TOptIA_NA
     bool renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing);
     void rebind(SPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
     void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
-    void confirm(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
  private:
@@ -48,7 +47,7 @@ class TSrvOptIA_NA : public TOptIA_NA
     bool assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet);
     SPtr<TIPv6Addr> getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6Addr> hint);
     bool assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t valid, bool quiet);
-    bool assignFixedLease(SPtr<TSrvOptIA_NA> req);
+    bool assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet);
 
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;

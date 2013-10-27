@@ -10,20 +10,13 @@
  *
  */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef LINUX
-#include <netinet/in.h>
-#endif
-
 #include <sstream>
 #include "SrvOptIA_PD.h"
 #include "SrvOptIAPrefix.h"
 #include "OptStatusCode.h"
 #include "Logger.h"
 #include "AddrClient.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Msg.h"
 #include "SrvCfgMgr.h"
 
@@ -158,7 +151,7 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
     SPtr<TIPv6Addr> cached;
 
     if (hint->getPlain()==string("::") ) {
-        cached = SrvAddrMgr().getCachedEntry(ClntDuid, TAddrIA::TYPE_PD);
+        cached = SrvAddrMgr().getCachedEntry(ClntDuid, IATYPE_PD);
         if (cached)
             hint = cached;
     }
@@ -176,10 +169,17 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
         /// @todo: master had if (!fake) here, assign branch didn't. Find out which one was right
         // if (!fake)
         {
+            SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
+            if (!cfgIface) {
+                Log(Error) << "Missing configuration interface with ifindex=" << Iface << LogEnd;
+                return false;
+            }
+
             // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
             // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, this->Iface, IAID_, T1_, T2_,
-                                   prefix, this->Prefered, this->Valid, this->PDLength, false);
+            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, cfgIface->getName(), 
+                                   Iface, IAID_, T1_, T2_, prefix, Prefered, Valid,
+                                   this->PDLength, false);
 
             // but CfgMgr has to increase usage only once. Don't ask my why :)
             SrvCfgMgr().incrPrefixCount(Iface, prefix);
@@ -232,7 +232,8 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
     bool fake  = false; // is this assignment for real?
     if (msgType == SOLICIT_MSG)
         fake = true;
-    if (parent->getOption(OPTION_RAPID_COMMIT))
+
+    if (parent->getType() == REPLY_MSG)
         fake = false;
 
     switch (msgType) {
@@ -450,7 +451,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
 
         SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed in-pool prefix.", Parent));
 
-        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+        SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, iface->getName(), Iface, IAID_, 
+                               T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
 
         // but CfgMgr has to increase usage only once. Don't ask my why :)
         SrvCfgMgr().incrPrefixCount(Iface, reservedPrefix);
@@ -470,7 +472,8 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
 
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed out-of-pool address.", Parent));
 
-    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, Iface, IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
+    SrvAddrMgr().addPrefix(ClntDuid, this->ClntAddr, iface->getName(), Iface, 
+                           IAID_, T1_, T2_, reservedPrefix, pref, valid, ex->getPrefixLen(), false);
 
     return true;
 }
@@ -611,15 +614,14 @@ List(TIPv6Addr) TSrvOptIA_PD::getFreePrefixes(SPtr<TSrvMsg> clientMsg, SPtr<TIPv
         return lst;  // return empty list
     }
 
-
-    int attempts = 100;
+    int attempts = SERVER_MAX_PD_RANDOM_TRIES;
     while (attempts--) {
         List(TIPv6Addr) lst;
         lst = ptrPD->getRandomList();
         lst.first();
         bool allFree = true;
         while (prefix = lst.get()) {
-            if (!SrvAddrMgr().prefixIsFree(prefix)) {
+            if (!SrvAddrMgr().prefixIsFree(prefix) || SrvCfgMgr().prefixReserved(prefix)) {
                 allFree = false;
             }
         }

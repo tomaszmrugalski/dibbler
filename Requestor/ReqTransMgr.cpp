@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <sstream>
 #include "SocketIPv6.h"
 #include "ReqTransMgr.h"
@@ -20,6 +21,7 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "OptVendorSpecInfo.h"
+#include "hex.h"
 
 using namespace std;
 
@@ -588,7 +590,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 	    
 	    char *Message = new char[length+10];
 	    memcpy(Message,buf+pos+2,length-2);
-	    sprintf(Message+length-2, "(%d)", st);
+	    sprintf(Message+length-2, "(%u)", st);
 	    o = string(Message);
 	    delete [] Message;
 	    break;
@@ -651,16 +653,7 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 
 string ReqTransMgr::BinToString(char * buf, int bufLen)
 {
-    std::ostringstream o;
-    o << setfill('0');
-    for (int i=0; i<bufLen; i++) {
-	o << setw(2) << hex << (unsigned int)buf[i];
-	if (i+1!=bufLen) {
-	    o << ":";
-	}
-    }
-
-    return o.str();
+    return (hexToText((uint8_t*)buf, bufLen, true));
 }
 
 bool ReqTransMgr::RetryConnection()

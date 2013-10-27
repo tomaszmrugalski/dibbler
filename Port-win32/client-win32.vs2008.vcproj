@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;.;include;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories="..;.;include;..\nettle;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;YYDEBUG; _WIN32"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
@@ -55,7 +55,7 @@
 				TreatWChar_tAsBuiltInType="true"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="1"
+				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				DisableSpecificWarnings="4996"
@@ -133,13 +133,14 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..;.;include;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
+				AdditionalIncludeDirectories=".;..;..\nettle;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
+				DefaultCharIsUnsigned="true"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"
@@ -601,18 +602,6 @@
 					RelativePath="..\ClntOptions\ClntOptTimeZone.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptUserClass.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorClass.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorSpec.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="ClntMessages"
@@ -689,42 +678,6 @@
 					RelativePath="..\CfgMgr\HostRange.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\CfgMgr\TimeZone.cpp"
-					>
-					<FileConfiguration
-						Name="Debug32|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release32|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|x64"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|x64"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-				</File>
 			</Filter>
 			<Filter
 				Name="misc"
@@ -747,6 +700,10 @@
 				</File>
 				<File
 					RelativePath="..\Misc\FQDN.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Misc\hex.cpp"
 					>
 				</File>
 				<File
@@ -866,7 +823,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Misc\md5.c"
+					RelativePath="..\Misc\md5-coreutils.c"
 					>
 				</File>
 				<File
@@ -911,6 +868,10 @@
 				>
 				<File
 					RelativePath="..\poslib\dnsmessage.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\poslib\dnssec-sign.cpp"
 					>
 				</File>
 				<File
@@ -1130,6 +1091,42 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
+			<Filter
+				Name="nettle"
+				>
+				<File
+					RelativePath="..\nettle\base64-decode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\base64-encode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\base64-meta.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac-md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5-meta.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5.c"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\memxor.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -1204,10 +1201,6 @@
 				</File>
 				<File
 					RelativePath="..\CfgMgr\StationRange.h"
-					>
-				</File>
-				<File
-					RelativePath="..\CfgMgr\TimeZone.h"
 					>
 				</File>
 			</Filter>
@@ -1507,6 +1500,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Misc\hmac-sha-md5.h"
+					>
+				</File>
+				<File
 					RelativePath="..\misc\IPv6Addr.h"
 					>
 				</File>
@@ -1560,6 +1557,10 @@
 				</File>
 				<File
 					RelativePath=".\config.h"
+					>
+				</File>
+				<File
+					RelativePath=".\stdbool.h"
 					>
 				</File>
 				<File
@@ -1663,17 +1664,61 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="nettle"
+				>
+				<File
+					RelativePath="..\nettle\base64.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\cbc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\hmac.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\macros.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\md5.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\memxor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-internal.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-meta.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\nettle-types.h"
+					>
+				</File>
+				<File
+					RelativePath="..\nettle\sha.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\AUTHORS"
+			>
+		</File>
 		<File
 			RelativePath="..\Changelog"
 			>
 		</File>
 		<File
 			RelativePath=".\client-win32.vs2003.rc"
-			>
-		</File>
-		<File
-			RelativePath="..\GUIDELINES"
 			>
 		</File>
 		<File

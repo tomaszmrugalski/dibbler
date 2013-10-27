@@ -10,7 +10,7 @@
 
 #include "ClntParsGlobalOpt.h"
 #include "Portable.h"
-#include "DHCPConst.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
 
 using namespace std;
@@ -19,16 +19,12 @@ TClntParsGlobalOpt::TClntParsGlobalOpt()
     :TClntParsIfaceOpt() {
     this->WorkDir        = WORKDIR;
     this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
-    this->Digest         = CLIENT_DEFAULT_DIGEST;
     this->AnonInfRequest = false;
     this->InactiveMode   = false;
     this->InsistMode     = false;
     this->FQDNFlagS      = CLIENT_DEFAULT_FQDN_FLAG_S;
     this->Experimental   = false;
     this->UseConfirm     = true;
-
-    this->AuthEnabled    = false;
-    this->AuthAcceptMethods.clear();
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
@@ -48,14 +44,6 @@ void TClntParsGlobalOpt::setOnLinkPrefixLength(int len) {
 
 int TClntParsGlobalOpt::getOnLinkPrefixLength() {
     return PrefixLength;
-}
-
-void TClntParsGlobalOpt::setDigest(DigestTypes digest) {
-    this->Digest = digest;
-}
-
-DigestTypes TClntParsGlobalOpt::getDigest() {
-    return this->Digest;
 }
 
 void TClntParsGlobalOpt::setAnonInfRequest(bool anonymous) {
@@ -96,17 +84,6 @@ bool TClntParsGlobalOpt::getExperimental()
     return Experimental;
 }
 
-void TClntParsGlobalOpt::setAuthAcceptMethods(List(DigestTypes) lst)
-{
-    AuthAcceptMethods = lst;
-    Log(Debug) << "AUTH: " << lst.count() << " method(s) accepted." << LogEnd;
-}
-
-List(DigestTypes) TClntParsGlobalOpt::getAuthAcceptMethods()
-{
-    return AuthAcceptMethods;
-}
-
 void TClntParsGlobalOpt::setFQDNFlagS(bool s)
 {
     FQDNFlagS = s;
@@ -115,18 +92,6 @@ void TClntParsGlobalOpt::setFQDNFlagS(bool s)
 bool TClntParsGlobalOpt::getFQDNFlagS()
 {
     return FQDNFlagS;
-}
-
-void TClntParsGlobalOpt::setAuthEnabled(bool enabled)
-{
-    AuthEnabled = enabled;
-    Log(Debug) << "AUTH: Authentication " << (enabled?"enabled":"disabled")
-               << "." << LogEnd;
-}
-
-bool TClntParsGlobalOpt::getAuthEnabled()
-{
-    return AuthEnabled;
 }
 
 void TClntParsGlobalOpt::setConfirm(bool conf)

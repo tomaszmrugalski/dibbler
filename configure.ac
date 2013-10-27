@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.2], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [1.0.0RC1], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
@@ -13,6 +13,24 @@ AM_MAINTAINER_MODE([disable])
 
 # Poslib stuff
 AC_LANG_CPLUSPLUS
+
+dnl -- Check for Max OS x and define __APPLE_USE_RFC3542 if version needs
+system=`uname -s`
+s_version=`uname -r`
+case $system in
+    Darwin)
+	    case $s_version in
+            12*|13*)
+                AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
+                NEED_RFC_3542=yes
+		# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
+		;;
+	    *)
+		# Let's hope that madness will go way one day.
+	    ;;
+        esac
+    ;;
+esac
 
 dnl change this to [no] to have verbose build system
 dnl make V=0 and make V=1 will do the trick
@@ -74,8 +92,6 @@ AC_TYPE_UINT8_T
 
 # Checks for library functions.
 AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostname gethostbyname gettimeofday inet_ntoa inet_aton memchr memmove memset select socket strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
 CFLAGS="$CFLAGS_SAVED"
@@ -201,32 +217,43 @@ dnl ---------------------------------------------
 dnl Detect OS (will be used to select proper port
 dnl ---------------------------------------------
   AC_MSG_CHECKING(which port is appropriate for this system)
-  system=`uname -s`
+# system=`uname -s`
   case $system in
     Linux)
       ARCH="LINUX"
       PORT_SUBDIR="Port-linux"
-      PORT_CFLAGS=
-      PORT_LDFLAGS="-lpthread"
-      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k"
+      PORT_CFLAGS=""
+      PORT_LDFLAGS=""
+      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=
+      PORT_CFLAGS=""
+      if test "$NEED_RFC_3542" == "yes"; then
+        PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
+      fi
       PORT_LDFLAGS=
-      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
       ;;
     OpenBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
-      PORT_CFLAGS=-DOPENBSD
+      PORT_CFLAGS="-DOPENBSD"
       PORT_LDFLAGS=
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
+      ;;
+    SunOS)
+      ARCH="SUNOS"
+      PORT_SUBDIR="Port-sun"
+      PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__"
+      PORT_LDFLAGS="-lsocket -lnsl"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
       ;;
     MINGW32*)
       ARCH="WIN2K"
       PORT_LDFLAGS = "-lws2_32"
-      PORT_CFLAGS  = "-DMINGWBUILD"
+      PORT_CFLAGS  = "-std=c99 -DMINGWBUILD"
       PORT_SUBDIR  = "Port-win2k"
       EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
@@ -236,7 +263,7 @@ dnl ---------------------------------------------
   esac
   AC_MSG_RESULT($PORT_SUBDIR)
 
-CFLAGS="${CFLAGS} -std=c99 ${PORT_CFLAGS}"
+CFLAGS="${CFLAGS} ${PORT_CFLAGS}"
 LDFLAGS="${LDFLAGS} ${PORT_LDFLAGS}"
 CPPFLAGS="${CPPFLAGS} -D${ARCH}"
 
@@ -324,9 +351,30 @@ dnl ------------------------------------------------------------
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_BIND_REUSE"
    fi
 
+### reusing dst addr filter ####################
+   AC_ARG_ENABLE(dst-addr-filter,
+        [  --enable-dst-addr-check Enables server checks of dst address vs socket binding address (default: no)],
+        [ case "${enableval}" in
+              yes)
+              MOD_SRV_DST_ADDR_CHECK=yes
+              ;;
+              no)
+              MOD_SRV_DST_ADDR_CHECK=no
+              ;;
+              *)
+              AC_MSG_ERROR(bad value ${enableval} for --enable-dst-addr-check)
+              ;;
+           esac],
+        [MOD_SRV_DST_ADDR_CHECK=yes]
+   )
+
+AM_CONDITIONAL(MOD_SRV_DST_ADDR_CHECK, test $MOD_SRV_DST_ADDR_CHECK = yes)
+AM_COND_IF([MOD_SRV_DST_ADDR_CHECK], [AC_DEFINE([MOD_SRV_DST_ADDR_CHECK], [1],
+           [Support for server checks if incoming destination addr matches socket address])])
+
 ### support for resolvconf tool (mostly Debian, probably) ##############
    AC_ARG_ENABLE(resolvconf,
-	[  --enable-resolvconf	   Enables support for resolvconf (/sbin/resolvcof) (default: no)],
+	[  --enable-resolvconf	  Enables support for resolvconf (/sbin/resolvcof) (default: no)],
 	[ case "${enableval}" in
 	       yes)
 	       MOD_RESOLVCONF=yes
@@ -401,10 +449,15 @@ AC_ARG_WITH(gtest,
 
 if test "$gtest_path" != "no"
 then
-	GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-	GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-	GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-	GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    if test -x "${gtest_path}/scripts/gtest-config"
+    then
+        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+        GTEST_LDADD=`${GTEST_CONFIG} --libs`
+    else
+        AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
+    fi
 fi
 
 AC_SUBST(GTEST_INCLUDES)
@@ -430,6 +483,13 @@ AC_SUBST(GTEST_LDADD)
 
    if test x$MOD_CLNT_CONFIRM = xyes; then
       CPPFLAGS="${CPPFLAGS} -DMOD_CLNT_CONFIRM"
+   fi
+
+   if test x$MOD_CLNT_CONFIRM = xyes && test $ARCH = LINUX ; then
+      echo "Link state detection enabled on Linux, adding -lpthreads"
+   LDFLAGS="${LDFLAGS} -lpthread"
+   else
+      echo "Link state detection disabled or this is not Linux, NOT adding -lpthreads"
    fi
 
 ### Remote autoconf ######################################
@@ -479,13 +539,62 @@ AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
 
-AC_OUTPUT(Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile $PORT_SUBDIR/Makefile AddrMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile Port-linux/Makefile Port-bsd/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg CfgMgr/tests/Makefile tests/Makefile tests/Srv/Makefile)
+AC_OUTPUT(
+Makefile
+AddrMgr/Makefile
+CfgMgr/Makefile
+ClntAddrMgr/Makefile
+ClntCfgMgr/Makefile
+ClntIfaceMgr/Makefile
+ClntMessages/Makefile
+ClntOptions/Makefile
+ClntTransMgr/Makefile
+IfaceMgr/Makefile
+Messages/Makefile
+Misc/Makefile
+Options/Makefile
+RelCfgMgr/Makefile
+RelIfaceMgr/Makefile
+RelMessages/Makefile
+RelOptions/Makefile
+RelTransMgr/Makefile
+Requestor/Makefile
+SrvAddrMgr/Makefile
+SrvCfgMgr/Makefile
+SrvIfaceMgr/Makefile
+SrvMessages/Makefile
+SrvOptions/Makefile
+SrvTransMgr/Makefile
+poslib/Makefile
+nettle/Makefile
+$PORT_SUBDIR/Makefile
+Port-linux/Makefile
+Port-bsd/Makefile
+Port-sun/Makefile
+Port-win32/Makefile
+Port-winnt2k/Makefile
+doc/Makefile
+Misc/Portable.h
+doc/doxygen.cfg
+doc/version.tex
+AddrMgr/tests/Makefile
+IfaceMgr/tests/Makefile
+Options/tests/Makefile
+SrvCfgMgr/tests/Makefile
+CfgMgr/tests/Makefile
+poslib/tests/Makefile
+Misc/tests/Makefile
+tests/Makefile
+tests/Srv/Makefile
+tests/utils/Makefile)
 
 dnl ----------------------------------------
 dnl Print out configured parameters
 dnl ----------------------------------------
 echo
+echo "Dibbler version               : $PACKAGE_VERSION"
 echo "Selected OS port              : $PORT_SUBDIR"
+echo "Actual OS                     : $system $s_version"
 echo "Debug                         : $debug"
 echo "Electric fence                : $efence"
 echo "Socket bind reuse             : $MOD_CLNT_BIND_REUSE"

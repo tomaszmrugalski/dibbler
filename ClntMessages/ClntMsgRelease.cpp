@@ -29,11 +29,11 @@
 
 using namespace std;
 
-/** 
+/**
  * create RELEASE message
- * 
- * @param iface 
- * @param addr 
+ *
+ * @param iface
+ * @param addr
  * @param iaLst - IA_NA list, which are served by on server on one link
  * @param ta    - IA_TA to be released
  * @param pdLst - IA_PD list to be released
@@ -45,7 +45,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
   :TClntMsg(iface, addr, RELEASE_MSG)
 {
     SPtr<TDUID> srvDUID;
-    
+
     IRT=REL_TIMEOUT;
     MRT=0;
     MRC=REL_MAX_RC;
@@ -56,7 +56,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     SPtr<TAddrIA> x = 0;
     if (iaLst.count()) {
         iaLst.first();
-        x=iaLst.get();
+        x = iaLst.get();
     }
     if (!x)
         x = ta;
@@ -79,55 +79,53 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     Options.push_back(new TOptDUID(OPTION_SERVERID, srvDUID,this));
     Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(),this));
 
-#if 0
-    if (ClntCfgMgr().getNotifyScripts()) {
-	// release workaround (add removed IAs)
-        /// @todo: WTF? Why are those IAs removed?
-        iaLst.first();
-        SPtr<TAddrIA> ia;
-	while (ia = iaLst.get()) 
-	{
-	    ClntAddrMgr().addIA(ia);
-	}
-	
-	
-	iaLst.first();
-	while (ia = iaLst.get())
-	{
-	    ClntAddrMgr().delIA(ia->getIAID());
-	}
-    }
-#endif
-
     // --- RELEASE IA ---
     iaLst.first();
     while(x=iaLst.get()) {
         Options.push_back(new TClntOptIA_NA(x,this));
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
-        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIface());
+        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIfindex());
+        if (!ptrIface) {
+            Log(Warning) << "Unable to find interface with ifindex "
+                         << x->getIfindex() << " while creating RELEASE." << LogEnd;
+            continue;
+        }
         x->firstAddr();
         while (ptrAddr = x->getAddr()) {
             ptrIface->delAddr(ptrAddr->get(), ptrAddr->getPrefix());
         }
 
-	// --- DNS Update ---
-	SPtr<TIPv6Addr> dns = x->getFQDNDnsServer();
-	if (dns) {
+        // --- DNS Update ---
+        SPtr<TIPv6Addr> dns = x->getFQDNDnsServer();
+        if (dns) {
             string fqdn = ptrIface->getFQDN();
-	    ClntIfaceMgr().fqdnDel(ptrIface, x, fqdn);
-	}
-	// --- DNS Update ---
+            ClntIfaceMgr().fqdnDel(ptrIface, x, fqdn);
+        }
+        // --- DNS Update ---
     }
-    
+
     // --- RELEASE TA ---
-    if (ta)
-	Options.push_back(new TClntOptTA(ta, this));
+    if (ta) {
+        Options.push_back(new TClntOptTA(ta, this));
+        SPtr<TClntIfaceIface> ptrIface;
+        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(ta->getIfindex());
+        if (ptrIface) {
+            SPtr<TAddrAddr> addr;
+            ta->firstAddr();
+            while (addr = ta->getAddr()) {
+                ptrIface->delAddr(addr->get(), addr->getPrefix());
+            }
+        } else {
+            Log(Warning) << "Unable to find interface with ifindex "
+                         << ta->getIfindex() << " while creating RELEASE." << LogEnd;
+        }
+    }
 
     // --- RELEASE PD ---
 
     SPtr<TAddrIA> pd = 0;
-    
+
     pdLst.first();
     while(pd=pdLst.get()) {
         SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
@@ -147,29 +145,35 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 
 void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
 {
-    SPtr<TOptDUID> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SPtr<TOptDUID> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
-    if ((!repSrvID)||
-        (!(*msgSrvID->getDUID()==*repSrvID->getDUID()))) {
-	Log(Error) << "Internal error. RELEASE sent to server with DUID=" << msgSrvID->getPlain()
-		   << ", but response returned with " << repSrvID->getPlain() << LogEnd;
-       return;
+    SPtr<TOptDUID> rspSrvID = (Ptr*) rep->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> msgSrvID = (Ptr*) getOption(OPTION_SERVERID);
+    if (!rspSrvID) {
+        Log(Warning) << "Received reply to RELEASE without SERVER-ID option." << LogEnd;
     }
-    IsDone=true;   
+
+    if (!msgSrvID) {
+        Log(Error) << "Sent RELEASE did not contain SERVER-ID. That seems to be my fault. Sorry." << LogEnd;
+    }
+
+    if (rspSrvID && msgSrvID &&
+        (!(*msgSrvID->getDUID()==*rspSrvID->getDUID()))) {
+        Log(Error) << "Internal error. RELEASE sent to server with DUID=" << msgSrvID->getPlain()
+                   << ", but response returned with " << rspSrvID->getPlain() << LogEnd;
+    }
+
+    IsDone = true; // we don't care. We sent release, we are shutting down anyway.
 }
 
-void TClntMsgRelease::doDuties()
-{
+void TClntMsgRelease::doDuties() {
     if (RC!=MRC)
-       	send();
+        send();
     else
        IsDone=true;
     return;
 }
 
-bool TClntMsgRelease::check()
-{
-	return false;
+bool TClntMsgRelease::check() {
+    return false;
 }
 
 std::string TClntMsgRelease::getName() const {

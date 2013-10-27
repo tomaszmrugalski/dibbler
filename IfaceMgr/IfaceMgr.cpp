@@ -9,10 +9,12 @@
  */
 
 #include <string.h>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 #include <errno.h>
 #include "Portable.h"
 #include "IfaceMgr.h"
@@ -67,10 +69,14 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
                                                        ptr->globaladdr,
                                                        ptr->globaladdrcount,
                                                        ptr->hardwareType));
+        iface->setMBit(ptr->m_bit);
+        iface->setOBit(ptr->o_bit);
         this->IfaceLst.append(iface);
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
+
+    dump();
 }
 
 /*
@@ -136,16 +142,14 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
     return 0;
 }
 
-/*
- * tries to read data from any socket on all interfaces
- * returns after time seconds.
- * @param time listens for time seconds
- * @param buf buffer
- * @param bufsize buffer size
- * @param peer informations about sender
- *
- * @return socket descriptor (or 0)
- */
+/// tries to read data from any socket on all interfaces
+/// returns after time seconds.
+/// @param time listens for time seconds
+/// @param buf buffer
+/// @param bufsize buffer size
+/// @param peer informations about sender
+///
+/// @return socket descriptor (or negative values for errors)
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer, bool tcpClient) {
     struct timeval czas;
@@ -167,22 +171,32 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     fds = *TIfaceSocket::getFDS();
 
     int maxFD;
-    //maxFD = FD_SETSIZE;
     maxFD = TIfaceSocket::getMaxFD() + 1;
 
-    result = ::select(maxFD,&fds,NULL, NULL, &czas);
+    // no sockets to listen  on... hopefully this is just inactive mode,
+    // not an error
+    if (!TIfaceSocket::getCount()) {
+        Log(Debug) << "No sockets open. Sleeping for " << time << " seconds." << LogEnd;
+#ifdef WIN32
+        Sleep(time*1000); // Windows sleep is specified in milliseconds
+#else
+        sleep(time); // Posix sleep is specified in seconds
+#endif
+        return 0;
+    }
+    result = ::select(maxFD, &fds, NULL, NULL, &czas);
 
     // something received
 
     if (result==0) { // timeout, nothing received
         bufsize = 0;
-        return 0;
+        return -1;
     }
     if (result<0) {
         char buf[512];
         strncpy(buf, strerror(errno),512);
         Log(Debug) << "Failed to read sockets (select() returned " << result << "), error=" << buf << LogEnd;
-        return 0;
+        return -1;
     }
 
     SPtr<TIfaceIface> iface;
@@ -206,7 +220,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
 
     if (!found) {
         Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
-        return 0;
+        return -1;
     }
 
     char myPlainAddr[48];   // my plain address
@@ -266,7 +280,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
         return -1;
     }
 
-#ifndef WIN32
+#ifdef MOD_SRV_DST_ADDR_CHECK
     // check if we've received data addressed to us. There's problem with sockets binding.
     // If there are 2 open sockets (one bound to multicast and one to global address),
     // each packet sent on multicast address is also received on unicast socket.
@@ -277,7 +291,7 @@ int TIfaceMgr::select(unsigned long time, char *buf,
             Log(Debug) << "Received data on address " << myPlainAddr << ", expected "
                    << *sock->getAddr() << ", message ignored." << LogEnd;
             bufsize = 0;
-            return 0;
+            return -1;
     }
 #endif
 
@@ -308,6 +322,7 @@ void TIfaceMgr::dump()
  */
 TIfaceMgr::~TIfaceMgr()
 {
+    closeSockets();
 }
 
 string TIfaceMgr::printMac(char * mac, int macLen) {
@@ -450,6 +465,7 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         break;
     case RENEW_MSG:
     case REBIND_MSG:
+    case INFORMATION_REQUEST_MSG:
         action = "update";
         break;
     default:
@@ -472,7 +488,14 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
     params.addParam("IFINDEX", tmp.str().c_str());
     tmp.str("");
 
-    params.addParam("REMOTE_ADDR", reply->getAddr()->getPlain());
+    string remote;
+    if (reply->getAddr()) {
+      remote = reply->getAddr()->getPlain();
+    } else {
+      remote = string(ALL_DHCP_RELAY_AGENTS_AND_SERVERS);
+    }
+
+    params.addParam("REMOTE_ADDR", remote);
 
     params.addParam("CLNT_MESSAGE", question->getName());
 
@@ -484,18 +507,27 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         optionToEnv(params, opt, "SRV");
     }
 
-#if 0
     // add options from client message
     question->firstOption();
     while( SPtr<TOpt> opt = question->getOption() ) {
         optionToEnv(params, opt, "CLNT");
     }
-#endif
 
     notifyScript(scriptName, action, params);
 }
 
+/// @brief closes all sockets
+void TIfaceMgr::closeSockets() {
+    Log(Debug) << "Closing all sockets." << LogEnd;
+    firstIface();
+    while (SPtr<TIfaceIface> iface = getIface()) {
+        iface->firstSocket();
 
+        while (SPtr<TIfaceSocket> socket = iface->getSocket()) {
+            iface->delSocket(socket->getFD());
+        }
+    }
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

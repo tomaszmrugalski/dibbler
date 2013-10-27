@@ -3,10 +3,9 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Grzegorz Pluto
  *
  * released under GNU GPL v2 only licence
- *
- * $Id: SrvTransMgr.h,v 1.12 2008-10-12 20:10:25 thomson Exp $
  *
  */
 
@@ -29,10 +28,10 @@ class TSrvTransMgr
 {
     friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
   public:
-    static void instanceCreate(const std::string config);
+    static void instanceCreate(const std::string& config, int port);
     static TSrvTransMgr &instance();
 
-    bool openSocket(SPtr<TSrvCfgIface> confIface);
+    bool openSocket(SPtr<TSrvCfgIface> confIface, int port);
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
@@ -48,19 +47,28 @@ class TSrvTransMgr
     void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
 #endif
 
+    bool sanitizeAddrDB();
+
     void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
                        std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
 
     void notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
-                          TAddrIA::TIAType type);
+                          TIAType type);
 
     char * getCtrlAddr();
     int    getCtrlIface();
 
+    int checkReconfigures();
+
+    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
+                         int msgType, SPtr<TDUID> ptrDUID);
+
+    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+
     // not private, as we need to instantiate derived SrvTransMgr in tests
   protected:
-    TSrvTransMgr(std::string xmlFile);
+    TSrvTransMgr(std::string xmlFile, int port);
     ~TSrvTransMgr();
 
     std::string XmlFile;
@@ -70,13 +78,11 @@ class TSrvTransMgr
     int ctrlIface;
     char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
 
-    //SPtr<TSrvMsg> requestMsg; /// @todo: Remove this field and do the REQUEST handling properly
-
     static TSrvTransMgr * Instance;
+
+    int port_;
 };
 
 
 
 #endif
-
-

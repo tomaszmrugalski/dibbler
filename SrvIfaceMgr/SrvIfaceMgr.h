@@ -14,33 +14,34 @@
 
 #include "SmartPtr.h"
 #include "IfaceMgr.h"
-#include "SrvIfaceIface.h"
+#include "Iface.h"
 #include "SrvMsg.h"
 
 #define SrvIfaceMgr() (TSrvIfaceMgr::instance())
 
 class TSrvIfaceMgr :public TIfaceMgr {
  public:
-   static void instanceCreate(const std::string xmlDumpFile);
+   static void instanceCreate(const std::string& xmlDumpFile);
    static TSrvIfaceMgr &instance();
 
    ~TSrvIfaceMgr();
    friend std::ostream & operator <<(std::ostream & strum, TSrvIfaceMgr &x);
 
-   SPtr<TSrvMsg> decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeMsg(int ifindex,
                            SPtr<TIPv6Addr> peer,
                            char * buf, int bufsize);
 
-   SPtr<TSrvMsg> decodeRelayForw(SPtr<TSrvIfaceIface> ptrIface,
+   SPtr<TSrvMsg> decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                                  SPtr<TIPv6Addr> peer,
                                  char * buf, int bufsize);
 
-   bool setupRelay(std::string name, int ifindex, int underIfindex,
-                   SPtr<TSrvOptInterfaceID> interfaceID);
+   //bool setupRelay(std::string name, int ifindex, int underIfindex,
+   //                SPtr<TSrvOptInterfaceID> interfaceID);
    void dump();
 
-   // ---sends messages---
-   bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+   // --- transmission/reception methods ---
+   virtual bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+   virtual int receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer);
 
    // ---sends messages over TCP---
    bool sendTcp(int iface, char *msg, int size,SPtr<TIPv6Addr> addr, int port);

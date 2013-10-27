@@ -75,18 +75,18 @@ void TOptIAAddress::setValid(unsigned long valid) {
     return buf;
 }
 
-SPtr<TIPv6Addr> TOptIAAddress::getAddr() {
+SPtr<TIPv6Addr> TOptIAAddress::getAddr() const {
     return Addr_;
 }
 
-unsigned long TOptIAAddress::getPref() {
+unsigned long TOptIAAddress::getPref() const {
     return PrefLifetime_;
 }
 
-unsigned long TOptIAAddress::getValid() {
+unsigned long TOptIAAddress::getValid() const {
     return ValidLifetime_;
 }
 
-bool TOptIAAddress::isValid() {
+bool TOptIAAddress::isValid() const {
     return Valid_;
 }

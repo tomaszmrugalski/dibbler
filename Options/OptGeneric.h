@@ -31,7 +31,7 @@ class TOptGeneric : public TOpt
     bool doDuties() { return true; }
 
     char * storeSelf(char* buf);
-    bool isValid();
+    virtual bool isValid() const;
   protected:
     char * Data;
     int DataLen;

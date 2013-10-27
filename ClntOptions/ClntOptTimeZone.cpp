@@ -22,7 +22,7 @@ TClntOptTimeZone::TClntOptTimeZone(char *buf, int bufsize, TMsg* parent)
 
 }
 
-bool TClntOptTimeZone::isValid() {
+bool TClntOptTimeZone::isValid() const {
     /// @todo: check is somehow
     return true;
 }

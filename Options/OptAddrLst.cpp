@@ -61,7 +61,7 @@ SPtr<TIPv6Addr> TOptAddrLst::getAddr()
     return this->AddrLst.get();
 }
 
-bool TOptAddrLst::isValid()
+bool TOptAddrLst::isValid() const
 {
     return this->Valid;
 }

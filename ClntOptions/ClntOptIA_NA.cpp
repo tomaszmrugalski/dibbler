@@ -68,7 +68,7 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> addrIA, TMsg* parent)
     addrIA->firstAddr();
     while ( ptrAddr = addrIA->getAddr() )
     {
-	if ( !decline || (ptrAddr->getTentative()==TENTATIVE_YES) )
+	if ( !decline || (ptrAddr->getTentative()==ADDRSTATUS_YES) )
 	    SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(), 
 						    zeroTimes?0:ptrAddr->getValid(),this->Parent) );
     }
@@ -458,17 +458,21 @@ void TClntOptIA_NA::setIface(int iface) {
 }
 
 
-bool TClntOptIA_NA::isValid()
-{
-    SPtr<TClntOptIAAddress> addr;
-    this->firstAddr();
-    while (addr = this->getAddr()) {
-	if (addr->getAddr()->linkLocal()) {
-	    Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA (IAID=" 
-			 << IAID_ << ") is link local. The whole IA option is considered invalid."
-			 << LogEnd;
-	    return false;
-	}
+bool TClntOptIA_NA::isValid() const {
+
+    const TOptList& opts = SubOptions.getSTL();
+
+    for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
+        if ((*it)->getOptType() != OPTION_IAADDR)
+            continue;
+        const TOptIAAddress* addr = (const TOptIAAddress*)it->get();
+
+        if (addr->getAddr()->linkLocal()) {
+            Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_NA (IAID="
+                         << IAID_ << ") is link local. The whole IA option is considered invalid."
+                         << LogEnd;
+            return false;
+        }
     }
 
     // RFC3315, section 22.4:

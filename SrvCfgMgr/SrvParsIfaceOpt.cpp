@@ -19,29 +19,16 @@
 using namespace std;
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
+    :Preference_(SERVER_DEFAULT_PREFERENCE), RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
+     IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE), ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE),
+     Unicast_(0), LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false),
+     RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(0),
+     FQDNSupport_(false), FQDNMode_(0/*DNS_UPDATE_MODE_NONE*/),
+     UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN), FQDNDomain_("")
 {
-    Unicast_       = 0;
-    Preference_    = SERVER_DEFAULT_PREFERENCE;
-    RapidCommit_   = SERVER_DEFAULT_RAPIDCOMMIT;
-    ClntMaxLease_  = SERVER_DEFAULT_CLNTMAXLEASE;
-    IfaceMaxLease_ = SERVER_DEFAULT_IFACEMAXLEASE;
     RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
 
     // don't support leasequery unless explicitly configured to do so
-    LeaseQuery_    = SERVER_DEFAULT_LEASEQUERY;
-
-    // options
-    FQDNSupport_      = false;
-    FQDNMode_         = 0; // (DNS_UPDATE_MODE_NONE)
-    VendorSpecSupport = false;
-
-    UnknownFQDN_ = SERVER_DEFAULT_UNKNOWN_FQDN;
-    FQDNDomain_ = "";
-
-    Relay_ = false;
-    RelayName_ = "[unknown]";
-    RelayID_ = -1;
-    RelayInterfaceID_ = -1;
 }
 
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {

@@ -142,7 +142,7 @@ char incr_mask[8] = { 0, 128, 192, 224, 240, 248, 252, 254 };
 void txt_to_iprange(unsigned char *iprange, const char *val) {
   char buff[128];
   char *ptr;
-  int x, z;
+  int x;
   if (strcmpi(val, "any") == 0) {
     memset(iprange, 0, 8);
     return;
@@ -160,6 +160,7 @@ void txt_to_iprange(unsigned char *iprange, const char *val) {
       memset(iprange, 0, 4);
       x = txt_to_int(ptr + 1);
       if (x > 128) throw PException("IPv6 mask value too long");
+      int z;
       for (z = 0; x >= 8; x -= 8) iprange[z++] = 255;
       iprange[z] = incr_mask[x];
     }
@@ -266,7 +267,7 @@ int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion) {
 void txt_to_ip6range(unsigned char *iprange, const char *val) {
   char buff[128];
   char *ptr;
-  int x, z;
+  int x;
   if (strcmpi(val, "any") == 0) {
     memset(iprange, 0, 32);
     return;
@@ -284,6 +285,7 @@ void txt_to_ip6range(unsigned char *iprange, const char *val) {
       memset(iprange, 0, 16);
       x = txt_to_int(ptr + 1);
       if (x > 128) throw PException("IPv6 mask value too long");
+      int z;
       for (z = 0; x >= 8; x -= 8) iprange[z++] = 255;
       iprange[z] = incr_mask[x];
     }
@@ -303,72 +305,74 @@ bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip) {
 }
 
 #define R_IP4 0
-#ifdef HAVE_IPV6
 #define R_IP6 1
-#endif
 #define R_NONE 2
 #define R_ANY 3
 
 bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a) {
-  stl_list(addrrange)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (addrrange_matches(it->range, a)) return true;
-    it++;
-  }
-  return false;
+    stl_list(addrrange)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (addrrange_matches(it->range, a)) return true;
+        ++it;
+    }
+    return false;
 }
 
 #ifdef HAVE_SLIST
 bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a) {
-  stl_slist(addrrange)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (addrrange_matches(it->range, a)) return true;
-    it++;
-  }
-  return false;
+    stl_slist(addrrange)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (addrrange_matches(it->range, a)) return true;
+        ++it;
+    }
+    return false;
 }
 #endif
 
 #ifdef HAVE_SLIST
 bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port) {
-  stl_slist(_addr)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (match_port) {
-      if (addrport_matches(&*it, a)) return true;
-    } else {
-      if (address_matches(&*it, a)) return true;
+    stl_slist(_addr)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (match_port) {
+            if (addrport_matches(&*it, a)) return true;
+        } else {
+            if (address_matches(&*it, a)) return true;
+        }
+        ++it;
     }
-    it++;
-  }
-  return false;
+    return false;
 }
 #endif
 
 bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port) {
-  stl_list(_addr)::iterator it = lst.begin();
-  while (it != lst.end()) {
-    if (match_port) {
-      if (addrport_matches(&*it, a)) return true;
-    } else {
-      if (address_matches(&*it, a)) return true;
+    stl_list(_addr)::iterator it = lst.begin();
+    while (it != lst.end()) {
+        if (match_port) {
+            if (addrport_matches(&*it, a)) return true;
+        } else {
+            if (address_matches(&*it, a)) return true;
+        }
+        ++it;
     }
-    it++;
-  }
-  return false;
+    return false;
 }
 
 void txt_to_addrrange(unsigned char *iprange, const char *val) {
-  if (strcmpi(val, "any") == 0) { iprange[0] = R_ANY; return; }
-  if (strcmpi(val, "none") == 0) { iprange[0] = R_NONE; return; }
-  if (!strchr(val, ':')) {
-    iprange[0] = R_IP4;
-    txt_to_iprange(iprange + 1, val);
-#ifdef HAVE_IPV6
-  } else {
-    iprange[0] = R_IP6;
-    txt_to_ip6range(iprange + 1, val);
-#endif
-  }
+    if (strcmpi(val, "any") == 0) {
+        iprange[0] = R_ANY;
+        return;
+    }
+    if (strcmpi(val, "none") == 0) {
+        iprange[0] = R_NONE;
+        return;
+    }
+    if (!strchr(val, ':')) {
+        iprange[0] = R_IP4;
+        txt_to_iprange(iprange + 1, val);
+    } else {
+        iprange[0] = R_IP6;
+        txt_to_ip6range(iprange + 1, val);
+    }
 }
 
 bool addrrange_matches(const unsigned char *iprange, _addr *a) {
@@ -376,9 +380,7 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
     case R_NONE: return false;
     case R_ANY: return true;
     case R_IP4: return iprange_matches(iprange + 1, get_ipv4_ptr(a));
-#ifdef HAVE_IPV6
     case R_IP6: return ip6range_matches(iprange + 1, get_ipv6_ptr(a));
-#endif
   }
   return false;
 }
@@ -387,19 +389,19 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
    (may be a <domain-name> or a true email address) */
 
 void txt_to_email(_domain target, const char *src, _cdomain origin) {
-  unsigned char dom[DOM_LEN];
-  char *cptr;
-
-  if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
-    /* contains a '@', so assume it's an email address */
-    if (src[0] == '@') throw PException("Incorrect email adress/domain name: begins with @");
-    domfromlabel(target, src, cptr - src);
-    txt_to_dname(dom, cptr + 1);
-    domcat(target, dom);
-  } else {
-    /* common domain name */
-    txt_to_dname(target, src, origin);
-  }
+    unsigned char dom[DOM_LEN];
+    char *cptr;
+    
+    if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
+        /* contains a '@', so assume it's an email address */
+        if (src[0] == '@') throw PException("Incorrect email adress/domain name: begins with @");
+        domfromlabel(target, src, cptr - src);
+        txt_to_dname(dom, cptr + 1);
+        domcat(target, dom);
+    } else {
+        /* common domain name */
+        txt_to_dname(target, src, origin);
+    }
 }
 
 /* converts a textual representation for a domain name to an rfc <domain-name> */
@@ -412,7 +414,7 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
   unsigned char tmp[16];
   char hex;
   int ttmp, ret;
-  
+
   if (src[0] == '@' && src[1] == '\0') {
     /* nothing but the origin */
     if (!origin)
@@ -450,9 +452,9 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
         }
         domcat(target, (_domain) "\7in-addr\4arpa");
         return;
-      }    
+      }
     }
-    
+
     ptr = (char *)strchr(src, '.');
     if (ptr) {
       if (ptr == src) throw PException("Zero length label");
@@ -469,27 +471,41 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
   }
 }
 
-void txt_to_addr(_addr *ret, const char *addr, int default_port, bool client) {
-  char taddr[128];
-  char *ptr = strchr((char *)addr, '#');
-  int x;
-  if (ptr) {
-    if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
-    memcpy(taddr, addr, (unsigned)(ptr - addr));
-    taddr[ptr-addr] = '\0';
-    txt_to_addr(ret, taddr, default_port, client);
-    addr_setport(ret, txt_to_int(ptr + 1));
-  } else {
-    try {
-      x = txt_to_int(addr);
-      if (client)
-        getaddress(ret, "127.0.0.1", x);
-      else
-        getaddress(ret, "0.0.0.0", x);
-    } catch (PException p) {
-      getaddress(ret, addr, default_port);
+/**
+ * \brief convert text to address
+ *
+ * Converts the text pointed to by addr to an _addr address structure. If
+ * the client parameter is set to true, the default IP is \p 127.0.0.1, else
+ * it is \p 0.0.0.0 . Addresses can be given by only an address, only a port,
+ * or a combination separated by a \p \# . Being based on the txt_to_ip and
+ * txt_to_ipv6 functions, this function also supports the literval values
+ * \c any , \c local, \c :any and \c :local .
+ *
+ * \param ret Memory to store result in
+ * \param addr Text describing the address
+ * \param default_port Default port if none is given
+ * \param is_client Influences default address
+ */
+void txt_to_addr(_addr *ret, const char *addr, int default_port, bool is_client) {
+    char taddr[128];
+    char *ptr = strchr((char *)addr, '#');
+    if (ptr) {
+        if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
+        memcpy(taddr, addr, (unsigned)(ptr - addr));
+        taddr[ptr-addr] = '\0';
+        txt_to_addr(ret, taddr, default_port, is_client);
+        addr_setport(ret, txt_to_int(ptr + 1));
+    } else {
+        try {
+            int x = txt_to_int(addr);
+            if (is_client)
+                getaddress(ret, "127.0.0.1", x);
+            else
+                getaddress(ret, "0.0.0.0", x);
+        } catch (PException p) {
+            getaddress(ret, addr, default_port);
+        }
     }
-  }
 }
 
 u_int32 poslib_degstr(char *&src, char pre, char post) {
@@ -525,7 +541,7 @@ unsigned char poslib_loc_precision(const char *str) {
   int x, y = 0;
   int n = 0;
   if (sscanf(str, "%4d.%6dm", &x, &y) < 1) throw PException(true, "Invalid precision: %s", str);
-  x = x*100+y;  
+  x = x*100+y;
   while (x >= 10) {
     x/=10; n++;
   }
@@ -620,13 +636,13 @@ uint16_t txt_to_qclass(const char *str, bool allow_q) {
   if (allow_q) {
     if (strcmpi(str, "ANY") == 0) return QCLASS_ANY;
     if (strcmpi(str, "NONE") == 0) return QCLASS_NONE;
-  }  
+  }
   throw PException(true, "Unknown class type %s", str);
-}  
+}
 
 stl_string intstring(u_int16 x) {
   char tmp[16];
-  snprintf(tmp, 15, "%d", x);
+  snprintf(tmp, 15, "%u", x);
   return stl_string(tmp);
 }
 
@@ -683,6 +699,9 @@ stl_string str_rcode(int rcode) {
   if (rcode == RCODE_NXRRSET) return "NXRRSET";
   if (rcode == RCODE_NOTAUTH) return "NOTAUTH";
   if (rcode == RCODE_NOTZONE) return "NOTZONE";
+  if (rcode == RCODE_BADSIG) return "BADSIG";
+  if (rcode == RCODE_BADKEY) return "BADKEY";
+  if (rcode == RCODE_BADTIME) return "BADTIME";
   return intstring(rcode);
 }
 
@@ -706,7 +725,7 @@ stl_string str_ttl(uint32_t ttl) {
     if (ttl == 0) return res;
     f++;
   }
-  sprintf(val, "%d", ttl);
+  sprintf(val, "%u", ttl);
   res += val;
   return res;
 }

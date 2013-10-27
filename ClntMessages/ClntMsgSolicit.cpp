@@ -36,7 +36,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
 				 SPtr<TClntCfgTA> ta,
 				 List(TClntCfgPD) pdLst, 
 				 bool rapid, bool remoteAutoconf)
-    :TClntMsg(iface,addr,SOLICIT_MSG)
+    :TClntMsg(iface, addr, SOLICIT_MSG)
 {
     IRT=SOL_TIMEOUT;
     MRT=SOL_MAX_RT;
@@ -93,8 +93,10 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
             Log(Error) << "AddrMgr does not have PD with IAID=" << pd->getIAID() << LogEnd;
     }
     
-    if(rapid)
+    if (rapid)
         Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
+
+    // RECONF-ACCEPT is added in TClntMsg::appendRequestedOptions()
 
     // append and switch to INPROCESS state
     if (!remoteAutoconf)
@@ -103,6 +105,8 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     // append options specified in the config file
     if (!remoteAutoconf)
 	appendRequestedOptions();
+
+    appendAuthenticationOption();
     
     IsDone = false;
     send();

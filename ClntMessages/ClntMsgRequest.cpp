@@ -73,24 +73,12 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     TOptList::iterator opt=Options.begin();
     while (opt!=Options.end())
     {
-        if ( (*opt)->getOptType() == OPTION_AAAAUTH || (*opt)->getOptType() == OPTION_ELAPSED_TIME)
+        if ( (*opt)->getOptType() == OPTION_ELAPSED_TIME)
 	          opt = Options.erase(opt);
         else {
 	          (*opt)->setParent(this);
             ++opt;
         }
-    }
-
-    // delete OPTION_KEYGEN from OPTION_ORO (needed only once)
-    /// @todo: shouldn't it be done when receiving OPTION_KEYGEN in ADVERTISE?
-    SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
-    if (optORO) {
-        if (advertise->getOption(OPTION_KEYGEN))
-            optORO->delOption(OPTION_KEYGEN);
-        // delete also OPTION_AUTH from OPTION_ORO
-        /// @todo: shouldn't it be done when receiving OPTION_AUTH in ADVERTISE?
-        if (advertise->getOption(OPTION_AUTH))
-            optORO->delOption(OPTION_AUTH);
     }
 
     // copy addresses offered in ADVERTISE
@@ -118,6 +106,7 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
 	SPtr<TOpt> opt;
 	// set this unicast address in each IA in AddrMgr
 	while ( opt = getOption() ) {
+	  /// @todo: add support for unicast in IA_TA and IA_PD
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
 	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
@@ -178,7 +167,6 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
     appendElapsedOption();
     appendAuthenticationOption();
 
-    pkt = new char[getSize()];
     this->IsDone = false;
     this->send();
 }

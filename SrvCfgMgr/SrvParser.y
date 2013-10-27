@@ -3,7 +3,9 @@
 %header{
 #include <iostream>
 #include <string>
-#include <malloc.h>
+#include <stdint.h>
+#include <sstream>
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "SmartPtr.h"
 #include "Container.h"
@@ -15,26 +17,24 @@
 #include "OptAddrLst.h"
 #include "OptDomainLst.h"
 #include "OptString.h"
+#include "OptVendorSpecInfo.h"
+#include "OptRtPrefix.h"
+#include "SrvOptAddrParams.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgTA.h"
 #include "SrvCfgPD.h"
+#include "SrvCfgClientClass.h"
 #include "SrvCfgAddrClass.h"
 #include "SrvCfgIface.h"
 #include "SrvCfgOptions.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "FQDN.h"
-#include "OptVendorSpecInfo.h"
-#include "OptRtPrefix.h"
-#include "SrvOptAddrParams.h"
-#include "Portable.h"
-#include "SrvCfgClientClass.h"
+#include "Key.h"
 #include "Node.h"
 #include "NodeConstant.h"
 #include "NodeClientSpecific.h"
 #include "NodeOperator.h"
-#include "CfgMgr.h"
-#include <sstream>
 
 using namespace std;
 
@@ -58,8 +58,10 @@ List(std::string) PresentStringLst;             /* string list */               
 List(Node) NodeClientClassLst;             /* Node list */                           \
 List(TFQDN) PresentFQDNLst;                                                          \
 SPtr<TIPv6Addr> addr;                                                                \
-List(THostRange) PresentRangeLst;                                                 \
-List(THostRange) PDLst;                                                           \
+SPtr<TSIGKey> CurrentKey;                                                            \
+DigestTypesLst DigestLst;                                                            \
+List(THostRange) PresentRangeLst;                                                    \
+List(THostRange) PDLst;                                                              \
 List(TSrvCfgOptions) ClientLst;                                                      \
 int PDPrefix;                                                                        \
 bool IfaceDefined(int ifaceNr);                                                      \
@@ -119,8 +121,10 @@ virtual ~SrvParser();
 %token CLIENT_, DUID_KEYWORD_, REMOTE_ID_, LINK_LOCAL_, ADDRESS_, PREFIX_, GUESS_MODE_
 %token INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_NEIGHBORS_
-%token AFTR_
-%token AUTH_METHOD_, AUTH_LIFETIME_, AUTH_KEY_LEN_
+%token AFTR_, PERFORMANCE_MODE_
+%token AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_METHODS_
+%token AUTH_DROP_UNAUTH_, AUTH_REALM_
+%token KEY_, SECRET_, ALGORITHM_, FUDGE_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token ACCEPT_LEASEQUERY_
@@ -137,6 +141,7 @@ virtual ~SrvParser();
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
 %token CONTAIN_
 %token NEXT_HOP_, ROUTE_, INFINITE_
+%token SUBNET_
 
 %token <strval>     STRING_
 %token <ival>       HEXNUMBER_
@@ -173,9 +178,12 @@ GlobalOption
 | WorkDirOption
 | StatelessOption
 | CacheSizeOption
-| AuthMethod
-| AuthLifetime
-| AuthKeyGenNonceLen
+| AuthProtocol
+| AuthAlgorithm
+| AuthReplay
+| AuthRealm
+| AuthMethods
+| AuthDropUnauthenticated
 | Experimental
 | IfaceIDOrder
 | FqdnDdnsAddress
@@ -183,10 +191,10 @@ GlobalOption
 | DdnsTimeout
 | GuessMode
 | ClientClass
+| Key
 | ScriptName
+| PerformanceMode
 ;
-
-
 
 InterfaceOptionDeclaration
 : ClassOptionDeclaration
@@ -222,6 +230,7 @@ InterfaceOptionDeclaration
 | VendorSpecOption
 | Client
 | InactiveMode
+| Subnet
 ;
 
 InterfaceDeclaration
@@ -261,6 +270,65 @@ InterfaceDeclarationsList
 | InterfaceDeclarationsList NextHopDeclaration
 | InterfaceDeclarationsList Route
 ;
+
+Key
+: KEY_ STRING_ '{'
+{
+    /// this is key object initialization part
+    CurrentKey = new TSIGKey(string($2));
+} KeyOptions
+'}'
+{
+    /// check that both secret and algorithm keywords were defined.
+    Log(Debug) << "Loaded key '" << CurrentKey->Name_ << "', base64len is "
+	       << CurrentKey->getBase64Data().length() << ", rawlen is "
+	       << CurrentKey->getPackedData().length() << "." << LogEnd;
+    if (CurrentKey->getPackedData().length() == 0) {
+	Log(Crit) << "Key " << CurrentKey->Name_ << " does not have secret specified." << LogEnd;
+	YYABORT;
+    }
+
+    if ( (CurrentKey->Digest_ != DIGEST_HMAC_MD5) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA1) &&
+	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA256) ) {
+	Log(Crit) << "Invalid key type specified: only hmac-md5, hmac-sha1 and hmac-sha256 are supported." << LogEnd;
+	YYABORT;
+    }
+
+    CfgMgr->addKey( CurrentKey );
+} ';'
+;
+
+KeyOptions
+:KeyOption
+|KeyOptions KeyOption
+;
+
+KeyOption
+:KeyAlgorithm
+|KeySecret
+|KeyFudge
+;
+
+KeySecret
+: SECRET_ STRING_ ';'
+{
+    // store the key in base64 encoded form
+    CurrentKey->setData(string($2));
+};
+
+KeyFudge
+: FUDGE_ Number ';'
+{
+    CurrentKey->Fudge_ = $2;
+}
+
+KeyAlgorithm
+: ALGORITHM_ DIGEST_HMAC_SHA256_ ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA256; }
+| ALGORITHM_ DIGEST_HMAC_SHA1_   ';' { CurrentKey->Digest_ = DIGEST_HMAC_SHA1;  }
+| ALGORITHM_ DIGEST_HMAC_MD5_    ';' { CurrentKey->Digest_ = DIGEST_HMAC_MD5;  }
+;
+/// add other key types here
 
 Client
 : CLIENT_ DUID_KEYWORD_ DUID_ '{'
@@ -378,6 +446,7 @@ TAClassDeclaration
 TAClassOptionsList
 : TAClassOption
 | TAClassOptionsList TAClassOption
+;
 
 TAClassOption
 : PreferredTimeOption
@@ -429,15 +498,14 @@ NEXT_HOP_ IPV6ADDR_ '{'
 }
 RouteList '}'
 {
-    SrvCfgIfaceLst.getLast()->addExtraOption(nextHop, false);
+    ParserOptStack.getLast()->addExtraOption(nextHop, false);
     nextHop = 0;
-    //should we call YYABORT;?
 }
 | NEXT_HOP_ IPV6ADDR_
 {
     SPtr<TIPv6Addr> routerAddr = new TIPv6Addr($2);
     SPtr<TOpt> myNextHop = new TOptAddr(OPTION_NEXT_HOP, routerAddr, NULL);
-    SrvCfgIfaceLst.getLast()->addExtraOption(myNextHop, false);
+    ParserOptStack.getLast()->addExtraOption(myNextHop, false);
 }
 ;
 
@@ -454,7 +522,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_
 {
@@ -463,7 +531,7 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 }
 | ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INFINITE_
 {
@@ -472,30 +540,108 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
     if (nextHop)
         nextHop->addOption(rtPrefix);
     else
-        SrvCfgIfaceLst.getLast()->addExtraOption(rtPrefix, false);
+        ParserOptStack.getLast()->addExtraOption(rtPrefix, false);
 };
+
+AuthProtocol
+: AUTH_PROTOCOL_ STRING_ {
+
+#ifndef MOD_DISABLE_AUTH
+    if (!strcasecmp($2,"none")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (!strcasecmp($2, "delayed")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
+    } else if (!strcasecmp($2, "reconfigure-key")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
+    } else if (!strcasecmp($2, "dibbler")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
+    } else {
+        Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthAlgorithm
+: AUTH_ALGORITHM_ STRING_ {
+    Log(Crit) << "auth-algorithm secification is not supported yet." << LogEnd;
+    YYABORT;
+};
+
+AuthReplay
+: AUTH_REPLAY_ STRING_ {
+
+#ifndef MOD_DISABLE_AUTH
+    if (strcasecmp($2, "none")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
+    } else if (strcasecmp($2, "monotonic")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_MONOTONIC);
+    } else {
+        Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+
+};
+
+AuthRealm
+: AUTH_REALM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthRealm(std::string($2));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthMethods
+: AUTH_METHODS_
+{
+    DigestLst.clear();
+} DigestList {
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthDigests(DigestLst);
+    CfgMgr->setAuthDropUnauthenticated(true);
+    DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+}
+
+DigestList
+: Digest
+| DigestList ',' Digest
+;
+
+Digest
+: DIGEST_NONE_        { DigestLst.push_back(DIGEST_NONE); }
+| DIGEST_PLAIN_       { DigestLst.push_back(DIGEST_PLAIN); }
+| DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.push_back(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.push_back(DIGEST_HMAC_SHA512); }
+;
+
+
+AuthDropUnauthenticated
+: AUTH_DROP_UNAUTH_ Number {
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthDropUnauthenticated($2);
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Now Options and their parameters
 /////////////////////////////////////////////////////////////////////////////
-AuthMethod
-: AUTH_METHOD_ DIGEST_NONE_        { ParserOptStack.getLast()->addDigest(DIGEST_NONE); }
-| AUTH_METHOD_ DIGEST_PLAIN_       { ParserOptStack.getLast()->addDigest(DIGEST_PLAIN); }
-| AUTH_METHOD_ DIGEST_HMAC_MD5_    { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_MD5); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA1_   { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA1); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA224_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA224); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA256_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA256); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA384_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA384); }
-| AUTH_METHOD_ DIGEST_HMAC_SHA512_ { ParserOptStack.getLast()->addDigest(DIGEST_HMAC_SHA512); }
-;
-
-AuthLifetime
-: AUTH_LIFETIME_ Number { ParserOptStack.getLast()->setAuthLifetime($2); }
-;
-
-AuthKeyGenNonceLen
-: AUTH_KEY_LEN_ Number { ParserOptStack.getLast()->setAuthKeyLen($2); }
-;
 
 ///////////////////////////////////////////////////
 // Parameters for FQDN Options                   //
@@ -509,9 +655,9 @@ FQDNList
 }
 | STRING_ '-' DUID_
 {
+    /// @todo: Use SPtr()
     TDUID* duidNew = new TDUID($3.duid,$3.length);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
-    /// @todo: Use SPtr()
     PresentFQDNLst.append(new TFQDN(duidNew, $1,false));
 }
 | STRING_ '-' IPV6ADDR_
@@ -561,13 +707,15 @@ VendorSpecList
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
 	       << $3 << ", valuelen=" << $5.length << LogEnd;
 
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($1, $3, $5.duid, $5.length, 0), false);
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
+								    $5.duid, $5.length, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
 	       << $5 << ", valuelen=" << $7.length << LogEnd;
-    SrvCfgIfaceLst.getLast()->addExtraOption(new TOptVendorSpecInfo($3, $5, $7.duid, $7.length, 0), false);
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
+								    $7.duid, $7.length, 0), false);
 }
 ;
 
@@ -847,16 +995,16 @@ AddrParams
 DsLiteAftrName
 : OPTION_ AFTR_ STRING_
 {
-    SPtr<TOpt> tunnelName = new TOptString(OPTION_AFTR_NAME, $3, 0);
+    SPtr<TOpt> tunnelName = new TOptDomainLst(OPTION_AFTR_NAME, $3, 0);
     Log(Debug) << "Enabling DS-Lite tunnel option, AFTR name=" << $3 << LogEnd;
-    SrvCfgIfaceLst.getLast()->addExtraOption(tunnelName, false);
+    ParserOptStack.getLast()->addExtraOption(tunnelName, false);
 };
 
 ExtraOption
 :OPTION_ Number DUID_KEYWORD_ DUID_
 {
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length << LogEnd;
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
@@ -864,7 +1012,7 @@ ExtraOption
     SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
 
     SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
 }
 |OPTION_ Number ADDRESS_LIST_
@@ -873,13 +1021,13 @@ ExtraOption
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
 };
 
@@ -897,7 +1045,7 @@ RemoteAutoconfNeighborsOption
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst(OPTION_NEIGHBORS, PresentAddrLst, 0);
-    SrvCfgIfaceLst.getLast()->addExtraOption(opt, false);
+    ParserOptStack.getLast()->addExtraOption(opt, false);
     Log(Debug) << "Remote autoconf neighbors enabled (" << PresentAddrLst.count()
 	       << " neighbors defined.)" << LogEnd;
 }
@@ -994,6 +1142,18 @@ ScriptName
 {
     CfgMgr->setScriptName($2);
 };
+
+PerformanceMode
+: PERFORMANCE_MODE_ Number
+{
+    if (!ParserOptStack.getLast()->getExperimental()) {
+	Log(Crit) << "Experimental 'performance-mode' defined, but experimental features are disabled. Add 'experimental' "
+		  << "in global section of server.conf to enable it." << LogEnd;
+	YYABORT;
+    }
+
+    CfgMgr->setPerformanceMode($2);
+}
 
 
 InactiveMode
@@ -1123,6 +1283,29 @@ InterfaceIDOption
 }
 ;
 
+Subnet
+:SUBNET_ IPV6ADDR_ '/' Number
+{
+    int prefix = $4;
+    if ( (prefix<1) || (prefix>128) ) {
+        Log(Crit) << "Invalid (1..128 allowed) prefix used: " << prefix
+                  << " in subnet definition in line " << lex->lineno() << LogEnd;
+        YYABORT;
+    }
+    SPtr<TIPv6Addr> min = getRangeMin($2, prefix);
+    SPtr<TIPv6Addr> max = getRangeMax($2, prefix);
+    SrvCfgIfaceLst.getLast()->addSubnet(min, max);
+    Log(Debug) << "Defined subnet " << min->getPlain() << "/" << $4
+               << " on " << SrvCfgIfaceLst.getLast()->getFullName() << LogEnd;
+}|SUBNET_ IPV6ADDR_ '-' IPV6ADDR_
+{
+    SPtr<TIPv6Addr> min = new TIPv6Addr($2);
+    SPtr<TIPv6Addr> max = new TIPv6Addr($4);
+    SrvCfgIfaceLst.getLast()->addSubnet(min, max);
+    Log(Debug) << "Defined subnet " << min->getPlain() << "-" << max->getPlain()
+               << "on " << SrvCfgIfaceLst.getLast()->getFullName() << LogEnd;
+}
+
 ClassOptionDeclaration
 : PreferredTimeOption
 | ValidTimeOption
@@ -1208,8 +1391,6 @@ DNSServerOption
 {
     SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nis_servers, false);
-
-    // ParserOptStack.getLast()->setDNSServerLst(&PresentAddrLst);
 }
 ;
 
@@ -1223,7 +1404,6 @@ DomainOption
 {
     SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
     ParserOptStack.getLast()->addExtraOption(domains, false);
-    // ParserOptStack.getLast()->setDomainLst(&PresentStringLst);
 }
 ;
 
@@ -1301,8 +1481,23 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug)  << "FQDNMode found, setting value"<< $3 <<LogEnd;
-    Log(Warning)<< "revDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
+    Log(Debug)  << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+    Log(Warning)<< "FQDN: RevDNS zoneroot lenght not specified, dynamic revDNS update will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
@@ -1313,8 +1508,28 @@ FQDNOption
 |OPTION_ FQDN_ INTNUMBER_ INTNUMBER_
 {
     PresentFQDNLst.clear();
-    Log(Debug) << "FQDNMode found, setting value " << $3 <<LogEnd;
-    Log(Debug) << "revDNS zoneroot lenght found, setting value " << $4 <<LogEnd;
+    Log(Debug) << "FQDN: Setting update mode to " << $3;
+    switch ($3) {
+    case 0:
+	Log(Cont) << "(no updates)" << LogEnd;
+	break;
+    case 1:
+	Log(Cont) << "(client will update AAAA, server will update PTR)" << LogEnd;
+	break;
+    case 2:
+	Log(Cont) << "(server will update both AAAA and PTR)" << LogEnd;
+	break;
+    default:
+	Log(Cont) << LogEnd;
+	Log(Crit) << "FQDN: Invalid mode. Only 0-2 are supported." << LogEnd;
+        YYABORT;
+    }
+
+    Log(Debug) << "FQDN: RevDNS zoneroot lenght set to " << $4 <<LogEnd;
+    if ( ($4 < 0) || ($4 > 128) ) {
+	Log(Crit) << "FQDN: Invalid zoneroot length specified:" << $4 << ". Value 0-128 expected." << LogEnd;
+	YYABORT;
+    }
     ParserOptStack.getLast()->setFQDNMode($3);
     ParserOptStack.getLast()->setRevDNSZoneRootLength($4);
 } FQDNList
@@ -1428,7 +1643,7 @@ LifetimeOption
 {
     SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
                                           OPTION_INFORMATION_REFRESH_TIME_LEN, 
-                                          uint32_t($3), NULL);
+                                          (uint32_t)($3), NULL);
     ParserOptStack.getLast()->addExtraOption(lifetime, false);
     //ParserOptStack.getLast()->setLifetime($3);
 }
@@ -1507,6 +1722,14 @@ Expr
 |CLIENT_VENDOR_SPEC_DATA_
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
+}
+| CLIENT_VENDOR_CLASS_EN_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_ENTERPRISE_NUM));
+}
+| CLIENT_VENDOR_CLASS_DATA_
+{
+    NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_DATA));
 }
 | STRING_
 {
@@ -1776,13 +1999,13 @@ void SrvParser::yyerror(char *m)
 }
 
 SrvParser::~SrvParser() {
-    this->ParserOptStack.clear();
-    this->SrvCfgIfaceLst.clear();
-    this->SrvCfgAddrClassLst.clear();
-    this->SrvCfgTALst.clear();
-    this->PresentAddrLst.clear();
-    this->PresentStringLst.clear();
-    this->PresentRangeLst.clear();
+    ParserOptStack.clear();
+    SrvCfgIfaceLst.clear();
+    SrvCfgAddrClassLst.clear();
+    SrvCfgTALst.clear();
+    PresentAddrLst.clear();
+    PresentStringLst.clear();
+    PresentRangeLst.clear();
 }
 
 static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
@@ -1790,7 +2013,7 @@ static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 SPtr<TIPv6Addr> SrvParser::getRangeMin(char * addrPacked, int prefix) {
     char packed[16];
     char mask;
-    memcpy(packed, addrPacked,16);
+    memcpy(packed, addrPacked, 16);
     if (prefix%8!=0) {
 	mask = bitMask[prefix%8];
 	packed[prefix/8] = packed[prefix/8] & mask;

@@ -204,6 +204,19 @@ make bison (just once, to compile bison++)
 make parser (each time you modify *.l or *.y files)
 @endverbatim
 
+If you modify *.l or *.y files, pay close attention to output of make
+parser. In particular, make sure that there are no error messages that
+the grammar is inconsistent. Please refer to one of many bison tutorials
+that explain how to solve conflicts.
+
+@b Note: When making the configuration parsers you might run into some 
+prototype issues with yyFlexLexer::LexerInput(..) and yyFlexLexer::LexerOutput(..)
+due to incompatibilities between the 'FlexLex.h' file distributed with dibbler
+and the Flex on you system. These issuses can for the most parts be solved by simply 
+replacing the 'CfgMgr/FlexLexer.h' distributed with dibbler with the one found 
+on you system.
+
+
 @section srcParsersParsing 5.5.1 Parsing
 Configuration file reading is done using Flex and bison++ tools. Flex
 is so called lexer. Its responsibility is to read config file and
@@ -232,8 +245,29 @@ parsing. Each subsequent element must inherit its parent properties
 (class object must inherit parameter values defined on the interface
 level).
 
-To accomplish this feat, simple stack was implemented. For example, in
-server parser, following methods are called before and after interface
+Config file has various scopes: global, interface, ia, pd and others.
+In many cases a parameter can be defined in a global scope
+(e.g. dns-server option) that can be later overridden on a lower level
+scope (e.g. interface scope). Once the parser works its way through
+the parsed config file, it creates objects on a stack that represents
+scopes. That stack can be accesed with SrvParser::ParserOptStack
+structure. In particular, almost all operations are done on its last
+element (i.e. the current scope).  That last element can be accessed
+with ParserOptStack.getLast().  The server uses
+TSrvParsGlobalOpt, TSrvParsIfaceOpt and TSrvParsClassOpt to represent
+scopes. The idea was to have the ability to properly derive values for
+options (e.g. defined in global scope and later use its value in
+interface scope), but that concept was never fully implemented.
+
+The stack is then used to set options in various scopes. See
+TSrvCfgIface::setOptions(), TSrvCfgMgr::setGlobalOptions(), and
+TSrvCfgAddrClass::setOptions() (and similar for client).
+
+To assist in this process, several methods were implemented in
+SrvParser: SrvParser::EndClassDeclaration(),
+SrvParser::EndIfaceDeclaration(), SrvParser::EndTAClassDeclaration(),
+SrvParser::EndPDDeclaration() and similar. For example, in server
+parser, following methods are called before and after interface
 definitions.
 
 @verbatim

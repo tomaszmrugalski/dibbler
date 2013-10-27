@@ -25,7 +25,7 @@ public:
     SPtr<TIPv6Addr> getAddr();
     const List(TIPv6Addr)& getAddrLst() { return AddrLst; }
     int countAddr();
-    bool isValid();
+    bool isValid() const;
     virtual bool doDuties() { return true; } // does nothing on its own
     std::string getPlain();
 protected:

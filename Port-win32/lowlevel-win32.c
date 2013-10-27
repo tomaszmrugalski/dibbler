@@ -11,6 +11,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 
+#include <icmpapi.h>
+
 #include <Ws2tcpip.h.>
 #include <Ws2spi.h>
 
@@ -254,10 +256,10 @@ extern	struct iface* if_list_get()
 
     	//set interface flags
     	iface->flags=0;
-    	if (adaptaddr->OperStatus==IfOperStatusUp)
-	        iface->flags|=IF_UP|IF_RUNNING|IF_MULTICAST;
+    	if (adaptaddr->OperStatus == IfOperStatusUp)
+	        iface->flags |= IFF_UP|IFF_RUNNING|IFF_MULTICAST;
 	    if (adaptaddr->IfType==IF_TYPE_SOFTWARE_LOOPBACK)
-    	    iface->flags|=IF_LOOPBACK;
+    	    iface->flags |= IFF_LOOPBACK;
 	
     	//go to next returned adapter
     	if (adaptaddr->Next)
@@ -307,11 +309,11 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
     
     free(buffer);
     if (!found)
-        return TENTATIVE_UNKNOWN; /* not found */
+        return ADDRSTATUS_UNKNOWN; /* not found */
     if (found->DadState==IpDadStateDuplicate)
-        return TENTATIVE_YES;     /* tentative */
+        return ADDRSTATUS_YES;     /* tentative */
     else
-        return TENTATIVE_NO;      /* not tentative */
+        return ADDRSTATUS_NO;      /* not tentative */
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
                       unsigned long pref, unsigned long valid, int prefixLen)
@@ -328,8 +330,8 @@ extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
     intptr_t i;
     sprintf(arg5,"interface=\"%s\"", ifacename);
     sprintf(arg6,"address=%s", addr);
-    sprintf(arg7,"validlifetime=%d", valid);
-    sprintf(arg8,"preferredlifetime=%d", pref);
+    sprintf(arg7,"validlifetime=%u", valid);
+    sprintf(arg8,"preferredlifetime=%u", pref);
     // use _P_DETACH to speed things up, (but the tentative detection will surely fail)
     i=_spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, NULL);
     return i;
@@ -480,7 +482,7 @@ extern int dns_add(const char* ifname, int ifaceid, const char* addrPlain) {
     
     sprintf(arg5,"\"%s\"", ifname);
     sprintf(arg6,"address=%s", addrPlain);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
     if (i == 0) {
         return LOWLEVEL_NO_ERROR;
     } else {
@@ -499,8 +501,11 @@ extern int dns_del(const char* ifname, int ifaceid, const char* addrPlain) {
     char arg6[256]; // address=...
     intptr_t i;
     sprintf(arg5,"\"%s\"", ifname);
-    sprintf(arg6,"address=%s", addrPlain);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
+    if (addrPlain)
+		sprintf(arg6,"address=%s", addrPlain);
+	else
+		sprintf(arg6,"all");
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,NULL);
 
     if (i == 0) {
         return LOWLEVEL_NO_ERROR;
@@ -602,11 +607,11 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     
     sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg6,"interface=\"%s\"", ifname);
-    sprintf(arg7,"preferredlifetime=%d", prefered);
-    sprintf(arg8,"validlifetime=%d", valid);
+    sprintf(arg7,"preferredlifetime=%u", prefered);
+    sprintf(arg8,"validlifetime=%u", valid);
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
 
     if (i==-1) {
         /// @todo: some better error support
@@ -635,7 +640,7 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     
     sprintf(arg5, "%s/%d", prefixPlain, prefixLength);
     sprintf(arg6,"interface=\"%s\"", ifname);
-    i=_spawnl(_P_DETACH,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
+    i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6, NULL);
 
     if (i==-1) {
         /// @todo: some better error support
@@ -655,12 +660,31 @@ void link_state_change_cleanup()
    /// @todo: implement this
 }
 
-int execute(const char *filename, char * argv[], char *env[])
+int execute(const char *filename, const char * argv[], const char *env[])
 {
     intptr_t i;
-	i=_spawnvpe(_P_WAIT, filename, argv, env);
+    i=_spawnvpe(_P_WAIT, filename, argv, env);
+    return i;
+}
 
-	return i;
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement MAC reading for Windows
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+}
+
+/** @brief returns host name of this host
+ *
+ * @param hostname buffer (hostname will be stored here)
+ * @param hostname_len length of the buffer
+ * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+ */
+int get_hostname(char* hostname, int hostname_len) {
+    memset(hostname,0, hostname_len);
+    if (GetComputerNameExA(ComputerNameDnsFullyQualified, hostname, &hostname_len)) {
+        return LOWLEVEL_NO_ERROR;
+    }
+    return LOWLEVEL_ERROR_UNSPEC;
 }
 
 extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port) {

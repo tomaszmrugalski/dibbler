@@ -5,14 +5,13 @@
 %%
 %% released under GNU GPL v2 licence
 %%
-%% $Id: dibbler-user-intro.tex,v 1.19 2008-08-29 00:07:38 thomson Exp $
 %%
 
 \section{Intro}
 First of all, as an author I would like to thank you for your interest
 in this DHCPv6 implementation. If this documentation doesn't answer
 your questions or you have any suggestions, feel free to contact
-me. See \hyperlink{contact}{Contact} section for details. Also be sure
+me as explained in \hyperlink{contact}{Contact} section. Also be sure
 to check out Dibbler website: \url{http://klub.com.pl/dhcpv6/}.
 
 \begin{flushright}
@@ -34,7 +33,7 @@ about their status and assigned parameters.
 
 Dibbler is a portable DHCPv6 solution, which features server, client and
 relay. Currently there are ports available for many Windows platforms
-ranging from NT4 to Windows 7, Linux 2.4/2.6 systems and Mac OS
+ranging from NT4 to Windows 8, Linux 2.4 or later systems and Mac OS
 (experimental). See Section \ref{requirements} for details. It supports both stateful
 (i.e. IPv6 address granting) and stateless (i.e. options granting)
 autoconfiguration. Besides basic
@@ -64,7 +63,8 @@ what lease query is, you definetely don't need it.
 \end{center}
 \end{figure}
 
-As for now, Dibbler supports following features:
+Dibbler 1.0.0RC1 supports all features specified in RFC3315. In
+particular the following features are supported:
 \begin{itemize}
 \item Basic server discovery and address assignment (\msg{SOLICIT},
       \msg{ADVERTISE}, \msg{REQUEST} and \msg{REPLY} messages) -- This
@@ -154,6 +154,18 @@ As for now, Dibbler supports following features:
       commit, address assignment procedure can be shortened to 2
       messages, instead of usual 4. Major advantage is lesser network
       usage and quicker client startup time.
+\item M,O bits from Router Advertisement -- the client can be told to
+  observe M(managed) and O(OtherConf) bits from RA and act according
+  to them
+\item Reconfigure -- server can inform clients that the configuration
+  has changed and clients can initiate Reconfigure
+\item Authentication: Reconfigure-key -- the server can generate HMAC-MD5
+  reconfigure keys on the fly to later authenticate reconfigure
+  messages. Clients are able to receive, store and later validate
+  against that received key.
+\item Authentication: Delayed authorization -- server and client can
+  protect their communication against tampering by using
+  preprovisioned keys.
 \end{itemize}
 
 \subsection{Supported parameters}
@@ -214,43 +226,42 @@ several enhancements:
 
 \subsection{Not supported features}
 Although list of the supported features increases with each release,
-some parts of the spec are not implemented yet. Below is a list of such
+there are certain limitations. Below is a list of such
 features:
 
 \begin{itemize}
- \item Authorization and Authentication\cite{rfc3315}
- \item Reconfigure mechanism\cite{rfc3315}
- \item Any kind of security in DNS Updates\cite{rfc4704}
- \item DNS Updates are done over IPv6 only. IPv4 support is not
-   planned.
- \item Client ignores M and O bits in Router Advertisements and
-   initiates operation as specfied in its config file.
+\item DNS Updates are done over IPv6 only. Adding IPv4 support is
+   not planned. Do not bother to develop patches -- Dibbler is a
+   IPv6-focused software and IPv4-related patches will be rejected.
+\item Conflict resolution in DNS Updates is not supported.
 \end{itemize}
 
 \subsection{Operating System Requirements}
 \label{requirements}
-Dibbler can be run on Linux systems with kernels from 2.4 and 2.6
+Dibbler can be run on Linux systems with kernels from 2.4 or later
 series. IPv6 (compiled into kernel or as module) support is necessary
 to run dibbler. DHCPv6 uses UDP ports below 1024, so root privileges
 are required. They're also required to add, modify and delete various
 system parameters, e.g. IPv6 addresses.
 
 Dibbler also runs on any Windows systems from Windows XP (Service Pack
-1 or later) to Windows 7. To install various Dibbler parts (server,
-client or relay) as services, administrator privileges might be
-required. Support for Windows NT4 and 2000 is limited and considered
-experimental. Due to lack of support and any kind of informations from
-Microsoft, this will not change. In fact, support for NT4 and 2000 is
-expected to be dropped soon.
+1 or later) to Windows 8. Support for Windows 8 has been added in
+0.8.3. To install various Dibbler parts (server, client or relay) as
+services, administrator privileges might be required. Support for
+Windows NT4 and 2000 is limited and considered experimental. Due to
+lack of support and any kind of informations from Microsoft, this will
+not change. In fact, support for NT4 and 2000 is expected to be
+dropped soon. Please post to Dibbler mailing list if you need them.
 
 There is working Mac OS X port available.
 
 Support for FreeBSD, NetBSD and OpenBSD was added in 0.8.1RC1, but
-those versions are not very well tested. They are confirmed to compile
-and be able to start operation. Author was not able to test them
-thoroughly, so reports regarding confirming their stability or
-detected issues are welcome. Please report them on the mailing
-list. See section \ref{mailing-list}.
+those versions are not very well tested. Support for Solaris 11 has
+been added in 0.8.3, but it is still highly experimental. Sources are
+confirmed to compile and be able to start operation. Author was not
+able to test them thoroughly, so reports regarding confirming their
+stability or any discovered issues are welcome. Please report them on
+the mailing list. See section \ref{mailing-list}.
 
 See RELEASE-NOTES for details about version-specific upgrades, fixes
 and features.

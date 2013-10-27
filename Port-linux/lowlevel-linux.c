@@ -128,6 +128,47 @@ void if_list_release(struct iface * list) {
     }
 }
 
+#define IF_RA_MANAGED 0x40
+#define IF_RA_OTHERCONF 0x80
+
+/**
+ * extracts M(managed) and O(other conf) flags set by Router Advertisement
+ *
+ * @param rta a pointer to tb[IFLA_PROTINFO] message received over netlink
+ *
+ * @return flags (see IF_RA_MANAGED and IF_RA_OTHERCONF)
+ */
+uint32_t link_get_mo_bits(struct rtattr* rta) {
+    size_t rtasize1;
+    void *rtadata;
+    struct rtattr *rta1;
+    uint32_t mo_flags = 0;
+
+    rtadata = RTA_DATA(rta);
+    rtasize1 = rta->rta_len;
+    for (rta1 = (struct rtattr *)rtadata; RTA_OK(rta1, rtasize1);
+         rta1 = RTA_NEXT(rta1, rtasize1)) {
+        void *rtadata1 = RTA_DATA(rta1);
+
+        switch(rta1->rta_type) {
+        case IFLA_INET6_FLAGS:
+
+            mo_flags = *((u_int32_t *)rtadata1);
+
+#ifdef LOWLEVEL_DEBUG
+            if (mo_flags & IF_RA_MANAGED)
+                printf("M flag!");
+            if (mo_flags & IF_RA_OTHERCONF)
+                printf("O flag!");
+#endif
+
+            return mo_flags;
+        }
+    }
+
+    return 0;
+}
+
 /*
  * returns interface list with detailed informations
  */
@@ -139,17 +180,20 @@ struct iface * if_list_get()
     struct rtnl_handle rth;
     struct iface * head = NULL;
     struct iface * tmp;
-    int preferred_family = AF_PACKET;
+    uint32_t mo_bits = 0;
 
     /* required to display information about interface */
     struct ifinfomsg *ifi;
-    struct rtattr * tb[IFLA_MAX+1];
+
+    /* table for storing base interface information */
+    struct rtattr * tb[IFLA_MAX + 1];
+
     int len;
-    memset(tb, 0, sizeof(*tb));
+    memset(tb, 0, sizeof(tb));
     memset(&rth,0, sizeof(rth));
 
     rtnl_open(&rth, 0);
-    rtnl_wilddump_request(&rth, preferred_family, RTM_GETLINK);
+    rtnl_wilddump_request(&rth, AF_INET6, RTM_GETLINK);
     rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
     
     /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
@@ -163,10 +207,17 @@ struct iface * if_list_get()
 	len -= NLMSG_LENGTH(sizeof(*ifi));
 	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), len);
 
+        /* let's get M,O flags for interface */
+        mo_bits = 0;
+        if (tb[IFLA_PROTINFO]) {
+            mo_bits = link_get_mo_bits(tb[IFLA_PROTINFO]);
+        }
+
 #ifdef LOWLEVEL_DEBUG
-	printf("### iface %d %s (flags:%d) ###\n",ifi->ifi_index,
-	       (char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags);
+	printf("### iface %d %s (flags:%d) (mo bits:%d)###\n",ifi->ifi_index,
+	       (char*)RTA_DATA(tb[IFLA_IFNAME]),ifi->ifi_flags, mo_bits);
 #endif
+
 
 	tmp = malloc(sizeof(struct iface));
 	memset(tmp, 0, sizeof(struct iface));
@@ -176,11 +227,13 @@ struct iface * if_list_get()
 	tmp->hardwareType = ifi->ifi_type;
 	tmp->next=head;
 	head=tmp;
-        /* printf("C: [%s,%d,%d]\n",tmp->name,tmp->id,tmp->flags); */
+
+        tmp->m_bit = (mo_bits & IF_RA_MANAGED)?1:0;
+        tmp->o_bit = (mo_bits & IF_RA_OTHERCONF)?1:0;
 
         memset(tmp->mac,0,255);
 	/* This stuff reads MAC addr */
-	/* Does inetface has LL_ADDR? */
+	/* Does inetface have LL_ADDR? */
 	if (tb[IFLA_ADDRESS]) {
   	    tmp->maclen = RTA_PAYLOAD(tb[IFLA_ADDRESS]);
 	    memcpy(tmp->mac,RTA_DATA(tb[IFLA_ADDRESS]), tmp->maclen);
@@ -199,6 +252,8 @@ struct iface * if_list_get()
 
     release_nlmsg_list(linfo);
     release_nlmsg_list(ainfo);
+
+    rtnl_close(&rth);
 
     return head;
 }
@@ -231,11 +286,15 @@ void ipaddr_local_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list 
 	    /* printf("flags:%d : ",ifa->ifa_flags); */
 
 	    pos = cnt*16;
-	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            buf = (char*) malloc( pos + 16);
+            if (pos > 0) {
+                memcpy(buf, tmpbuf, pos); /* copy old addrs */
+            }
 	    memcpy(buf+pos,addr,16); /* copy new addr */
-	    
-	    free(tmpbuf);
+
+            if (pos > 0) {
+                free(tmpbuf);
+            }
 	    tmpbuf = buf;
 	    cnt++;
 	}
@@ -274,10 +333,13 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 
 	    pos = cnt*16;
 	    buf = (char*) malloc( pos + 16);
-	    memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            if (pos > 0) {
+                memcpy(buf,tmpbuf, pos); /* copy old addrs */
+            }
 	    memcpy(buf+pos,addr,16); /* copy new addr */
-	    
-	    free(tmpbuf);
+	    if (pos > 0) {
+                free(tmpbuf);
+            }
 	    tmpbuf = buf;
 	    cnt++;
 	}
@@ -437,7 +499,8 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
 	return LOWLEVEL_ERROR_SOCK_OPTS;
     }
 
-    if (thisifaceonly) {
+    /* bind to device only when running as root */
+    if (thisifaceonly && !getuid()) {
 	if (setsockopt(Insock, SOL_SOCKET, SO_BINDTODEVICE, ifacename, strlen(ifacename)+1) <0) {
 	    sprintf(Message, "Unable to bind socket to interface %s.", ifacename);
 	    return LOWLEVEL_ERROR_BIND_IFACE;
@@ -458,6 +521,7 @@ int sock_add(char * ifacename,int ifaceid, char * addr, int port, int thisifaceo
     bzero(&bindme, sizeof(struct sockaddr_in6));
     bindme.sin6_family = AF_INET6;
     bindme.sin6_port   = htons(port);
+    bindme.sin6_scope_id = ifaceid;
     tmp = (char*)(&bindme.sin6_addr);
     inet_pton6(addr, tmp);
     if (bind(Insock, (struct sockaddr*)&bindme, sizeof(bindme)) < 0) {
@@ -641,35 +705,11 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     return tentative;
 }
 
-uint32_t getAAASPIfromFile() {
-    char filename[1024];
-    struct stat st;
-    uint32_t ret;
-    FILE *file;
-
-    strcpy(filename, "/var/lib/dibbler/AAA/AAA-SPI");
-
-    if (stat(filename, &st))
-        return 0;
-
-    file = fopen(filename, "r");
-    if (!file)
-        return 0;
-
-    if (fscanf(file, "%10x", &ret) <= 0) {
-        /// @todo: print an error here
-        ret = 0;
-    }
-    fclose(file);
-
-    return ret;
-}
-
 char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];
     if (SPI != 0)
-        snprintf(filename, 1024, "%s%s%x", "/var/lib/dibbler/AAA/", "AAA-key-", SPI);
+        snprintf(filename, 1024, "%s%s%08x", "/var/lib/dibbler/AAA/", "AAA-key-", SPI);
     else
         strcpy(filename, "/var/lib/dibbler/AAA/AAA-key");
     return filename;
@@ -724,6 +764,12 @@ char * error_message()
     return Message;
 }
 
+int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
+                      char* mac, int* mac_len) {
+    /// @todo: Implement this for Linux
+    /// see "/sbin/ip -6 neigh"
+    return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+}
 
 /* iproute.c dummy link section */
 int show_stats = 0; /* to disable iproute.c messages */

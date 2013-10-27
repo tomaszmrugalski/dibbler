@@ -120,6 +120,12 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
         return true;
     }
 
+    /// @todo: this was on master, but not on on Manelski branch. Should it be here?
+    // append SERVERID
+    SPtr<TOptDUID> serverID;
+    serverID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
+    Options.push_back((Ptr*)serverID);
+
     if (send) {
         // allocate buffer
         this->send();
@@ -308,7 +314,7 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
     SPtr<TAddrAddr> addr;
     SPtr<TAddrPrefix> prefix;
 
-    unsigned long nowTs = now();
+    unsigned long nowTs = (uint32_t) time(NULL);
     unsigned long cliTs = cli->getLastTimestamp();
     unsigned long diff = nowTs - cliTs;
 

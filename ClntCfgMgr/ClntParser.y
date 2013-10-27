@@ -3,6 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
+#include <vector>
 #include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
@@ -14,7 +15,6 @@
 #include "ClntCfgIA.h"
 #include "ClntCfgTA.h"
 #include "ClntCfgPD.h"
-#include "ClntOptVendorSpec.h"
 #include "ClntCfgMgr.h"
 #include "Logger.h"
 #include "OptGeneric.h"
@@ -42,10 +42,10 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-List(DigestTypes)   DigestLst;                                              \
+DigestTypesLst      DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(THostID) PresentStationLst;                                         \
+List(THostID) PresentStationLst;                                            \
 List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;                                         \
@@ -110,7 +110,7 @@ namespace std
 %token FQDN_, FQDN_S_, DDNS_PROTOCOL_, DDNS_TIMEOUT_
 %token LIFETIME_, VENDOR_SPEC_
 %token IFACE_,NO_CONFIG_,REJECT_SERVERS_,PREFERRED_SERVERS_
-%token IA_,TA_,IAID_,ADDRESS_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
+%token IA_,TA_,IAID_,ADDRESS_KEYWORD_, NAME_, IPV6ADDR_,WORKDIR_, RAPID_COMMIT_
 %token OPTION_, SCRIPT_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, LOGCOLORS_
 %token <strval>     STRING_
@@ -118,17 +118,17 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
+%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_, OBEY_RA_BITS_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
-%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
+%token AUTH_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_REALM_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
 %token AFTR_
 %token ROUTING_
-%token ADDRESS_LIST_, STRING_KEYWORD_, DUID_KEYWORD_, REQUEST_
+%token ADDRESS_LIST_KEYWORD_, STRING_KEYWORD_, DUID_KEYWORD_, HEX_KEYWORD_
 %token RECONFIGURE_
 %type  <ival> Number
 
@@ -162,8 +162,11 @@ GlobalOptionDeclaration
 | ScriptName
 | DdnsProtocol
 | DdnsTimeout
-| AuthEnabledOption
-| AuthAcceptOption
+| AuthAcceptMethods
+| AuthProtocol
+| AuthAlgorithm
+| AuthReplay
+| AuthRealm
 | AnonInfRequest
 | InactiveMode
 | InsistMode
@@ -172,6 +175,7 @@ GlobalOptionDeclaration
 | SkipConfirm
 | ReconfigureAccept
 | DownlinkPrefixInterfaces
+| ObeyRaBits
 ;
 
 InterfaceOptionDeclaration
@@ -413,7 +417,7 @@ IADeclarationList
 ;
 
 ADDRESDeclaration
-: ADDRESS_ '{'
+: ADDRESS_KEYWORD_ '{'
 {
     SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
     SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
@@ -428,7 +432,7 @@ ADDRESDeclarationList '}'
 	ParserOptStack.delLast();
 }
 //In this agregated declaration no address hints are allowed
-|ADDRESS_ Number '{'
+|ADDRESS_KEYWORD_ Number '{'
 {
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ParserOptStack.getLast()->setAddrHint(false);
@@ -439,22 +443,22 @@ ADDRESDeclarationList '}'
     ParserOptStack.delLast();
 }
 
-|ADDRESS_ Number '{' '}'
+|ADDRESS_KEYWORD_ Number '{' '}'
 {
     for (int i=0;i<$2; i++) EmptyAddr();
 }
 
-|ADDRESS_ '{' '}'
+|ADDRESS_KEYWORD_ '{' '}'
 {
     EmptyAddr();
 }
 
-|ADDRESS_ Number
+|ADDRESS_KEYWORD_ Number
 {
     for (int i=0;i<$2; i++) EmptyAddr();
 }
 
-|ADDRESS_
+|ADDRESS_KEYWORD_
 {
     EmptyAddr();
 }
@@ -555,16 +559,76 @@ ScriptName
     CfgMgr->setScript($2);
 }
 
-AuthEnabledOption
-: AUTH_ENABLED_ Number    { ParserOptStack.getLast()->setAuthEnabled($2); }
-
-AuthAcceptOption
-: AUTH_ACCEPT_METHODS_
+AuthAcceptMethods
+: AUTH_METHODS_
 {
     DigestLst.clear();
 } DigestList {
-    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst);
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthAcceptMethods(DigestLst);
+    DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 }
+
+AuthProtocol
+: AUTH_PROTOCOL_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    if (!strcasecmp($2,"none")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (!strcasecmp($2, "delayed")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
+    } else if (!strcasecmp($2, "reconfigure-key")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
+    } else if (!strcasecmp($2, "dibbler")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
+    } else {
+        Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthAlgorithm
+: AUTH_ALGORITHM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    Log(Crit) << "auth-algorithm selection is not supported yet." << LogEnd;
+    YYABORT;
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+| AuthReplay
+
+AuthReplay
+: AUTH_REPLAY_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    if (strcasecmp($2, "none")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
+    } else if (strcasecmp($2, "monotonic")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_MONOTONIC);
+    } else {
+        Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthRealm
+: AUTH_REALM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthRealm(std::string($2));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
 
 DigestList
 : Digest
@@ -572,12 +636,14 @@ DigestList
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA1_   { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA224_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA256_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA384_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA512_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
+: DIGEST_NONE_        { DigestLst.push_back(DIGEST_NONE); }
+| DIGEST_PLAIN_       { DigestLst.push_back(DIGEST_PLAIN); }
+| DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.push_back(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.push_back(DIGEST_HMAC_SHA512); }
 ;
 
 AnonInfRequest
@@ -667,6 +733,12 @@ ExperimentalRemoteAutoconf
 #endif
 };
 
+ObeyRaBits
+: OBEY_RA_BITS_
+{
+    Log(Debug) << "Obeying Router Advertisement (M, O) bits." << LogEnd;
+    CfgMgr->obeyRaBits(true);
+}
 
 SkipConfirm
 : SKIP_CONFIRM_
@@ -971,7 +1043,12 @@ SIPDomainOption
 FQDNOption
 :OPTION_ FQDN_
 {
-    ParserOptStack.getLast()->setFQDN(string(""));
+	char hostname[255];
+	if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
+	    ParserOptStack.getLast()->setFQDN(string(hostname));
+	} else {
+	    ParserOptStack.getLast()->setFQDN(string(""));
+	}
 }
 |OPTION_ FQDN_ STRING_
 {
@@ -1080,10 +1157,10 @@ VendorSpecOption
 ;
 
 VendorSpecList
-: Number                     { VendorSpec.append( new TOptVendorSpecInfo($1,0,0,0,0) ); }
-| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo($1,$3,0,0,0) ); }
-| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo($3,0,0,0,0) ); }
-| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo($3,$5,0,0,0) ); }
+: Number                     { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,0,0,0,0) ); }
+| Number '-' Number          { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1,$3,0,0,0) ); }
+| VendorSpecList ',' Number  { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,0,0,0,0) ); }
+| VendorSpecList ',' Number '-' Number { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3,$5,0,0,0) ); }
 ;
 
 DsLiteTunnelOption
@@ -1094,52 +1171,64 @@ DsLiteTunnelOption
 ;
 
 ExtraOption
-:OPTION_ Number DUID_KEYWORD_ DUID_
+:OPTION_ Number HEX_KEYWORD_ DUID_
 {
-    Log(Debug) << "Extra option defined: code=" << $2 << ", valuelen=" << $4.length << LogEnd;
+    // option 123 hex 0x1234abcd
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Duid, false);
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Duid, true);
+    Log(Debug) << "Will send option " << $2 << " (hex data, len" << $4.length << ")" << LogEnd;
 }
-|OPTION_ Number ADDRESS_ IPV6ADDR_
+|OPTION_ Number ADDRESS_KEYWORD_ IPV6ADDR_
 {
+    // option 123 address 2001:db8::1
     SPtr<TIPv6Addr> addr(new TIPv6Addr($4));
 
     SPtr<TOpt> opt = new TOptAddr($2, addr, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Addr, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", address=" << addr->getPlain() << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_Addr, true);
+    Log(Debug) << "Will send option " << $2 << " (address " << addr->getPlain() << ")" << LogEnd;
 }
-|OPTION_ Number ADDRESS_LIST_
+|OPTION_ Number ADDRESS_LIST_KEYWORD_
 {
+    // option 123 address-list 2001:db8::1,2001:db8::cafe
     PresentAddrLst.clear();
 } ADDRESSList
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_AddrLst, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", containing "
-	       << PresentAddrLst.count() << " addresses." << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_AddrLst, true);
+    Log(Debug) << "Will send option " << $2 << " (address list, containing "
+	       << PresentAddrLst.count() << " addresses)." << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
+    // option 123 string "foobar"
     SPtr<TOpt> opt = new TOptString($2, string($4), 0);
-    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_String, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", string=" << $4 << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_String, true);
+    Log(Debug) << "Will send option " << $2 << " (string " << $4 << ")" << LogEnd;
 }
-|OPTION_ Number ADDRESS_ REQUEST_
+|OPTION_ Number HEX_KEYWORD_
+{
+    // just request option 123 and interpret responses as hex
+    Log(Debug) << "Will request option " << $2 << " and iterpret response as hex." << LogEnd;
+    ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_Duid, false);
+}
+|OPTION_ Number ADDRESS_KEYWORD_
 {
     // just request this option and expect OptAddr layout
-    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    Log(Debug) << "Will request option " << $2 
+               << " and interpret response as IPv6 address." << LogEnd;
     ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_Addr, false);
 }
-|OPTION_ Number STRING_ REQUEST_
+|OPTION_ Number STRING_KEYWORD_
 {
     // just request this option and expect OptString layout
-    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    Log(Debug) << "Will request option " << $2 << " and interpret response as a string." << LogEnd;
     ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_String, false);
 }
-|OPTION_ Number ADDRESS_LIST_
+|OPTION_ Number ADDRESS_LIST_KEYWORD_
 {
     // just request this option and expect OptAddrLst layout
-    Log(Debug) << "Extra option requested: code=" << $2 << LogEnd;
+    Log(Debug) << "Will request option " << $2
+               << " and interpret response as an address list." << LogEnd;
     ClntCfgIfaceLst.getLast()->addExtraOption($2, TOpt::Layout_AddrLst, false);
 };
 

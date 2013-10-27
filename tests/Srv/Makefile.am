@@ -28,6 +28,8 @@ Srv_tests_SOURCES = run_tests.cpp
 Srv_tests_SOURCES += assign_utils.cc assign_utils.h
 Srv_tests_SOURCES += assign_addr_unittest.cc assign_prefix_unittest.cc
 Srv_tests_SOURCES += options_unittest.cc
+Srv_tests_SOURCES += relay_unittest.cc
+Srv_tests_SOURCES += wireshark.cc
 
 Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 
@@ -44,7 +46,8 @@ Srv_tests_LDADD += $(top_builddir)/Messages/libMessages.a
 Srv_tests_LDADD += $(top_builddir)/SrvOptions/libSrvOptions.a
 Srv_tests_LDADD += $(top_builddir)/Options/libOptions.a
 Srv_tests_LDADD += $(top_builddir)/Misc/libMisc.a
-Srv_tests_LDADD += $(top_builddir)/poslib/libposlib.a
+Srv_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
+Srv_tests_LDADD += $(top_builddir)/nettle/libNettle.a
 Srv_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
 endif
 

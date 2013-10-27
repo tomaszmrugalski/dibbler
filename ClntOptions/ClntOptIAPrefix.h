@@ -21,7 +21,7 @@ class TClntOptIAPrefix : public TOptIAPrefix
     TClntOptIAPrefix(char *addr,int n, TMsg* parent);
     TClntOptIAPrefix(SPtr<TIPv6Addr> addr, long pref, long valid, char prefix_length, TMsg* parent);
     bool doDuties();
-    bool isValid();
+    bool isValid() const;
 };
 
 #endif /* CLNTOPTIAPREFIX_H */

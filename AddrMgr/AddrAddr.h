@@ -42,11 +42,11 @@ class TAddrAddr
     void setTimestamp();
     
     // tentative
-    enum ETentative getTentative();
-    void setTentative(enum ETentative state);
+    enum EAddrStatus getTentative();
+    void setTentative(enum EAddrStatus state);
 
   protected:
-    enum ETentative Tentative;
+    enum EAddrStatus Tentative;
 
     unsigned long Prefered;
     unsigned long Valid;

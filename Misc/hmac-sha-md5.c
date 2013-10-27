@@ -5,20 +5,14 @@
  *
  * released under GNU GPL v2 licence
  *
- * $Id: hmac-sha-md5.c,v 1.1 2006-11-30 03:28:35 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- *
- *
  */
 
 #include <string.h>
 #include <stdlib.h>
-#include "hmac.h"
-#include "md5.h"
-#include "sha1.h"
-#include "sha256.h"
-#include "sha512.h"
+#include "Misc/md5.h"
+#include "Misc/sha1.h"
+#include "Misc/sha256.h"
+#include "Misc/sha512.h"
 
 /* "Feeding The Void With Emptiness..." ;) */
 #define SHA_CASE(x,y)                                                                       \

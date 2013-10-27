@@ -100,6 +100,7 @@ time-zone           { return SrvParser::TIME_ZONE_;}
 sip-server          { return SrvParser::SIP_SERVER_; }
 sip-domain          { return SrvParser::SIP_DOMAIN_; }
 next-hop            { return SrvParser::NEXT_HOP_; }
+subnet              { return SrvParser::SUBNET_; }
 route               { return SrvParser::ROUTE_; }
 fqdn                { return SrvParser::FQDN_; }
 infinite            { return SrvParser::INFINITE_; }
@@ -130,21 +131,34 @@ bulk-leasequery-accept    { return SrvParser::BULKLQ_ACCEPT_; }
 bulk-leasequery-tcp-port  { return SrvParser::BULKLQ_TCPPORT_; }
 bulk-leasequery-max-conns { return SrvParser::BULKLQ_MAX_CONNS_; }
 bulk-leasequery-timeout   { return SrvParser::BULKLQ_TIMEOUT_; }
-auth-method         { return SrvParser::AUTH_METHOD_; }
-auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
-auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
+auth-protocol       { return SrvParser::AUTH_PROTOCOL_; }
+auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
+auth-replay         { return SrvParser::AUTH_REPLAY_;}
+auth-realm          { return SrvParser::AUTH_REALM_; }
+auth-methods        { return SrvParser::AUTH_METHODS_; }
+auth-required       { return SrvParser::AUTH_DROP_UNAUTH_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-plain        { return SrvParser::DIGEST_PLAIN_; }
 digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }
+hmac-md5            { return SrvParser::DIGEST_HMAC_MD5_; }
 digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
+hmac-sha1           { return SrvParser::DIGEST_HMAC_SHA1_; }
 digest-hmac-sha224  { return SrvParser::DIGEST_HMAC_SHA224_; }
+hmac-sha224         { return SrvParser::DIGEST_HMAC_SHA224_; }
 digest-hmac-sha256  { return SrvParser::DIGEST_HMAC_SHA256_; }
+hmac-sha256         { return SrvParser::DIGEST_HMAC_SHA256_; }
 digest-hmac-sha384  { return SrvParser::DIGEST_HMAC_SHA384_; }
+hmac-sha384         { return SrvParser::DIGEST_HMAC_SHA384_; }
 digest-hmac-sha512  { return SrvParser::DIGEST_HMAC_SHA512_; }
+hmac-sha512         { return SrvParser::DIGEST_HMAC_SHA512_; }
+key                 { return SrvParser::KEY_; }
+secret              { return SrvParser::SECRET_; }
+algorithm           { return SrvParser::ALGORITHM_; }
+fudge               { return SrvParser::FUDGE_; }
 client-class        { return SrvParser::CLIENT_CLASS_; }
 match-if            { return SrvParser::MATCH_IF_; }
 ==                  { return SrvParser::EQ_; }
-and                  { return SrvParser::AND_; }
+and                 { return SrvParser::AND_; }
 or                  { return SrvParser::OR_; }
 client.vendor-spec.en    { return SrvParser::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_; }
 client.vendor-spec.data   { return SrvParser::CLIENT_VENDOR_SPEC_DATA_; }
@@ -156,7 +170,7 @@ substring	    { return SrvParser::SUBSTRING_; }
 contain	    { return SrvParser::CONTAIN_; }
 string              { return SrvParser::STRING_KEYWORD_; }
 address-list        { return SrvParser::ADDRESS_LIST_; }
-
+performance-mode    { return SrvParser::PERFORMANCE_MODE_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
@@ -310,7 +324,6 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {hexdigit}{2}(:{hexdigit}{2})+ {
    int len = (strlen(yytext)+1)/3;
    char * pos = 0;
-   // Log(Crit) << "#### Detected [" << yytext << "] as DUID [len=" << len << "]" << LogEnd;
    yylval.duidval.length = len;
    yylval.duidval.duid   = new char[len];
 
@@ -339,7 +352,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%20x",&(yylval.ival))) {
-      Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd;
+      Log(Crit) << "Hex value [" << yytext << "] parsing failed." << LogEnd;
       YYABORT;
     }
     return SrvParser::HEXNUMBER_;
@@ -348,7 +361,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {integer} {
     // DECIMAL NUMBER
     if(!sscanf(yytext,"%20u",&(yylval.ival))) {
-	Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd;
+	Log(Crit) << "Decimal value [" << yytext << "] parsing failed." << LogEnd;
 	YYABORT;
     }
     return SrvParser::INTNUMBER_;

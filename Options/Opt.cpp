@@ -87,7 +87,7 @@ void TOpt::delAllOptions() {
     SubOptions.clear();
 }
 
-bool TOpt::isValid() {
+bool TOpt::isValid() const {
     return Valid;
 }
 
@@ -122,6 +122,15 @@ std::string TOpt::getPlain() {
     return "[generic]";
 }
 
+SPtr<TOpt> TOpt::getOption(const TOptList& list, uint16_t opt_type) {
+    for (TOptList::const_iterator opt = list.begin(); opt != list.end();
+         ++opt) {
+        if ((*opt)->getOptType() == opt_type) {
+            return *opt;
+        }
+    }
+    return SPtr<TOpt>(); // NULL
+}
 
 /// Parses options or suboptions, creates appropriate objects and store them in options container
 ///

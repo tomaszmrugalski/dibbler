@@ -14,6 +14,7 @@
 #include "SmartPtr.h"
 #include "DUID.h"
 #include "IfaceMgr.h"
+#include "Key.h"
 
 /* shared by server and relay */
 #define RELAY_MIN_IFINDEX 1024
@@ -51,6 +52,24 @@ class TCfgMgr
     void setDDNSTimeout(unsigned int timeout) { DDNSTimeout_ = timeout; }
     unsigned int getDDNSTimeout() { return DDNSTimeout_; }
 
+#if !defined(MOD_SRV_DISABLE_DNSUPDATE) && !defined(MOD_CLNT_DISABLE_DNSUPDATE)
+    void addKey(SPtr<TSIGKey> key);
+    SPtr<TSIGKey> getKey();
+#endif
+
+#ifndef MOD_DISABLE_AUTH
+    void setAuthProtocol(AuthProtocols proto);
+    void setAuthReplay(AuthReplay replay_detection_mode);
+    void setAuthAlgorithm(uint8_t algorithm); // protocol specific value
+    AuthProtocols getAuthProtocol();
+    AuthReplay getAuthReplay();
+    uint8_t getAuthAlgorithm();
+    void setAuthDropUnauthenticated(bool drop);
+    bool getAuthDropUnauthenticated();
+    void setAuthRealm(const std::string& realm);
+    std::string getAuthRealm();
+#endif
+
  protected:
     SPtr<TDUID> DUID;
     bool setDUID(const std::string& duidFile, TIfaceMgr &ifaceMgr);
@@ -65,6 +84,18 @@ class TCfgMgr
     SPtr<TDUID> DUIDEnterpriseID;
     DNSUpdateProtocol DdnsProto;
     unsigned int DDNSTimeout_;
+
+#ifndef MOD_DISABLE_AUTH
+    AuthProtocols AuthProtocol_;
+    uint8_t AuthAlgorithm_;
+    AuthReplay AuthReplay_;
+    std::string AuthRealm_;
+
+    bool AuthDropUnauthenticated_;
+#endif
+
+    // for TSIG in DDNS
+    TSIGKeyList Keys_;
  private:
     
 };

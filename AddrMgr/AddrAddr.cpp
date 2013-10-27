@@ -32,8 +32,8 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
     this->Valid = valid;
     this->Addr=addr;
-    this->Timestamp = now();
-    this->Tentative = TENTATIVE_UNKNOWN;
+    this->Timestamp = (unsigned long)time(NULL);
+    this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = 128;
 
     if (pref>valid) {
@@ -58,8 +58,8 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix) {
     this->Prefered = pref;
     this->Valid = valid;
     this->Addr=addr;
-    this->Timestamp = now();
-    this->Tentative = TENTATIVE_UNKNOWN;
+    this->Timestamp = (unsigned long)time(NULL);
+    this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = prefix;
 
     if (pref>valid) {
@@ -96,7 +96,7 @@ SPtr<TIPv6Addr> TAddrAddr::get() {
 unsigned long TAddrAddr::getPrefTimeout()
 {
     unsigned long ts = Timestamp + Prefered;
-    unsigned long x  = now();
+    unsigned long x  = (unsigned long)time(NULL);
     if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
         return DHCPV6_INFINITY;
     }
@@ -116,7 +116,7 @@ unsigned long TAddrAddr::getPrefTimeout()
 unsigned long TAddrAddr::getValidTimeout()
 {
     unsigned long ts = Timestamp + Valid;
-    unsigned long x  = now();
+    unsigned long x  = (unsigned long)time(NULL);
     if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
 	return DHCPV6_INFINITY;
     }
@@ -139,7 +139,7 @@ void TAddrAddr::setTimestamp(long ts)
     this->Timestamp = ts;
 }
 
-void TAddrAddr::setTentative(enum ETentative state)
+void TAddrAddr::setTentative(enum EAddrStatus state)
 {
     this->Tentative = state;
 }
@@ -157,10 +157,10 @@ void TAddrAddr::setValid(unsigned long valid)
 // set timestamp
 void TAddrAddr::setTimestamp()
 {
-    this->Timestamp = now();
+    this->Timestamp = (unsigned long)time(NULL);
 }
 
-enum ETentative TAddrAddr::getTentative()
+enum EAddrStatus TAddrAddr::getTentative()
 {
     return Tentative;
 }

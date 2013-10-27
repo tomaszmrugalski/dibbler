@@ -12,18 +12,14 @@
 #define SRVMSGADVERTISE_H
 
 #include "SrvMsg.h"
-#include "SrvMsgSolicit.h"
 class TSrvMsgAdvertise : public TSrvMsg
 {
   public:
     // creates object based on a buffer
-    TSrvMsgAdvertise(int iface, SPtr<TIPv6Addr> addr);
-    TSrvMsgAdvertise(SPtr<TSrvMsgSolicit> question);
-    TSrvMsgAdvertise(unsigned int iface, SPtr<TIPv6Addr> addr,unsigned char* buf, unsigned int bufSize);
-    /// @todo: get rid of 2 of those constructors
+    TSrvMsgAdvertise(SPtr<TSrvMsg> question);
 
     bool check();
-    bool handleSolicitOptions(SPtr<TSrvMsgSolicit> solicit);
+    bool handleSolicitOptions(SPtr<TSrvMsg> solicit);
     void doDuties();
     unsigned long getTimeout();
     std::string getName() const;
