@@ -1025,5 +1025,4 @@ extern int terminate_tcp_connection(int fd,int how) {
         return 1;
     }
     return iResult;
-
 }

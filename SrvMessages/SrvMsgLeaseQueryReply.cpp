@@ -111,13 +111,14 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
         default:
             Options.push_back( new TOptStatusCode(STATUSCODE_UNKNOWNQUERYTYPE, "Invalid Query type.", this) );
             Log(Warning) << "LQ: Invalid query type (" << q->getQueryType() << " received." << LogEnd;
-            return true;
+            send = true;
+            break;
         }
     }
 
     if (!count) {
         Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
-        return true;
+        send = true;
     }
 
     /// @todo: this was on master, but not on on Manelski branch. Should it be here?

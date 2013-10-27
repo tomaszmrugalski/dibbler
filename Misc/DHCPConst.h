@@ -161,13 +161,6 @@
 // RFC5460: Bulk Leasequer
 #define OPTION_RELAY_ID		53
 
-// The following option numbers are not yet standardized and
-// won't interoperate with other implementations
-// option formats taken from:
-// draft-ram-dhc-dhcpv6-aakey-01.txt
-#define OPTION_AAAAUTH              240
-#define OPTION_KEYGEN               241
-
 #define OPTION_NEXT_HOP         242
 #define OPTION_RTPREFIX         243
 
@@ -211,7 +204,6 @@ typedef enum {
 
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY (uint32_t) 0xffffffffu
-
 
 /// used for 2 purposes:
 /// is address tentative?

@@ -37,7 +37,7 @@ bool TSrvCfgIface::bulkLeaseQuerySupport() const
     return BulkLeaseQuery_;
 }
 
-SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid, 
+SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
                                                       TMsg * parent, bool quiet) {
 
     SPtr<TOptVendorData> remoteID;

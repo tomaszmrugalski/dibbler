@@ -197,6 +197,7 @@ bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr,
             continue; // don't send anything via multicast sockets
         break;
     }
+
     if (!sock) {
         Log(Error) << "Send failed: interface " << ptrIface->getName()
                    << "/" << iface << " has no open sockets." << LogEnd;
@@ -211,9 +212,11 @@ bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr,
         tmpl=0;
     }
 
-    // send it!
-    //return (sock->send(msg,size,addr,port));
-    return (sock->send_tcp(msg,size,addr,port));
+    if (sock->send_tcp(msg,size,addr,port) == 0) {
+        return true; // all ok
+    } else {
+        return false;
+    }
 }
 
 // @brief reads messages from all interfaces
@@ -314,6 +317,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             Log(Debug) << "Control message received." << LogEnd;
             return 0;
         }
+
         Log(Warning) << "Received message is too short (" << bufsize
                      << ") bytes, at least 4 are required." << LogEnd;
         return 0; //NULL

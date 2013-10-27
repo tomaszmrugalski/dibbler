@@ -667,7 +667,6 @@ bool ReqTransMgr::RetryConnection()
 
 void ReqTransMgr::TerminateTcpConn()
 {
-
     Log(Debug) << "Closing conection..." << LogEnd;
     int how;
     how=2;
@@ -676,7 +675,6 @@ void ReqTransMgr::TerminateTcpConn()
     Iface->firstSocket();
     ptr = Iface->getSocket();
     this->Socket->terminate_tcp(ptr->getFD(),how);
-
 }
 
 bool ReqTransMgr::ValidateMsg(char * msgBuf)

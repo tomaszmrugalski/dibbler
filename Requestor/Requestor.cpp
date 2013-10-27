@@ -363,7 +363,6 @@ int main(int argc, char *argv[])
             return LOWLEVEL_ERROR_BIND_FAILED;
         }
 
-
         if (!transMgr->SendMsg()) {
             Log(Crit) << "Aborted. Message transmission failed." << LogEnd;
             return LOWLEVEL_ERROR_SOCKET;
