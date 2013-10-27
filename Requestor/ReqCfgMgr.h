@@ -22,6 +22,15 @@ typedef struct {
     char * addr;
     char * duid;
     char * bulk;
+    char * linkAddr;
+    char * remoteId;
+    char * relayId;
+    char * clientId;
+    int  enterpriseNumber;
+    int  queryType;
+    int requestCount;
+    bool multiplyQuery;
+
 } ReqCfgMgr;
 
 #endif

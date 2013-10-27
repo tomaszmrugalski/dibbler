@@ -11,6 +11,7 @@
 #include <string>
 #include "ReqMsg.h"
 #include "DHCPConst.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -26,6 +27,27 @@ TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 
 }
 
+//TMsg(int iface, SPtr<TIPv6Addr> addr, char *&buf, int msgType, int msgSize)
+TReqMsg::TReqMsg(int iface, SPtr<TIPv6Addr> addr, char *buf, int msgType,int msgSize)
+    :TMsg(iface,addr,msgType)
+{
+
+}
+
+void TReqMsg::validateLQ()
+{
+
+}
+
+void TReqMsg::isComletion()
+{
+
+}
+
+void TReqMsg::multipleQuery()
+{
+
+}
 
 std::string TReqMsg::getName() const
 {
@@ -37,6 +59,11 @@ std::string TReqMsg::getName() const
     default:
         return "unknown";
     }
+}
+
+int TReqMsg::getReqMsgType()
+{
+    return ReqMsgType;
 }
 
 void TReqMsg::addOption(SPtr<TOpt> opt)

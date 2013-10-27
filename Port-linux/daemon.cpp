@@ -124,6 +124,7 @@ int init(const char * pidfile, const char * workdir) {
      * portable.) */
     char buf[20];
     char cmd[256];
+
     pid_t pid = getPID(pidfile);
     if (pid > 0) {
 	/* @todo: ISO C++ doesn't support 'j' length modifier nor 'll' nor

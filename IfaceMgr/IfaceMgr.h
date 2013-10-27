@@ -23,6 +23,7 @@ class TOpt;
 
 class TIfaceMgr {
   public:
+    bool isTcpSet;
     friend std::ostream & operator <<(std::ostream & strum, TIfaceMgr &x);
 
     TIfaceMgr(const std::string& xmlFile, bool getIfaces);
@@ -36,7 +37,7 @@ class TIfaceMgr {
     int countIface();
 
     // ---other---
-    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer);
+    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer, bool tcpClient=false);
     std::string printMac(char * mac, int macLen);
     void dump();
     bool isDone();
@@ -55,6 +56,7 @@ class TIfaceMgr {
 
     std::string XmlFile;
     List(TIfaceIface) IfaceLst; //Interface list
+    bool isTcp;
     bool IsDone;
 };
 

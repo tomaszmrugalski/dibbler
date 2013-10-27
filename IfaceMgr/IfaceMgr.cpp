@@ -36,6 +36,7 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
     this->IsDone  = false;
     struct iface  * ptr;
     struct iface  * ifaceList;
+    this->isTcpSet = false;
 
     if (!getIfaces)
         return;
@@ -146,7 +147,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
  * @return socket descriptor (or 0)
  */
 int TIfaceMgr::select(unsigned long time, char *buf,
-                      int &bufsize, SPtr<TIPv6Addr> peer) {
+                      int &bufsize, SPtr<TIPv6Addr> peer, bool tcpClient) {
     struct timeval czas;
     int result;
     if (time > DHCPV6_INFINITY/2)
@@ -187,13 +188,18 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     SPtr<TIfaceIface> iface;
     SPtr<TIfaceSocket> sock;
     bool found = 0;
+
     IfaceLst.first();
     while ( (!found) && (iface = IfaceLst.get()) ) {
         iface->firstSocket();
         while ( sock = iface->getSocket() ) {
+            sock->getFD();
             if (FD_ISSET(sock->getFD(),&fds)) {
                 found = true;
+                Log(Info) << "Socket found:" << sock->getFD() <<LogEnd;
                 break;
+            } else {
+                Log(Info) << "Socket isn't set but is present" << sock->getFD() <<LogEnd;
             }
         }
     }
@@ -206,13 +212,53 @@ int TIfaceMgr::select(unsigned long time, char *buf,
     char myPlainAddr[48];   // my plain address
     char peerPlainAddr[48]; // peer plain address
 
-    // receive data (pure C function used)
-    result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
-    char peerAddrPacked[16];
-    char myAddrPacked[16];
-    inet_pton6(peerPlainAddr,peerAddrPacked);
-    inet_pton6(myPlainAddr,myAddrPacked);
-    peer->setAddr(peerAddrPacked);
+    int stype, flags =0;
+    stype = getsOpt(sock->getFD());
+    if(stype != -1) {
+        if (stype==SOCK_DGRAM) {
+            result = sock_recv(sock->getFD(), myPlainAddr, peerPlainAddr, buf, bufsize);
+            char peerAddrPacked[16];
+            char myAddrPacked[16];
+            inet_pton6(peerPlainAddr,peerAddrPacked);
+            inet_pton6(myPlainAddr,myAddrPacked);
+            peer->setAddr(peerAddrPacked);
+
+            #ifndef WIN32
+                // check if we've received data addressed to us. There's problem with sockets binding.
+                // If there are 2 open sockets (one bound to multicast and one to global address),
+                // each packet sent on multicast address is also received on unicast socket.
+                char anycast[16] = {0};
+
+                if (!iface->flagLoopback()
+                    && memcmp(sock->getAddr()->getAddr(), myAddrPacked, 16)
+                    && memcmp(sock->getAddr()->getAddr(), anycast, 16) ) {
+                        Log(Debug) << "Received data on address " << myPlainAddr << ", expected "
+                               << *sock->getAddr() << ", message ignored." << LogEnd;
+                        bufsize = 0;
+                        return 0;
+                }
+            #endif
+            this->isTcp=false;
+        } else if (stype==SOCK_STREAM) {
+            if(!tcpClient) {
+                if(!this->isTcpSet) {
+                    //add new socket by accept function
+                    if(iface->addTcpSocket(sock->getAddr(),sock->getPort(),sock->getFD()))
+                            this->isTcpSet = true;
+                } else {
+                    result = sock_recv_tcp(iface->getSocket()->getMaxFD(), buf, bufsize, flags);
+                }
+            } else {
+                result = sock_recv_tcp(sock->getFD(), buf, bufsize, flags);
+            }
+            this->isTcp = true;
+
+        }
+
+    } else {
+        Log(Error) << "Seems like internal error. Unable to find any socket with incoming data." << LogEnd;
+        return 0;
+    }
 
     if (result==-1) {
         Log(Error) << "Socket recv() failure detected." << LogEnd;

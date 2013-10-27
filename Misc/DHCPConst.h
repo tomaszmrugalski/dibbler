@@ -249,6 +249,7 @@ enum EUnknownFQDNMode {
 
 
 int allowOptInOpt(int msgType, int optOut, int optIn);
+int allowOptInOptInBulk(int msgType, int optOut, int optIn, int pos);
 int allowOptInMsg(int msgType, int optType);
 
 #ifdef WIN32

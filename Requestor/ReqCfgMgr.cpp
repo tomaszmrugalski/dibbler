@@ -8,4 +8,4 @@
  * $Id: ReqCfgMgr.cpp,v 1.1 2007-12-02 10:31:59 thomson Exp $
  */
 
-
+#include "ReqCfgMgr.h"

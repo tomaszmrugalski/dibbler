@@ -43,7 +43,7 @@ char* TOpt::storeHeader(char* buf) {
     return buf;
 }
 
-char* TOpt::storeSubOpt( char* buf){
+char* TOpt::storeSubOpt(char* buf) {
     SPtr<TOpt> ptr;
     SubOptions.first();
     while ( ptr = SubOptions.get() ) {

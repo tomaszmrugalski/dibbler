@@ -19,13 +19,14 @@ class TSrvMsgLeaseQuery : public TSrvMsg
 {
   public:
     TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
-                      int bufSize, bool tcp = false);
+                      int bufSize,int MsgType, bool tcp = false);
 
     void doDuties();
     bool check();
+    unsigned int getBulkSize(char * buf);
     ~TSrvMsgLeaseQuery();
     std::string getName() const;
-    bool isTCP() { return tcp; };
+    bool isTCP();
   private:
     bool tcp;
 };

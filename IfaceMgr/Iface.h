@@ -62,7 +62,9 @@ class TIfaceIface{
     
     // ---socket related---
     bool addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
-    // bool addSocket(int port, bool ifaceonly, bool reuse); 
+    bool addTcpSocket(SPtr<TIPv6Addr> addr, int port, int baseFD);
+    bool closeTcpConnection();
+
     bool delSocket(int id);
     void firstSocket();
     SPtr <TIfaceSocket> getSocketByFD(int fd);

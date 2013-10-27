@@ -288,6 +288,57 @@ bool TIfaceIface::addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool 
     return true;
 }
 
+//bool addTcpSocket(SPtr<TIPv6Addr> addr, int port,bool iffaceonly, bool reuse);
+bool TIfaceIface::addTcpSocket(SPtr<TIPv6Addr> addr, int port, int baseFD)
+{
+
+    // Log(Debug) << "Creating Tcp socket on " << *addr << " address." << LogEnd;
+    SPtr<TIfaceSocket> ptr = new TIfaceSocket(this->Name, this->ID,addr,port,baseFD);
+    if (ptr->getStatus()!=STATE_CONFIGURED) {
+        return false;
+    }
+
+    SocketsLst.append(ptr);
+    return true;
+
+}
+
+bool TIfaceIface::closeTcpConnection()
+{
+    int sockId, stype, failCount=0;
+    bool found=false;
+    // tricks with FDS macros
+
+    fd_set fds;
+    fds = *TIfaceSocket::getFDS();
+
+
+    SPtr<TIfaceSocket> sock;
+
+    while (!found) {
+        sockId = sock->getMaxFD();
+        stype = getsOpt(sockId);
+        if(stype != -1) {
+          if (stype==SOCK_STREAM)
+              found = true;
+        } else {
+            Log(Error) << "Cannot close TCP connection with:" << sockId << LogEnd;
+            failCount++;
+        }
+    }
+
+    FD_CLR(sockId,&fds);
+    sock->terminate_tcp(sockId,2);
+    this->delSocket(sockId);
+    if (failCount && found!=true)
+        return false;
+    else
+        return true;
+
+   // Log(Debug) << "MAX FD after colse and del:" << sock->getMaxFD() << LogEnd;
+   // Log(Debug) << "Binded socket OLD:" << this->getSocketByFD(5) << LogEnd;
+}
+
 #if 0
 /*
  * binds socket on whole interface

@@ -30,15 +30,22 @@ class TIfaceSocket;
 class TIfaceSocket {
     friend std::ostream& operator<<(std::ostream& strum, TIfaceSocket &x);
  public:
-    TIfaceSocket(char * iface,int ifaceid, int port, 
-		     SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
-    TIfaceSocket(char * iface,int ifaceid, int port,
-		     bool ifaceonly, bool reuse);
-   
+    TIfaceSocket(char * iface,int ifaceid, int port, SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
+    TIfaceSocket(char * iface,int ifaceid, int port, bool ifaceonly, bool reuse);
+
+    //bulk's constructor
+    TIfaceSocket(char * iface, int ifaceid,SPtr<TIPv6Addr> addr, int port, int baseSocket);
+
     // ---transmission---
     int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
     int recv(char * buf,SPtr<TIPv6Addr> addr);
-    
+
+    // ---TCP-transmission---
+    int send_tcp(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
+    int recv_tcp(char * buf,SPtr<TIPv6Addr> addr);
+    int terminate_tcp(int fd, int how);
+    int accept(SPtr<TIPv6Addr> peer, char *peerPlainAddr);
+
     // ---get info---
     int getFD();
     int getPort();
@@ -57,12 +64,16 @@ class TIfaceSocket {
     ~TIfaceSocket();
  private:
     // adds socket to this interface
-    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, 
-		     int port, bool ifaceonly, bool reuse);
+    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port, bool ifaceonly, bool reuse);
+    int createSocket_TCP(char * iface, int ifaceid, SPtr<TIPv6Addr> addr,int port);
+
     void printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port);
 
     // FileDescriptor
     int FD;
+
+    //Base Socket FileDescriptor
+    int baseFD;
 
     // bounded port
     int Port;
@@ -92,6 +103,7 @@ class TIfaceSocket {
     // created. It call FD_SET to zero fd_set 
     static int Count;
     static int MaxFD; // needed instead of FD_MAXSIZE on Macs
+    static int tcpConnnectionCount;
 };
 
 

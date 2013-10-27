@@ -34,6 +34,8 @@ class TMsg
     // used to create TMsg object based on received char[] data
     TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
     
+    TMsg(int iface, SPtr<TIPv6Addr> addr, char * &buf, int msgType, int &bufSize);
+
     virtual int getSize();
     
     // transmit (or retransmit)
@@ -82,10 +84,14 @@ class TMsg
 
     // notify scripts stuff
     void* getNotifyScriptParams();
+    bool Bulk;
 
   protected:
     int MsgType;
     long TransID;
+
+    //bulk's parameter
+    int MsgSize;
 
     bool delOption(int code);
 

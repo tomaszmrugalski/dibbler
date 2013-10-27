@@ -32,7 +32,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
 	      return;
     }
     SrvIfaceMgr().dump();
-    
+
     TSrvCfgMgr::instanceCreate(config, SRVCFGMGR_FILE);
     if ( SrvCfgMgr().isDone() ) {
         Log(Crit) << "Fatal error during CfgMgr initialization." << LogEnd;
@@ -108,6 +108,31 @@ void TDHCPServer::run()
 	    continue;
 	} 
 	SrvTransMgr().relayMsg(msg);
+
+        //do this to keep TCP session alive
+        if(msg->Bulk) {
+            //msg->IsDone=true;
+
+
+            if(ptrIface->closeTcpConnection())
+                Log(Info) << "Closing OK" << LogEnd;
+            else
+                Log(Info) << "Closing failure" << LogEnd;
+
+
+            //TODO: this should to keep TCP session alive to receive more data from requestor
+            /*/SPtr<TSrvMsg> ptrMsg;
+            ptrMsg = SrvTransMgr().MsgLst.get();
+            if(ptrMsg->isDone())
+                ptrIface->closeTcpConnection();
+            else {
+                Log(Info) << "Msg has been send but TCP session is still seting up" << LogEnd;
+            } */
+           // msg->IsDone = true;
+            SrvIfaceMgr().isTcpSet = false;
+
+        }
+
     }
     Log(Notice) << "Bye bye." << LogEnd;
 }

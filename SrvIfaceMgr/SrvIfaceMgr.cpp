@@ -72,7 +72,6 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
         Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
                  // << ", flags=" << ptr->flags
                     << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
-
         SPtr<TIfaceIface> iface(new TSrvIfaceIface(ptr->name,ptr->id,
                                                        ptr->flags,
                                                        ptr->mac,
@@ -139,6 +138,43 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     return (sock->send(msg,size,addr,port));
 }
 
+bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port)
+{
+    // find this interface
+    SPtr<TIfaceIface> ptrIface;
+    ptrIface = this->getIfaceByID(iface);
+    if (!ptrIface) {
+            Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
+            return false;
+    }
+
+    // find this socket
+    SPtr<TIfaceSocket> sock;
+    ptrIface->firstSocket();
+    while (sock = ptrIface->getSocket()) {
+        if (sock->multicast())
+            continue; // don't send anything via multicast sockets
+        break;
+    }
+    if (!sock) {
+        Log(Error) << "Send failed: interface " << ptrIface->getName()
+                   << "/" << iface << " has no open sockets." << LogEnd;
+        return false;
+    }
+
+    unsigned short tmpl=0;
+    int pos2=0;
+    for(pos2=0;pos2<size;pos2++) {
+        tmpl = msg[pos2];
+        Log(Debug) << "pos"<<pos2<<":"<<tmpl <<LogEnd;
+        tmpl=0;
+    }
+
+    // send it!
+    //return (sock->send(msg,size,addr,port));
+    return (sock->send_tcp(msg,size,addr,port));
+}
+
 // @brief reads messages from all interfaces
 // it's wrapper around IfaceMgr::select(...) method
 //
@@ -166,6 +202,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         // check message type
         msgtype = buf[0];
         //SPtr<TMsg> ptr;
+
         SPtr<TSrvIfaceIface> ptrIface;
 
         // get interface
@@ -174,6 +211,58 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
                    << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
                    << ")." << LogEnd;
+
+        if (this->isTcp) {
+            if (bufsize<6) {
+                Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
+                return 0; //NULL
+            }
+            msgtype = buf[2];
+
+            switch (msgtype) {
+
+                case LEASEQUERY_MSG:
+                {
+                    Log(Debug) << "[Bulk] Leasequery messege coming" << LogEnd;
+                    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+                    if (!ptr->validateReplayDetection() ||
+                        !ptr->validateAuthInfo(buf, bufsize)) {
+                        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+                        return 0;
+                    }
+                    ptr->Bulk = true;
+                    return ptr;
+                }
+                case RELAY_FORW_MSG:
+                {
+                    Log(Debug) << "[Bulk] Relay_Forward messege coming" << LogEnd;
+                    ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+                    if (!ptr)
+                        return 0;
+                    if (!ptr->validateReplayDetection() ||
+                        !ptr->validateAuthInfo(buf, bufsize)) {
+                        Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
+                        return 0;
+                    }
+                }
+                return ptr;
+                case LEASEQUERY_REPLY_MSG:
+                    Log(Debug) << "[Bulk] Leasequery_Reply messege coming" << LogEnd;
+                    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                    return 0; //NULL;
+                case LEASEQUERY_DONE_MSG:
+                    Log(Debug) << "[Bulk] Leasequery_Done coming" << LogEnd;
+                    Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+                    return 0;
+                case LEASEQUERY_DATA_MSG:
+                    Log(Debug) << "[Bulk] Leasequery_Data coming" << LogEnd;
+                    Log(Warning) << "[Bulk] Illegal message type " << msgtype << " received." << LogEnd;
+                    return 0;
+                default:
+                Log(Warning) << "[Bulk] Illegal message type (default) " << msgtype << " received." << LogEnd;
+                return 0;
+            }
+        }
 
         // create specific message object
         SPtr<TSrvMsg> ptr;
@@ -219,6 +308,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
             Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
             return 0; //NULL
         }
+
+        // create specific message object
+        SPtr<TSrvMsg> ptr;
     } else {
         return 0; //NULL
     }
@@ -459,6 +551,18 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
     int ifaceid = ptrIface->getID();
     if (bufsize<4)
         return 0;
+
+    // Leasequery messages
+    if (this->isTcp) {
+        switch (buf[2]) {
+        case LEASEQUERY_MSG:
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
+        default:
+            Log(Warning) << "Illegal message type " << (int)(buf[2]) << " received." << LogEnd;
+            return 0; //NULL;;
+        }
+    }
+
     switch (buf[0]) {
     case SOLICIT_MSG:
               return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);

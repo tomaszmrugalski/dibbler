@@ -13,16 +13,28 @@
 #include <string>
 #include "Msg.h"
 #include "SmartPtr.h"
+#include "ReqOpt.h"
 
 class TReqMsg: public TMsg
 {
 public:
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
+
     // used to create TMsg object based on received char[] data
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+
+    // bulk constructor
+    TReqMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int msgType,int msgSize);
+
     void addOption(SPtr<TOpt> opt);
+    int ReqMsgType;
+    TContainer< SPtr<TOpt> > SubOptions;
 
     std::string getName() const;
+    int getReqMsgType();
+    void validateLQ();//defined in rfc 5007
+    void isComletion(); //check completion of server replay (rfc 5460 p.11)
+    void multipleQuery();//requestor can send multiple query to receive more data
 };
 
 #endif

@@ -57,7 +57,6 @@ libRequestor_a_LIBADD =
 am_libRequestor_a_OBJECTS = libRequestor_a-ReqCfgMgr.$(OBJEXT) \
 	libRequestor_a-ReqMsg.$(OBJEXT) \
 	libRequestor_a-ReqOpt.$(OBJEXT) \
-	libRequestor_a-ReqOpts.$(OBJEXT) \
 	libRequestor_a-ReqTransMgr.$(OBJEXT)
 libRequestor_a_OBJECTS = $(am_libRequestor_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
@@ -242,7 +241,7 @@ noinst_LIBRARIES = libRequestor.a
 libRequestor_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/Messages -I$(top_srcdir)/Options \
 	-I$(top_srcdir)/IfaceMgr
-libRequestor_a_SOURCES = ReqCfgMgr.cpp ReqCfgMgr.h ReqMsg.cpp ReqMsg.h ReqOpt.cpp ReqOpt.h ReqOpts.cpp ReqTransMgr.cpp ReqTransMgr.h
+libRequestor_a_SOURCES = ReqCfgMgr.cpp ReqCfgMgr.h ReqMsg.cpp ReqMsg.h ReqOpt.cpp ReqOpt.h ReqTransMgr.cpp ReqTransMgr.h
 all: all-am
 
 .SUFFIXES:
@@ -368,22 +367,6 @@ libRequestor_a-ReqOpt.obj: ReqOpt.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReqOpt.cpp' object='libRequestor_a-ReqOpt.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRequestor_a-ReqOpt.obj `if test -f 'ReqOpt.cpp'; then $(CYGPATH_W) 'ReqOpt.cpp'; else $(CYGPATH_W) '$(srcdir)/ReqOpt.cpp'; fi`
-
-libRequestor_a-ReqOpts.o: ReqOpts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRequestor_a-ReqOpts.o -MD -MP -MF $(DEPDIR)/libRequestor_a-ReqOpts.Tpo -c -o libRequestor_a-ReqOpts.o `test -f 'ReqOpts.cpp' || echo '$(srcdir)/'`ReqOpts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRequestor_a-ReqOpts.Tpo $(DEPDIR)/libRequestor_a-ReqOpts.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReqOpts.cpp' object='libRequestor_a-ReqOpts.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRequestor_a-ReqOpts.o `test -f 'ReqOpts.cpp' || echo '$(srcdir)/'`ReqOpts.cpp
-
-libRequestor_a-ReqOpts.obj: ReqOpts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRequestor_a-ReqOpts.obj -MD -MP -MF $(DEPDIR)/libRequestor_a-ReqOpts.Tpo -c -o libRequestor_a-ReqOpts.obj `if test -f 'ReqOpts.cpp'; then $(CYGPATH_W) 'ReqOpts.cpp'; else $(CYGPATH_W) '$(srcdir)/ReqOpts.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRequestor_a-ReqOpts.Tpo $(DEPDIR)/libRequestor_a-ReqOpts.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ReqOpts.cpp' object='libRequestor_a-ReqOpts.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRequestor_a-ReqOpts.obj `if test -f 'ReqOpts.cpp'; then $(CYGPATH_W) 'ReqOpts.cpp'; else $(CYGPATH_W) '$(srcdir)/ReqOpts.cpp'; fi`
 
 libRequestor_a-ReqTransMgr.o: ReqTransMgr.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRequestor_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRequestor_a-ReqTransMgr.o -MD -MP -MF $(DEPDIR)/libRequestor_a-ReqTransMgr.Tpo -c -o libRequestor_a-ReqTransMgr.o `test -f 'ReqTransMgr.cpp' || echo '$(srcdir)/'`ReqTransMgr.cpp

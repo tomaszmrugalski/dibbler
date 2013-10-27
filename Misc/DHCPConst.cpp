@@ -70,9 +70,62 @@ int allowOptInMsg(int msg, int opt)
 20 Reconf. Accept *
 */
 
-int allowOptInOpt(int msgType, int parent, int subopt) {
+int allowOptInOptInBulk(int msgType, int parent, int subopt, int pos) {
 
     // additional options (not specified in RFC3315)
+    //if (subopt>20)
+    //    return 1;
+
+    switch (msgType) {
+    case LEASEQUERY_MSG:
+
+        switch (subopt) {
+        case OPTION_CLIENTID:
+            if(pos!=4) {
+                Log(Error) << "Leasequery message received by server, but the frame doesn't contain CLIENT_ID option." << LogEnd;
+                return STATUSCODE_MALFORMEDQUERY;
+            }
+            return 1;
+            break;
+        case OPTION_LQ_QUERY:
+            if (parent != OPTION_CLIENTID) {
+                Log(Error)  << "Leasequery message received by server, but the frame doesn't contain OPTION_LEASEQUERY option in appropriate place." << LogEnd;
+                return STATUSCODE_MALFORMEDQUERY;
+            }
+            return 1;
+            break;
+        case OPTION_IAADDR:
+            return 1;
+            break;
+        case OPTION_RELAY_ID:
+            return 1;
+            break;
+        case OPTION_REMOTE_ID:
+            return 1;
+            break;
+
+        }
+
+        break;
+    case LEASEQUERY_DONE_MSG:
+        Log(Error) << "Leasequery_done message received by server - not supported." << LogEnd;
+        return STATUSCODE_UNKNOWNQUERYTYPE;
+        break;
+    case  LEASEQUERY_DATA_MSG:
+        Log(Error) << "Leasequery_data message received by server - not supported." << LogEnd;
+        return STATUSCODE_UNKNOWNQUERYTYPE;
+        break;
+    case LEASEQUERY_REPLY_MSG:
+        Log(Error) << "Leasequery_reply message received by server - not supported." << LogEnd;
+        return STATUSCODE_UNKNOWNQUERYTYPE;
+        break;
+    }
+    return 0;
+}
+
+int allowOptInOpt(int msgType, int parent, int subopt){
+
+// additional options (not specified in RFC3315)
     if (subopt>20)
         return 1;
 

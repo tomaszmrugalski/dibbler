@@ -90,6 +90,15 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface) {
         }
     }
 
+    // Creating TCP socket
+    if (SrvCfgMgr().isBulkSupported()) {
+        Log(Notice) << "Bulk-leasequery accepted. Creating TCP socket on" << confIface->getName()
+                       <<"/" << confIface->getID() << " interface." << LogEnd;
+        if (!iface->addTcpSocket(unicast,DHCPSERVER_PORT,0)) {
+            Log(Crit) << "Proper TCP socket creation failed." << LogEnd;
+        }
+    }
+
     char srvAddr[16];
     if (!confIface->isRelay()) {
         inet_pton6(ALL_DHCP_RELAY_AGENTS_AND_SERVERS,srvAddr);
@@ -251,18 +260,37 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         a = new TSrvMsgReply(nmsg);
         break;
     }
+
     case LEASEQUERY_MSG: {
-        int iface = msg->getIface();
-        if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
-            Log(Error) << "LQ: LeaseQuery message received on " << iface
-                       << " interface, but it is not supported there." << LogEnd;
-            return;
+        if(!msg->Bulk) {
+            int iface = msg->getIface();
+            if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport() ) {
+                Log(Error) << "LQ: LeaseQuery message received on " << iface
+                           << " interface, but it is not supported there." << LogEnd;
+                return;
+            }
+            Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+            SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
+            a = new TSrvMsgLeaseQueryReply(lq);
+            //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+            //                  int bufSize,int MsgType, bool tcp = false);
+            break;
+        } else {
+            int iface = msg->getIface();
+            if (!SrvCfgMgr().getIfaceByID(iface) || (!SrvCfgMgr().getIfaceByID(iface)->bulkLeaseQuerySupport()) ) {
+                Log(Error) << "BLQ: LeaseQuery message received on " << iface
+                           << " interface, but it is not supported there." << LogEnd;
+                return;
+            }
+            Log(Debug) << "BLQ: Bulk LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+            SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
+            a = new TSrvMsgLeaseQueryReply(lq);
+            //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+            //                  int bufSize,int MsgType, bool tcp = false);
+            break;
         }
-        Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        processLeaseQuery(lq);
-        break;
     }
+
     case RECONFIGURE_MSG:
     case ADVERTISE_MSG:
     case REPLY_MSG:
@@ -279,6 +307,8 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
                     << " not supported." << LogEnd;
         break;
     }
+
+
     }
 
     if (a) {
@@ -482,32 +512,6 @@ TSrvTransMgr & TSrvTransMgr::instance()
         exit(EXIT_FAILURE);
     }
     return *Instance;
-}
-
-void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
-    SPtr<TSrvMsg> asnw;
-    int iface = lq->getIface();
-    if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
-        Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
-        return;
-    }
-
-    if (lq->isTCP()) {
-        Log(Debug) << "BLQ: LeaseQuery received over TCP, preparing answer." << LogEnd;
-    } else {
-        Log(Debug) << "LQ: LeaseQuery received over UDP, preparing answer." << LogEnd;
-    }
-    
-    SPtr<TSrvOptLQ> query;
-    query = (Ptr*) lq->getOption(OPTION_LQ_QUERY);
-    if (!query) {
-        Log(Warning) << "LQ: Unable to find LQ_QUERY option in LQ message. Not sending reply." << LogEnd;
-        return;
-    }
-
-    SPtr<TSrvMsg> answ = new TSrvMsgLeaseQueryReply(lq);
-    // don't add to MsgLst (no need to store cached reply)
-    // LQ-REPLY was sent from TSrvMsgLeaseQueryReply constructor
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)

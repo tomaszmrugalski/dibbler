@@ -43,6 +43,9 @@ public:
     TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
+    //following constructor calls for tcp messages
+    TSrvMsg(int iface, SPtr<TIPv6Addr> addr,char * buf,int bufSize,int msgType);
+
     void copyRelayInfo(SPtr<TSrvMsg> q);
     void copyAAASPI(SPtr<TSrvMsg> q);
     void copyRemoteID(SPtr<TSrvMsg> q);

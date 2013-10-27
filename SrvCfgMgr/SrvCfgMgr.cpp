@@ -1134,3 +1134,8 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     }
     return DNSAddr;
 }
+
+bool TSrvCfgMgr::isBulkSupported()
+{
+    return BulkLQAccept;
+}

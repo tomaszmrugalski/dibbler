@@ -54,6 +54,26 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {
 }
 
+TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, char *buf,int bufSize, int msgType):
+TMsg(iface, addr, buf, msgType,bufSize)
+{
+    setDefaults();
+    int pos = 0;
+    SPtr<TOpt> ptr;
+    if (bufSize < 6 + pos) {
+        Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
+                   << " bytes left to parse. Bytes ignored." << LogEnd;
+    } else {
+        //calling bulk contruct
+        ptr = new TSrvOptLQ(buf,bufSize, this, msgType);
+
+        if ( (ptr) && (ptr->isValid()) )
+            Options.push_back( ptr );
+        else
+            Log(Warning) << "BLQ:Option type invalid. Option ignored." << LogEnd;
+    }
+}
+
 /**
  * this constructor builds message based on the buffer
  * (i.e. SOLICIT, REQUEST, RENEW, REBIND, RELEASE, INF-REQUEST, DECLINE)
@@ -459,7 +479,14 @@ void TSrvMsg::send()
     } else {
         offset += this->storeSelf(buf+offset);
     }
-    SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+
+    if(!this->Bulk) {
+        SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+    } else {
+        port = DHCPSERVER_PORT;
+        Log(Info) <<"Trying to send Bulk Leasequery reply"<<LogEnd;
+        SrvIfaceMgr().sendTcp(ptrIface->getID(),buf,offset,this->PeerAddr,port);
+    }
 }
 
 SPtr<TDUID> TSrvMsg::getClientDUID() {
