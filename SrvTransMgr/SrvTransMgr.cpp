@@ -521,7 +521,9 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
 
         TNotifyScriptParams params;
         notifyExpireInfo(params, *addr, IATYPE_IA);
-        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
+		std::string scriptName = SrvCfgMgr().getScriptName();
+		if( !scriptName.empty() )
+			SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
     for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = tempAddrLst.begin();

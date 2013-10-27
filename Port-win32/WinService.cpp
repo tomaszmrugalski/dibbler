@@ -21,7 +21,7 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
     ServicePtr = this;
     strncpy(ServiceName, serviceName, sizeof(ServiceName)-1);
     ServiceType = serviceType;
-    Dependencies = dependencies;
+    strncpy(Dependencies, dependencies, sizeof(Dependencies)-1);
     MajorVersion = 1;
     MinorVersion = 0;
     EventSource = NULL;
