@@ -21,10 +21,13 @@
 #include "AddrClient.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include "hex.h"
 
 using namespace std;
 
-TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile) {
+TAddrMgr::TAddrMgr(const std::string& xmlFile, bool loadfile)
+    :ReplayDetectionValue_(0) {
+
     this->IsDone = false;
     this->XmlFile = xmlFile;
 
@@ -383,7 +386,10 @@ bool TAddrMgr::addPrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TIPv6
     // have we found this PD?
     if (!ptrPD) {
         ptrPD = new TAddrIA(ifname, ifindex, IATYPE_PD, addr, duid, T1, T2, IAID);
+
+        /// @todo: This setState() was used on reconfigure branch, but not on master
         ptrPD->setState(STATE_CONFIGURED);
+
         client->addPD(ptrPD);
         if (!quiet)
             Log(Debug) << "PD: Adding PD (iaid=" << IAID << ") to addrDB." << LogEnd;
@@ -629,8 +635,15 @@ bool TAddrMgr::xmlLoadBuiltIn(const char * xmlFile)
             stringstream tmp(strstr(buf,"<timestamp>")+11);
             unsigned int ts;
             tmp >> ts;
-            Log(Info) << "DB timestamp:" << ts << ", now()=" << now() << ", db is " << (now()-ts)
+            uint32_t now = (uint32_t)time(NULL);
+            Log(Info) << "DB timestamp:" << ts << ", now()=" << now << ", db is " << (now-ts)
                       << " second(s) old." << LogEnd;
+            continue;
+        }
+        if (strstr(buf,"<replayDetection>")) {
+            stringstream tmp(strstr(buf,"<replayDetection>") + 17);
+            tmp >> ReplayDetectionValue_;
+            Log(Debug) << "Auth: Replay detection value loaded " << ReplayDetectionValue_ << LogEnd;
             continue;
         }
         if (AddrMgrTag && strstr(buf,"<AddrClient")) {
@@ -683,10 +696,11 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
     SPtr<TAddrClient> clnt = 0;
     SPtr<TDUID> duid = 0;
     SPtr<TAddrIA> ia = 0;
-    SPtr<TAddrIA> ptrpd=0;
+    SPtr<TAddrIA> ptrpd = 0;
     SPtr<TAddrIA> ta = 0;
     SPtr<TIPv6Addr> unicast;
     string ifacename;
+    std::vector<uint8_t> reconfKey;
 
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
@@ -696,7 +710,8 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
         if (strstr(buf,"<duid")) {
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
@@ -704,6 +719,18 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
             continue;
         }
+        
+        if (strstr(buf, "<ReconfigureKey")) {
+            x = strstr(buf, ">") + 1;
+            char* end;
+            if (x) {
+                end = strstr(x, "</ReconfigureKey>");
+                if (end)
+                    *end = 0;
+            }
+            reconfKey = textToHex(string(x));
+        }
+
         if(strstr(buf,"<AddrIA ")){
             t1 = 0; t2 = 0; iaid = 0; ifindex = 0; ifacename = "";
             if ((x=strstr(buf,"T1"))) {
@@ -775,13 +802,21 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
                 ifindex = atoi(x+7);
                 // Log(Debug) << "Parsed AddrPD::iface=" << iface << LogEnd;
             }
+            if (strstr(buf,"unicast")) {
+                x = strstr(buf,"=")+2;
+                if (x)
+                    x = strstr(x," ")-1;
+                if (x)
+                    *x = 0; // remove trailing xml tag
+                unicast = new TIPv6Addr(strstr(buf,"=")+2, true);
+            }
             if ((x=strstr(buf,"ifacename"))) {
                 char* end = strstr(x + 11, "\"");
                 if (end) {
                     ifacename = string(x + 11, end);
                 }
             }
-            if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, ifacename, ifindex)) {
+            if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, ifacename, ifindex, unicast)) {
                 if (!ptrpd || !clnt)
                     continue;
                 if (ptrpd->countPrefix()) {
@@ -793,6 +828,10 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
         }
         if (strstr(buf,"</AddrClient>"))
             break;
+    }
+
+    if (clnt) {
+        clnt->ReconfKey_ = reconfKey;
     }
 
     return clnt;
@@ -837,7 +876,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(const char * xmlFile, FILE *f) {
  * @return pointer to newly created TAddrIA object
  */
 SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,
-                                    int iaid, const string& ifacename, int ifindex) {
+                                    int iaid, const string& ifacename, int ifindex,
+                                    SPtr<TIPv6Addr> unicast /* =0 */) {
     // IA paramteres
     char buf[256];
     char * x = 0;
@@ -853,7 +893,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"duid")) {
             //char * x;
             x = strstr(buf,">")+1;
-            x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
             if (x)
                 *x = 0; // remove trailing xml tag
             duid = new TDUID(strstr(buf,">")+1);
@@ -863,6 +904,10 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
                        << ifindex << LogEnd;
 
             ptrpd = new TAddrIA(ifacename, ifindex, IATYPE_PD, 0, duid, t1, t2, iaid);
+
+            // @todo: Why are we always setting CONFIRMME state? What if the address/prefix
+            // hasn't changed?
+            ptrpd->setState(STATE_CONFIRMME);
             continue;
         }
         if (strstr(buf,"<AddrPrefix")) {
@@ -902,7 +947,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
  */
 
 SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,
-                                    int iaid, const string& ifacename, int ifindex)
+                                    int iaid, const string& ifacename, int ifindex,
+                                    SPtr<TIPv6Addr> unicast)
 {
     // IA paramteres
     char buf[256];
@@ -918,7 +964,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
         if (strstr(buf,"<duid")) {
 	    //char * x;
 	    x = strstr(buf,">")+1;
-	    x = strstr(x,"</duid>");
+            if (x)
+                x = strstr(x,"</duid>");
 	    if (x)
 		*x = 0; // remove trailing xml tag
 	    duid = new TDUID(strstr(buf,">")+1);
@@ -945,7 +992,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 	    continue;
 	}
 	if (strstr(buf, "<fqdn ")) {
-	    // TODO: parse DUID
+	    /// @todo parse DUID
 	    char * beg = strstr(buf, "duid=\"") + 6;
 	    if (!beg)
 		continue; // malformed line: "<fqdn" tag missing >
@@ -983,7 +1030,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 		    ia->addAddr(addr);
 		    addr->setTentative(ADDRSTATUS_NO);
 		} else {
-		    Log(Debug) << "Address " << addr->get()->getPlain() << " is no longer supported. Lease dropped." << LogEnd;
+		    Log(Debug) << "Address " << addr->get()->getPlain()
+                               << " is no longer supported. Lease dropped." << LogEnd;
 		}
 	    }
 	}
@@ -1027,7 +1075,7 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
         if ((x=strstr(buf,"valid"))) {
             valid = atoi(x+7);
         }
-        if(pd==false) {
+        if(!pd) {
             if ((x=strstr(buf,"prefix="))) {
                 prefix = atoi(x+8);
             }
@@ -1122,13 +1170,19 @@ TAddrMgr::~TAddrMgr() {
 
 }
 
+uint64_t TAddrMgr::getNextReplayDetectionValue() {
+    return ++ReplayDetectionValue_;
+}
+
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
 ostream & operator<<(ostream & strum,TAddrMgr &x) {
     strum << "<AddrMgr>" << endl;
-    strum << "  <timestamp>" << now() << "</timestamp>" << endl;
+    strum << "  <timestamp>" << (uint32_t)time(NULL) << "</timestamp>" << endl;
+    strum << "  <replayDetection>" << x.ReplayDetectionValue_ << "</replayDetection>" << endl;
     x.print(strum);
 
     SPtr<TAddrClient> ptr;

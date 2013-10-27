@@ -27,7 +27,10 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
                                  int maclen, char* llAddr, int llAddrCnt, char * globalAddr,
                                  int globalAddrCnt, int hwType)
   :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType),
-   TunnelEndpoint(0), LifetimeTimeout(DHCPV6_INFINITY), LifetimeTimestamp(now()) {
+   TunnelEndpoint(0), LifetimeTimeout(DHCPV6_INFINITY) {
+
+    LifetimeTimestamp = (uint32_t)time(NULL);
+
     this->DNSServerLst.clear();
     this->DomainLst.clear();
     this->NTPServerLst.clear();
@@ -55,7 +58,7 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
 unsigned int TClntIfaceIface::getTimeout() {
     if (this->LifetimeTimeout == DHCPV6_INFINITY)
         return DHCPV6_INFINITY;
-    unsigned int current = now();
+    unsigned int current = (uint32_t)time(NULL);
     if (current > this->LifetimeTimestamp+this->LifetimeTimeout)
         return 0;
     return this->LifetimeTimestamp+this->LifetimeTimeout-current;
@@ -491,7 +494,7 @@ bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const
 
 bool TClntIfaceIface::setLifetime(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, unsigned int life) {
     this->LifetimeTimeout = life;
-    this->LifetimeTimestamp = now();
+    this->LifetimeTimestamp = (uint32_t)time(NULL);
     if (life == DHCPV6_INFINITY) {
         Log(Info) << "Granted options are parmanent (lifetime = INFINITY.)" << LogEnd;
         return true;
@@ -684,8 +687,12 @@ std::ostream & operator <<(std::ostream & strum, TClntIfaceIface &x) {
     strum << " name=\"" << x.Name << "\"";
     strum << " ifindex=\"" << x.ID << "\"";
     strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
-	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
+    strum << " flags=\"0x" << hex << x.Flags << dec << "\""
+          << " mBit=\"" << (x.M_bit_?"1":"0") << "\" oBit=\"" << (x.O_bit_?"1":"0")
+          << "\">" << endl;
+
+    strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback")
+          << (x.flagRunning()?" running":" no-running")
           << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
 
     strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;

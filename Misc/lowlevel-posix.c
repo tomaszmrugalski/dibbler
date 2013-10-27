@@ -7,12 +7,15 @@
  *
  */
 
-#include "Portable.h"
+// We need this, so unistd.h include gethostname() definition
+#define _BSD_SOURCE
+
+#include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include "Portable.h"
 
 int execute(const char *filename, const char * argv[], const char *env[])
 {
@@ -69,4 +72,21 @@ int get_hostname(char* hostname, int hostname_len) {
     } else {
         return LOWLEVEL_ERROR_UNSPEC;
     }
+}
+
+uint32_t getAAASPIfromFile() {
+    uint32_t ret;
+    FILE *file;
+
+    file = fopen(CLNT_AAASPI_FILE, "r");
+    if (!file) {
+        return 0;
+    }
+
+    if (fscanf(file, "%10x", &ret) <= 0) {
+        ret = 0;
+    }
+    fclose(file);
+
+    return ret;
 }

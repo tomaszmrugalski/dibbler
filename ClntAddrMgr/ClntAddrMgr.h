@@ -60,7 +60,9 @@ class TClntAddrMgr : public TAddrMgr
 		   const std::string& ifacename, int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 		   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		   int length, bool quiet);
+
     bool updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
+                      const std::string& ifname,
 		      int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
 		      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
 		      int length, bool quiet);

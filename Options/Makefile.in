@@ -73,8 +73,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libOptions_a_AR = $(AR) $(ARFLAGS)
 libOptions_a_LIBADD =
-am_libOptions_a_OBJECTS = libOptions_a-OptAAAAuthentication.$(OBJEXT) \
-	libOptions_a-OptAddr.$(OBJEXT) \
+am_libOptions_a_OBJECTS = libOptions_a-OptAddr.$(OBJEXT) \
 	libOptions_a-OptAddrLst.$(OBJEXT) \
 	libOptions_a-OptAuthentication.$(OBJEXT) \
 	libOptions_a-Opt.$(OBJEXT) libOptions_a-OptDUID.$(OBJEXT) \
@@ -85,7 +84,6 @@ am_libOptions_a_OBJECTS = libOptions_a-OptAAAAuthentication.$(OBJEXT) \
 	libOptions_a-OptIA_PD.$(OBJEXT) \
 	libOptions_a-OptIAPrefix.$(OBJEXT) \
 	libOptions_a-OptInteger.$(OBJEXT) \
-	libOptions_a-OptKeyGeneration.$(OBJEXT) \
 	libOptions_a-OptOptionRequest.$(OBJEXT) \
 	libOptions_a-OptStatusCode.$(OBJEXT) \
 	libOptions_a-OptString.$(OBJEXT) \
@@ -95,6 +93,7 @@ am_libOptions_a_OBJECTS = libOptions_a-OptAAAAuthentication.$(OBJEXT) \
 	libOptions_a-OptVendorClass.$(OBJEXT) \
 	libOptions_a-OptVendorSpecInfo.$(OBJEXT) \
 	libOptions_a-OptRtPrefix.$(OBJEXT) \
+	libOptions_a-OptReconfigureMsg.$(OBJEXT) \
 	libOptions_a-OptVendorData.$(OBJEXT)
 libOptions_a_OBJECTS = $(am_libOptions_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -356,20 +355,20 @@ top_srcdir = @top_srcdir@
 SUBDIRS = . $(am__append_1)
 noinst_LIBRARIES = libOptions.a
 libOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Messages
-libOptions_a_SOURCES = OptAAAAuthentication.cpp OptAAAAuthentication.h \
-	OptAddr.cpp OptAddr.h OptAddrLst.cpp OptAddrLst.h \
-	OptAuthentication.cpp OptAuthentication.h Opt.cpp Opt.h \
-	OptDUID.cpp OptDUID.h OptEmpty.cpp OptEmpty.h OptFQDN.cpp \
-	OptFQDN.h OptGeneric.cpp OptGeneric.h OptIAAddress.cpp \
-	OptIAAddress.h OptIA_NA.cpp OptIA_NA.h OptIA_PD.cpp OptIA_PD.h \
-	OptIAPrefix.cpp OptIAPrefix.h OptInteger.cpp OptInteger.h \
-	OptKeyGeneration.cpp OptKeyGeneration.h OptOptionRequest.cpp \
+libOptions_a_SOURCES = OptAddr.cpp OptAddr.h OptAddrLst.cpp \
+	OptAddrLst.h OptAuthentication.cpp OptAuthentication.h Opt.cpp \
+	Opt.h OptDUID.cpp OptDUID.h OptEmpty.cpp OptEmpty.h \
+	OptFQDN.cpp OptFQDN.h OptGeneric.cpp OptGeneric.h \
+	OptIAAddress.cpp OptIAAddress.h OptIA_NA.cpp OptIA_NA.h \
+	OptIA_PD.cpp OptIA_PD.h OptIAPrefix.cpp OptIAPrefix.h \
+	OptInteger.cpp OptInteger.h OptOptionRequest.cpp \
 	OptOptionRequest.h OptStatusCode.cpp OptStatusCode.h \
 	OptString.cpp OptString.h OptDomainLst.cpp OptDomainLst.h \
 	OptTA.cpp OptTA.h OptUserClass.cpp OptUserClass.h \
 	OptVendorClass.cpp OptVendorClass.h OptVendorSpecInfo.cpp \
 	OptVendorSpecInfo.h OptRtPrefix.cpp OptRtPrefix.h \
-	OptVendorData.cpp OptVendorData.h
+	OptReconfigureMsg.cpp OptReconfigureMsg.h OptVendorData.cpp \
+	OptVendorData.h
 all: all-recursive
 
 .SUFFIXES:
@@ -419,7 +418,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-Opt.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptAAAAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptAddr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptAddrLst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptAuthentication.Po@am__quote@
@@ -433,8 +431,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptIA_NA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptIA_PD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptInteger.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptOptionRequest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptReconfigureMsg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptRtPrefix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptStatusCode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libOptions_a-OptString.Po@am__quote@
@@ -464,20 +462,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
-
-libOptions_a-OptAAAAuthentication.o: OptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptAAAAuthentication.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptAAAAuthentication.Tpo -c -o libOptions_a-OptAAAAuthentication.o `test -f 'OptAAAAuthentication.cpp' || echo '$(srcdir)/'`OptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptAAAAuthentication.Tpo $(DEPDIR)/libOptions_a-OptAAAAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptAAAAuthentication.cpp' object='libOptions_a-OptAAAAuthentication.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptAAAAuthentication.o `test -f 'OptAAAAuthentication.cpp' || echo '$(srcdir)/'`OptAAAAuthentication.cpp
-
-libOptions_a-OptAAAAuthentication.obj: OptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptAAAAuthentication.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptAAAAuthentication.Tpo -c -o libOptions_a-OptAAAAuthentication.obj `if test -f 'OptAAAAuthentication.cpp'; then $(CYGPATH_W) 'OptAAAAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/OptAAAAuthentication.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptAAAAuthentication.Tpo $(DEPDIR)/libOptions_a-OptAAAAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptAAAAuthentication.cpp' object='libOptions_a-OptAAAAuthentication.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptAAAAuthentication.obj `if test -f 'OptAAAAuthentication.cpp'; then $(CYGPATH_W) 'OptAAAAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/OptAAAAuthentication.cpp'; fi`
 
 libOptions_a-OptAddr.o: OptAddr.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptAddr.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptAddr.Tpo -c -o libOptions_a-OptAddr.o `test -f 'OptAddr.cpp' || echo '$(srcdir)/'`OptAddr.cpp
@@ -661,20 +645,6 @@ libOptions_a-OptInteger.obj: OptInteger.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptInteger.obj `if test -f 'OptInteger.cpp'; then $(CYGPATH_W) 'OptInteger.cpp'; else $(CYGPATH_W) '$(srcdir)/OptInteger.cpp'; fi`
 
-libOptions_a-OptKeyGeneration.o: OptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptKeyGeneration.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptKeyGeneration.Tpo -c -o libOptions_a-OptKeyGeneration.o `test -f 'OptKeyGeneration.cpp' || echo '$(srcdir)/'`OptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptKeyGeneration.Tpo $(DEPDIR)/libOptions_a-OptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptKeyGeneration.cpp' object='libOptions_a-OptKeyGeneration.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptKeyGeneration.o `test -f 'OptKeyGeneration.cpp' || echo '$(srcdir)/'`OptKeyGeneration.cpp
-
-libOptions_a-OptKeyGeneration.obj: OptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptKeyGeneration.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptKeyGeneration.Tpo -c -o libOptions_a-OptKeyGeneration.obj `if test -f 'OptKeyGeneration.cpp'; then $(CYGPATH_W) 'OptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/OptKeyGeneration.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptKeyGeneration.Tpo $(DEPDIR)/libOptions_a-OptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptKeyGeneration.cpp' object='libOptions_a-OptKeyGeneration.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptKeyGeneration.obj `if test -f 'OptKeyGeneration.cpp'; then $(CYGPATH_W) 'OptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/OptKeyGeneration.cpp'; fi`
-
 libOptions_a-OptOptionRequest.o: OptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptOptionRequest.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptOptionRequest.Tpo -c -o libOptions_a-OptOptionRequest.o `test -f 'OptOptionRequest.cpp' || echo '$(srcdir)/'`OptOptionRequest.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptOptionRequest.Tpo $(DEPDIR)/libOptions_a-OptOptionRequest.Po
@@ -800,6 +770,20 @@ libOptions_a-OptRtPrefix.obj: OptRtPrefix.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptRtPrefix.cpp' object='libOptions_a-OptRtPrefix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptRtPrefix.obj `if test -f 'OptRtPrefix.cpp'; then $(CYGPATH_W) 'OptRtPrefix.cpp'; else $(CYGPATH_W) '$(srcdir)/OptRtPrefix.cpp'; fi`
+
+libOptions_a-OptReconfigureMsg.o: OptReconfigureMsg.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptReconfigureMsg.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptReconfigureMsg.Tpo -c -o libOptions_a-OptReconfigureMsg.o `test -f 'OptReconfigureMsg.cpp' || echo '$(srcdir)/'`OptReconfigureMsg.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptReconfigureMsg.Tpo $(DEPDIR)/libOptions_a-OptReconfigureMsg.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptReconfigureMsg.cpp' object='libOptions_a-OptReconfigureMsg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptReconfigureMsg.o `test -f 'OptReconfigureMsg.cpp' || echo '$(srcdir)/'`OptReconfigureMsg.cpp
+
+libOptions_a-OptReconfigureMsg.obj: OptReconfigureMsg.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptReconfigureMsg.obj -MD -MP -MF $(DEPDIR)/libOptions_a-OptReconfigureMsg.Tpo -c -o libOptions_a-OptReconfigureMsg.obj `if test -f 'OptReconfigureMsg.cpp'; then $(CYGPATH_W) 'OptReconfigureMsg.cpp'; else $(CYGPATH_W) '$(srcdir)/OptReconfigureMsg.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libOptions_a-OptReconfigureMsg.Tpo $(DEPDIR)/libOptions_a-OptReconfigureMsg.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='OptReconfigureMsg.cpp' object='libOptions_a-OptReconfigureMsg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libOptions_a-OptReconfigureMsg.obj `if test -f 'OptReconfigureMsg.cpp'; then $(CYGPATH_W) 'OptReconfigureMsg.cpp'; else $(CYGPATH_W) '$(srcdir)/OptReconfigureMsg.cpp'; fi`
 
 libOptions_a-OptVendorData.o: OptVendorData.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libOptions_a-OptVendorData.o -MD -MP -MF $(DEPDIR)/libOptions_a-OptVendorData.Tpo -c -o libOptions_a-OptVendorData.o `test -f 'OptVendorData.cpp' || echo '$(srcdir)/'`OptVendorData.cpp

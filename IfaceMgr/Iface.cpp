@@ -30,8 +30,9 @@ using namespace std;
  * stores informations about interface
  */
 TIfaceIface::TIfaceIface(const char * name, int id, unsigned int flags, char* mac,
-                         int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType)
-    :Mac(new char[maclen]),Maclen(maclen)
+                         int maclen, char* llAddr, int llAddrCnt, char * globalAddr,
+                         int globalCnt, int hwType)
+    :Mac(new char[maclen]),Maclen(maclen), M_bit_(false), O_bit_(false)
 {
     snprintf(this->Name,MAX_IFNAME_LENGTH,"%s",name);
 
@@ -120,6 +121,9 @@ void TIfaceIface::updateState(struct iface *x)
     }
 
     HWType = x->hardwareType;
+
+    setMBit(x->m_bit);
+    setOBit(x->o_bit);
 }
 
 
@@ -393,6 +397,34 @@ int TIfaceIface::getPrefixLength() {
     return PrefixLen;
 }
 
+/// @brief set M (managed) bit as received from Router Advertisement
+///
+/// @param m bool flag (Sets of clears M bit)
+void TIfaceIface::setMBit(bool m) {
+    M_bit_ = m;
+}
+
+/// @brief set O (other conf) bit as received from Router Advertisement
+///
+/// @param o bool flag (Sets of clears O bit)
+void TIfaceIface::setOBit(bool o) {
+    O_bit_ = o;
+}
+
+/// @brief returns M (managed) bit as received from Router Advertisement
+///
+/// @return value of M bit
+bool TIfaceIface::getMBit() {
+    return M_bit_;
+}
+
+/// @brief returns O (other conf) bit as received from Router Advertisement
+///
+/// @return value of O bit
+bool TIfaceIface::getOBit() {
+    return O_bit_;
+}
+
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
@@ -402,15 +434,18 @@ int TIfaceIface::getPrefixLength() {
 ostream & operator <<(ostream & strum, TIfaceIface &x) {
     char buf[48];
 
-    strum << "  <IfaceIface";
-    strum << " name=\"" << x.Name << "\"";
-    strum << " ifindex=\"" << x.ID << "\"";
-    strum << " hwType=\"" << x.getHardwareType() << "\"";
-    strum << " flags=\"0x" << hex << x.Flags << dec << "\">" << endl;
-	strum << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback") << (x.flagRunning()?" running":" no-running")
-          << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl;
-    strum << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl;
-    strum << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
+    strum << "  <IfaceIface"
+          << " name=\"" << x.Name << "\""
+          << " ifindex=\"" << x.ID << "\""
+          << " hwType=\"" << x.getHardwareType() << "\""
+          << " flags=\"0x" << hex << x.Flags << dec << "\" "
+          << " mBit=\"" << (x.M_bit_?"1":"0") << "\" oBit=\"" << (x.O_bit_?"1":"0")
+          << "\">" << endl
+          << "    <!-- " << (x.flagLoopback()?"looback":"no-loopback")
+          << (x.flagRunning()?" running":" no-running")
+          << (x.flagMulticast()?" multicast -->":" no-multicast -->") << endl
+          << "    <!-- PrefixLength configured to " << x.PrefixLen << " -->" << endl
+          << "    <!-- " << x.LLAddrCnt << " link scoped addrs -->" << endl;
 
     for (int i=0; i<x.LLAddrCnt; i++) {
               inet_ntop6(x.LLAddr+i*16,buf);

@@ -51,7 +51,8 @@ class TClntCfgMgr : public TCfgMgr
     SPtr<TClntCfgIface> getIface(int id);
     void firstIface();
     void addIface(SPtr<TClntCfgIface> x);
-    void makeInactiveIface(int ifindex, bool inactive);
+    void makeInactiveIface(int ifindex, bool inactive, bool managed,
+                           bool otherConf);
     int countIfaces();
     void dump();
 
@@ -83,11 +84,17 @@ class TClntCfgMgr : public TCfgMgr
     SPtr<TClntCfgIface> checkInactiveIfaces();
     bool openSocket(SPtr<TClntCfgIface> iface);
 
+    void obeyRaBits(bool obey);
+    bool obeyRaBits();
+
 #ifndef MOD_DISABLE_AUTH
     // Authorization
-    uint32_t getAAASPI();
-    List(DigestTypes) getAuthAcceptMethods();
-    bool getAuthEnabled();
+    uint32_t getSPI();
+
+    /// @todo move this to CfgMgr
+    void setAuthAcceptMethods(const std::vector<DigestTypes>& methods);
+    const std::vector<DigestTypes>& getAuthAcceptMethods();
+
     SPtr<KeyList> AuthKeys;
 #endif
 
@@ -120,11 +127,10 @@ private:
     bool UseConfirm;
     bool Reconfigure;
 
-    DigestTypes Digest;
+    DigestTypes Digest_;
 #ifndef MOD_DISABLE_AUTH
-    bool AuthEnabled;
-    List(DigestTypes) AuthAcceptMethods;
-    uint32_t AAASPI;
+    std::vector<DigestTypes> AuthAcceptMethods_; // used in auth protocol dibbler
+    uint32_t SPI_;                     // used in auth protocol dibbler
 #endif
 
 #ifdef MOD_REMOTE_AUTOCONF
@@ -134,6 +140,8 @@ private:
     bool FQDNFlagS; // S bit in the FQDN option
 
     std::vector<std::string> DownlinkPrefixIfaces_;
+
+    bool ObeyRaBits_;
 
     static TClntCfgMgr * Instance;
 };

@@ -87,7 +87,7 @@ void TOpt::delAllOptions() {
     SubOptions.clear();
 }
 
-bool TOpt::isValid() {
+bool TOpt::isValid() const {
     return Valid;
 }
 

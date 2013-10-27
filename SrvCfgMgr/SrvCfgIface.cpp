@@ -968,7 +968,7 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
           << " unknownFqdnMode=\"" << iface.UnknownFQDN_ << "\""
           << ">" << endl;
       lst->first();
-      while (f=lst->get()) {
+      while ((f = lst->get())) {
             out << "       " << *f;
       }
       out << "    </fqdnOptions>" << endl;

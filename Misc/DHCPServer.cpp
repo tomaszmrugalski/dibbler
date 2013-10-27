@@ -23,7 +23,7 @@ TDHCPServer::TDHCPServer(const std::string& config)
     :IsDone_(false)
 {
     serviceShutdown = 0;
-    srand(now());
+    srand((uint32_t)time(NULL));
 
     TSrvIfaceMgr::instanceCreate(SRVIFACEMGR_FILE);
     if ( SrvIfaceMgr().isDone() ) {
@@ -72,6 +72,8 @@ TDHCPServer::TDHCPServer(const std::string& config)
 
 void TDHCPServer::run()
 {
+    Log(Notice) << "Server begins operation." << LogEnd;
+
     bool silent = false;
     while ( (!isDone()) && (!SrvTransMgr().isDone()) ) {
         if (serviceShutdown)
@@ -132,6 +134,10 @@ void TDHCPServer::run()
         }
         SrvTransMgr().relayMsg(msg);
     }
+
+    SrvCfgMgr().setPerformanceMode(false);
+    SrvAddrMgr().dump();
+
     SrvIfaceMgr().closeSockets();
     Log(Notice) << "Bye bye." << LogEnd;
 }

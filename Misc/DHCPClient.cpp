@@ -29,7 +29,7 @@ TDHCPClient::TDHCPClient(const std::string& config)
 {
     serviceShutdown = 0;
     linkstateChange = 0;
-    srand(now());
+    srand((uint32_t)time(NULL));
 
     TClntIfaceMgr::instanceCreate(CLNTIFACEMGR_FILE);
     if ( ClntIfaceMgr().isDone() ) {

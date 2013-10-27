@@ -13,10 +13,6 @@
 #include "ClntMsgAdvertise.h"
 #include "OptInteger.h"
 #include "OptDUID.h"
-
-#ifndef MOD_DISABLE_AUTH
-#include "ClntOptKeyGeneration.h"
-#endif
 #include "ClntOptPreference.h"
 
 using namespace std;
@@ -73,17 +69,6 @@ string TClntMsgAdvertise::getInfo()
     } else {
         tmp << ", no preference option, assumed 0";
     }
-
-#ifndef MOD_DISABLE_AUTH
-    SPtr<TClntOptKeyGeneration> keyGen;
-    keyGen = (Ptr*) getOption(OPTION_KEYGEN);
-    if (keyGen) {
-	tmp << ", keygen (AlgorithmId=" << keyGen->getAlgorithmId() << ")";
-	DigestType = (DigestTypes)keyGen->getAlgorithmId();
-    } else {
-	tmp << ", no auth info";
-    }
-#endif
     
     return tmp.str();
 }

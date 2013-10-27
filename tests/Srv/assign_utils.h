@@ -15,8 +15,22 @@
 #include <unistd.h>
 
 namespace test {
+
+    struct Pkt6Info {
+        Pkt6Info(int iface, char* msg, int size, SPtr<TIPv6Addr> addr, int port);
+        int Iface_;
+        std::vector<uint8_t> Data_;
+        SPtr<TIPv6Addr> Addr_;
+        int Port_;
+    };
+
+    typedef std::vector<Pkt6Info> Pkt6Collection;
+
     class NakedSrvIfaceMgr: public TSrvIfaceMgr {
     public:
+
+        Pkt6Collection sent_pkts_;
+
         NakedSrvIfaceMgr(const std::string& xmlFile)
             : TSrvIfaceMgr(xmlFile) {
             TSrvIfaceMgr::Instance = this;
@@ -24,6 +38,9 @@ namespace test {
         ~NakedSrvIfaceMgr() {
             TSrvIfaceMgr::Instance = NULL;
         }
+        virtual bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
+        virtual int receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer);
+
     };
 
     class NakedSrvAddrMgr: public TSrvAddrMgr {
@@ -87,7 +104,7 @@ namespace test {
             pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
         }
 
-	void setIface(const std::string& name);
+        void setIface(const std::string& name);
 
         SPtr<TSrvMsgSolicit> createSolicit() {
 

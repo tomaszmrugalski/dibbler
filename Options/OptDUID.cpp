@@ -40,12 +40,12 @@ TOptDUID::TOptDUID(int type, const char* buf, int bufsize, TMsg* parent)
     // bufsize-=DUID->getLen();
 }
 
-SPtr<TDUID> TOptDUID::getDUID()
+SPtr<TDUID> TOptDUID::getDUID() const
 {
-	return DUID;
+    return DUID;
 }
 
-bool TOptDUID::isValid()
+bool TOptDUID::isValid() const
 {
     if (this->getDUID()->getLen()>2) 
         return true;

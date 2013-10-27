@@ -131,9 +131,12 @@ bulk-leasequery-accept    { return SrvParser::BULKLQ_ACCEPT_; }
 bulk-leasequery-tcp-port  { return SrvParser::BULKLQ_TCPPORT_; }
 bulk-leasequery-max-conns { return SrvParser::BULKLQ_MAX_CONNS_; }
 bulk-leasequery-timeout   { return SrvParser::BULKLQ_TIMEOUT_; }
-auth-method         { return SrvParser::AUTH_METHOD_; }
-auth-lifetime       { return SrvParser::AUTH_LIFETIME_; }
-auth-key-len        { return SrvParser::AUTH_KEY_LEN_; }
+auth-protocol       { return SrvParser::AUTH_PROTOCOL_; }
+auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
+auth-replay         { return SrvParser::AUTH_REPLAY_;}
+auth-realm          { return SrvParser::AUTH_REALM_; }
+auth-methods        { return SrvParser::AUTH_METHODS_; }
+auth-required       { return SrvParser::AUTH_DROP_UNAUTH_; }
 digest-none         { return SrvParser::DIGEST_NONE_; }
 digest-plain        { return SrvParser::DIGEST_PLAIN_; }
 digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }
@@ -167,7 +170,7 @@ substring	    { return SrvParser::SUBSTRING_; }
 contain	    { return SrvParser::CONTAIN_; }
 string              { return SrvParser::STRING_KEYWORD_; }
 address-list        { return SrvParser::ADDRESS_LIST_; }
-
+performance-mode    { return SrvParser::PERFORMANCE_MODE_; }
 
 yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
 no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
@@ -349,7 +352,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
     if(!sscanf(yytext,"%20x",&(yylval.ival))) {
-      Log(Crit) << "Hex value [" << yytext << " parsing failed." << LogEnd;
+      Log(Crit) << "Hex value [" << yytext << "] parsing failed." << LogEnd;
       YYABORT;
     }
     return SrvParser::HEXNUMBER_;
@@ -358,7 +361,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 {integer} {
     // DECIMAL NUMBER
     if(!sscanf(yytext,"%20u",&(yylval.ival))) {
-	Log(Crit) << "Decimal value [" << yytext << " parsing failed." << LogEnd;
+	Log(Crit) << "Decimal value [" << yytext << "] parsing failed." << LogEnd;
 	YYABORT;
     }
     return SrvParser::INTNUMBER_;

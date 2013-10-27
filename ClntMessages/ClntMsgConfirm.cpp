@@ -104,7 +104,7 @@ void TClntMsgConfirm::addrsAccepted() {
         ptrIA->setState(STATE_CONFIGURED);
 
 	// Once confirmed, this triggers the
-        ptrIA->setTimestamp( now()-ptrIA->getT1() );
+        ptrIA->setTimestamp( (uint32_t)time(NULL) - ptrIA->getT1() );
 	
 	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
 	if (!ptrIface)

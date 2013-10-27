@@ -99,6 +99,6 @@ std::string TOptInteger::getPlain() {
     return tmp.str();
 }
 
-bool TOptInteger::isValid() {
+bool TOptInteger::isValid() const {
     return this->Valid;
 }

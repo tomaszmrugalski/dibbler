@@ -28,7 +28,7 @@ class TOptUserClass : public TOpt
     TOptUserClass(uint16_t type, const char* buf, unsigned short buf_len, TMsg* parent);
     TOptUserClass(uint16_t type, TMsg* parent);
     size_t getSize();
-    bool isValid();
+    virtual bool isValid() const;
     char* storeSelf( char* buf);
     bool doDuties() { return false; }
 protected:

@@ -22,7 +22,7 @@ class TOptVendorSpecInfo : public TOpt
 
     size_t getSize();
     char * storeSelf(char* buf);
-    bool isValid();
+    virtual bool isValid() const;
     virtual std::string getPlain();
 
     uint32_t getVendor();

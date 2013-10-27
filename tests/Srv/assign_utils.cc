@@ -11,6 +11,24 @@ using namespace std;
 
 namespace test {
 
+Pkt6Info::Pkt6Info(int iface, char* msg, int size, SPtr<TIPv6Addr> addr, int port)
+    :Iface_(iface), Data_(size), Addr_(addr), Port_(port) {
+    memcpy(&Data_[0], msg, size);
+}
+
+bool NakedSrvIfaceMgr::send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port) {
+
+    Pkt6Info x(iface, msg, size, addr, port);
+
+    sent_pkts_.push_back(x);
+
+    return TSrvIfaceMgr::send(iface, msg, size, addr, port);
+}
+
+int NakedSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer) {
+    return TSrvIfaceMgr::receive(timeout, buf, bufsize, peer);
+}
+
 bool ServerTest::checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
                             SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1, uint32_t t2,
                             uint32_t pref, uint32_t valid) {

@@ -84,7 +84,7 @@ bool TClntOptIAAddress::doDuties()
     return false;
 }
 
-bool TClntOptIAAddress::isValid()
+bool TClntOptIAAddress::isValid() const
 {
     if (TOptIAAddress::isValid())
         return this->getValid()>=this->getPref();

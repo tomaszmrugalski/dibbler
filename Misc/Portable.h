@@ -13,7 +13,7 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-#define DIBBLER_VERSION "0.8.4"
+#define DIBBLER_VERSION "1.0.0RC1"
 
 #define DIBBLER_COPYRIGHT1 "| Dibbler - a portable DHCPv6, version " DIBBLER_VERSION
 #define DIBBLER_COPYRIGHT2 "| Authors : Tomasz Mrugalski<thomson(at)klub.com.pl>,Marek Senderski<msend(at)o2.pl>"
@@ -37,18 +37,6 @@
 #include <stdint.h>
 #endif
 
-#ifndef uint8_t
-#define uint8_t  unsigned char
-#endif
-
-#ifndef uint16_t
-#define uint16_t unsigned short int
-#endif
-
-#ifndef uint32_t
-#define uint32_t unsigned int
-#endif
-
 #ifdef WIN32
 #ifndef uint64_t
 #define uint64_t unsigned long long int
@@ -70,12 +58,15 @@ uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
 #ifdef __cplusplus 
 extern "C" {
 #endif
+    uint8_t readUint8(const BUFFER_TYPE* buf);
+    BUFFER_TYPE* writeUint8(BUFFER_TYPE* buf, uint8_t octet);
     uint16_t readUint16(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
     uint32_t readUint32(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
     uint64_t readUint64(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
+    BUFFER_TYPE* writeData(BUFFER_TYPE* buf,  BUFFER_TYPE* data, size_t len);
 #ifdef __cplusplus 
 }
 #endif
@@ -103,6 +94,8 @@ struct iface {
     int  globaladdrcount;          /* number of global IPV6 addresses */
     int  link_state;               /* used in link change detection routines */
     unsigned int flags;            /* look IF_xxx in portable.h */
+    unsigned char m_bit;           /* M bit in RA received? */
+    unsigned char o_bit;           /* O bit in RA received? */
     struct iface* next;            /* structure describing next iface in system */
 };
 
@@ -175,6 +168,8 @@ struct link_state_notify_t
 #define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
+#define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
+#define SRV_KEYMAP_FILE    "/var/lib/dibbler/AAA/keys-mapping"
 #define NULLFILE           "/dev/null"
 
 /* those defines were initially used on Linux only, but hopefully 
@@ -251,8 +246,6 @@ struct link_state_notify_t
 #include <windows.h>
 #include <time.h>
 #endif
-
-#define now() (unsigned long) time(NULL)
 
 /* ********************************************************************** */
 /* *** interface/socket low level functions ***************************** */

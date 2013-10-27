@@ -21,7 +21,7 @@ class TClntOptIAAddress : public TOptIAAddress
     TClntOptIAAddress(char *addr,int n, TMsg* parent);
     TClntOptIAAddress(SPtr<TIPv6Addr> addr, long pref, long valid, TMsg* parent);
     bool doDuties();
-    bool isValid();
+    bool isValid() const;
 };
 
 #endif /* CLNTOPTIAADDRESS_H */

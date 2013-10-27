@@ -6,4 +6,10 @@ libSrvMessages_a_CPPFLAGS += -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/AddrMgr -I$(
 libSrvMessages_a_CPPFLAGS += -I$(top_srcdir)/SrvTransMgr
 libSrvMessages_a_CPPFLAGS += -I$(top_srcdir)/poslib/poslib -I$(top_srcdir)/poslib
 
-libSrvMessages_a_SOURCES = SrvMsgAdvertise.cpp SrvMsgAdvertise.h SrvMsgConfirm.cpp SrvMsgConfirm.h SrvMsg.cpp SrvMsgDecline.cpp SrvMsgDecline.h SrvMsg.h SrvMsgInfRequest.cpp SrvMsgInfRequest.h SrvMsgLeaseQuery.cpp SrvMsgLeaseQuery.h SrvMsgLeaseQueryReply.cpp SrvMsgLeaseQueryReply.h SrvMsgRebind.cpp SrvMsgRebind.h SrvMsgRelease.cpp SrvMsgRelease.h SrvMsgRenew.cpp SrvMsgRenew.h SrvMsgReply.cpp SrvMsgReply.h SrvMsgRequest.cpp SrvMsgRequest.h SrvMsgSolicit.cpp SrvMsgSolicit.h
+libSrvMessages_a_SOURCES  = SrvMsgAdvertise.cpp SrvMsgAdvertise.h SrvMsgConfirm.cpp SrvMsgConfirm.h
+libSrvMessages_a_SOURCES += SrvMsg.cpp SrvMsg.h SrvMsgDecline.cpp SrvMsgDecline.h
+libSrvMessages_a_SOURCES += SrvMsgInfRequest.cpp SrvMsgInfRequest.h SrvMsgLeaseQuery.cpp SrvMsgLeaseQuery.h
+libSrvMessages_a_SOURCES += SrvMsgLeaseQueryReply.cpp SrvMsgLeaseQueryReply.h SrvMsgRebind.cpp SrvMsgRebind.h
+libSrvMessages_a_SOURCES += SrvMsgRelease.cpp SrvMsgRelease.h SrvMsgRenew.cpp SrvMsgRenew.h
+libSrvMessages_a_SOURCES += SrvMsgReply.cpp SrvMsgReply.h SrvMsgRequest.cpp SrvMsgRequest.h
+libSrvMessages_a_SOURCES += SrvMsgSolicit.cpp SrvMsgSolicit.h SrvMsgReconfigure.cpp SrvMsgReconfigure.h

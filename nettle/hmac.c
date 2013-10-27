@@ -35,8 +35,6 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 
-//#include <alloca.h>
-
 #define IPAD 0x36
 #define OPAD 0x5c
 

@@ -279,7 +279,10 @@ domainname& domainname::operator+=(const domainname& nam) {
       lensrc = domlen(nam.domain);
 
   if (lenres + lensrc - 1 > DOM_LEN) throw PException("Domain name too long");
-  domain = (unsigned char *)realloc(domain, lenres + lensrc - 1);
+  unsigned char * tmp = (unsigned char *)realloc(domain, lenres + lensrc - 1);
+  if (tmp != NULL) {
+      domain = tmp;
+  }
   memcpy(domain + lenres - 1, nam.domain, lensrc);
   return *this;
 }

@@ -83,6 +83,9 @@
   - Tao Cui <Cuit(at)ihep(dot)ac(dot)cn>
     2013-01: interface-id shorter than 4 bytes are now handled ok
 
+  - Grzegorz Pluto
+    200?-2012: reconfigure support
+
   - Jean-Jacques Sarton <jj(dot)sarton(at)web(dot)de>
     2013-03: Patch for double free in file read error handling
     2013-03: Patch for stop command not working on Linux
@@ -93,6 +96,18 @@
     2013-03: gethostname for WIN32
     2013-03: Inactive-mode for Win32
     2013-04: OptFQDN improvements
+
+  - George Joseph <george(dot)joseph(at)fairview5(dot)com>
+    2013-08: Fixed leases are now kept in the database (bug #291)
+    2013-08: Client segfault when incomplete/invalid AUTH info specified (bug #289)
+    2013-08: Log message fix (bug #292)
+
+  - Patrick Pichon <patrick(dot)pipiche(dot)fr>
+    2013-09: Fedora RPM script
+
+  - Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
+    2013-10: Service dependency for Windows Vista and newer fix
+    2013-10: Script calling fix.
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

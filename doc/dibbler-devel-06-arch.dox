@@ -169,4 +169,16 @@ or subscriber-id (or mac address)
 // 4. An attempt to add each fixed lease to DB is tried. If lease
 //   is already in DB, addition is skipped. Leases are marked as fixed.
 
+@section archAuth 6.7 Authentication
+
+see TClntMsg::appendAuthenticationOption()
+bool TClntMsg::checkReceivedAuthOption()
+void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
+bool TSrvMsg::validateReplayDetection()
+
+missing:
+ - validation on server side
+
+
+
 */

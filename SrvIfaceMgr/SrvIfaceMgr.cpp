@@ -131,11 +131,11 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     SPtr<TIfaceSocket> backup;
     ptrIface->firstSocket();
     while (sock = ptrIface->getSocket()) {
+        if (sock->multicast())
+            continue; // don't send anything via multicast sockets
         if (!backup) {
             backup = sock;
         }
-        if (sock->multicast())
-            continue; // don't send anything via multicast sockets
         if (!addr->linkLocal() && sock->getAddr()->linkLocal())
             continue; // we need socket bound to global address if dst is global addr
         if (addr->linkLocal() && !sock->getAddr()->linkLocal())
@@ -162,6 +162,23 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     }
 }
 
+/// @brief tries to receive a packet
+///
+/// This method is virtual for the purpose of easy faking packet
+/// reception in tests
+///
+/// @param timeout select() timeout in seconds
+/// @param buf pointer to reception buffer
+/// @param bufsize reference to buffer size (will be updated to received packet size
+///        if reception is successful)
+/// @param peer address of the pkt sender
+///
+/// @return socket descriptor (or negative values for errors)
+///
+int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer) {
+    return TIfaceMgr::select(timeout, buf, bufsize, peer);
+}
+
 // @brief reads messages from all interfaces
 // it's wrapper around IfaceMgr::select(...) method
 //
@@ -180,7 +197,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     int sockid;
 
     // read data
-    sockid = TIfaceMgr::select(timeout,buf,bufsize,peer);
+    sockid = receive(timeout, buf, bufsize, peer);
     if (sockid < 0) {
         return 0;
     }
@@ -219,37 +236,54 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     case RELEASE_MSG:
     case DECLINE_MSG:
     case INFORMATION_REQUEST_MSG:
-    case LEASEQUERY_MSG:
-        {
+    case LEASEQUERY_MSG:  {
             ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
             break;
-        }
-        case RELAY_FORW_MSG:
-        {
-            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-            break;
-        }
-        return ptr;
-        case ADVERTISE_MSG:
-        case REPLY_MSG:
-        case RECONFIGURE_MSG:
-        case RELAY_REPL_MSG:
-        case LEASEQUERY_REPLY_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; //NULL;
-        default:
-            Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
-            return 0; //NULL
+    }
+    case RELAY_FORW_MSG: {
+        ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+        break;
+    }
+    case ADVERTISE_MSG:
+    case REPLY_MSG:
+    case RECONFIGURE_MSG:
+    case RELAY_REPL_MSG:
+    case LEASEQUERY_REPLY_MSG:
+        Log(Warning) << "Illegal message type " << msgtype << " received."
+                     << LogEnd;
+        return 0; //NULL;
+    default:
+        Log(Warning) << "Message type " << msgtype << " not supported. Ignoring."
+                     << LogEnd;
+        return 0; //NULL
     }
 
     if (!ptr)
         return 0;
 
-    if (!ptr->validateReplayDetection() ||
-        !ptr->validateAuthInfo(buf, bufsize)) {
-        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
+#ifndef MOD_DISABLE_AUTH
+    if (!ptr->validateReplayDetection()) {
+        Log(Warning) << "Auth: message replay detection failed, message dropped"
+                     << LogEnd;
         return 0;
     }
+
+    bool authOk = ptr->validateAuthInfo(buf, bufsize,
+                                        SrvCfgMgr().getAuthProtocol(),
+                                        SrvCfgMgr().getAuthDigests());
+
+    if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
+        Log(Warning) << "Auth: authorization is mandatory, but incoming message"
+                     << " does not include AUTH option. Message dropped." << LogEnd;
+        return 0;
+    }
+
+    if (SrvCfgMgr().getAuthDropUnauthenticated() && !authOk) {
+      Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
+		   << " Message dropped." << LogEnd;
+      return 0;
+    }
+#endif
 
     /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 
@@ -527,7 +561,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         msg->setRemoteID(remoteID);
         remoteID = 0;
         remoteID = msg->getRemoteID();
-        PrintHex("RemoteID:", remoteID->getVendorData(), remoteID->getVendorDataLen());
+        PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
     return (Ptr*)msg;

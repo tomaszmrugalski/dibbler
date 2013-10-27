@@ -73,16 +73,13 @@ am__v_AR_1 =
 libSrvOptions_a_AR = $(AR) $(ARFLAGS)
 libSrvOptions_a_LIBADD =
 am_libSrvOptions_a_OBJECTS =  \
-	libSrvOptions_a-SrvOptAAAAuthentication.$(OBJEXT) \
 	libSrvOptions_a-SrvOptAddrParams.$(OBJEXT) \
-	libSrvOptions_a-SrvOptAuthentication.$(OBJEXT) \
 	libSrvOptions_a-SrvOptFQDN.$(OBJEXT) \
 	libSrvOptions_a-SrvOptIAAddress.$(OBJEXT) \
 	libSrvOptions_a-SrvOptIA_NA.$(OBJEXT) \
 	libSrvOptions_a-SrvOptIA_PD.$(OBJEXT) \
 	libSrvOptions_a-SrvOptIAPrefix.$(OBJEXT) \
 	libSrvOptions_a-SrvOptInterfaceID.$(OBJEXT) \
-	libSrvOptions_a-SrvOptKeyGeneration.$(OBJEXT) \
 	libSrvOptions_a-SrvOptLQ.$(OBJEXT) \
 	libSrvOptions_a-SrvOptTA.$(OBJEXT)
 libSrvOptions_a_OBJECTS = $(am_libSrvOptions_a_OBJECTS)
@@ -307,11 +304,15 @@ libSrvOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/IfaceMgr -I$(top_srcdir)/SrvCfgMgr \
 	-I$(top_srcdir)/CfgMgr -I$(top_srcdir)/SrvAddrMgr \
 	-I$(top_srcdir)/AddrMgr -I$(top_srcdir)/SrvTransMgr
+
+#libSrvOptions_a_SOURCES = SrvOptAAAAuthentication.cpp SrvOptAAAAuthentication.h
+#libSrvOptions_a_SOURCES += SrvOptAuthentication.cpp SrvOptAuthentication.h
 #libSrvOptions_a_SOURCES += SrvOptClientIdentifier.cpp SrvOptClientIdentifier.h
 #libSrvOptions_a_SOURCES += SrvOptDNSServers.cpp SrvOptDNSServers.h
 #libSrvOptions_a_SOURCES += SrvOptDomainName.cpp SrvOptDomainName.h
 #libSrvOptions_a_SOURCES += SrvOptEcho.cpp SrvOptEcho.h
 #libSrvOptions_a_SOURCES += SrvOptElapsed.cpp SrvOptElapsed.h
+#libSrvOptions_a_SOURCES += SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h
 #libSrvOptions_a_SOURCES += SrvOptLifetime.cpp SrvOptLifetime.h
 #libSrvOptions_a_SOURCES += SrvOptNISDomain.cpp SrvOptNISDomain.h
 #libSrvOptions_a_SOURCES += SrvOptNISPDomain.cpp SrvOptNISPDomain.h
@@ -325,15 +326,12 @@ libSrvOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 #libSrvOptions_a_SOURCES += SrvOptSIPDomain.cpp SrvOptSIPDomain.h
 #libSrvOptions_a_SOURCES += SrvOptSIPServer.cpp SrvOptSIPServer.h
 #libSrvOptions_a_SOURCES += SrvOptStatusCode.cpp SrvOptStatusCode.h
-libSrvOptions_a_SOURCES = SrvOptAAAAuthentication.cpp \
-	SrvOptAAAAuthentication.h SrvOptAddrParams.cpp \
-	SrvOptAddrParams.h SrvOptAuthentication.cpp \
-	SrvOptAuthentication.h SrvOptFQDN.cpp SrvOptFQDN.h \
-	SrvOptIAAddress.cpp SrvOptIAAddress.h SrvOptIA_NA.cpp \
-	SrvOptIA_NA.h SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp \
+libSrvOptions_a_SOURCES = SrvOptAddrParams.cpp SrvOptAddrParams.h \
+	SrvOptFQDN.cpp SrvOptFQDN.h SrvOptIAAddress.cpp \
+	SrvOptIAAddress.h SrvOptIA_NA.cpp SrvOptIA_NA.h \
+	SrvOptIA_PD.cpp SrvOptIA_PD.h SrvOptIAPrefix.cpp \
 	SrvOptIAPrefix.h SrvOptInterfaceID.cpp SrvOptInterfaceID.h \
-	SrvOptKeyGeneration.cpp SrvOptKeyGeneration.h SrvOptLQ.cpp \
-	SrvOptLQ.h SrvOptTA.cpp SrvOptTA.h
+	SrvOptLQ.cpp SrvOptLQ.h SrvOptTA.cpp SrvOptTA.h
 all: all-am
 
 .SUFFIXES:
@@ -382,16 +380,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptAddrParams.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptFQDN.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIAAddress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIAPrefix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIA_NA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptIA_PD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptInterfaceID.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptLQ.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvOptions_a-SrvOptTA.Po@am__quote@
 
@@ -416,20 +411,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-libSrvOptions_a-SrvOptAAAAuthentication.o: SrvOptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptAAAAuthentication.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Tpo -c -o libSrvOptions_a-SrvOptAAAAuthentication.o `test -f 'SrvOptAAAAuthentication.cpp' || echo '$(srcdir)/'`SrvOptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptAAAAuthentication.cpp' object='libSrvOptions_a-SrvOptAAAAuthentication.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptAAAAuthentication.o `test -f 'SrvOptAAAAuthentication.cpp' || echo '$(srcdir)/'`SrvOptAAAAuthentication.cpp
-
-libSrvOptions_a-SrvOptAAAAuthentication.obj: SrvOptAAAAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptAAAAuthentication.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Tpo -c -o libSrvOptions_a-SrvOptAAAAuthentication.obj `if test -f 'SrvOptAAAAuthentication.cpp'; then $(CYGPATH_W) 'SrvOptAAAAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptAAAAuthentication.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptAAAAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptAAAAuthentication.cpp' object='libSrvOptions_a-SrvOptAAAAuthentication.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptAAAAuthentication.obj `if test -f 'SrvOptAAAAuthentication.cpp'; then $(CYGPATH_W) 'SrvOptAAAAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptAAAAuthentication.cpp'; fi`
-
 libSrvOptions_a-SrvOptAddrParams.o: SrvOptAddrParams.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptAddrParams.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptAddrParams.Tpo -c -o libSrvOptions_a-SrvOptAddrParams.o `test -f 'SrvOptAddrParams.cpp' || echo '$(srcdir)/'`SrvOptAddrParams.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptAddrParams.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptAddrParams.Po
@@ -443,20 +424,6 @@ libSrvOptions_a-SrvOptAddrParams.obj: SrvOptAddrParams.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptAddrParams.cpp' object='libSrvOptions_a-SrvOptAddrParams.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptAddrParams.obj `if test -f 'SrvOptAddrParams.cpp'; then $(CYGPATH_W) 'SrvOptAddrParams.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptAddrParams.cpp'; fi`
-
-libSrvOptions_a-SrvOptAuthentication.o: SrvOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptAuthentication.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Tpo -c -o libSrvOptions_a-SrvOptAuthentication.o `test -f 'SrvOptAuthentication.cpp' || echo '$(srcdir)/'`SrvOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptAuthentication.cpp' object='libSrvOptions_a-SrvOptAuthentication.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptAuthentication.o `test -f 'SrvOptAuthentication.cpp' || echo '$(srcdir)/'`SrvOptAuthentication.cpp
-
-libSrvOptions_a-SrvOptAuthentication.obj: SrvOptAuthentication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptAuthentication.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Tpo -c -o libSrvOptions_a-SrvOptAuthentication.obj `if test -f 'SrvOptAuthentication.cpp'; then $(CYGPATH_W) 'SrvOptAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptAuthentication.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptAuthentication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptAuthentication.cpp' object='libSrvOptions_a-SrvOptAuthentication.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptAuthentication.obj `if test -f 'SrvOptAuthentication.cpp'; then $(CYGPATH_W) 'SrvOptAuthentication.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptAuthentication.cpp'; fi`
 
 libSrvOptions_a-SrvOptFQDN.o: SrvOptFQDN.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptFQDN.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptFQDN.Tpo -c -o libSrvOptions_a-SrvOptFQDN.o `test -f 'SrvOptFQDN.cpp' || echo '$(srcdir)/'`SrvOptFQDN.cpp
@@ -541,20 +508,6 @@ libSrvOptions_a-SrvOptInterfaceID.obj: SrvOptInterfaceID.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptInterfaceID.cpp' object='libSrvOptions_a-SrvOptInterfaceID.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptInterfaceID.obj `if test -f 'SrvOptInterfaceID.cpp'; then $(CYGPATH_W) 'SrvOptInterfaceID.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptInterfaceID.cpp'; fi`
-
-libSrvOptions_a-SrvOptKeyGeneration.o: SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptKeyGeneration.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo -c -o libSrvOptions_a-SrvOptKeyGeneration.o `test -f 'SrvOptKeyGeneration.cpp' || echo '$(srcdir)/'`SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptKeyGeneration.cpp' object='libSrvOptions_a-SrvOptKeyGeneration.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptKeyGeneration.o `test -f 'SrvOptKeyGeneration.cpp' || echo '$(srcdir)/'`SrvOptKeyGeneration.cpp
-
-libSrvOptions_a-SrvOptKeyGeneration.obj: SrvOptKeyGeneration.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptKeyGeneration.obj -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo -c -o libSrvOptions_a-SrvOptKeyGeneration.obj `if test -f 'SrvOptKeyGeneration.cpp'; then $(CYGPATH_W) 'SrvOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptKeyGeneration.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Tpo $(DEPDIR)/libSrvOptions_a-SrvOptKeyGeneration.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvOptKeyGeneration.cpp' object='libSrvOptions_a-SrvOptKeyGeneration.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvOptions_a-SrvOptKeyGeneration.obj `if test -f 'SrvOptKeyGeneration.cpp'; then $(CYGPATH_W) 'SrvOptKeyGeneration.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvOptKeyGeneration.cpp'; fi`
 
 libSrvOptions_a-SrvOptLQ.o: SrvOptLQ.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvOptions_a-SrvOptLQ.o -MD -MP -MF $(DEPDIR)/libSrvOptions_a-SrvOptLQ.Tpo -c -o libSrvOptions_a-SrvOptLQ.o `test -f 'SrvOptLQ.cpp' || echo '$(srcdir)/'`SrvOptLQ.cpp

@@ -14,6 +14,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 #include <errno.h>
 #include "Portable.h"
 #include "IfaceMgr.h"
@@ -67,6 +68,8 @@ TIfaceMgr::TIfaceMgr(const std::string& xmlFile, bool getIfaces)
                                                        ptr->globaladdr,
                                                        ptr->globaladdrcount,
                                                        ptr->hardwareType));
+        iface->setMBit(ptr->m_bit);
+        iface->setOBit(ptr->o_bit);
         this->IfaceLst.append(iface);
         ptr = ptr->next;
     }
@@ -138,16 +141,14 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
     return 0;
 }
 
-/*
- * tries to read data from any socket on all interfaces
- * returns after time seconds.
- * @param time listens for time seconds
- * @param buf buffer
- * @param bufsize buffer size
- * @param peer informations about sender
- *
- * @return socket descriptor (or negative values for errors)
- */
+/// tries to read data from any socket on all interfaces
+/// returns after time seconds.
+/// @param time listens for time seconds
+/// @param buf buffer
+/// @param bufsize buffer size
+/// @param peer informations about sender
+///
+/// @return socket descriptor (or negative values for errors)
 int TIfaceMgr::select(unsigned long time, char *buf,
                       int &bufsize, SPtr<TIPv6Addr> peer) {
     struct timeval czas;
@@ -460,13 +461,11 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
         optionToEnv(params, opt, "SRV");
     }
 
-#if 0
     // add options from client message
     question->firstOption();
     while( SPtr<TOpt> opt = question->getOption() ) {
         optionToEnv(params, opt, "CLNT");
     }
-#endif
 
     notifyScript(scriptName, action, params);
 }

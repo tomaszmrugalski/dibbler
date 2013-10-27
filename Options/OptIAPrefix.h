@@ -24,14 +24,14 @@ class TOptIAPrefix : public TOpt
     size_t getSize();
 
     char * storeSelf( char* buf);
-    SPtr<TIPv6Addr> getPrefix();
-    char getPrefixLength();
-    unsigned long getPref();
-    unsigned long getValid();
+    SPtr<TIPv6Addr> getPrefix() const;
+    uint8_t getPrefixLength() const;
+    unsigned long getPref() const;
+    unsigned long getValid() const;
     void setPref(unsigned long pref);
     void setValid(unsigned long valid);
     void setPrefixLenght(char prefix_length);
-    bool isValid();
+    virtual bool isValid() const;
 
  private:
     SPtr<TIPv6Addr> Prefix_; //

@@ -27,6 +27,7 @@
 #include "ClntMsgInfRequest.h"
 #include "ClntMsgDecline.h"
 #include "ClntMsgConfirm.h"
+#include "ClntMsgReconfigure.h"
 #include "Container.h"
 #include "DHCPConst.h"
 #include "Logger.h"
@@ -442,7 +443,7 @@ void TClntTransMgr::doDuties()
                           << " Following operation may be unstable!" << LogEnd;
             }
             if (!openSockets(x)) {
-                Log(Crit) << "Attempt to bind activates interfaces failed."
+                Log(Crit) << "Attempt to bind activated interfaces failed."
                           << " Following operation may be unstable!" << LogEnd;
             }
         }
@@ -622,6 +623,11 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     if (!msgAnswer->check())
         return ;
 
+    if (msgAnswer->getType() == RECONFIGURE_MSG) {
+        handleReconfigure(msgAnswer);
+        return;
+    }
+
 #ifdef MOD_REMOTE_AUTOCONF
     if (neighborInfoGet(msgAnswer->getTransID())) {
         processRemoteReply(msgAnswer);
@@ -663,6 +669,29 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     } 
     ClntCfgMgr().dump();
     ClntAddrMgr().dump();
+}
+
+/// processes received RECONFIGURE message
+///
+/// Verifies that received message is valid. Depending on received option, it will
+/// send RENEW, INF-REQUEST or REBIND message
+///
+/// @param reconfMsg pointer to received reconfigure message
+///
+void TClntTransMgr::handleReconfigure(SPtr<TClntMsg> reconfMsg) {
+    // see if there is reconfigure-msg option. If not, drop message.
+    // if yes, send specific message, e.g. call sendRenew(), sendRebind() or sendInfRequest()
+
+    if(!ClntCfgMgr().getReconfigure()) {
+        Log(Notice) << "Client is not configured to support reconfigure message." << LogEnd;
+        return;
+    }
+
+    /// @todo: check authentication here
+
+    /// @todo: server may tell client to send, RENEW, REBIND or INF-REQUEST
+    Log(Notice) << "Received RECONFIGURE, sending RENEW." << LogEnd;
+    sendRenew();
 }
 
 /** 
@@ -754,12 +783,47 @@ void TClntTransMgr::sendRequest(TOptList requestOptions, int iface)
     for (TOptList::iterator opt= requestOptions.begin();
          opt!=requestOptions.end(); ++opt)
     {
-        if (!allowOptInMsg(REQUEST_MSG, (*opt)->getOptType()))
+        if (!allowOptInMsg(REQUEST_MSG, (*opt)->getOptType()) ||
+	    (*opt)->getOptType() == OPTION_AUTH)
             opt = requestOptions.erase(opt);
     }
     SPtr<TClntMsg> ptr = new TClntMsgRequest(requestOptions, iface);
     Transactions.append( (Ptr*)ptr );
 }
+
+void TClntTransMgr::sendRenew()
+{
+    // Find all IAs
+    List(TAddrIA) iaLst;
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrIA> iaPattern;
+    ClntAddrMgr().firstIA();
+
+    // Need to be fixed:?? how to deal with mutiple network interfaces.
+    while (ia = ClntAddrMgr().getIA() ) {
+        iaLst.append(ia);
+        ia->setState(STATE_INPROCESS);
+    }
+
+    // Find all PDs
+    List(TAddrIA) pdLst;
+    ClntAddrMgr().firstPD();
+    while (ia = ClntAddrMgr().getPD()) 
+    {
+        pdLst.append(ia);
+        ia->setState(STATE_INPROCESS);
+    }
+
+    if (iaLst.count() + pdLst.count() == 0) {
+	// there are no IAs or PD to refresh. Just do nothing.
+	return;
+    }
+	 
+    Log(Info) << "Generating RENEW for " << iaLst.count() << " IA(s) and " << pdLst.count() << " PD(s). " << LogEnd;
+    SPtr <TClntMsg> ptrRenew = new TClntMsgRenew(iaLst, pdLst);
+    Transactions.append(ptrRenew);
+}
+
 
 // Send RELEASE message
 void TClntTransMgr::sendRelease( List(TAddrIA) IALst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst)
@@ -845,6 +909,9 @@ void TClntTransMgr::checkSolicit() {
     while( (iface=ClntCfgMgr().getIface()) )
     {
         if (iface->noConfig())
+            continue;
+
+        if (iface->stateless())
             continue;
 
         // step 1: check if there are any IA to be configured
@@ -947,6 +1014,7 @@ void TClntTransMgr::checkInfRequest()
     {
         if (iface->noConfig())
             continue;
+
         SPtr<TClntIfaceIface> ifaceIface = (Ptr*)ClntIfaceMgr().getIfaceByID(iface->getID());
         if (!ifaceIface) {
             Log(Error) << "Interface with ifindex=" << iface->getID() << " not found." << LogEnd;
@@ -977,8 +1045,6 @@ void TClntTransMgr::checkInfRequest()
                 iface->setNISPDomainState(STATE_NOTCONFIGURED);
             if (iface->getKeyGenerationState() == STATE_CONFIGURED) 
                 iface->setKeyGenerationState(STATE_NOTCONFIGURED);
-            if (iface->getAuthenticationState() == STATE_CONFIGURED) 
-                iface->setAuthenticationState(STATE_NOTCONFIGURED);
         }
 
         if ( (iface->getDNSServerState()     == STATE_NOTCONFIGURED) ||

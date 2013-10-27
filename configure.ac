@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([dibbler], [0.8.4], [dibbler@klub.com.pl])
+AC_INIT([dibbler], [1.0.0RC1], [dibbler@klub.com.pl])
 AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
@@ -20,10 +20,14 @@ s_version=`uname -r`
 case $system in
     Darwin)
 	    case $s_version in
-            12*)
+            12*|13*)
                 AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
                 NEED_RFC_3542=yes
-            ;;
+		# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
+		;;
+	    *)
+		# Let's hope that madness will go way one day.
+	    ;;
         esac
     ;;
 esac

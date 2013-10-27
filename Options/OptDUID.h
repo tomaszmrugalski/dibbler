@@ -24,8 +24,8 @@ class TOptDUID : public TOpt
 
     char * storeSelf(char* buf);
     bool doDuties() { return true; }
-    SPtr<TDUID> getDUID();
-    bool isValid();
+    SPtr<TDUID> getDUID() const;
+    virtual bool isValid() const;
     std::string getPlain() { if (DUID) return DUID->getPlain(); else return std::string(""); }
   protected:
     SPtr<TDUID> DUID;

@@ -3,6 +3,7 @@
 %header{
 #include <iostream>
 #include <string>
+#include <vector>
 #include <malloc.h>
 #include "DHCPConst.h"
 #include "SmartPtr.h"
@@ -41,10 +42,10 @@ List(TClntCfgIA)    ClntCfgIALst;                                           \
 List(TClntCfgTA)    ClntCfgTALst;                                           \
 List(TClntCfgPD)    ClntCfgPDLst;                                           \
 List(TClntCfgAddr)  ClntCfgAddrLst;                                         \
-List(DigestTypes)   DigestLst;                                              \
+DigestTypesLst      DigestLst;                                              \
 /*Pointer to list which should contain either rejected servers or */        \
 /*preffered servers*/                                                       \
-List(THostID) PresentStationLst;                                         \
+List(THostID) PresentStationLst;                                            \
 List(TIPv6Addr) PresentAddrLst;                                             \
 List(TClntCfgPrefix) PrefixLst;                                             \
 List(std::string) PresentStringLst;                                         \
@@ -117,10 +118,10 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_
+%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_, OBEY_RA_BITS_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
-%token AUTH_ENABLED_, AUTH_ACCEPT_METHODS_
+%token AUTH_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_REALM_
 %token DIGEST_NONE_, DIGEST_PLAIN_, DIGEST_HMAC_MD5_, DIGEST_HMAC_SHA1_, DIGEST_HMAC_SHA224_
 %token DIGEST_HMAC_SHA256_, DIGEST_HMAC_SHA384_, DIGEST_HMAC_SHA512_
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
@@ -161,8 +162,11 @@ GlobalOptionDeclaration
 | ScriptName
 | DdnsProtocol
 | DdnsTimeout
-| AuthEnabledOption
-| AuthAcceptOption
+| AuthAcceptMethods
+| AuthProtocol
+| AuthAlgorithm
+| AuthReplay
+| AuthRealm
 | AnonInfRequest
 | InactiveMode
 | InsistMode
@@ -171,6 +175,7 @@ GlobalOptionDeclaration
 | SkipConfirm
 | ReconfigureAccept
 | DownlinkPrefixInterfaces
+| ObeyRaBits
 ;
 
 InterfaceOptionDeclaration
@@ -554,16 +559,76 @@ ScriptName
     CfgMgr->setScript($2);
 }
 
-AuthEnabledOption
-: AUTH_ENABLED_ Number    { ParserOptStack.getLast()->setAuthEnabled($2); }
-
-AuthAcceptOption
-: AUTH_ACCEPT_METHODS_
+AuthAcceptMethods
+: AUTH_METHODS_
 {
     DigestLst.clear();
 } DigestList {
-    ParserOptStack.getLast()->setAuthAcceptMethods(DigestLst);
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthAcceptMethods(DigestLst);
+    DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 }
+
+AuthProtocol
+: AUTH_PROTOCOL_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    if (!strcasecmp($2,"none")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
+    } else if (!strcasecmp($2, "delayed")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DELAYED);
+    } else if (!strcasecmp($2, "reconfigure-key")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
+        CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
+    } else if (!strcasecmp($2, "dibbler")) {
+        CfgMgr->setAuthProtocol(AUTH_PROTO_DIBBLER);
+    } else {
+        Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthAlgorithm
+: AUTH_ALGORITHM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    Log(Crit) << "auth-algorithm selection is not supported yet." << LogEnd;
+    YYABORT;
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+| AuthReplay
+
+AuthReplay
+: AUTH_REPLAY_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    if (strcasecmp($2, "none")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
+    } else if (strcasecmp($2, "monotonic")) {
+        CfgMgr->setAuthReplay(AUTH_REPLAY_MONOTONIC);
+    } else {
+        Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
+        YYABORT;
+    }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
+
+AuthRealm
+: AUTH_REALM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
+    CfgMgr->setAuthRealm(std::string($2));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+};
 
 DigestList
 : Digest
@@ -571,12 +636,14 @@ DigestList
 ;
 
 Digest
-: DIGEST_HMAC_MD5_    { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_MD5; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA1_   { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA1; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA224_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA224; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA256_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA256; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA384_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA384; DigestLst.append(dt); }
-| DIGEST_HMAC_SHA512_ { SPtr<DigestTypes> dt = new DigestTypes; *dt = DIGEST_HMAC_SHA512; DigestLst.append(dt); }
+: DIGEST_NONE_        { DigestLst.push_back(DIGEST_NONE); }
+| DIGEST_PLAIN_       { DigestLst.push_back(DIGEST_PLAIN); }
+| DIGEST_HMAC_MD5_    { DigestLst.push_back(DIGEST_HMAC_MD5); }
+| DIGEST_HMAC_SHA1_   { DigestLst.push_back(DIGEST_HMAC_SHA1); }
+| DIGEST_HMAC_SHA224_ { DigestLst.push_back(DIGEST_HMAC_SHA224); }
+| DIGEST_HMAC_SHA256_ { DigestLst.push_back(DIGEST_HMAC_SHA256); }
+| DIGEST_HMAC_SHA384_ { DigestLst.push_back(DIGEST_HMAC_SHA384); }
+| DIGEST_HMAC_SHA512_ { DigestLst.push_back(DIGEST_HMAC_SHA512); }
 ;
 
 AnonInfRequest
@@ -666,6 +733,12 @@ ExperimentalRemoteAutoconf
 #endif
 };
 
+ObeyRaBits
+: OBEY_RA_BITS_
+{
+    Log(Debug) << "Obeying Router Advertisement (M, O) bits." << LogEnd;
+    CfgMgr->obeyRaBits(true);
+}
 
 SkipConfirm
 : SKIP_CONFIRM_

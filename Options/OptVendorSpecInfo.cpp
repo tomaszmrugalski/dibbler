@@ -121,7 +121,7 @@ std::string TOptVendorSpecInfo::getPlain() {
     return tmp.str();
 }
 
-bool TOptVendorSpecInfo::isValid()
+bool TOptVendorSpecInfo::isValid() const
 {
     return true;
 }

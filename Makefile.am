@@ -4,7 +4,7 @@ CODE_SUBDIRS = @PORT_SUBDIR@ nettle
 if HAVE_GTEST
   CODE_SUBDIRS += tests/utils 
 endif
-CODE_SUBDIRS += Misc poslib Options AddrMgr CfgMgr IfaceMgr Messages
+CODE_SUBDIRS += Misc poslib Messages Options AddrMgr CfgMgr IfaceMgr
 CODE_SUBDIRS += SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr
 CODE_SUBDIRS += RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr
 CODE_SUBDIRS += ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr ClntMessages
@@ -105,8 +105,8 @@ dibbler_relay_LDADD += -L$(top_builddir)/CfgMgr -lCfgMgr
 dibbler_relay_LDADD += -L$(top_builddir)/RelOptions -lRelOptions
 dibbler_relay_LDADD += -L$(top_builddir)/IfaceMgr -lIfaceMgr
 dibbler_relay_LDADD += -L$(top_builddir)/poslib -lPoslib
-dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/Messages -lMessages
+dibbler_relay_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_relay_LDADD += -L$(top_builddir)/Misc -lMisc
 
@@ -125,7 +125,7 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
-nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
+nobase_dist_doc_DATA = ChangeLog LICENSE RELNOTES
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-linux.sh
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-macos.sh
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-bsd.sh

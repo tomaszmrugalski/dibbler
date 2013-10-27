@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntIfaceMgr.h,v 1.16 2008-08-29 00:07:28 thomson Exp $
- *
  */
 
 #include <iostream>
@@ -88,7 +86,7 @@ public:
 
     std::string XmlFile;
 
-    static TClntIfaceMgr * Instance;
+    static TClntIfaceMgr* Instance;
 };
 
 #endif 

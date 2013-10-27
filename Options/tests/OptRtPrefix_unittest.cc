@@ -5,7 +5,7 @@
 #include "OptAddr.h"
 #include "OptRtPrefix.h"
 
-namespace {
+namespace test {
 
     char expected[] = {
         OPTION_NEXT_HOP/256, OPTION_NEXT_HOP%256, 0, 42,

@@ -14,9 +14,15 @@
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
+#include "ClntTransMgr.h"
 #include "ClntMsgReply.h"
+#include "ClntMsgRenew.h"
 #include "ClntMsgAdvertise.h"
+#include "ClntMsgReconfigure.h"
 #include "Logger.h"
+
+
+
 
 #ifndef MOD_CLNT_DISABLE_DNSUPDATE
 #include "DNSUpdate.h"
@@ -118,14 +124,17 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 
         switch (msgtype) {
         case ADVERTISE_MSG:
-            ptr = new TClntMsgAdvertise(ifaceid,peer,buf,bufsize);
-#ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
-                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
-                    return 0;
-            }
-#endif
-            return ptr;
+            ptr = new TClntMsgAdvertise(ifaceid, peer, buf, bufsize);
+	    break;
+
+        case REPLY_MSG:
+            ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
+	    break;
+
+        case RECONFIGURE_MSG:
+            ptr = new TClntMsgReconfigure(ifaceid, peer, buf, bufsize);
+            break;
+
         case SOLICIT_MSG:
         case REQUEST_MSG:
         case CONFIRM_MSG:
@@ -134,28 +143,29 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         case RELEASE_MSG:
         case DECLINE_MSG:
         case INFORMATION_REQUEST_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; // NULL
-        case REPLY_MSG:
-            ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
-#ifndef MOD_DISABLE_AUTH
-            if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthAcceptMethods())) {
-                    Log(Error) << "Message dropped, authentication validation failed." << LogEnd;
-                    return 0;
-            }
-#endif
-            return ptr;
-
-        case RECONFIGURE_MSG:
-            Log(Warning) << "Reconfigure Message is currently not supported." << LogEnd;
-            return 0; // NULL
-        case RELAY_FORW_MSG: // those two msgs should not be visible for client
+        case RELAY_FORW_MSG:
         case RELAY_REPL_MSG:
         default:
             Log(Warning) << "Message type " << msgtype << " is not supposed to "
                          << "be received by client. Check your relay/server configuration." << LogEnd;
             return 0;
         }
+
+#ifndef MOD_DISABLE_AUTH
+        if (ClntCfgMgr().getAuthProtocol() == AUTH_PROTO_RECONFIGURE_KEY) {
+            ptr->getReconfKeyFromAddrMgr();
+        }
+
+	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
+                                   ClntCfgMgr().getAuthAcceptMethods())) {
+
+            /// @todo Implement AUTH_DROP_UNAUTH_ on client-side
+            Log(Warning) << "Message dropped, authentication validation failed." << LogEnd;
+            return 0;
+	}
+#endif
+	return ptr;
+
     } else {
         return 0;
     }
@@ -195,6 +205,8 @@ TClntIfaceMgr::TClntIfaceMgr(const std::string& xmlFile)
                                                           ptr->globaladdr,
                                                           ptr->globaladdrcount,
                                                           ptr->hardwareType);
+        iface->setMBit(ptr->m_bit);
+        iface->setOBit(ptr->o_bit);
         this->IfaceLst.append(iface);
 
         ptr = ptr->next;
@@ -619,9 +631,21 @@ void TClntIfaceMgr::redetectIfaces() {
     }
     while (ptr!=NULL) {
         iface = getIfaceByID(ptr->id);
-        if (iface && (ptr->flags!=iface->getFlags())) {
-            Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex <<iface->getFlags()
-                        << ", new=" << ptr->flags << ")." << dec << LogEnd;
+        if (!iface) {
+            ptr = ptr->next;
+            continue;
+        }
+
+        if  ( (ptr->flags != iface->getFlags()) ||
+              (ptr->m_bit != iface->getMBit()) ||
+              (ptr->o_bit != iface->getOBit())
+            ) {
+            Log(Notice) << "Flags on interface " << iface->getFullName()
+                        << " has changed (old=" << hex <<iface->getFlags()
+                        << ", new=" << ptr->flags << dec
+                        << ", M bit:" << (iface->getMBit()?"1":"0") << "->" << (ptr->m_bit?"1":"0")
+                        << ", O bit:" << (iface->getOBit()?"1":"0") << "->" << (ptr->o_bit?"1":"0")
+                        << ")."  << LogEnd;
             iface->updateState(ptr);
         }
         ptr = ptr->next;
@@ -659,3 +683,5 @@ ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "</ClntIfaceMgr>" << std::endl;
     return strum;
 }
+
+

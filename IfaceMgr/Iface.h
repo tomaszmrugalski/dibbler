@@ -39,6 +39,12 @@ class TIfaceIface{
     bool flagLoopback();
     void updateState(struct iface * x);
 
+    // --- RA bits ---
+    void setMBit(bool m);
+    void setOBit(bool o);
+    bool getMBit();
+    bool getOBit();
+
     // ---layer-2 related---
     int   getMacLen();
     char* getMac();
@@ -81,12 +87,11 @@ class TIfaceIface{
     int Maclen;
     char* LLAddr;
     int LLAddrCnt;
+    bool M_bit_; // M (managed) bit from Router Advertisement
+    bool O_bit_; // O (other conf) bit from Router Advertisement
 
     List(TIPv6Addr) GlobalAddrLst;
-    
-//    char * GlobalAddr;
-//    int GlobalAddrCnt;
-    
+
     int HWType;
 
     // sockets

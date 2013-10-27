@@ -32,7 +32,7 @@ class TIfaceMgr {
     SPtr<TIfaceIface> getIface();
     SPtr<TIfaceIface> getIfaceByName(const std::string& name);
     SPtr<TIfaceIface> getIfaceByID(int id);
-    SPtr<TIfaceIface> getIfaceBySocket(int fd);
+    virtual SPtr<TIfaceIface> getIfaceBySocket(int fd);
     int countIface();
 
     // ---other---

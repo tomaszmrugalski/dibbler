@@ -5,6 +5,8 @@
 *.lo
 *.la
 *~
+*.log
+*.trs
 TAGS
 dibbler-?.?.?
 dibbler-?.?.?-git
@@ -56,3 +58,11 @@ config.log
 config.status
 doc/doxygen.cfg
 include/dibbler-config.h
+AddrMgr/tests/AddrMgr_tests
+CfgMgr/tests/CfgMgr_tests
+IfaceMgr/tests/DnsUpdate_tests
+Misc/tests/Misc_tests
+Options/tests/Opt_tests
+SrvCfgMgr/tests/SrvCfgMgr_tests
+poslib/tests/tsig_tests
+tests/Srv/Srv_tests

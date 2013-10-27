@@ -45,6 +45,8 @@ SrvCfgMgr_tests_LDADD += $(top_builddir)/Misc/libMisc.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/poslib/libPoslib.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/nettle/libNettle.a
 SrvCfgMgr_tests_LDADD += $(top_builddir)/@PORT_SUBDIR@/libLowLevel.a
+
+dist_noinst_DATA = testdata/info.txt testdata/keys-mapping
 endif
 
 noinst_PROGRAMS = $(TESTS)

@@ -1,6 +1,34 @@
 
   Dibbler changelog
  -------------------
+1.0.0 [not-released-yet]
+  - Cli: segfault when invalid or incomplete auth parameters are specified
+    Thanks to George Joseph for a patch (bug #289)
+  - Srv: fixed leases are not added to AddrMgr. Thanks to George Joseph for
+    a patch (bug #291)
+  - Log message fixed. Thanks to George Joseph for a patch (bug #292)
+  - Client options are now passed to notify scripts (bug #293)
+  - Fedora RPM script contributted by Patrick Pichon, thanks!
+  - Srv: Experimental performance-mode added
+  - Compliation fix for Mac OS X 10.9/Apple LLVM 5.0 (clang-500)
+  - The code compiles again with --disable-auth
+  - Cli: does not send or expect AUTH option by default.
+  - Win: Service dependency fixed for Vista and above
+  - Notify script called only when non-empty script name specified.
+    (thanks to Hernan Martinez for contributed patches)
+
+1.0.0RC1 [2013-07-30]
+  - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
+  - Authentication rewritten (now uses RFC3315 option formats)
+  - Auth: support for reconfigure-key added
+  - Auth: support for delayed authentication
+  - Linux: support for M,O bits reading from Router Advertisements (bug #49)
+  - Srv: server no longer crashes when options are defined in global scope
+    (issue reported by Michael Thorsager, thanks!)
+  - Srv: database sanitization now works also for relays (bug #288)
+    (issue reported by Michael Thorsager, thanks!)
+  - After 10 years of development, all features from RFC3315 are now supported!
+    (there are outstanding bugs, though...)
 
 0.8.4 [2013-06-27]
   - Rel: Unknown message types are now relayed (as a forward compatibility

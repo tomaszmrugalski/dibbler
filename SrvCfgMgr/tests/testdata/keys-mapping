@@ -1,0 +1,5 @@
+# Comments starting with # are ignored.
+# So are empty lines
+
+00:01:02:03:04:06:07:08:09, 0x010203ff
+00:04:ff:ab:cd:ef:09:87:65:a1:bc, 0xabcdef00

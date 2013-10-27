@@ -23,7 +23,7 @@ public:
     char * storeSelf( char* buf);
     size_t getSize();
     unsigned int getValue();
-    bool isValid();
+    bool isValid() const;
     std::string getPlain();
     bool doDuties() { return true; }
 protected:

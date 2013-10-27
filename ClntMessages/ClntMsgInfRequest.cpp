@@ -97,8 +97,6 @@ TClntMsgInfRequest::TClntMsgInfRequest(TOptList ReqOpts,
             case OPTION_INTERFACE_ID:
             case OPTION_RECONF_MSG:
             case OPTION_AUTH:
-            case OPTION_AAAAUTH:
-            case OPTION_KEYGEN:
 	    case OPTION_ELAPSED_TIME:       //delete the old elapsed option,as we will append a new one
                 delOption(opt->getOptType());
                 break;        

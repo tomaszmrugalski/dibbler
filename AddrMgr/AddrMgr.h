@@ -109,13 +109,17 @@ class TAddrMgr
     bool xmlLoadBuiltIn(const char * xmlFile);
     SPtr<TAddrClient> parseAddrClient(const char * xmlFile, FILE *f);
     SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,
-                              int iaid, const std::string& ifname, int ifindex);
+                              int iaid, const std::string& ifname, int ifindex,
+                              SPtr<TIPv6Addr> unicast = 0);
     SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,
-                              int iaid, const std::string& ifname, int ifindex);
+                              int iaid, const std::string& ifname, int ifindex,
+                              SPtr<TIPv6Addr> unicast = 0);
     SPtr<TAddrAddr> parseAddrAddr(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrPrefix> parseAddrPrefix(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);
 #endif
+
+    uint64_t getNextReplayDetectionValue();
 
 protected:
     virtual void print(std::ostream & out) = 0;
@@ -134,6 +138,8 @@ protected:
 
     /// should the client without any IA, TA or PDs be deleted? (srv = yes, client = no)
     bool DeleteEmptyClient;
+
+    uint64_t ReplayDetectionValue_;
 };
 
 #endif

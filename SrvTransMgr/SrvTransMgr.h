@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Grzegorz Pluto
  *
  * released under GNU GPL v2 only licence
  *
@@ -58,6 +59,13 @@ class TSrvTransMgr
     char * getCtrlAddr();
     int    getCtrlIface();
 
+    int checkReconfigures();
+
+    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
+                         int msgType, SPtr<TDUID> ptrDUID);
+
+    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+
     // not private, as we need to instantiate derived SrvTransMgr in tests
   protected:
     TSrvTransMgr(std::string xmlFile, int port);
@@ -78,5 +86,3 @@ class TSrvTransMgr
 
 
 #endif
-
-

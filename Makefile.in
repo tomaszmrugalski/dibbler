@@ -395,7 +395,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 CODE_SUBDIRS = @PORT_SUBDIR@ nettle $(am__append_1) Misc poslib \
-	Options AddrMgr CfgMgr IfaceMgr Messages SrvOptions \
+	Messages Options AddrMgr CfgMgr IfaceMgr SrvOptions \
 	SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr \
 	RelCfgMgr RelIfaceMgr RelMessages RelOptions RelTransMgr \
 	ClntOptions ClntTransMgr ClntAddrMgr ClntCfgMgr ClntIfaceMgr \
@@ -469,8 +469,8 @@ dibbler_relay_LDADD = -L$(top_builddir)/RelTransMgr -lRelTransMgr \
 	-L$(top_builddir)/RelMessages -lRelMessages -lRelCfgMgr \
 	-L$(top_builddir)/CfgMgr -lCfgMgr -L$(top_builddir)/RelOptions \
 	-lRelOptions -L$(top_builddir)/IfaceMgr -lIfaceMgr \
-	-L$(top_builddir)/poslib -lPoslib -L$(top_builddir)/Options \
-	-lOptions -L$(top_builddir)/Messages -lMessages \
+	-L$(top_builddir)/poslib -lPoslib -L$(top_builddir)/Messages \
+	-lMessages -L$(top_builddir)/Options -lOptions \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel \
 	-L$(top_builddir)/Misc -lMisc
 dibbler_requestor_SOURCES = $(top_srcdir)/Requestor/Requestor.cpp $(top_srcdir)/Requestor/Requestor.h
@@ -482,7 +482,7 @@ dibbler_requestor_LDADD = -L$(top_builddir)/Requestor -lRequestor \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr -L$(top_builddir)/Misc \
 	-lMisc -L$(top_builddir)/Options -lOptions \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
-nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES \
+nobase_dist_doc_DATA = ChangeLog LICENSE RELNOTES \
 	scripts/notify-scripts/client-notify-linux.sh \
 	scripts/notify-scripts/client-notify-macos.sh \
 	scripts/notify-scripts/client-notify-bsd.sh \

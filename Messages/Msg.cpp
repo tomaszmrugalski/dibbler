@@ -8,6 +8,7 @@
  * released under GNU GPL v2 only licence
  */
 
+#include <string.h>
 #include <stdlib.h>
 #include <cmath>
 #include "Portable.h"
@@ -16,13 +17,14 @@
 #include "Container.h"
 #include "Msg.h"
 #include "Opt.h"
+#include "OptAuthentication.h"
 #include "Logger.h"
 #include "hmac-sha-md5.h"
 
 class TNotifyScriptParams;
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
-    :pkt(0), NotifyScripts(NULL)
+    :NotifyScripts(NULL)
 {
     setAttribs(iface, addr, 0, 0);
     if (bufSize<4)
@@ -34,7 +36,7 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize)
 }
 
 TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType)
-    :pkt(0), NotifyScripts(NULL)
+    :NotifyScripts(NULL)
 {
     long tmp = rand() % (255*255*255);
     setAttribs(iface,addr,msgType,tmp);
@@ -54,15 +56,10 @@ void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID
     TransID = transID;
     IsDone = false;
     MsgType = msgType;
-    pkt = NULL;
-    DigestType = DIGEST_NONE; /* by default digest is none */
-    AuthInfoPtr = NULL;
-    AuthInfoKey = NULL;
-    KeyGenNonce = NULL;
-    KeyGenNonceLen = 0;
-    AAASPI = 0;
-    SPI = 0;
-    ReplayDetection = 0;
+    DigestType_ = DIGEST_NONE; /* by default digest is none */
+    AuthDigestPtr_ = NULL;
+    AuthDigestLen_ = 0;
+    SPI_ = 0;
 }
 
 int TMsg::getSize()
@@ -118,46 +115,94 @@ int TMsg::storeSelf(char * buffer)
     }
 
 #ifndef MOD_DISABLE_AUTH
-    DigestTypes UsedDigestType;
-
-	// for AAAAUTH use only HMAC-SHA1
-    if (getOption(OPTION_AAAAUTH))
-            UsedDigestType = DIGEST_HMAC_SHA1;
-    else
-            UsedDigestType = DigestType;
-
-    if (AuthInfoKey && AuthInfoPtr && (getOption(OPTION_AUTH) || getOption(OPTION_AAAAUTH)) && UsedDigestType != DIGEST_NONE) {
-            Log(Debug) << "Auth: Used digest type is " << getDigestName(UsedDigestType) << LogEnd;
-            switch (UsedDigestType) {
-                    case DIGEST_PLAIN:
-                        memcpy(AuthInfoPtr, "This is 32-byte plain testkey...", getDigestSize(UsedDigestType));
-                        break;
-                    case DIGEST_HMAC_MD5:
-                        hmac_md5(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr);
-                        break;
-                    case DIGEST_HMAC_SHA1:
-                        hmac_sha(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr, 1);
-                        break;
-                    case DIGEST_HMAC_SHA224:
-                        hmac_sha(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr, 224);
-                        break;
-                    case DIGEST_HMAC_SHA256:
-                        hmac_sha(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr, 256);
-                        break;
-                    case DIGEST_HMAC_SHA384:
-                        hmac_sha(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr, 384);
-                        break;
-                    case DIGEST_HMAC_SHA512:
-                        hmac_sha(start, buffer-start, AuthInfoKey, AUTHKEYLEN, (char *)AuthInfoPtr, 512);
-                        break;
-                    default:
-                        break;
-            }
-            PrintHex("Auth: Sending digest: ", AuthInfoPtr, getDigestSize(UsedDigestType));
-    }
+    calculateDigests(start, buffer - start);
 #endif
 
     return buffer-start;
+}
+
+void TMsg::calculateDigests(char* buffer, size_t len) {
+
+    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    if (!auth)
+        return;
+
+    switch (auth->getProto()) {
+    default: {
+        Log(Error) << "AUTH: protocol " << auth->getProto() << " not supported yet." << LogEnd;
+        return;
+    }
+    case AUTH_PROTO_DELAYED: {
+        if (AuthKey_.empty()) {
+            if (MsgType == SOLICIT_MSG) {
+                return; // That's alright, no auth info in SOLICIT
+            }
+            Log(Error) << "AUTH: Can't sign delayed-auth option, key empty." << LogEnd;
+            return;
+        }
+        if (auth->getAuthDataPtr()) {
+            hmac_md5(buffer, len, (char*) &AuthKey_[0], AuthKey_.size() ,auth->getAuthDataPtr());
+        }
+        return;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+        if (AuthKey_.size() != RECONFIGURE_KEY_SIZE) {
+            Log(Error) << "AUTH: Invalid size of reconfigure-key: expected " <<
+                RECONFIGURE_KEY_SIZE << ", actual size " << AuthKey_.size() << LogEnd;
+            return;
+        }
+        if (auth->getAuthDataPtr()) {
+            hmac_md5(buffer, len, (char*) &AuthKey_[0], AuthKey_.size() ,auth->getAuthDataPtr());
+        }
+        return;
+    }
+    case AUTH_PROTO_NONE: {
+        // don't calculate anything
+        return;
+    }
+    case AUTH_PROTO_DIBBLER: {
+        DigestTypes UsedDigestType;
+
+	// for AAAAUTH use only HMAC-SHA1
+        UsedDigestType = DigestType_;
+
+        if (getSPI() && !loadAuthKey()) {
+            return;
+        }
+        
+        if (getSPI() && !AuthKey_.empty() && UsedDigestType != DIGEST_NONE) {
+            Log(Debug) << "Auth: Used digest type is " << getDigestName(UsedDigestType) << LogEnd;
+            switch (UsedDigestType) {
+            case DIGEST_PLAIN:
+                memcpy(AuthDigestPtr_, "This is 32-byte plain testkey...", getDigestSize(UsedDigestType));
+                break;
+            case DIGEST_HMAC_MD5:
+                hmac_md5(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_);
+                break;
+            case DIGEST_HMAC_SHA1:
+                hmac_sha(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_, 1);
+                break;
+            case DIGEST_HMAC_SHA224:
+                hmac_sha(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_, 224);
+                break;
+            case DIGEST_HMAC_SHA256:
+                hmac_sha(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_, 256);
+                break;
+            case DIGEST_HMAC_SHA384:
+                hmac_sha(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_, 384);
+                break;
+            case DIGEST_HMAC_SHA512:
+                hmac_sha(buffer, len, (char*)&AuthKey_[0], AuthKey_.size(), (char *)AuthDigestPtr_, 512);
+                break;
+            default:
+                break;
+            }
+            PrintHex(std::string("Auth: Sending digest ") + getDigestName(UsedDigestType) +" : ",
+				 (uint8_t*)AuthDigestPtr_, getDigestSize(UsedDigestType));
+        }
+    }
+    }
+
 }
 
 SPtr<TOpt> TMsg::getOption(int type) {
@@ -208,135 +253,173 @@ bool TMsg::isDone(bool done) {
     return IsDone;
 }
 
-void TMsg::setAuthInfoPtr(char* ptr) {
-    AuthInfoPtr = ptr;
+void TMsg::setAuthDigestPtr(char* ptr, unsigned len) {
+    AuthDigestPtr_ = ptr;
+    AuthDigestLen_ = len;
 }
 
-void TMsg::setAuthInfoKey(char* ptr) {
-    AuthInfoKey = ptr;
-
-    if (!ptr) {
-        Log(Debug) << "Strange, NULL pointer to setAuthInfoKey()" << LogEnd;
-        return;
-    }
-
-    PrintHex("Auth: setting auth info to: ", AuthInfoKey, AUTHKEYLEN);
+void TMsg::setAuthKey(const TKey& key) {
+    AuthKey_ = key;
+    PrintHex("Auth: setting key to: ", (uint8_t*)&AuthKey_[0], AuthKey_.size());
 }
 
-int TMsg::setAuthInfoKey() {
-#ifndef MOD_DISABLE_AUTH
-    //  key = HMAC-SHA1 (AAA-key, {Key Generation Nonce || client identifier})
+bool TMsg::loadAuthKey() {
 
-    char *KeyGenNonce_ClientID;
-    char * AAAkey;
-    uint32_t AAAkeyLen;
+    unsigned len = 0;
+    char * ptr = getAAAKey(SPI_, &len);
+    AuthKey_.resize(len);
+    memcpy(&AuthKey_[0], ptr, len);
+    free(ptr);
 
-    if (!KeyGenNonce)
-        KeyGenNonceLen = 16;
-
-    /// @todo set proper size of Client ID (DUID?) (here and in hmac_sha())
-    KeyGenNonce_ClientID = new char[KeyGenNonceLen+128];
-
-    AAAkey = getAAAKey(AAASPI, &AAAkeyLen);
-    std::string fname = getAAAKeyFilename(AAASPI);
-
-    // error, no file?
-    if (!AAAkey) {
-        Log(Error) << "Auth: Unable to load key file for SPI " << std::hex << AAASPI <<": " << fname 
-                   << " not found." << std::dec << LogEnd;
-        AuthInfoKey = NULL;
-        delete [] KeyGenNonce_ClientID;
-        return -1;
-    }
-    Log(Debug) << "Auth: AAA-key loaded from file " << fname << "." << LogEnd;
-
-    PrintHex("Auth: AAA-key: ", AAAkey, AAAkeyLen);
-
-    memset(KeyGenNonce_ClientID, 0, KeyGenNonceLen+128);
-    if (KeyGenNonce)
-        memcpy(KeyGenNonce_ClientID, KeyGenNonce, KeyGenNonceLen);
-
-    /// @todo fill also with ClientID (DUID?)
-
-    PrintHex("Auth: Infokey: using KeyGenNonce+CliendID: ", KeyGenNonce_ClientID, KeyGenNonceLen+128);
-
-    Log(Debug) << "Auth: AAAKeyLen: " << AAAkeyLen << ", KeyGenNonceLen: " << KeyGenNonceLen << LogEnd;
-    AuthInfoKey = new char[AUTHKEYLEN];
-    hmac_sha(KeyGenNonce_ClientID, KeyGenNonceLen+128, AAAkey, AAAkeyLen, (char *)AuthInfoKey, 1);
-
-    PrintHex("Auth: AuthInfoKey (calculated): ", AuthInfoKey, AUTHKEYLEN);
-
-    delete [] KeyGenNonce_ClientID;
-#endif
-
-    return 0;
+    return (len>0);
 }
 
-char * TMsg::getAuthInfoKey() {
-    return AuthInfoKey;
-}
-
-void TMsg::setAAASPI(uint32_t val) {
-    AAASPI = val;
-}
-
-uint32_t TMsg::getAAASPI() {
-    return AAASPI;
+TKey TMsg::getAuthKey() {
+    return AuthKey_;
 }
 
 void TMsg::setSPI(uint32_t val) {
-    SPI = val;
+    SPI_ = val;
 }
 
 uint32_t TMsg::getSPI() {
-    return SPI;
+    return SPI_;
 }
 
-void TMsg::setReplayDetection( uint64_t value)
-{
-	ReplayDetection = value;
-}
-
-uint64_t TMsg::getReplayDetection() {
-    return ReplayDetection;
-}
-
-void TMsg::setKeyGenNonce(char *value, unsigned len)
-{
-    if (len) {
-    	KeyGenNonce = new char[len];
-        memcpy(KeyGenNonce, value, len);
-        KeyGenNonceLen = len;
-    }
-}
-
-char *TMsg::getKeyGenNonce() {
-    return KeyGenNonce;
-}
-
-unsigned TMsg::getKeyGenNonceLen() {
-    return KeyGenNonceLen;
-}
-
-bool TMsg::validateAuthInfo(char *buf, int bufSize) {
-    List(DigestTypes) lst;
-    lst.clear();
-
-    return validateAuthInfo(buf, bufSize, lst);
-}
-
-bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
+bool TMsg::validateAuthInfo(char *buf, int bufSize,
+                            AuthProtocols proto,
+                            const DigestTypesLst& acceptedDigestTypes) {
     bool is_ok = false;
-    SPtr<DigestTypes> dt;
     bool dt_in_list = false;
+
+    switch (proto) {
+    case AUTH_PROTO_NONE:
+        return true;
+    case AUTH_PROTO_DELAYED: {
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            Log(Warning) << "AUTH: Mandatory AUTH option missing in delayed auth."
+                         << LogEnd;
+            return false;
+        }
+        if (auth->getProto() != AUTH_PROTO_DELAYED) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 2(delayed auth), but got "
+                         << int(auth->getProto()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1 (HMAC-MD5), but got "
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (MsgType == SOLICIT_MSG) {
+            if (auth->getSize() != TOptAuthentication::OPT_AUTH_FIXED_SIZE + TOpt::OPTION6_HDR_LEN) {
+                Log(Warning) << "AUTH: Received non-empty delayed-auth option in SOLICIT,"
+                             << " expected empty." << LogEnd;
+                return false;
+            } else {
+                return true; // delayed auth in Solicit should come in empty
+            }
+        }
+
+        if (SPI_ == 0) {
+            Log(Warning) << "AUTH: Received invalid SPI = 0." << LogEnd;
+            return false;
+        }
+
+        if (!loadAuthKey()) {
+            Log(Warning) << "AUTH: Failed to load delayed auth key with key id="
+                         << std::hex << getSPI() << std::dec << LogEnd;
+            return false;
+        }
+
+        // Ok, let's do validation
+        char *rcvdAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+        char *goodAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+
+        memmove(rcvdAuthInfo, AuthDigestPtr_, DELAYED_AUTH_DIGEST_SIZE);
+        memset(AuthDigestPtr_, 0, DELAYED_AUTH_DIGEST_SIZE);
+
+        hmac_md5(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo);
+
+        Log(Debug) << "Auth: Checking delayed-auth (HMAC-MD5) digest:" << LogEnd;
+        PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, DELAYED_AUTH_DIGEST_SIZE);
+        PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, DELAYED_AUTH_DIGEST_SIZE);
+
+        if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, DELAYED_AUTH_DIGEST_SIZE))
+            is_ok = true;
+
+        delete [] rcvdAuthInfo;
+        delete [] goodAuthInfo;
+
+        return is_ok;
+    }
+    case AUTH_PROTO_RECONFIGURE_KEY: {
+        if (MsgType != RECONFIGURE_MSG)
+            return true;
+        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        if (!auth) {
+            Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE." << LogEnd;
+            return false;
+        }
+        if (auth->getProto() != AUTH_PROTO_RECONFIGURE_KEY) {
+            Log(Warning) << "AUTH: Bad protocol in auth: expected 3(reconfigure-key), but got "
+                         << int(auth->getProto()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getAlgorithm() != 1) {
+            Log(Warning) << "AUTH: Bad algorithm in auth option: expected 1, but got "
+                         << int(auth->getAlgorithm()) << ", key ignored." << LogEnd;
+            return false;
+        }
+        if (auth->getRDM() != AUTH_REPLAY_NONE) {
+            Log(Warning) << "AUTH: Bad replay detection method (RDM) value: expected 0,"
+                         << ", but got " << auth->getRDM() << LogEnd;
+            // This is small issue enough, so we can continue.
+        }
+        if (AuthKey_.size() != RECONFIGURE_KEY_SIZE) {
+            Log(Error) << "AUTH: Failed to verify incoming RECONFIGURE message due to "
+                       << "reconfigure-key issue: expected size " << RECONFIGURE_KEY_SIZE
+                       << ", but got " << AuthKey_.size() << ", message dropped." << LogEnd;
+            return false;
+        }
+        if (!AuthDigestPtr_) {
+            Log(Error) << "AUTH: Failed to verify incoming RECONFIGURE message: "
+                       << "AuthDigestPtr_ not set, message dropped." << LogEnd;
+            return false;
+        }
+
+        char *rcvdAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+        char *goodAuthInfo = new char[RECONFIGURE_DIGEST_SIZE];
+
+        memmove(rcvdAuthInfo, AuthDigestPtr_, RECONFIGURE_DIGEST_SIZE);
+        memset(AuthDigestPtr_, 0, RECONFIGURE_DIGEST_SIZE);
+
+        hmac_md5(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo);
+
+        Log(Debug) << "Auth: Checking reconfigure-key" << LogEnd;
+        PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, RECONFIGURE_DIGEST_SIZE);
+        PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, RECONFIGURE_DIGEST_SIZE);
+
+        if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, RECONFIGURE_DIGEST_SIZE))
+            is_ok = true;
+
+        delete [] rcvdAuthInfo;
+        delete [] goodAuthInfo;
+
+        return is_ok;
+    }
+    case AUTH_PROTO_DIBBLER:
+        break;
+    }
     
     //empty list means that any digest type is accepted
-    if (authLst.count() == 0) {
+    if (acceptedDigestTypes.empty()) {
         dt_in_list = true;
     } else {
-        authLst.first();
-        while (dt = authLst.get()) {
-            if (*dt == DigestType) {
+        // check if the digest is allowed AUTH list
+        for (unsigned i = 0; i < acceptedDigestTypes.size(); ++i) {
+            if (acceptedDigestTypes[i] == DigestType_) {
                 dt_in_list = true;
                 break;
             }
@@ -344,66 +427,78 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize, List(DigestTypes) authLst) {
     }
 
     if (dt_in_list == false) {
-        if (DigestType == DIGEST_NONE)
-            Log(Error) << "Authentication option is required." << LogEnd;
+        if (DigestType_ == DIGEST_NONE)
+            Log(Warning) << "Authentication option is required." << LogEnd;
         else
-            Log(Error) << "Authentication method " << getDigestName(DigestType) << " not accepted." << LogEnd;
+            Log(Warning) << "Authentication method " << getDigestName(DigestType_)
+                       << " not accepted." << LogEnd;
         return false;
     }
 
-    if (DigestType == DIGEST_NONE) {
+    if (DigestType_ == DIGEST_NONE) {
             is_ok = true;
-    } else if (AuthInfoPtr) {
+    } else if (AuthDigestPtr_) {
 #ifndef MOD_DISABLE_AUTH
 
-        if (!AuthInfoKey) {
-            Log(Debug) << "Auth: No AuthInfoKey was set. This could mean bad SPI or no AAA-SPI file." << LogEnd;
+        if (AuthKey_.empty() && !loadAuthKey()) {
+            Log(Debug) << "Auth: Failed to load key with SPI=" << SPI_ << LogEnd;
             return false;
         }
 
-        unsigned AuthInfoLen = getDigestSize(DigestType);
+        unsigned AuthInfoLen = getDigestSize(DigestType_);
         char *rcvdAuthInfo = new char[AuthInfoLen];
         char *goodAuthInfo = new char[AuthInfoLen];
 
-        memmove(rcvdAuthInfo, AuthInfoPtr, AuthInfoLen);
-        memset(AuthInfoPtr, 0, AuthInfoLen);
+        memmove(rcvdAuthInfo, AuthDigestPtr_, AuthInfoLen);
+        memset(AuthDigestPtr_, 0, AuthInfoLen);
 
-        switch (DigestType) {
-                // [s] change the key to something that make sense
+        switch (DigestType_) {
                 case DIGEST_PLAIN:
-                    memcpy(goodAuthInfo, "This is 32-byte plain testkey...", 32); break;
+                    /// @todo: load plain text from a file
+                    memcpy(goodAuthInfo, "This is 32-byte plain testkey...", 32);
+                    break;
                 case DIGEST_HMAC_MD5:
-                    hmac_md5(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo); break;
+                    hmac_md5(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo);
+                    break;
                 case DIGEST_HMAC_SHA1:
-                    hmac_sha(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo, 1); break;
+                    hmac_sha(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo, 1);
+                    break;
                 case DIGEST_HMAC_SHA224:
-                    hmac_sha(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo, 224); break;
+                    hmac_sha(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo, 224);
+                    break;
                 case DIGEST_HMAC_SHA256:
-                    hmac_sha(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo, 256); break;
+                    hmac_sha(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo, 256);
+                    break;
                 case DIGEST_HMAC_SHA384:
-                    hmac_sha(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo, 384); break;
+                    hmac_sha(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo, 384);
+                    break;
                 case DIGEST_HMAC_SHA512:
-                    hmac_sha(buf, bufSize, AuthInfoKey, AUTHKEYLEN, goodAuthInfo, 512); break;
+                    hmac_sha(buf, bufSize, (char*)&AuthKey_[0], AuthKey_.size(), goodAuthInfo, 512);
+                    break;
                 default:
                     break;
         }
         if (0 == memcmp(goodAuthInfo, rcvdAuthInfo, AuthInfoLen))
             is_ok = true;
 
-        Log(Debug) << "Auth:Checking using digest method: " << DigestType << LogEnd;
-        PrintHex("Auth:received digest: ", rcvdAuthInfo, AuthInfoLen);
-        PrintHex("Auth:  proper digest: ", goodAuthInfo, AuthInfoLen);
+        Log(Debug) << "Auth:Checking using digest method: "
+                   << getDigestName(DigestType_) << LogEnd;
+        PrintHex("Auth:received digest: ", (uint8_t*)rcvdAuthInfo, AuthInfoLen);
+        PrintHex("Auth:  proper digest: ", (uint8_t*)goodAuthInfo, AuthInfoLen);
 
         delete [] rcvdAuthInfo;
         delete [] goodAuthInfo;
 
         if (is_ok)
-            Log(Info) << "Authentication Information correct." << LogEnd;
-        else
-            Log(Error) << "Authentication Information incorrect." << LogEnd;
+            Log(Info) << "Auth: Digest correct." << LogEnd;
+        else {
+            Log(Warning) << "Auth: Digest incorrect." << LogEnd;
+	}
 #endif
     } else {
-      Log(Error) << "Auth: Digest mode set to " << DigestType << ", but AUTH option not set." << LogEnd;
+        Log(Error) << "Auth: Digest mode set to " << DigestType_
+                   << ", but AUTH option not set." << LogEnd;
+        return false;
     }
     
     return is_ok;
@@ -463,7 +558,7 @@ bool TMsg::check(bool clntIDmandatory, bool srvIDmandatory)
 
     if (authCnt > 1) {
 	Log(Warning) << "No more that one authentication option is allowed in the " << this->getName()
-		     << " message, but " << srvCnt << " received.";
+		     << " message, but " << authCnt << " received.";
 	status = false;
     }
 

@@ -81,7 +81,7 @@ char * TOptVendorData::storeSelf( char* buf)
     return buf;    
 }
 
-bool TOptVendorData::isValid()
+bool TOptVendorData::isValid() const
 {
     return true;
 }

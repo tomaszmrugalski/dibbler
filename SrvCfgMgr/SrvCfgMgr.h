@@ -24,7 +24,6 @@ class TSrvCfgMgr;
 #include "KeyList.h"
 #include "SrvCfgClientClass.h"
 
-
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
 class SrvParser;
@@ -105,10 +104,10 @@ public:
     //Authentication
 #ifndef MOD_DISABLE_AUTH
     SPtr<KeyList> AuthKeys;
-    unsigned int getAuthLifetime();
-    unsigned int getAuthKeyGenNonceLen();
-    List(DigestTypes) getDigestLst();
+    void setAuthDigests(const DigestTypesLst& digests);
+    DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
+    uint32_t getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid);
 #endif
 
     void setDefaults();
@@ -122,6 +121,11 @@ public:
     int getRelayByInterfaceID(SPtr<TSrvOptInterfaceID> interfaceID);
     int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
     int getAnyRelay();
+
+
+    // Sets performance mode (not write whole XML)
+    void setPerformanceMode(bool mode);
+    bool getPerformanceMode();
 
     // used to be private, but we need access in tests
 protected:
@@ -151,7 +155,7 @@ protected:
 #ifndef MOD_DISABLE_AUTH
     unsigned int AuthLifetime;
     unsigned int AuthKeyGenNonceLen;
-    List(DigestTypes) DigestLst;
+    DigestTypesLst DigestTypesLst_;
 #endif
 
     // DDNS address
@@ -162,6 +166,8 @@ protected:
     unsigned short BulkLQTcpPort;
     unsigned int BulkLQMaxConns;
     unsigned int BulkLQTimeout;
+
+    bool PerformanceMode_;
 };
 
 #endif /* SRVCONFMGR_H */

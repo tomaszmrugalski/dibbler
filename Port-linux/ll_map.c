@@ -96,7 +96,7 @@ const char *ll_idx_n2a(unsigned idx, char *buf)
 	for (im = idxmap[idx&0xF]; im; im = im->next)
 		if (im->index == idx)
 			return im->name;
-	snprintf(buf, 16, "if%d", idx);
+	snprintf(buf, 16, "if%u", idx);
 	return buf;
 }
 

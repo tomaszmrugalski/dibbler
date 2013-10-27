@@ -197,9 +197,8 @@ public:
     EState getKeyGenerationState();
     void setKeyGenerationState(EState state);
 
-    // --- option: Authentication ---
-    EState getAuthenticationState();
-    void setAuthenticationState(EState state);
+    void setMbit(bool m_bit);
+    void setObit(bool o_bit);
 
 private:
     void setDefaults();
@@ -246,7 +245,6 @@ private:
     EState PrefixDelegationState;
     EState VendorSpecState;
     EState KeyGenerationState;
-    EState AuthenticationState;
     EState RoutingEnabledState;
 
     /// @todo: Remove those booleans and use State directly

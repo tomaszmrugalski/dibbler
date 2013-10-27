@@ -52,7 +52,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     appendMandatoryOptions(ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     this->MRT_ = 31;
     IsDone = false;
     this->send();
@@ -274,7 +273,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 31;
     this->send();
@@ -343,7 +341,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     appendRequestedOptions(ClientDUID, rebind->getAddr(),rebind->getIface(), ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 0;
     this->send();
@@ -527,7 +524,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
     NotifyScripts = notifyParams;
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 46;
     this->send();
@@ -595,7 +591,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     appendRequestedOptions(ClientDUID,renew->getAddr(),renew->getIface(), ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 0;
     this->send();
@@ -621,10 +616,16 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
+#ifndef MOD_DISABLE_AUTH
+    SPtr<TOpt> reconfAccept = request->getOption(OPTION_RECONF_ACCEPT);
+    if (reconfAccept) {
+        appendReconfigureKey();
+    }
+#endif
+
     IsDone = false;
     MRT_ = 330;
-    this->send();
+    send();
 }
 
 /// @brief ctor used for generating REPLY message as SOLICIT response (in rapid-commit mode)
@@ -648,7 +649,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     SPtr<TIPv6Addr> ptrAddr;
     MRT_ = 330;
@@ -685,8 +685,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
             case OPTION_RECONF_MSG  :
             case OPTION_IA_NA       :
             case OPTION_IA_TA       :
-            case OPTION_AAAAUTH     :
-            case OPTION_KEYGEN      :
                 Log(Warning) << "Invalid option " << ptrOpt->getOptType() <<" received." << LogEnd;
                 break;
             default:
@@ -704,7 +702,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
 
     appendAuthenticationOption(ClientDUID);
 
-    pkt = new char[this->getSize()];
     IsDone = false;
     MRT_ = 330;
     send();
@@ -715,10 +712,10 @@ void TSrvMsgReply::doDuties() {
 }
 
 unsigned long TSrvMsgReply::getTimeout() {
-    unsigned long diff = now() - FirstTimeStamp_;
-    if (diff>SERVER_REPLY_CACHE_TIMEOUT)
+    unsigned long diff = (int32_t)time(NULL) - FirstTimeStamp_;
+    if (diff > SERVER_REPLY_CACHE_TIMEOUT)
         return 0;
-    return SERVER_REPLY_CACHE_TIMEOUT-diff;
+    return SERVER_REPLY_CACHE_TIMEOUT - diff;
 }
 
 bool TSrvMsgReply::check() {

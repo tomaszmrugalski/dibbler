@@ -39,7 +39,7 @@ using namespace std;
 TAddrIA::TAddrIA(const std::string& ifacename, int ifindex, TIAType type, SPtr<TIPv6Addr> addr,
                  SPtr<TDUID> duid, unsigned long t1, unsigned long t2,unsigned long id)
     :IAID(id),T1(t1),T2(t2), State(STATE_NOTCONFIGURED), 
-     Tentative(ADDRSTATUS_UNKNOWN), Timestamp(now()), 
+     Tentative(ADDRSTATUS_UNKNOWN), Timestamp((unsigned long)time(NULL)),
      Unicast(false), Iface_(ifacename), Ifindex_(ifindex), Type(type)
 {
     this->setDUID(duid);
@@ -285,7 +285,7 @@ unsigned long TAddrIA::getT1Timeout() {
 	return DHCPV6_INFINITY;
     }
     
-    x  = now();
+    x  = (unsigned long)time(NULL);
     if (ts>x)  
         return ts-x;
     else
@@ -299,7 +299,7 @@ unsigned long TAddrIA::getT2Timeout() {
 	return DHCPV6_INFINITY;
     }
 
-    x  = now();
+    x  = (unsigned long)time(NULL);
     if (ts>x) 
         return ts-x;
     else 
@@ -373,7 +373,7 @@ void TAddrIA::setTimestamp(unsigned long ts)
 }
 
 void TAddrIA::setTimestamp() {
-    this->setTimestamp(now());
+    this->setTimestamp((unsigned long)time(NULL));
 }
 
 unsigned long TAddrIA::getTimestamp()
@@ -403,9 +403,9 @@ unsigned long TAddrIA::getTentativeTimeout()
         while ( ptrAddr = AddrLst.get() )
         {
             if (ptrAddr->getTentative()==ADDRSTATUS_UNKNOWN)
-                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-now() ) 
+                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL) )
                 {
-                    min = ptrAddr->getTimestamp()+DADTIMEOUT-now();
+                    min = ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL);
                 }
         }
     }
@@ -439,7 +439,7 @@ enum EAddrStatus TAddrIA::getTentative()
 	case ADDRSTATUS_NO:
 	    continue;
 	case ADDRSTATUS_UNKNOWN:
-        if ( ptrAddr->getTimestamp()+DADTIMEOUT < now() ) 
+        if ( ptrAddr->getTimestamp()+DADTIMEOUT < (unsigned long)time(NULL) )
         {
 
             switch (is_addr_tentative(NULL, Ifindex_, ptrAddr->get()->getPlain()) ) 

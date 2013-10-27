@@ -4,6 +4,10 @@
 
 Note: This is a scratchpad. It just happens to be available with the rest of the code.
 
+- must include *.l *.y files in dist
+
+- Check if client message retransmissions have proper digests.
+
 Subnet support:
 - rcv: clean up SrvIfaceMgr::decodeRelayForw()
 - remove getUnderlaying(), getOverlaying() (WTF???)
@@ -27,6 +31,46 @@ Important:
 - DNS Update(delete) after expiration
 
 - Common option parsing
+
+========= Authentication ========
+- implement authentication option: framework for multiple auth protocols (done)
+- 2 protocols defined in 3315, 3rd done by Kowalczuk (3 total)
+- at most one auth option incluended
+- unit-tests for client
+- unit-tests for server
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |          OPTION_AUTH          |          option-len           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |   protocol    |   algorithm   |      RDM      |               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    |                                                               |
+    |          replay detection (64 bits)           +-+-+-+-+-+-+-+-+
+    |                                               |   auth-info   |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    .                   authentication information                  .
+    .                       (variable length)                       .
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+RDM = 0 => monotonically increasing counter
+    (must be supported by all protocols)
+
+Delayed auth protocol
+protocol = 2, delayed auth mechanism.
+
+algorithm
+ 1 = hmac-md5
+
+- Client and server preconfigured with keys
+
+
+-client requests auth in solicit
+-srv includes auth in advertise
+-contains nonce value generate by the source as a message auth code (MAC)
+ HMAC-MD5 is used
+
+
 
 
 Refactor:
