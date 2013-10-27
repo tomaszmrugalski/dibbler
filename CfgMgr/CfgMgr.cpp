@@ -338,7 +338,7 @@ SPtr<TDUID> TCfgMgr::getDUID()
     return DUID;
 }
 
-#ifndef MOD_DISABLE_AUTH
+#if !defined(MOD_SRV_DISABLE_DNSUPDATE) && !defined(MOD_CLNT_DISABLE_DNSUPDATE)
 void TCfgMgr::addKey(SPtr<TSIGKey> key) {
     Keys_.push_back(key);
 }
@@ -350,7 +350,9 @@ SPtr<TSIGKey> TCfgMgr::getKey() {
 
     return Keys_.front(); // just return first key for now
 }
+#endif
 
+#ifndef MOD_DISABLE_AUTH
 void TCfgMgr::setAuthProtocol(AuthProtocols proto) {
     Log(Debug) << "Auth: setting auth protocol to " << proto << LogEnd;
     AuthProtocol_ = proto;

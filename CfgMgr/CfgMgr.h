@@ -52,13 +52,12 @@ class TCfgMgr
     void setDDNSTimeout(unsigned int timeout) { DDNSTimeout_ = timeout; }
     unsigned int getDDNSTimeout() { return DDNSTimeout_; }
 
-
+#if !defined(MOD_SRV_DISABLE_DNSUPDATE) && !defined(MOD_CLNT_DISABLE_DNSUPDATE)
     void addKey(SPtr<TSIGKey> key);
+    SPtr<TSIGKey> getKey();
+#endif
 
 #ifndef MOD_DISABLE_AUTH
-    SPtr<TSIGKey> getKey();
-
-    void setAuthProtocol(AuthProtocols proto);
     void setAuthReplay(AuthReplay replay_detection_mode);
     void setAuthAlgorithm(uint8_t algorithm); // protocol specific value
     AuthProtocols getAuthProtocol();

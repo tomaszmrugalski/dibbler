@@ -7,12 +7,15 @@
  *
  */
 
-#include "Portable.h"
+// We need this, so unistd.h include gethostname() definition
+#define _BSD_SOURCE
+
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include "Portable.h"
 
 int execute(const char *filename, const char * argv[], const char *env[])
 {

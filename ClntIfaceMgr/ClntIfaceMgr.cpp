@@ -163,9 +163,8 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             Log(Warning) << "Message dropped, authentication validation failed." << LogEnd;
             return 0;
 	}
-
-	return ptr;
 #endif
+	return ptr;
 
     } else {
         return 0;

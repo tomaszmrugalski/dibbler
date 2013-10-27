@@ -1138,23 +1138,23 @@ static const short yyrline[] = { 0,
    431,   436,   439,   447,   448,   452,   453,   454,   455,   456,
    457,   458,   459,   463,   466,   474,   475,   478,   479,   480,
    481,   482,   483,   484,   485,   492,   499,   504,   513,   514,
-   517,   527,   536,   547,   565,   571,   583,   588,   591,   598,
-   599,   603,   604,   605,   606,   607,   608,   609,   610,   615,
-   628,   633,   640,   646,   651,   657,   666,   667,   671,   675,
-   682,   690,   700,   701,   705,   709,   718,   734,   738,   750,
-   773,   777,   786,   790,   799,   805,   817,   823,   837,   841,
-   847,   851,   857,   861,   867,   870,   875,   882,   887,   895,
-   900,   908,   920,   925,   933,   938,   946,   953,   960,   973,
-   981,   987,   995,   999,  1004,  1012,  1023,  1032,  1039,  1046,
-  1061,  1073,  1079,  1084,  1091,  1097,  1104,  1111,  1118,  1124,
-  1137,  1143,  1150,  1171,  1182,  1187,  1203,  1214,  1220,  1226,
-  1235,  1239,  1246,  1251,  1256,  1264,  1277,  1287,  1288,  1289,
-  1290,  1291,  1292,  1293,  1294,  1295,  1296,  1297,  1298,  1302,
-  1331,  1364,  1368,  1378,  1381,  1391,  1395,  1406,  1418,  1421,
-  1432,  1435,  1447,  1455,  1458,  1481,  1485,  1513,  1520,  1525,
-  1533,  1541,  1558,  1568,  1571,  1582,  1585,  1596,  1608,  1619,
-  1630,  1632,  1639,  1642,  1652,  1658,  1658,  1666,  1675,  1684,
-  1695,  1699,  1703,  1707,  1711,  1716,  1725
+   517,   527,   536,   547,   570,   576,   594,   603,   606,   617,
+   618,   622,   623,   624,   625,   626,   627,   628,   629,   634,
+   651,   656,   663,   669,   674,   680,   689,   690,   694,   698,
+   705,   713,   723,   724,   728,   732,   741,   757,   761,   773,
+   796,   800,   809,   813,   822,   828,   840,   846,   860,   864,
+   870,   874,   880,   884,   890,   893,   898,   905,   910,   918,
+   923,   931,   943,   948,   956,   961,   969,   976,   983,   996,
+  1004,  1010,  1018,  1022,  1027,  1035,  1046,  1055,  1062,  1069,
+  1084,  1096,  1102,  1107,  1114,  1120,  1127,  1134,  1141,  1147,
+  1160,  1166,  1173,  1194,  1205,  1210,  1226,  1237,  1243,  1249,
+  1258,  1262,  1269,  1274,  1279,  1287,  1300,  1310,  1311,  1312,
+  1313,  1314,  1315,  1316,  1317,  1318,  1319,  1320,  1321,  1325,
+  1354,  1387,  1391,  1401,  1404,  1414,  1418,  1429,  1441,  1444,
+  1455,  1458,  1470,  1478,  1481,  1504,  1508,  1536,  1543,  1548,
+  1556,  1564,  1581,  1591,  1594,  1605,  1608,  1619,  1631,  1642,
+  1653,  1655,  1662,  1665,  1675,  1681,  1681,  1689,  1698,  1707,
+  1718,  1722,  1726,  1730,  1734,  1739,  1748
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","RELAY_",
@@ -2319,6 +2319,8 @@ case 153:
 case 154:
 #line 547 "SrvParser.y"
 {
+
+#ifndef MOD_DISABLE_AUTH
     if (!strcasecmp(yyvsp[0].strval,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
@@ -2333,18 +2335,23 @@ case 154:
         Log(Crit) << "Invalid auth-protocol parameter: " << string(yyvsp[0].strval) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 ;
     break;}
 case 155:
-#line 565 "SrvParser.y"
+#line 570 "SrvParser.y"
 {
     Log(Crit) << "auth-algorithm secification is not supported yet." << LogEnd;
     YYABORT;
 ;
     break;}
 case 156:
-#line 571 "SrvParser.y"
+#line 576 "SrvParser.y"
 {
+
+#ifndef MOD_DISABLE_AUTH
     if (strcasecmp(yyvsp[0].strval, "none")) {
         CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
     } else if (strcasecmp(yyvsp[0].strval, "monotonic")) {
@@ -2353,75 +2360,91 @@ case 156:
         Log(Crit) << "Invalid auth-replay parameter: " << string(yyvsp[0].strval) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+
 ;
     break;}
 case 157:
-#line 583 "SrvParser.y"
+#line 594 "SrvParser.y"
 {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthRealm(std::string(yyvsp[0].strval));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 ;
     break;}
 case 158:
-#line 589 "SrvParser.y"
+#line 604 "SrvParser.y"
 {
     DigestLst.clear();
 ;
     break;}
 case 159:
-#line 591 "SrvParser.y"
+#line 606 "SrvParser.y"
 {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthDigests(DigestLst);
     CfgMgr->setAuthDropUnauthenticated(true);
     DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 ;
     break;}
 case 162:
-#line 603 "SrvParser.y"
+#line 622 "SrvParser.y"
 { DigestLst.push_back(DIGEST_NONE); ;
     break;}
 case 163:
-#line 604 "SrvParser.y"
+#line 623 "SrvParser.y"
 { DigestLst.push_back(DIGEST_PLAIN); ;
     break;}
 case 164:
-#line 605 "SrvParser.y"
+#line 624 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_MD5); ;
     break;}
 case 165:
-#line 606 "SrvParser.y"
+#line 625 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_SHA1); ;
     break;}
 case 166:
-#line 607 "SrvParser.y"
+#line 626 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_SHA224); ;
     break;}
 case 167:
-#line 608 "SrvParser.y"
+#line 627 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_SHA256); ;
     break;}
 case 168:
-#line 609 "SrvParser.y"
+#line 628 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_SHA384); ;
     break;}
 case 169:
-#line 610 "SrvParser.y"
+#line 629 "SrvParser.y"
 { DigestLst.push_back(DIGEST_HMAC_SHA512); ;
     break;}
 case 170:
-#line 615 "SrvParser.y"
+#line 634 "SrvParser.y"
 {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthDropUnauthenticated(yyvsp[0].ival);
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 ;
     break;}
 case 171:
-#line 629 "SrvParser.y"
+#line 652 "SrvParser.y"
 {
     Log(Notice)<< "FQDN: The client "<<yyvsp[0].strval<<" has no address nor DUID"<<LogEnd;
     PresentFQDNLst.append(new TFQDN(yyvsp[0].strval,false));
 ;
     break;}
 case 172:
-#line 634 "SrvParser.y"
+#line 657 "SrvParser.y"
 {
     /// @todo: Use SPtr()
     TDUID* duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
@@ -2430,7 +2453,7 @@ case 172:
 ;
     break;}
 case 173:
-#line 641 "SrvParser.y"
+#line 664 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval <<" reserved for address "<<*addr<<LogEnd;
@@ -2438,14 +2461,14 @@ case 173:
 ;
     break;}
 case 174:
-#line 647 "SrvParser.y"
+#line 670 "SrvParser.y"
 {
 	Log(Debug) << "FQDN:"<<yyvsp[0].strval<<" has no reservations (is available to everyone)."<<LogEnd;
     PresentFQDNLst.append(new TFQDN(yyvsp[0].strval,false));
 ;
     break;}
 case 175:
-#line 652 "SrvParser.y"
+#line 675 "SrvParser.y"
 {
     TDUID* duidNew = new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
@@ -2453,7 +2476,7 @@ case 175:
 ;
     break;}
 case 176:
-#line 658 "SrvParser.y"
+#line 681 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     Log(Debug)<< "FQDN:" << yyvsp[-2].strval<<" reserved for address "<< addr->getPlain() << LogEnd;
@@ -2461,27 +2484,27 @@ case 176:
 ;
     break;}
 case 177:
-#line 666 "SrvParser.y"
+#line 689 "SrvParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 178:
-#line 667 "SrvParser.y"
+#line 690 "SrvParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
 case 179:
-#line 672 "SrvParser.y"
+#line 695 "SrvParser.y"
 {
     PresentAddrLst.append(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 180:
-#line 676 "SrvParser.y"
+#line 699 "SrvParser.y"
 {
     PresentAddrLst.append(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 181:
-#line 683 "SrvParser.y"
+#line 706 "SrvParser.y"
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << yyvsp[-4].ival << ", optionCode: "
 	       << yyvsp[-2].ival << ", valuelen=" << yyvsp[0].duidval.length << LogEnd;
@@ -2491,7 +2514,7 @@ case 181:
 ;
     break;}
 case 182:
-#line 691 "SrvParser.y"
+#line 714 "SrvParser.y"
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << yyvsp[-4].ival << ", optionCode: "
 	       << yyvsp[-2].ival << ", valuelen=" << yyvsp[0].duidval.length << LogEnd;
@@ -2500,21 +2523,21 @@ case 182:
 ;
     break;}
 case 183:
-#line 700 "SrvParser.y"
+#line 723 "SrvParser.y"
 { PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 184:
-#line 701 "SrvParser.y"
+#line 724 "SrvParser.y"
 { PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
     break;}
 case 185:
-#line 706 "SrvParser.y"
+#line 729 "SrvParser.y"
 {
 	PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 186:
-#line 710 "SrvParser.y"
+#line 733 "SrvParser.y"
 {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2525,7 +2548,7 @@ case 186:
     ;
     break;}
 case 187:
-#line 719 "SrvParser.y"
+#line 742 "SrvParser.y"
 {
 	SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
@@ -2543,13 +2566,13 @@ case 187:
     ;
     break;}
 case 188:
-#line 735 "SrvParser.y"
+#line 758 "SrvParser.y"
 {
 	PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
     ;
     break;}
 case 189:
-#line 739 "SrvParser.y"
+#line 762 "SrvParser.y"
 {
 	SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
 	SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2560,7 +2583,7 @@ case 189:
     ;
     break;}
 case 190:
-#line 751 "SrvParser.y"
+#line 774 "SrvParser.y"
 {
 	SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[-2].addrval));
 	int prefix = yyvsp[0].ival;
@@ -2582,13 +2605,13 @@ case 190:
     ;
     break;}
 case 191:
-#line 774 "SrvParser.y"
+#line 797 "SrvParser.y"
 {
     PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 192:
-#line 778 "SrvParser.y"
+#line 801 "SrvParser.y"
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2599,13 +2622,13 @@ case 192:
 ;
     break;}
 case 193:
-#line 787 "SrvParser.y"
+#line 810 "SrvParser.y"
 {
     PresentRangeLst.append(new THostRange(new TIPv6Addr(yyvsp[0].addrval),new TIPv6Addr(yyvsp[0].addrval)));
 ;
     break;}
 case 194:
-#line 791 "SrvParser.y"
+#line 814 "SrvParser.y"
 {
     SPtr<TIPv6Addr> addr1(new TIPv6Addr(yyvsp[-2].addrval));
     SPtr<TIPv6Addr> addr2(new TIPv6Addr(yyvsp[0].addrval));
@@ -2616,7 +2639,7 @@ case 194:
 ;
     break;}
 case 195:
-#line 800 "SrvParser.y"
+#line 823 "SrvParser.y"
 {
     SPtr<TDUID> duid(new TDUID(yyvsp[0].duidval.duid, yyvsp[0].duidval.length));
     PresentRangeLst.append(new THostRange(duid, duid));
@@ -2624,7 +2647,7 @@ case 195:
 ;
     break;}
 case 196:
-#line 806 "SrvParser.y"
+#line 829 "SrvParser.y"
 {
     SPtr<TDUID> duid1(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SPtr<TDUID> duid2(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -2638,7 +2661,7 @@ case 196:
 ;
     break;}
 case 197:
-#line 818 "SrvParser.y"
+#line 841 "SrvParser.y"
 {
     SPtr<TDUID> duid(new TDUID(yyvsp[0].duidval.duid, yyvsp[0].duidval.length));
     PresentRangeLst.append(new THostRange(duid, duid));
@@ -2646,7 +2669,7 @@ case 197:
 ;
     break;}
 case 198:
-#line 824 "SrvParser.y"
+#line 847 "SrvParser.y"
 {
     SPtr<TDUID> duid2(new TDUID(yyvsp[-2].duidval.duid,yyvsp[-2].duidval.length));
     SPtr<TDUID> duid1(new TDUID(yyvsp[0].duidval.duid,yyvsp[0].duidval.length));
@@ -2659,88 +2682,88 @@ case 198:
 ;
     break;}
 case 199:
-#line 838 "SrvParser.y"
+#line 861 "SrvParser.y"
 {
     PresentRangeLst.clear();
 ;
     break;}
 case 200:
-#line 841 "SrvParser.y"
+#line 864 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRejedClnt(&PresentRangeLst);
 ;
     break;}
 case 201:
-#line 848 "SrvParser.y"
+#line 871 "SrvParser.y"
 {
     PresentRangeLst.clear();
 ;
     break;}
 case 202:
-#line 851 "SrvParser.y"
+#line 874 "SrvParser.y"
 {
     ParserOptStack.getLast()->setAcceptClnt(&PresentRangeLst);
 ;
     break;}
 case 203:
-#line 858 "SrvParser.y"
+#line 881 "SrvParser.y"
 {
     PresentRangeLst.clear();
 ;
     break;}
 case 204:
-#line 861 "SrvParser.y"
+#line 884 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst);
 ;
     break;}
 case 205:
-#line 868 "SrvParser.y"
+#line 891 "SrvParser.y"
 {
 ;
     break;}
 case 206:
-#line 870 "SrvParser.y"
+#line 893 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPool(&PresentRangeLst/*PDList*/);
 ;
     break;}
 case 207:
-#line 876 "SrvParser.y"
+#line 899 "SrvParser.y"
 {
    this->PDPrefix = yyvsp[0].ival;
 ;
     break;}
 case 208:
-#line 883 "SrvParser.y"
+#line 906 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPrefBeg(yyvsp[0].ival);
     ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);
 ;
     break;}
 case 209:
-#line 888 "SrvParser.y"
+#line 911 "SrvParser.y"
 {
     ParserOptStack.getLast()->setPrefBeg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setPrefEnd(yyvsp[0].ival);
 ;
     break;}
 case 210:
-#line 896 "SrvParser.y"
+#line 919 "SrvParser.y"
 {
     ParserOptStack.getLast()->setValidBeg(yyvsp[0].ival);
     ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);
 ;
     break;}
 case 211:
-#line 901 "SrvParser.y"
+#line 924 "SrvParser.y"
 {
     ParserOptStack.getLast()->setValidBeg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setValidEnd(yyvsp[0].ival);
 ;
     break;}
 case 212:
-#line 909 "SrvParser.y"
+#line 932 "SrvParser.y"
 {
     int x=yyvsp[0].ival;
     if ( (x<1) || (x>1000)) {
@@ -2752,47 +2775,47 @@ case 212:
 ;
     break;}
 case 213:
-#line 921 "SrvParser.y"
+#line 944 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT1Beg(yyvsp[0].ival);
     ParserOptStack.getLast()->setT1End(yyvsp[0].ival);
 ;
     break;}
 case 214:
-#line 926 "SrvParser.y"
+#line 949 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT1Beg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setT1End(yyvsp[0].ival);
 ;
     break;}
 case 215:
-#line 934 "SrvParser.y"
+#line 957 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT2Beg(yyvsp[0].ival);
     ParserOptStack.getLast()->setT2End(yyvsp[0].ival);
 ;
     break;}
 case 216:
-#line 939 "SrvParser.y"
+#line 962 "SrvParser.y"
 {
     ParserOptStack.getLast()->setT2Beg(yyvsp[-2].ival);
     ParserOptStack.getLast()->setT2End(yyvsp[0].ival);
 ;
     break;}
 case 217:
-#line 947 "SrvParser.y"
+#line 970 "SrvParser.y"
 {
     ParserOptStack.getLast()->setClntMaxLease(yyvsp[0].ival);
 ;
     break;}
 case 218:
-#line 954 "SrvParser.y"
+#line 977 "SrvParser.y"
 {
     ParserOptStack.getLast()->setClassMaxLease(yyvsp[0].ival);
 ;
     break;}
 case 219:
-#line 961 "SrvParser.y"
+#line 984 "SrvParser.y"
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled. Add 'experimental' "
@@ -2805,7 +2828,7 @@ case 219:
 ;
     break;}
 case 220:
-#line 974 "SrvParser.y"
+#line 997 "SrvParser.y"
 {
     SPtr<TOpt> tunnelName = new TOptDomainLst(OPTION_AFTR_NAME, yyvsp[0].strval, 0);
     Log(Debug) << "Enabling DS-Lite tunnel option, AFTR name=" << yyvsp[0].strval << LogEnd;
@@ -2813,7 +2836,7 @@ case 220:
 ;
     break;}
 case 221:
-#line 982 "SrvParser.y"
+#line 1005 "SrvParser.y"
 {
     SPtr<TOpt> opt = new TOptGeneric(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
@@ -2821,7 +2844,7 @@ case 221:
 ;
     break;}
 case 222:
-#line 988 "SrvParser.y"
+#line 1011 "SrvParser.y"
 {
     SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[0].addrval));
 
@@ -2831,13 +2854,13 @@ case 222:
 ;
     break;}
 case 223:
-#line 996 "SrvParser.y"
+#line 1019 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 224:
-#line 999 "SrvParser.y"
+#line 1022 "SrvParser.y"
 {
     SPtr<TOpt> opt = new TOptAddrLst(yyvsp[-3].ival, PresentAddrLst, 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
@@ -2845,7 +2868,7 @@ case 224:
 ;
     break;}
 case 225:
-#line 1005 "SrvParser.y"
+#line 1028 "SrvParser.y"
 {
     SPtr<TOpt> opt = new TOptString(yyvsp[-2].ival, string(yyvsp[0].strval), 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
@@ -2853,7 +2876,7 @@ case 225:
 ;
     break;}
 case 226:
-#line 1013 "SrvParser.y"
+#line 1036 "SrvParser.y"
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'remote autoconf neighbors' defined, but "
@@ -2866,7 +2889,7 @@ case 226:
 ;
     break;}
 case 227:
-#line 1023 "SrvParser.y"
+#line 1046 "SrvParser.y"
 {
     SPtr<TOpt> opt = new TOptAddrLst(OPTION_NEIGHBORS, PresentAddrLst, 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
@@ -2875,19 +2898,19 @@ case 227:
 ;
     break;}
 case 228:
-#line 1033 "SrvParser.y"
+#line 1056 "SrvParser.y"
 {
     ParserOptStack.getLast()->setIfaceMaxLease(yyvsp[0].ival);
 ;
     break;}
 case 229:
-#line 1040 "SrvParser.y"
+#line 1063 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 230:
-#line 1047 "SrvParser.y"
+#line 1070 "SrvParser.y"
 {
     if ( (yyvsp[0].ival!=0) && (yyvsp[0].ival!=1)) {
 	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value."
@@ -2901,7 +2924,7 @@ case 230:
 ;
     break;}
 case 231:
-#line 1062 "SrvParser.y"
+#line 1085 "SrvParser.y"
 {
     if ((yyvsp[0].ival<0)||(yyvsp[0].ival>255)) {
 	Log(Crit) << "Preference value (" << yyvsp[0].ival << ") in line " << lex->lineno()
@@ -2912,56 +2935,56 @@ case 231:
 ;
     break;}
 case 232:
-#line 1073 "SrvParser.y"
+#line 1096 "SrvParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 233:
-#line 1079 "SrvParser.y"
+#line 1102 "SrvParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 234:
-#line 1085 "SrvParser.y"
+#line 1108 "SrvParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 235:
-#line 1092 "SrvParser.y"
+#line 1115 "SrvParser.y"
 {
     logger::setColors(yyvsp[0].ival==1);
 ;
     break;}
 case 236:
-#line 1098 "SrvParser.y"
+#line 1121 "SrvParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 237:
-#line 1105 "SrvParser.y"
+#line 1128 "SrvParser.y"
 {
     ParserOptStack.getLast()->setStateless(true);
 ;
     break;}
 case 238:
-#line 1112 "SrvParser.y"
+#line 1135 "SrvParser.y"
 {
     Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 239:
-#line 1119 "SrvParser.y"
+#line 1142 "SrvParser.y"
 {
     CfgMgr->setScriptName(yyvsp[0].strval);
 ;
     break;}
 case 240:
-#line 1125 "SrvParser.y"
+#line 1148 "SrvParser.y"
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
 	Log(Crit) << "Experimental 'performance-mode' defined, but experimental features are disabled. Add 'experimental' "
@@ -2973,20 +2996,20 @@ case 240:
 ;
     break;}
 case 241:
-#line 1138 "SrvParser.y"
+#line 1161 "SrvParser.y"
 {
     ParserOptStack.getLast()->setInactiveMode(true);
 ;
     break;}
 case 242:
-#line 1144 "SrvParser.y"
+#line 1167 "SrvParser.y"
 {
     Log(Crit) << "Experimental features are allowed." << LogEnd;
     ParserOptStack.getLast()->setExperimental(true);
 ;
     break;}
 case 243:
-#line 1151 "SrvParser.y"
+#line 1174 "SrvParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6))
     {
@@ -3007,20 +3030,20 @@ case 243:
 ;
     break;}
 case 244:
-#line 1172 "SrvParser.y"
+#line 1195 "SrvParser.y"
 {
     ParserOptStack.getLast()->setCacheSize(yyvsp[0].ival);
 ;
     break;}
 case 245:
-#line 1183 "SrvParser.y"
+#line 1206 "SrvParser.y"
 {
     ParserOptStack.getLast()->setLeaseQuerySupport(true);
 
 ;
     break;}
 case 246:
-#line 1188 "SrvParser.y"
+#line 1211 "SrvParser.y"
 {
     switch (yyvsp[0].ival) {
     case 0:
@@ -3036,7 +3059,7 @@ case 246:
 ;
     break;}
 case 247:
-#line 1204 "SrvParser.y"
+#line 1227 "SrvParser.y"
 {
     if (yyvsp[0].ival!=0 && yyvsp[0].ival!=1) {
 	Log(Error) << "Invalid bulk-leasequery-accept value: " << (yyvsp[0].ival)
@@ -3047,58 +3070,58 @@ case 247:
 ;
     break;}
 case 248:
-#line 1215 "SrvParser.y"
+#line 1238 "SrvParser.y"
 {
     CfgMgr->bulkLQTcpPort( yyvsp[0].ival );
 ;
     break;}
 case 249:
-#line 1221 "SrvParser.y"
+#line 1244 "SrvParser.y"
 {
     CfgMgr->bulkLQMaxConns( yyvsp[0].ival );
 ;
     break;}
 case 250:
-#line 1227 "SrvParser.y"
+#line 1250 "SrvParser.y"
 {
     CfgMgr->bulkLQTimeout( yyvsp[0].ival );
 ;
     break;}
 case 251:
-#line 1236 "SrvParser.y"
+#line 1259 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayName(yyvsp[0].strval);
 ;
     break;}
 case 252:
-#line 1240 "SrvParser.y"
+#line 1263 "SrvParser.y"
 {
     ParserOptStack.getLast()->setRelayID(yyvsp[0].ival);
 ;
     break;}
 case 253:
-#line 1247 "SrvParser.y"
+#line 1270 "SrvParser.y"
 {
     SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID(yyvsp[0].ival, 0);
     ParserOptStack.getLast()->setRelayInterfaceID(id);
 ;
     break;}
 case 254:
-#line 1252 "SrvParser.y"
+#line 1275 "SrvParser.y"
 {
     SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID(yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0);
     ParserOptStack.getLast()->setRelayInterfaceID(id);
 ;
     break;}
 case 255:
-#line 1257 "SrvParser.y"
+#line 1280 "SrvParser.y"
 {
     SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID(yyvsp[0].strval, strlen(yyvsp[0].strval), 0);
     ParserOptStack.getLast()->setRelayInterfaceID(id);
 ;
     break;}
 case 256:
-#line 1265 "SrvParser.y"
+#line 1288 "SrvParser.y"
 {
     int prefix = yyvsp[0].ival;
     if ( (prefix<1) || (prefix>128) ) {
@@ -3114,7 +3137,7 @@ case 256:
 ;
     break;}
 case 257:
-#line 1278 "SrvParser.y"
+#line 1301 "SrvParser.y"
 {
     SPtr<TIPv6Addr> min = new TIPv6Addr(yyvsp[-2].addrval);
     SPtr<TIPv6Addr> max = new TIPv6Addr(yyvsp[0].addrval);
@@ -3124,7 +3147,7 @@ case 257:
 ;
     break;}
 case 270:
-#line 1303 "SrvParser.y"
+#line 1326 "SrvParser.y"
 {
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
@@ -3153,7 +3176,7 @@ case 270:
 ;
     break;}
 case 271:
-#line 1332 "SrvParser.y"
+#line 1355 "SrvParser.y"
 {
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
@@ -3182,39 +3205,39 @@ case 271:
 ;
     break;}
 case 272:
-#line 1365 "SrvParser.y"
+#line 1388 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 273:
-#line 1368 "SrvParser.y"
+#line 1391 "SrvParser.y"
 {
     SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_DNS_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nis_servers, false);
 ;
     break;}
 case 274:
-#line 1378 "SrvParser.y"
+#line 1401 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 275:
-#line 1381 "SrvParser.y"
+#line 1404 "SrvParser.y"
 {
     SPtr<TOpt> domains = new TOptDomainLst(OPTION_DOMAIN_LIST, PresentStringLst, NULL);
     ParserOptStack.getLast()->addExtraOption(domains, false);
 ;
     break;}
 case 276:
-#line 1392 "SrvParser.y"
+#line 1415 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 277:
-#line 1395 "SrvParser.y"
+#line 1418 "SrvParser.y"
 {
     SPtr<TOpt> ntp_servers = new TOptAddrLst(OPTION_SNTP_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(ntp_servers, false);
@@ -3222,7 +3245,7 @@ case 277:
 ;
     break;}
 case 278:
-#line 1407 "SrvParser.y"
+#line 1430 "SrvParser.y"
 {
     SPtr<TOpt> timezone = new TOptString(OPTION_NEW_TZDB_TIMEZONE, string(yyvsp[0].strval), NULL);
     ParserOptStack.getLast()->addExtraOption(timezone, false);
@@ -3230,13 +3253,13 @@ case 278:
 ;
     break;}
 case 279:
-#line 1418 "SrvParser.y"
+#line 1441 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 280:
-#line 1421 "SrvParser.y"
+#line 1444 "SrvParser.y"
 {
     SPtr<TOpt> sip_servers = new TOptAddrLst(OPTION_SIP_SERVER_A, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(sip_servers, false);
@@ -3244,13 +3267,13 @@ case 280:
 ;
     break;}
 case 281:
-#line 1432 "SrvParser.y"
+#line 1455 "SrvParser.y"
 {
     PresentStringLst.clear();
 ;
     break;}
 case 282:
-#line 1435 "SrvParser.y"
+#line 1458 "SrvParser.y"
 {
     SPtr<TOpt> sip_domains = new TOptDomainLst(OPTION_SIP_SERVER_D, PresentStringLst, NULL);
     ParserOptStack.getLast()->addExtraOption(sip_domains, false);
@@ -3258,7 +3281,7 @@ case 282:
 ;
     break;}
 case 283:
-#line 1448 "SrvParser.y"
+#line 1471 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
@@ -3268,13 +3291,13 @@ case 283:
 ;
     break;}
 case 284:
-#line 1455 "SrvParser.y"
+#line 1478 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 ;
     break;}
 case 285:
-#line 1459 "SrvParser.y"
+#line 1482 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug)  << "FQDN: Setting update mode to " << yyvsp[0].ival;
@@ -3299,14 +3322,14 @@ case 285:
 ;
     break;}
 case 286:
-#line 1481 "SrvParser.y"
+#line 1504 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 
 ;
     break;}
 case 287:
-#line 1486 "SrvParser.y"
+#line 1509 "SrvParser.y"
 {
     PresentFQDNLst.clear();
     Log(Debug) << "FQDN: Setting update mode to " << yyvsp[-1].ival;
@@ -3336,28 +3359,28 @@ case 287:
 ;
     break;}
 case 288:
-#line 1513 "SrvParser.y"
+#line 1536 "SrvParser.y"
 {
     ParserOptStack.getLast()->setFQDNLst(&PresentFQDNLst);
 
 ;
     break;}
 case 289:
-#line 1521 "SrvParser.y"
+#line 1544 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode(yyvsp[-1].ival), string(yyvsp[0].strval) );
     Log(Debug) << "FQDN: Unknown fqdn names processing set to " << yyvsp[-1].ival << ", domain=" << yyvsp[0].strval << "." << LogEnd;
 ;
     break;}
 case 290:
-#line 1526 "SrvParser.y"
+#line 1549 "SrvParser.y"
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode(yyvsp[0].ival), string("") );
     Log(Debug) << "FQDN: Unknown fqdn names processing set to " << yyvsp[0].ival << ", no domain." << LogEnd;
 ;
     break;}
 case 291:
-#line 1534 "SrvParser.y"
+#line 1557 "SrvParser.y"
 {
     addr = new TIPv6Addr(yyvsp[0].addrval);
     CfgMgr->setDDNSAddress(addr);
@@ -3365,7 +3388,7 @@ case 291:
 ;
     break;}
 case 292:
-#line 1542 "SrvParser.y"
+#line 1565 "SrvParser.y"
 {
     if (!strcasecmp(yyvsp[0].strval,"tcp"))
 	CfgMgr->setDDNSProtocol(TCfgMgr::DNSUPDATE_TCP);
@@ -3382,20 +3405,20 @@ case 292:
 ;
     break;}
 case 293:
-#line 1559 "SrvParser.y"
+#line 1582 "SrvParser.y"
 {
     Log(Debug) << "DDNS: Setting timeout to " << yyvsp[0].ival << "ms." << LogEnd;
     CfgMgr->setDDNSTimeout(yyvsp[0].ival);
 ;
     break;}
 case 294:
-#line 1568 "SrvParser.y"
+#line 1591 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 295:
-#line 1571 "SrvParser.y"
+#line 1594 "SrvParser.y"
 {
     SPtr<TOpt> nis_servers = new TOptAddrLst(OPTION_NIS_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nis_servers, false);
@@ -3403,13 +3426,13 @@ case 295:
 ;
     break;}
 case 296:
-#line 1582 "SrvParser.y"
+#line 1605 "SrvParser.y"
 {
     PresentAddrLst.clear();
 ;
     break;}
 case 297:
-#line 1585 "SrvParser.y"
+#line 1608 "SrvParser.y"
 {
     SPtr<TOpt> nisp_servers = new TOptAddrLst(OPTION_NISP_SERVERS, PresentAddrLst, NULL);
     ParserOptStack.getLast()->addExtraOption(nisp_servers, false);
@@ -3417,7 +3440,7 @@ case 297:
 ;
     break;}
 case 298:
-#line 1597 "SrvParser.y"
+#line 1620 "SrvParser.y"
 {
     SPtr<TOpt> nis_domain = new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, string(yyvsp[0].strval), NULL);
     ParserOptStack.getLast()->addExtraOption(nis_domain, false);
@@ -3425,14 +3448,14 @@ case 298:
 ;
     break;}
 case 299:
-#line 1609 "SrvParser.y"
+#line 1632 "SrvParser.y"
 {
     SPtr<TOpt> nispdomain = new TOptDomainLst(OPTION_NISP_DOMAIN_NAME, string(yyvsp[0].strval), NULL);
     ParserOptStack.getLast()->addExtraOption(nispdomain, false);
 ;
     break;}
 case 300:
-#line 1620 "SrvParser.y"
+#line 1643 "SrvParser.y"
 {
     SPtr<TOpt> lifetime = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
                                           OPTION_INFORMATION_REFRESH_TIME_LEN, 
@@ -3442,25 +3465,25 @@ case 300:
 ;
     break;}
 case 301:
-#line 1630 "SrvParser.y"
+#line 1653 "SrvParser.y"
 {
 ;
     break;}
 case 302:
-#line 1632 "SrvParser.y"
+#line 1655 "SrvParser.y"
 {
     // ParserOptStack.getLast()->setVendorSpec(VendorSpec);
     // Log(Debug) << "Vendor-spec parsing finished" << LogEnd;
 ;
     break;}
 case 303:
-#line 1640 "SrvParser.y"
+#line 1663 "SrvParser.y"
 {
     Log(Notice) << "ClientClass found, name: " << string(yyvsp[-1].strval) << LogEnd;
 ;
     break;}
 case 304:
-#line 1643 "SrvParser.y"
+#line 1666 "SrvParser.y"
 {
     SPtr<Node> cond =  NodeClientClassLst.getLast();
     SrvCfgClientClassLst.append( new TSrvCfgClientClass(string(yyvsp[-4].strval),cond));
@@ -3468,12 +3491,12 @@ case 304:
 ;
     break;}
 case 305:
-#line 1653 "SrvParser.y"
+#line 1676 "SrvParser.y"
 {
 ;
     break;}
 case 307:
-#line 1659 "SrvParser.y"
+#line 1682 "SrvParser.y"
 {
     SPtr<Node> r =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3483,7 +3506,7 @@ case 307:
 ;
     break;}
 case 308:
-#line 1667 "SrvParser.y"
+#line 1690 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3494,7 +3517,7 @@ case 308:
 ;
     break;}
 case 309:
-#line 1676 "SrvParser.y"
+#line 1699 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3505,7 +3528,7 @@ case 309:
 ;
     break;}
 case 310:
-#line 1685 "SrvParser.y"
+#line 1708 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3515,38 +3538,38 @@ case 310:
 ;
     break;}
 case 311:
-#line 1696 "SrvParser.y"
+#line 1719 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM));
 ;
     break;}
 case 312:
-#line 1700 "SrvParser.y"
+#line 1723 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_SPEC_DATA));
 ;
     break;}
 case 313:
-#line 1704 "SrvParser.y"
+#line 1727 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_ENTERPRISE_NUM));
 ;
     break;}
 case 314:
-#line 1708 "SrvParser.y"
+#line 1731 "SrvParser.y"
 {
     NodeClientClassLst.append(new NodeClientSpecific(NodeClientSpecific::CLIENT_VENDOR_CLASS_DATA));
 ;
     break;}
 case 315:
-#line 1712 "SrvParser.y"
+#line 1735 "SrvParser.y"
 {
     // Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     NodeClientClassLst.append(new NodeConstant(string(yyvsp[0].strval)));
 ;
     break;}
 case 316:
-#line 1717 "SrvParser.y"
+#line 1740 "SrvParser.y"
 {
     //Log(Info) << "Constant expression found:" <<string($1)<<LogEnd;
     stringstream convert;
@@ -3557,7 +3580,7 @@ case 316:
 ;
     break;}
 case 317:
-#line 1726 "SrvParser.y"
+#line 1749 "SrvParser.y"
 {
     SPtr<Node> l =  NodeClientClassLst.getLast();
     NodeClientClassLst.delLast();
@@ -3768,7 +3791,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1039 "../bison++/bison.cc"
-#line 1732 "SrvParser.y"
+#line 1755 "SrvParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

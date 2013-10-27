@@ -564,12 +564,17 @@ AuthAcceptMethods
 {
     DigestLst.clear();
 } DigestList {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthAcceptMethods(DigestLst);
     DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 }
 
 AuthProtocol
 : AUTH_PROTOCOL_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
     if (!strcasecmp($2,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
@@ -584,17 +589,25 @@ AuthProtocol
         Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 
 AuthAlgorithm
 : AUTH_ALGORITHM_ STRING_ {
-    Log(Crit) << "auth-algorithm secification is not supported yet." << LogEnd;
+#ifndef MOD_DISABLE_AUTH
+    Log(Crit) << "auth-algorithm selection is not supported yet." << LogEnd;
     YYABORT;
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 | AuthReplay
 
 AuthReplay
 : AUTH_REPLAY_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
     if (strcasecmp($2, "none")) {
         CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
     } else if (strcasecmp($2, "monotonic")) {
@@ -603,11 +616,18 @@ AuthReplay
         Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 
 AuthRealm
 : AUTH_REALM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthRealm(std::string($2));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 
 DigestList

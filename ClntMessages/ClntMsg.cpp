@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <stdlib.h>
 #include "Portable.h"
 #include "ClntCfgMgr.h"
 
@@ -1094,6 +1095,11 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 }
 
 bool TClntMsg::checkReceivedAuthOption() {
+
+#ifdef MOD_DISABLE_AUTH
+    return true;
+#else
+
   // Note that this method does not verify digests. That is verified elsewhere
   // see TMsg::validateAuthInfo() from TClntIfaceMgr::select() and from
   // TSrvIfaceMgr::select()
@@ -1205,6 +1211,7 @@ bool TClntMsg::checkReceivedAuthOption() {
       return true;
     }
     }
+#endif
 
     return false;
 }
@@ -1221,6 +1228,9 @@ void TClntMsg::getReconfKeyFromAddrMgr() {
 
 bool TClntMsg::validateReplayDetection() {
 
+#ifdef MOD_DISABLE_AUTH
+    return true;
+#else
     if (ClntCfgMgr().getAuthReplay() == AUTH_REPLAY_NONE) {
         // we don't care about replay detection
         return true;
@@ -1256,4 +1266,5 @@ bool TClntMsg::validateReplayDetection() {
     }
 
     return true; // not really needed
+#endif
 }

@@ -1,6 +1,6 @@
 
   Dibbler changelog
- ------------------- 
+ -------------------
 1.0.0 [not-released-yet]
   - Cli: segfault when invalid or incomplete auth parameters are specified
     Thanks to George Joseph for a patch (bug #289)
@@ -11,6 +11,7 @@
   - Fedora RPM script contributted by Patrick Pichon, thanks!
   - Srv: Experimental performance-mode added
   - Compliation fix for Mac OS X 10.9/Apple LLVM 5.0 (clang-500)
+  - The code compiles again with --disable-auth
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

@@ -545,6 +545,8 @@ ROUTE_ IPV6ADDR_ '/' INTNUMBER_ LIFETIME_ INTNUMBER_
 
 AuthProtocol
 : AUTH_PROTOCOL_ STRING_ {
+
+#ifndef MOD_DISABLE_AUTH
     if (!strcasecmp($2,"none")) {
         CfgMgr->setAuthProtocol(AUTH_PROTO_NONE);
         CfgMgr->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
@@ -559,6 +561,9 @@ AuthProtocol
         Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 
 AuthAlgorithm
@@ -569,6 +574,8 @@ AuthAlgorithm
 
 AuthReplay
 : AUTH_REPLAY_ STRING_ {
+
+#ifndef MOD_DISABLE_AUTH
     if (strcasecmp($2, "none")) {
         CfgMgr->setAuthReplay(AUTH_REPLAY_NONE);
     } else if (strcasecmp($2, "monotonic")) {
@@ -577,11 +584,19 @@ AuthReplay
         Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
         YYABORT;
     }
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
+
 };
 
 AuthRealm
 : AUTH_REALM_ STRING_ {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthRealm(std::string($2));
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 };
 
 AuthMethods
@@ -589,9 +604,13 @@ AuthMethods
 {
     DigestLst.clear();
 } DigestList {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthDigests(DigestLst);
     CfgMgr->setAuthDropUnauthenticated(true);
     DigestLst.clear();
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 }
 
 DigestList
@@ -613,7 +632,11 @@ Digest
 
 AuthDropUnauthenticated
 : AUTH_DROP_UNAUTH_ Number {
+#ifndef MOD_DISABLE_AUTH
     CfgMgr->setAuthDropUnauthenticated($2);
+#else
+    Log(Crit) << "Auth support disabled at compilation time." << LogEnd;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////

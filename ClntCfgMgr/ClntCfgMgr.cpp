@@ -518,6 +518,7 @@ bool TClntCfgMgr::validateConfig()
         }
     }
 
+#ifndef MOD_DISABLE_AUTH
     // Validate authentication settings
     switch (getAuthProtocol()) {
     case AUTH_PROTO_NONE:
@@ -558,6 +559,7 @@ bool TClntCfgMgr::validateConfig()
     case AUTH_PROTO_DIBBLER:
         break;
     }
+#endif
 
     return true;
 }

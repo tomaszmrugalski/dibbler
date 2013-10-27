@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <sys/wait.h>  //CHANGED: the following two headers are added.
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include "DHCPClient.h"
