@@ -105,5 +105,9 @@
   - Patrick Pichon <patrick(dot)pipiche(dot)fr>
     2013-09: Fedora RPM script
 
+  - Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
+    2013-10: Service dependency for Windows Vista and newer fix
+    2013-10: Script calling fix.
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

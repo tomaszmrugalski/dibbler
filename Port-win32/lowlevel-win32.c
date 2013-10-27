@@ -670,7 +670,6 @@ int execute(const char *filename, const char * argv[], const char *env[])
 int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                       char* mac, int* mac_len) {
     /// @todo: Implement MAC reading for Windows
-	printf("%s \n", v6addr);
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
 }
 
