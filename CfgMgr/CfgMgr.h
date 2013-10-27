@@ -58,6 +58,7 @@ class TCfgMgr
 #endif
 
 #ifndef MOD_DISABLE_AUTH
+    void setAuthProtocol(AuthProtocols proto);
     void setAuthReplay(AuthReplay replay_detection_mode);
     void setAuthAlgorithm(uint8_t algorithm); // protocol specific value
     AuthProtocols getAuthProtocol();

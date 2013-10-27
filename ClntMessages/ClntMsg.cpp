@@ -448,7 +448,9 @@ void TClntMsg::appendAuthenticationOption()
     switch (ClntCfgMgr().getAuthProtocol()) {
     case AUTH_PROTO_NONE: {
         algorithm = 0;
-        break;
+
+        // Do not sent AUTH with proto=0.
+        return;
     }
     case AUTH_PROTO_DELAYED: {
         algorithm = 1;

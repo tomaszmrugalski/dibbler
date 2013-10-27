@@ -12,6 +12,7 @@
   - Srv: Experimental performance-mode added
   - Compliation fix for Mac OS X 10.9/Apple LLVM 5.0 (clang-500)
   - The code compiles again with --disable-auth
+  - Cli: does not send or expect AUTH option by default.
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

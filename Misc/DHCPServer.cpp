@@ -72,6 +72,8 @@ TDHCPServer::TDHCPServer(const std::string& config)
 
 void TDHCPServer::run()
 {
+    Log(Notice) << "Server begins operation." << LogEnd;
+
     bool silent = false;
     while ( (!isDone()) && (!SrvTransMgr().isDone()) ) {
         if (serviceShutdown)
