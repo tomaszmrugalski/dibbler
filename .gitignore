@@ -66,3 +66,8 @@ Options/tests/Opt_tests
 SrvCfgMgr/tests/SrvCfgMgr_tests
 poslib/tests/tsig_tests
 tests/Srv/Srv_tests
+client-CfgMgr.xml
+client-IfaceMgr.xml
+dibbler-*-win32.exe
+Port-win32/Debug32
+Port-win32/Release32

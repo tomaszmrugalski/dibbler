@@ -9,9 +9,14 @@
  */
 
 #define WIN32_LEAN_AND_MEAN
+
+/* tells stdlib.h to include rand_s - more secure version */
+#define _CRT_RAND_S
 #include <winsock2.h>
 
-#include <icmpapi.h>
+/* causes compilation errors on Visual Studio 2008 because of IPAddr type being undefined */
+/* commented out for now */
+/* #include <icmpapi.h> */
 
 #include <Ws2tcpip.h.>
 #include <Ws2spi.h>
@@ -685,4 +690,14 @@ int get_hostname(char* hostname, int hostname_len) {
         return LOWLEVEL_NO_ERROR;
     }
     return LOWLEVEL_ERROR_UNSPEC;
+}
+
+void fill_random(uint8_t* buffer, int len) {
+    unsigned int number;
+    int i = 0;
+
+    for (i=0; i < len; ++i) {
+        rand_s(&number);
+        buffer[i] = (number%256);
+    }
 }

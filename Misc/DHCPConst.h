@@ -12,8 +12,6 @@
 #ifndef DHCPCONST_H
 #define DHCPCONST_H
 
-#include <vector>
-
 #define ALL_DHCP_RELAY_AGENTS_AND_SERVERS  "ff02::1:2"
 #define ALL_DHCP_SERVERS                   "ff05::1:3"
 
@@ -196,7 +194,6 @@ typedef enum {
 // INFINITY + 1 is 0. That's cool!
 #define DHCPV6_INFINITY 0xffffffffu
 
-
 /// used for 2 purposes:
 /// is address tentative?
 /// is address valid on link?
@@ -286,7 +283,10 @@ enum DigestTypes {
     DIGEST_INVALID = 8
 };
 
+#ifdef __cplusplus
+#include <vector>
 typedef std::vector<DigestTypes> DigestTypesLst;
+#endif
 
 unsigned getDigestSize(enum DigestTypes type);
 char *getDigestName(enum DigestTypes type);

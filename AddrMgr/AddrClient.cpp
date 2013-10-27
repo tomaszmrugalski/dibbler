@@ -339,10 +339,7 @@ void TAddrClient::setReplayDetectionRcvd(uint64_t val) {
 void TAddrClient::generateReconfKey() {
     ReconfKey_.resize(16);
 
-    // @todo: put some better randomness here
-    for (int i = 0; i < 16; i++) {
-        ReconfKey_[i] = random()%256;
-    }
+    fill_random(&ReconfKey_[0], 16);
 }
 
 // --------------------------------------------------------------------

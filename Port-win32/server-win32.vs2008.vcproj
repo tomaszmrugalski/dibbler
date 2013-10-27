@@ -415,10 +415,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptAAAAuthentication.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptAddr.cpp"
 					>
 				</File>
@@ -440,10 +436,6 @@
 				</File>
 				<File
 					RelativePath="..\Options\OptEmpty.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Options\OptEmpty.h"
 					>
 				</File>
 				<File
@@ -475,11 +467,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptKeyGeneration.cpp"
+					RelativePath="..\Options\OptOptionRequest.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptOptionRequest.cpp"
+					RelativePath="..\Options\OptReconfigureMsg.cpp"
 					>
 				</File>
 				<File
@@ -519,15 +511,7 @@
 				Name="SrvOptions"
 				>
 				<File
-					RelativePath="..\SrvOptions\SrvOptAAAAuthentication.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\SrvOptions\SrvOptAddrParams.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptAuthentication.cpp"
 					>
 				</File>
 				<File
@@ -552,10 +536,6 @@
 				</File>
 				<File
 					RelativePath="..\SrvOptions\SrvOptInterfaceID.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SrvOptions\SrvOptKeyGeneration.cpp"
 					>
 				</File>
 				<File
@@ -604,6 +584,10 @@
 				</File>
 				<File
 					RelativePath="..\SrvMessages\SrvMsgRebind.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SrvMessages\SrvMsgReconfigure.cpp"
 					>
 				</File>
 				<File

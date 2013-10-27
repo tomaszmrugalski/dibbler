@@ -90,3 +90,10 @@ uint32_t getAAASPIfromFile() {
 
     return ret;
 }
+
+void fill_random(uint8_t* buffer, size_t len) {
+    // @todo: put some better randomness here
+    for (int i = 0; i < len; i++) {
+        ReconfKey_[i] = random()%256;
+    }
+}

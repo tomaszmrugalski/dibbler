@@ -381,6 +381,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptAuthentication.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Options\OptGeneric.cpp"
 					>
 				</File>

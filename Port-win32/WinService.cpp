@@ -8,7 +8,7 @@
  *
  */
 
-#include <windows.h>
+#include "Portable.h"
 #include <stdio.h>
 #include "winservice.h"
 #include "Logger.h"

@@ -443,10 +443,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptAAAAuthentication.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptAddr.cpp"
 					>
 				</File>
@@ -499,11 +495,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptKeyGeneration.cpp"
+					RelativePath="..\Options\OptOptionRequest.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptOptionRequest.cpp"
+					RelativePath="..\Options\OptReconfigureMsg.cpp"
 					>
 				</File>
 				<File
@@ -539,15 +535,7 @@
 				Name="ClntOptions"
 				>
 				<File
-					RelativePath="..\ClntOptions\ClntOptAAAAuthentication.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\ClntOptions\ClntOptAddrParams.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptAuthentication.cpp"
 					>
 				</File>
 				<File
@@ -572,10 +560,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptIAPrefix.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptKeyGeneration.cpp"
 					>
 				</File>
 				<File
@@ -636,6 +620,10 @@
 				</File>
 				<File
 					RelativePath="..\ClntMessages\ClntMsgRebind.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\ClntMessages\ClntMsgReconfigure.cpp"
 					>
 				</File>
 				<File
@@ -1212,10 +1200,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptAAAAuthentication.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Options\OptAddr.h"
 					>
 				</File>
@@ -1224,15 +1208,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptClientIdentifier.h"
-					>
-				</File>
-				<File
-					RelativePath="..\sources\Options\OptDNSServers.h"
-					>
-				</File>
-				<File
-					RelativePath="..\sources\Options\OptDomainName.h"
+					RelativePath="..\Options\OptFQDN.h"
 					>
 				</File>
 				<File
@@ -1244,7 +1220,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Options\OptIA_NA.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptIA_PD.h"
+					>
+				</File>
+				<File
 					RelativePath="..\sources\Options\OptIAAddress.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptIAAddress.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Options\OptIAPrefix.h"
 					>
 				</File>
 				<File
@@ -1256,31 +1248,23 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptKeyGeneration.h"
-					>
-				</File>
-				<File
-					RelativePath="..\sources\Options\OptNTPServers.h"
-					>
-				</File>
-				<File
 					RelativePath="..\sources\Options\OptOptionRequest.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptRapidCommit.h"
+					RelativePath="..\Options\OptOptionRequest.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptServerIdentifier.h"
+					RelativePath="..\Options\OptReconfigureMsg.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptServerUnicast.h"
+					RelativePath="..\Options\OptRtPrefix.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptStatusCode.h"
+					RelativePath="..\Options\OptStatusCode.h"
 					>
 				</File>
 				<File
@@ -1288,23 +1272,23 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Options\OptStringLst.h"
+					RelativePath="..\Options\OptTA.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptTimeZone.h"
+					RelativePath="..\Options\OptUserClass.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptUserClass.h"
+					RelativePath="..\Options\OptVendorClass.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptVendorClass.h"
+					RelativePath="..\Options\OptVendorData.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sources\Options\OptVendorSpecInfo.h"
+					RelativePath="..\Options\OptVendorSpecInfo.h"
 					>
 				</File>
 			</Filter>
@@ -1312,19 +1296,7 @@
 				Name="ClntOptions"
 				>
 				<File
-					RelativePath="..\ClntOptions\ClntOptAAAAuthentication.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptClientIdentifier.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptDNSServers.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptDomainName.h"
+					RelativePath="..\ClntOptions\ClntOptAddrParams.h"
 					>
 				</File>
 				<File
@@ -1352,31 +1324,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\ClntOptions\ClntOptKeyGeneration.h"
-					>
-				</File>
-				<File
 					RelativePath="..\ClntOptions\ClntOptLifetime.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISDomain.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISPDomain.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISPServer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNISServer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptNTPServers.h"
 					>
 				</File>
 				<File
@@ -1385,26 +1333,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptPreference.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptRapidCommit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptServerIdentifier.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptServerUnicast.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptSIPDomain.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptSIPServer.h"
 					>
 				</File>
 				<File
@@ -1417,18 +1345,6 @@
 				</File>
 				<File
 					RelativePath="..\ClntOptions\ClntOptTimeZone.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptUserClass.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorClass.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ClntOptions\ClntOptVendorSpecInfo.h"
 					>
 				</File>
 			</Filter>
