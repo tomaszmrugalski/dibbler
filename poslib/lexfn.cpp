@@ -28,6 +28,8 @@
 
 #include "lexfn.h"
 
+#include "Portable.h"
+
 using namespace std;
 
 bool txt_to_bool(const char *buff) {
