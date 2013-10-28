@@ -38,6 +38,20 @@
 #endif
 
 #ifdef WIN32
+#if 1
+#ifndef uint8_t
+#define uint8_t  unsigned char
+#endif
+
+#ifndef uint16_t
+#define uint16_t unsigned short int
+#endif
+
+#ifndef uint32_t
+#define uint32_t unsigned int
+#endif
+#endif
+
 #ifndef uint64_t
 #define uint64_t unsigned long long int
 #endif
@@ -147,6 +161,8 @@ struct link_state_notify_t
 #define CLNTLOG_FILE       "dibbler-client.log"
 #define SRVLOG_FILE        "dibbler-server.log"
 #define RELLOG_FILE        "dibbler-relay.log"
+#define CLNT_AAASPI_FILE   "AAA-SPI"
+#define SRV_KEYMAP_FILE    "keys-mapping"
 #define NULLFILE           "nul"
 /* specifies if client should remove any configured DNS servers when configuring
    DNS servers for the first time. This makes sense on WIN32 only. */
@@ -210,10 +226,10 @@ struct link_state_notify_t
 
 #ifdef WIN32
 #define IFF_RUNNING        IFF_UP
-// those defines are in ws2ipdef.h
-//#define IFF_UP             0x1
-//#define IFF_MULTICAST      0x4
-//#define IFF_LOOPBACK       0x8
+/* those defines are in ws2ipdef.h
+#define IFF_UP             0x1
+#define IFF_MULTICAST      0x4
+#define IFF_LOOPBACK       0x8 */
 #endif
 
 /* ********************************************************************** */
@@ -344,6 +360,12 @@ unsigned long pref, unsigned long valid, int prefixLength);
     uint32_t getAAASPIfromFile();
 
     int execute(const char *filename, const char * argv[], const char *env[]);
+
+    /** @brief fills specified buffer with random data
+     * @param buffer random data will be written here
+     * @param len length of the buffer
+     */
+    void fill_random(uint8_t* buffer, int len);
 
     /** @brief returns host name of this host
      *

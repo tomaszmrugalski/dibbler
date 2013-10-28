@@ -65,7 +65,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         Log(Crit) << "Msg received through not configured interface. "
             "Somebody call an exorcist!" << LogEnd;
         IsDone = true;
-        return ADDRSTATUS_UNKNOWN;
+        return false;
     }
 
     EAddrStatus onLink = ADDRSTATUS_YES;
@@ -712,7 +712,7 @@ void TSrvMsgReply::doDuties() {
 }
 
 unsigned long TSrvMsgReply::getTimeout() {
-    unsigned long diff = (int32_t)time(NULL) - FirstTimeStamp_;
+    unsigned long diff = (uint32_t)time(NULL) - FirstTimeStamp_;
     if (diff > SERVER_REPLY_CACHE_TIMEOUT)
         return 0;
     return SERVER_REPLY_CACHE_TIMEOUT - diff;

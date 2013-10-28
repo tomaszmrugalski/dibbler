@@ -90,3 +90,10 @@ uint32_t getAAASPIfromFile() {
 
     return ret;
 }
+
+void fill_random(uint8_t* buffer, int len) {
+    // @todo: put some better randomness here
+    for (int i = 0; i < len; i++) {
+        buffer[i] = random()%256;
+    }
+}

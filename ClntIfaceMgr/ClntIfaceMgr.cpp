@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <stdlib.h>
+#include <unistd.h>
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
