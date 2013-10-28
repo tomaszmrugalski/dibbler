@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug32|Win32">
+      <Configuration>Debug32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug32|x64">
+      <Configuration>Debug32</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release32|Win32">
+      <Configuration>Release32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release32|x64">
+      <Configuration>Release32</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>relay-win32</ProjectName>
+    <ProjectGuid>{F3D13220-6D1A-43A5-B753-AA107DAC773D}</ProjectGuid>
+    <Keyword>ManagedCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release32|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <OutDir>Debug32\</OutDir>
+    <IntDir>Debug32\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <OutDir>Release32\</OutDir>
+    <IntDir>Release32\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;MOD_DISABLE_AUTH;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)dibbler-relay.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;MOD_DISABLE_AUTH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)dibbler-relay.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions> /J</AdditionalOptions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)dibbler-relay.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..;.;include;..\TransMgr;..\RelTransMgr;..\RelOptions;..\RelMessages;..\RelIfaceMgr;..\RelCfgMgr;..\Options;..\Misc;..\Messages;..\IfaceMgr;..\CfgMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)dibbler-relay.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\RelTransMgr\RelTransMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\Iface.cpp" />
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp" />
+    <ClCompile Include="..\RelIfaceMgr\RelIfaceMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp" />
+    <ClCompile Include="..\Options\Opt.cpp" />
+    <ClCompile Include="..\Options\OptAuthentication.cpp" />
+    <ClCompile Include="..\Options\OptGeneric.cpp" />
+    <ClCompile Include="..\Options\OptIAAddress.cpp" />
+    <ClCompile Include="..\Options\OptIAPrefix.cpp" />
+    <ClCompile Include="..\Options\OptInteger.cpp" />
+    <ClCompile Include="..\Options\OptOptionRequest.cpp" />
+    <ClCompile Include="..\Options\OptRtPrefix.cpp" />
+    <ClCompile Include="..\Options\OptVendorData.cpp" />
+    <ClCompile Include="..\Options\OptVendorSpecInfo.cpp" />
+    <ClCompile Include="..\RelOptions\RelOptEcho.cpp" />
+    <ClCompile Include="..\RelOptions\RelOptGeneric.cpp" />
+    <ClCompile Include="..\RelOptions\RelOptInterfaceID.cpp" />
+    <ClCompile Include="..\RelOptions\RelOptRelayMsg.cpp" />
+    <ClCompile Include="..\RelOptions\RelOptRemoteID.cpp" />
+    <ClCompile Include="..\Messages\Msg.cpp" />
+    <ClCompile Include="..\RelMessages\RelMsg.cpp" />
+    <ClCompile Include="..\RelMessages\RelMsgGeneric.cpp" />
+    <ClCompile Include="..\RelMessages\RelMsgRelayForw.cpp" />
+    <ClCompile Include="..\RelMessages\RelMsgRelayRepl.cpp" />
+    <ClCompile Include="..\CfgMgr\CfgMgr.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelCfgIface.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelCfgMgr.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelLexer.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelParser.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelParsGlobalOpt.cpp" />
+    <ClCompile Include="..\RelCfgMgr\RelParsIfaceOpt.cpp" />
+    <ClCompile Include="..\misc\addrpack.c" />
+    <ClCompile Include="..\misc\DHCPConst.cpp" />
+    <ClCompile Include="..\Misc\DHCPRelay.cpp" />
+    <ClCompile Include="..\misc\DUID.cpp" />
+    <ClCompile Include="..\Misc\hex.cpp" />
+    <ClCompile Include="..\misc\IPv6Addr.cpp" />
+    <ClCompile Include="..\Misc\KeyList.cpp" />
+    <ClCompile Include="..\misc\Logger.cpp" />
+    <ClCompile Include="..\misc\long128.cpp" />
+    <ClCompile Include="..\Misc\ScriptParams.cpp" />
+    <ClCompile Include="lowlevel-win32.c" />
+    <ClCompile Include="relay-win32.cpp" />
+    <ClCompile Include="RelService.cpp" />
+    <ClCompile Include="WinService.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource3.h" />
+    <ClInclude Include="..\IfaceMgr\Iface.h" />
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h" />
+    <ClInclude Include="..\RelIfaceMgr\RelIfaceMgr.h" />
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h" />
+    <ClInclude Include="..\Options\Opt.h" />
+    <ClInclude Include="..\Options\OptGeneric.h" />
+    <ClInclude Include="..\Options\OptInteger4.h" />
+    <ClInclude Include="..\Options\OptVendorData.h" />
+    <ClInclude Include="..\RelOptions\RelOptGeneric.h" />
+    <ClInclude Include="..\RelOptions\RelOptInterfaceID.h" />
+    <ClInclude Include="..\RelOptions\RelOptRelayMsg.h" />
+    <ClInclude Include="..\CfgMgr\CfgMgr.h" />
+    <ClInclude Include="..\RelCfgMgr\RelCfgIface.h" />
+    <ClInclude Include="..\RelCfgMgr\RelCfgMgr.h" />
+    <ClInclude Include="..\RelCfgMgr\RelLexer.h" />
+    <ClInclude Include="..\RelCfgMgr\RelParser.h" />
+    <ClInclude Include="..\RelCfgMgr\RelParsGlobalOpt.h" />
+    <ClInclude Include="..\RelCfgMgr\RelParsIfaceOpt.h" />
+    <ClInclude Include="..\misc\Container.h" />
+    <ClInclude Include="..\misc\DHCPConst.h" />
+    <ClInclude Include="..\Misc\DHCPRelay.h" />
+    <ClInclude Include="..\misc\DUID.h" />
+    <ClInclude Include="..\misc\IPv6Addr.h" />
+    <ClInclude Include="..\Misc\KeyList.h" />
+    <ClInclude Include="..\misc\Logger.h" />
+    <ClInclude Include="..\misc\long128.h" />
+    <ClInclude Include="..\misc\Portable.h" />
+    <ClInclude Include="..\Misc\ScriptParams.h" />
+    <ClInclude Include="..\misc\SmartPtr.h" />
+    <ClInclude Include="RelService.h" />
+    <ClInclude Include="WinService.h" />
+    <ClInclude Include="..\RelMessages\RelMsg.h" />
+    <ClInclude Include="..\RelMessages\RelMsgGeneric.h" />
+    <ClInclude Include="..\RelMessages\RelMsgRelayForw.h" />
+    <ClInclude Include="..\RelMessages\RelMsgRelayRepl.h" />
+    <ClInclude Include="..\RelTransMgr\RelTransMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Changelog" />
+    <None Include="..\RELNOTES" />
+    <None Include="..\TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="relay-win32.vs2013.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="server-win32.vs2013.vcxproj">
+      <Project>{b4a3663c-44d7-46d2-b397-9d7e0e4eb557}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

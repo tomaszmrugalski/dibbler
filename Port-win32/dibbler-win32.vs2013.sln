@@ -1,21 +1,14 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-win32", "client-win32.vs2008.vcxproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557} = {B4A3663C-44D7-46D2-B397-9D7E0E4EB557}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-win32", "client-win32.vs2013.vcxproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "requestor-win32", "requestor-win32.vs2008.vcxproj", "{67D615F8-4E5F-42F8-BE4C-197F348155AE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F3D13220-6D1A-43A5-B753-AA107DAC773D} = {F3D13220-6D1A-43A5-B753-AA107DAC773D}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "requestor-win32", "requestor-win32.vs2013.vcxproj", "{67D615F8-4E5F-42F8-BE4C-197F348155AE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-win32", "server-win32.vs2008.vcxproj", "{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-win32", "server-win32.vs2013.vcxproj", "{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "relay-win32", "relay-win32.vs2008.vcxproj", "{F3D13220-6D1A-43A5-B753-AA107DAC773D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B4A3663C-44D7-46D2-B397-9D7E0E4EB557} = {B4A3663C-44D7-46D2-B397-9D7E0E4EB557}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "relay-win32", "relay-win32.vs2013.vcxproj", "{F3D13220-6D1A-43A5-B753-AA107DAC773D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
