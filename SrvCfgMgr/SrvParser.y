@@ -291,11 +291,16 @@ Key
     if ( (CurrentKey->Digest_ != DIGEST_HMAC_MD5) &&
 	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA1) &&
 	 (CurrentKey->Digest_ != DIGEST_HMAC_SHA256) ) {
-	Log(Crit) << "Invalid key type specified: only hmac-md5, hmac-sha1 and hmac-sha256 are supported." << LogEnd;
+	Log(Crit) << "Invalid key type specified: only hmac-md5, hmac-sha1 and "
+                  << "hmac-sha256 are supported." << LogEnd;
 	YYABORT;
     }
-
+#if !defined(MOD_SRV_DISABLE_DNSUPDATE) && !defined(MOD_CLNT_DISABLE_DNSUPDATE)
     CfgMgr->addKey( CurrentKey );
+#else
+    Log(Crit) << "DNS Update disabled at compilation time. Can't specify TSIG key."
+              << LogEnd;
+#endif
 } ';'
 ;
 
@@ -983,12 +988,14 @@ AddrParams
 : ADDR_PARAMS_ Number
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
-	Log(Crit) << "Experimental 'addr-params' defined, but experimental features are disabled. Add 'experimental' "
+	Log(Crit) << "Experimental 'addr-params' defined, but experimental "
+                  << "features are disabled. Add 'experimental' "
 		  << "in global section of server.conf to enable it." << LogEnd;
 	YYABORT;
     }
     int bitfield = ADDRPARAMS_MASK_PREFIX;
-    Log(Warning) << "Experimental addr-params added (prefix=" << $2 << ", bitfield=" << bitfield << ")." << LogEnd;
+    Log(Warning) << "Experimental addr-params added (prefix=" << $2
+                 << ", bitfield=" << bitfield << ")." << LogEnd;
     ParserOptStack.getLast()->setAddrParams($2,bitfield);
 };
 
@@ -1005,7 +1012,8 @@ ExtraOption
 {
     SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", length="
+               << $4.length << LogEnd;
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
@@ -1022,7 +1030,8 @@ ExtraOption
 {
     SPtr<TOpt> opt = new TOptAddrLst($2, PresentAddrLst, 0);
     ParserOptStack.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", address count=" << PresentAddrLst.count() << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", address count="
+               << PresentAddrLst.count() << LogEnd;
 }
 |OPTION_ Number STRING_KEYWORD_ STRING_
 {
@@ -1069,8 +1078,8 @@ RapidCommitOption
 :   RAPID_COMMIT_ Number
 {
     if ( ($2!=0) && ($2!=1)) {
-	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno() << " must have 0 or 1 value."
-	       << LogEnd;
+	Log(Crit) << "RAPID-COMMIT  parameter in line " << lex->lineno()
+                  << " must have 0 or 1 value." << LogEnd;
 	YYABORT;
     }
     if (yyvsp[0].ival==1)
@@ -1133,7 +1142,8 @@ StatelessOption
 GuessMode
 : GUESS_MODE_
 {
-    Log(Info) << "Guess-mode enabled: relay interfaces may be loosely defined (matching interface-id is not mandatory)." << LogEnd;
+    Log(Info) << "Guess-mode enabled: relay interfaces may be loosely "
+              << "defined (matching interface-id is not mandatory)." << LogEnd;
     ParserOptStack.getLast()->setGuessMode(true);
 };
 
@@ -1147,7 +1157,8 @@ PerformanceMode
 : PERFORMANCE_MODE_ Number
 {
     if (!ParserOptStack.getLast()->getExperimental()) {
-	Log(Crit) << "Experimental 'performance-mode' defined, but experimental features are disabled. Add 'experimental' "
+	Log(Crit) << "Experimental 'performance-mode' defined, but experimental "
+                  << "features are disabled. Add 'experimental' "
 		  << "in global section of server.conf to enable it." << LogEnd;
 	YYABORT;
     }
@@ -1185,7 +1196,8 @@ IfaceIDOrder
 		ParserOptStack.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
     } else
     {
-		Log(Crit) << "Invalid interface-id-order specified. Allowed values: before, after, omit" << LogEnd;
+		Log(Crit) << "Invalid interface-id-order specified. Allowed "
+                          << "values: before, after, omit" << LogEnd;
 		YYABORT;
     }
 };
@@ -1217,7 +1229,8 @@ AcceptLeaseQuery
 		ParserOptStack.getLast()->setLeaseQuerySupport(true);
 		break;
     default:
-		Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed values: 0, 1, yes, no, true, false" << LogEnd;
+		Log(Crit) << "Invalid value of accept-leasequery specifed. Allowed "
+                          << "values: 0, 1, yes, no, true, false" << LogEnd;
 		YYABORT;
     }
 };
@@ -1470,8 +1483,10 @@ FQDNOption
 :OPTION_ FQDN_
 {
     PresentFQDNLst.clear();
-    Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates executed by server)." << LogEnd;
-    Log(Warning) << "revDNS zoneroot lenght not found, dynamic revDNS update will not be possible." << LogEnd;
+    Log(Debug)   << "No FQDNMode found, setting default mode 2 (all updates "
+                 "executed by server)." << LogEnd;
+    Log(Warning) << "revDNS zoneroot lenght not found, dynamic revDNS update "
+                 "will not be possible." << LogEnd;
     ParserOptStack.getLast()->setFQDNMode(2);
     ParserOptStack.getLast()->setRevDNSZoneRootLength(0);
 } FQDNList
@@ -1527,7 +1542,8 @@ FQDNOption
 
     Log(Debug) << "FQDN: RevDNS zoneroot lenght set to " << $4 <<LogEnd;
     if ( ($4 < 0) || ($4 > 128) ) {
-	Log(Crit) << "FQDN: Invalid zoneroot length specified:" << $4 << ". Value 0-128 expected." << LogEnd;
+	Log(Crit) << "FQDN: Invalid zoneroot length specified:" << $4
+                  << ". Value 0-128 expected." << LogEnd;
 	YYABORT;
     }
     ParserOptStack.getLast()->setFQDNMode($3);
@@ -1543,12 +1559,14 @@ AcceptUnknownFQDN
 :ACCEPT_UNKNOWN_FQDN_ Number STRING_
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode($2), string($3) );
-    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2 << ", domain=" << $3 << "." << LogEnd;
+    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2
+               << ", domain=" << $3 << "." << LogEnd;
 }
 |ACCEPT_UNKNOWN_FQDN_ Number
 {
     ParserOptStack.getLast()->setUnknownFQDN(EUnknownFQDNMode($2), string("") );
-    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2 << ", no domain." << LogEnd;
+    Log(Debug) << "FQDN: Unknown fqdn names processing set to " << $2
+               << ", no domain." << LogEnd;
 }
 ;
 
@@ -1956,16 +1974,20 @@ bool SrvParser::EndPDDeclaration()
 	if (!len)
 	    len = pool->getPrefixLength();
 	if (len!=pool->getPrefixLength()) {
-	    Log(Crit) << "Prefix pools with different lengths are not supported. Make sure that all 'pd-pool' uses the same prefix length." << LogEnd;
+	    Log(Crit) << "Prefix pools with different lengths are not supported. "
+                "Make sure that all 'pd-pool' uses the same prefix length." << LogEnd;
 	    return false;
 	}
     }
     if (len>PDPrefix) {
-	Log(Crit) << "Clients are supposed to get /" << this->PDPrefix << " prefixes, but pd-pool(s) are only /" << len << " long." << LogEnd;
+	Log(Crit) << "Clients are supposed to get /" << this->PDPrefix << " prefixes,"
+                  << "but pd-pool(s) are only /" << len << " long." << LogEnd;
 	return false;
     }
     if (len==PDPrefix) {
-	Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are supposed to get /" << len << " prefixes. Only ONE client will get prefix" << LogEnd;
+	Log(Warning) << "Prefix pool /" << PDPrefix << " defined and clients are "
+            "supposed to get /" << len << " prefixes. Only ONE client will get "
+            "prefix" << LogEnd;
     }
 
     SPtr<TSrvCfgPD> ptrPD = new TSrvCfgPD();
