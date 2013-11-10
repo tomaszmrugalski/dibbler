@@ -482,7 +482,7 @@ dibbler_requestor_LDADD = -L$(top_builddir)/Requestor -lRequestor \
 	-L$(top_builddir)/IfaceMgr -lIfaceMgr -L$(top_builddir)/Misc \
 	-lMisc -L$(top_builddir)/Options -lOptions \
 	-L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
-nobase_dist_doc_DATA = ChangeLog LICENSE RELNOTES \
+nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES \
 	scripts/notify-scripts/client-notify-linux.sh \
 	scripts/notify-scripts/client-notify-macos.sh \
 	scripts/notify-scripts/client-notify-bsd.sh \
