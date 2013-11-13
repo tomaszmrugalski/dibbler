@@ -329,16 +329,21 @@ int sock_del(int fd)
 int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
 {	
     struct addrinfo inforemote,*remote;
-	char				addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
-	char				portStr[10];
-	int i;
-	char				packaddr[16];
-	char				ifaceStr[10];
+    char addrStr[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")+5];
+    char portStr[10];
+    int i;
+    char packaddr[16];
+    char ifaceStr[10];
 
-	strcpy(addrStr,addr);
-	itoa(port,portStr,10);
+    memset(addrStr,  0, sizeof(addrStr));
+    memset(portStr,  0, sizeof(portStr));
+    memset(packaddr, 0, sizeof(packaddr));
+    memset(ifaceStr, 0, sizeof(ifaceStr));
+
+    strcpy(addrStr,addr);
+    itoa(port,portStr,10);
     itoa(iface,ifaceStr,10);
-	inet_pton6(addrStr,packaddr);
+    inet_pton6(addrStr,packaddr);
 
     if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
        ||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
