@@ -91,14 +91,6 @@ bool TOpt::isValid() const {
     return Valid;
 }
 
-SPtr<TDUID> TOpt::getDUID() {
-    return this->DUID;
-}
-void TOpt::setDUID(SPtr<TDUID> duid) {
-    this->DUID = duid;
-}
-
-
 /// @brief Deletes all specified options of that type
 ///
 /// @param type

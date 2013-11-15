@@ -87,9 +87,6 @@ class TOpt
     void delAllOptions();
     void setParent(TMsg* Parent);
 
-    SPtr<TDUID> getDUID();
-    void setDUID(SPtr<TDUID> duid);
-
     static bool parseOptions(TContainer< SPtr<TOpt> >& options,
                              const char* buf,
                              size_t len,
@@ -108,7 +105,6 @@ class TOpt
     TContainer< SPtr<TOpt> > SubOptions;
     int OptType;
     TMsg* Parent;
-    SPtr<TDUID> DUID;
     bool Valid;
 };
 

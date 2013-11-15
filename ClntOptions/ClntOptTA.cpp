@@ -12,10 +12,11 @@
 #include "ClntOptTA.h"
 #include "ClntOptIAAddress.h"
 #include "ClntOptStatusCode.h"
-#include "Logger.h"
 #include "ClntOptIAAddress.h"
+#include "OptDUID.h"
 #include "ClntAddrMgr.h"
 #include "ClntIfaceMgr.h"
+#include "Logger.h"
 
 /** 
  * Constructor used during 
@@ -143,10 +144,17 @@ TClntOptTA::~TClntOptTA()
         return true;
     }
 
+    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    if (!duid) {
+	Log(Error) << "Unable to find proper DUID while setting TA." << LogEnd;
+	return false;
+    }
+
     if (!ta) {
-	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB." << LogEnd;
-        ta = new TAddrIA(cfgIface->getName(), this->Iface, IATYPE_TA, 0 /*if unicast, then this->Addr*/, 
-		         this->DUID, DHCPV6_INFINITY, 
+	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB."
+                   << LogEnd;
+        ta = new TAddrIA(cfgIface->getName(), this->Iface, IATYPE_TA, 0 /*if
+                         unicast, then this->Addr*/, duid->getDUID(), DHCPV6_INFINITY,
 		         DHCPV6_INFINITY, this->getIAID());
         ClntAddrMgr().addTA(ta);
     }
@@ -175,7 +183,8 @@ TClntOptTA::~TClntOptTA()
 	    }
 	    // add this address in addrDB...
 	    ta->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
-	    ta->setDUID(this->DUID);
+	    ta->setDUID(duid->getDUID()
+);
 	    // ... and in IfaceMgr - 
 	    ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(), ptrIface->getPrefixLength());
 	    Log(Notice) << "Temp. address " << *optAddr->getAddr() << " has been added to "
