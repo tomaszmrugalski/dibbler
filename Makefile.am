@@ -125,7 +125,7 @@ dibbler_requestor_LDADD += -L$(top_builddir)/Misc -lMisc
 dibbler_requestor_LDADD += -L$(top_builddir)/Options -lOptions
 dibbler_requestor_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 
-nobase_dist_doc_DATA = ChangeLog LICENSE RELNOTES
+nobase_dist_doc_DATA = CHANGELOG LICENSE RELNOTES
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-linux.sh
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-macos.sh
 nobase_dist_doc_DATA += scripts/notify-scripts/client-notify-bsd.sh

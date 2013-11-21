@@ -16,6 +16,7 @@
   - Win: Service dependency fixed for Vista and above
   - Notify script called only when non-empty script name specified.
     (thanks to Hernan Martinez for contributed patches)
+  - Support for ppc64le architecture added (thanks to Snehal for sending patches)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

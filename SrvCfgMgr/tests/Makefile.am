@@ -14,10 +14,10 @@ AM_CPPFLAGS += -I$(top_srcdir)/Misc
 AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
 info:
-        @echo "GTEST_LDADD=$(GTEST_LDADD)"
-        @echo "GTEST_LDFLAGS=$(GTEST_LDFLAGS)"
-        @echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
-        @echo "HAVE_GTEST=$(HAVE_GTEST)"
+	@echo "GTEST_LDADD=$(GTEST_LDADD)"
+	@echo "GTEST_LDFLAGS=$(GTEST_LDFLAGS)"
+	@echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
+	@echo "HAVE_GTEST=$(HAVE_GTEST)"
 
 TESTS =
 if HAVE_GTEST

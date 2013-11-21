@@ -1,10 +1,10 @@
 Summary: Dibbler - a portable DHCPv6
 Name: dibbler
-Version: 0.8.4
+Version: 1.0.0RC1
 Release: 1
 License: GPL
 Group: Applications/Internet
-Source: dibbler-0.8.4.tar.gz
+Source: %{name}-%{version}.tar.gz
 URL: http://klub.com.pl/dhcpv6/
 Packager: Patrick PICHON
 BuildRoot: /var/tmp/%{name}-buildroot

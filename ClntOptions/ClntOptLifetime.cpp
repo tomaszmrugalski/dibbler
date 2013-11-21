@@ -9,6 +9,7 @@
  */
 #include "DHCPConst.h"
 #include "ClntOptLifetime.h"
+#include "OptDUID.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -26,11 +27,19 @@ TClntOptLifetime::TClntOptLifetime( char pref, TMsg* parent)
 bool TClntOptLifetime::doDuties()
 {
     string reason = "trying to set Lifetime timer.";
-    int ifindex = this->Parent->getIface();
 
-    if (!DUID) {
-        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
+    if (!Parent) {
+        Log(Error) << "Unable to set lifetime: option parent not set." << LogEnd;
         return false;
+    }
+
+    int ifindex = Parent->getIface();
+
+    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+
+    if (!duid) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
+	return false;
     }
 
     SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
@@ -41,5 +50,5 @@ bool TClntOptLifetime::doDuties()
     }
 
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
-    return iface->setLifetime(DUID, Parent->getAddr(), Value);
+    return iface->setLifetime(duid->getDUID(), Parent->getAddr(), Value);
 }

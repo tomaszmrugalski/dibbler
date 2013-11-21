@@ -111,14 +111,13 @@ unsigned long TClntAddrMgr::getTentativeTimeout()
 {
     SPtr<TAddrIA> ptrIA;
     Client->firstIA();
-    unsigned long min = DHCPV6_INFINITY;
-    unsigned long tmp;
+    uint32_t min = DHCPV6_INFINITY;
 
     while(ptrIA=Client->getIA())
     {
-	      tmp = ptrIA->getTentativeTimeout();
-	      if (min > tmp)
-		  min = tmp;
+        uint32_t tmp = ptrIA->getTentativeTimeout();
+        if (min > tmp)
+            min = tmp;
     }
 
     return min;

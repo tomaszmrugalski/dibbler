@@ -1002,10 +1002,10 @@ uninstall-am:
 
 
 info:
-        @echo "GTEST_LDADD=$(GTEST_LDADD)"
-        @echo "GTEST_LDFLAGS=$(GTEST_LDFLAGS)"
-        @echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
-        @echo "HAVE_GTEST=$(HAVE_GTEST)"
+	@echo "GTEST_LDADD=$(GTEST_LDADD)"
+	@echo "GTEST_LDFLAGS=$(GTEST_LDFLAGS)"
+	@echo "GTEST_INCLUDES=$(GTEST_INCLUDES)"
+	@echo "HAVE_GTEST=$(HAVE_GTEST)"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
