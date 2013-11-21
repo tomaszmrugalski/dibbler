@@ -43,9 +43,8 @@ class TClntOptIA_NA : public TOptIA_NA
     int countValidAddrs(SPtr<TAddrIA> ptrAddrIA);
 
     SPtr<TIPv6Addr> Addr;
-    bool Unicast;
     SPtr<TDUID> DUID;
-    int Iface;
+    int Iface_;
 };
 
 

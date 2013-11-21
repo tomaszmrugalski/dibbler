@@ -160,7 +160,8 @@ int inet_pton6(const char *src, char * dst)
 char * inet_ntop4(const char * src, char * dst)
 {
 	char tmp[sizeof "255.255.255.255"];
-	sprintf(tmp,"%u.%u.%u.%u", src[0], src[1], src[2], src[3]);
+	sprintf(tmp,"%u.%u.%u.%u", (const unsigned char)src[0], (const unsigned char)src[1],
+                (const unsigned char)src[2], (const unsigned char)src[3]);
 	return strcpy(dst, tmp);
 }
 

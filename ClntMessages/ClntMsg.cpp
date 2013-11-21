@@ -250,11 +250,6 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	return;
     }
 
-    this->firstOption();
-    SPtr<TOpt> opt;
-    while ( opt = getOption() )
-	opt->setDUID(optSrvID->getDUID());
-
     // @todo: confirm verification here
 
 }

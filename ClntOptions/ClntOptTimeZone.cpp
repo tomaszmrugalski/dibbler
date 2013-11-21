@@ -8,6 +8,7 @@
  */
 
 #include "ClntOptTimeZone.h"
+#include "OptDUID.h"
 #include "ClntMsg.h"
 #include "Logger.h"
 
@@ -31,9 +32,10 @@ bool TClntOptTimeZone::doDuties() {
     std::string reason = "trying to set time zone.";
     int ifindex = Parent->getIface();
 
-    if (!this->DUID) {
-        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-        return false;
+    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    if (!duid) {
+	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
+	return false;
     }
 
     SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
@@ -46,7 +48,7 @@ bool TClntOptTimeZone::doDuties() {
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setTimezoneState(STATE_CONFIGURED);
 
-    return iface->setTimezone(DUID, Parent->getAddr(), Str);
+    return iface->setTimezone(duid->getDUID(), Parent->getAddr(), Str);
 }
 
 /// @todo remove this

@@ -429,6 +429,11 @@ int sock_send(int fd, char * addr, char * buf, int buflen, int port,int iface)
     int i;
     char packaddr[16];
     char ifaceStr[10];
+
+    memset(addrStr,  0, sizeof(addrStr));
+    memset(portStr,  0, sizeof(portStr));
+    memset(packaddr, 0, sizeof(packaddr));
+    memset(ifaceStr, 0, sizeof(ifaceStr));
     
     strcpy(addrStr,addr);
     itoa(port,portStr,10);
