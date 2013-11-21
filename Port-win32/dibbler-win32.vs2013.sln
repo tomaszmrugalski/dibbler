@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
+# Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-win32", "client-win32.vs2013.vcxproj", "{F3A8782D-88E1-4604-AF79-CC225A3F64F4}"
@@ -16,8 +16,8 @@ Global
 		Release32|Win32 = Release32|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug32|Win32.ActiveCfg = Debug32|Win32
-		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug32|Win32.Build.0 = Debug32|Win32
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug32|Win32.ActiveCfg = Release32|Win32
+		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Debug32|Win32.Build.0 = Release32|Win32
 		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Release32|Win32.ActiveCfg = Release32|Win32
 		{F3A8782D-88E1-4604-AF79-CC225A3F64F4}.Release32|Win32.Build.0 = Release32|Win32
 		{67D615F8-4E5F-42F8-BE4C-197F348155AE}.Debug32|Win32.ActiveCfg = Debug32|Win32

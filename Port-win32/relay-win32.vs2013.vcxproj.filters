@@ -314,6 +314,6 @@
     <None Include="..\TODO" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="relay-win32.vs2003.rc" />
+    <ResourceCompile Include="relay-win32.vs2013.rc" />
   </ItemGroup>
 </Project>

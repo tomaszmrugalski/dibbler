@@ -786,6 +786,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="server-win32.vs2003.rc" />
+    <ResourceCompile Include="server-win32.vs2013.rc" />
   </ItemGroup>
 </Project>
