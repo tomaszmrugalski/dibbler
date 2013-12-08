@@ -27,8 +27,7 @@ TSrvService::TSrvService() : TWinService("DHCPv6Server","Dibbler - a DHCPv6 serv
 	DIBBLER_VERSION ".")
 {
 	// Depend on 'tcpip6' service only if it's Windows XP or Windows 2003.
-	// Vista and above have IPv6 intalled by default and it is not controlled
-	// by a service.
+	// Vista and above have IPv6 in the TCP stack and it's not a standalone service.
 	OSVERSIONINFO verinfo;
 	verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
 	GetVersionEx(&verinfo);

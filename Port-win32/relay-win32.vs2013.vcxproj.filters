@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{fa97716e-c31f-4947-b024-506778284bd6}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\IfaceMgr">
+      <UniqueIdentifier>{6852e24c-d14c-4a84-a766-0ef541bcfd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Options">
+      <UniqueIdentifier>{85448e6f-5b56-4096-af97-4cb036474d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RelOptions">
+      <UniqueIdentifier>{c6a9fae6-3663-4dc9-bc95-e6c6460cce71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RelMessages">
+      <UniqueIdentifier>{3da7be29-e90c-419a-b708-9098213709a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CfgMgr">
+      <UniqueIdentifier>{497f4be9-f5e8-49fe-b55c-e34786bfce27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\misc">
+      <UniqueIdentifier>{21012a27-8156-4bfa-bf79-54565e3fa573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\port-win32">
+      <UniqueIdentifier>{a629b57b-ddaf-44cd-b0eb-7e8a5684c64d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{e69b2e55-ebe4-4395-9127-c62a553d2942}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Header Files\IfaceMgr">
+      <UniqueIdentifier>{f9ac314a-6c1e-4344-a178-ec6d8f2df4d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Options">
+      <UniqueIdentifier>{4cd43b74-87ab-44f6-81cd-b7459ceba1a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RelOptions">
+      <UniqueIdentifier>{754bae33-4ac9-46d6-bc77-780a2de225d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CfgMgr">
+      <UniqueIdentifier>{61a91dac-14d5-4e5d-b524-bb496ef6559c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\misc">
+      <UniqueIdentifier>{59384773-d48f-4033-a82c-abe140619517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\port-win32">
+      <UniqueIdentifier>{34708bc3-9225-4587-a873-23f476d7ccbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Messages">
+      <UniqueIdentifier>{a74a0f8b-7d3b-4b96-a923-3157385d5d58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RelTransMgr">
+      <UniqueIdentifier>{c23ca751-ab66-4ffe-b65c-4b48316e7abc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\RelTransMgr\RelTransMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\Iface.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelIfaceMgr\RelIfaceMgr.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\Opt.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptAuthentication.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptGeneric.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAAddress.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptInteger.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptOptionRequest.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptRtPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptVendorData.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptVendorSpecInfo.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelOptions\RelOptEcho.cpp">
+      <Filter>Source Files\RelOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelOptions\RelOptGeneric.cpp">
+      <Filter>Source Files\RelOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelOptions\RelOptInterfaceID.cpp">
+      <Filter>Source Files\RelOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelOptions\RelOptRelayMsg.cpp">
+      <Filter>Source Files\RelOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelOptions\RelOptRemoteID.cpp">
+      <Filter>Source Files\RelOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Messages\Msg.cpp">
+      <Filter>Source Files\RelMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelMessages\RelMsg.cpp">
+      <Filter>Source Files\RelMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelMessages\RelMsgGeneric.cpp">
+      <Filter>Source Files\RelMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelMessages\RelMsgRelayForw.cpp">
+      <Filter>Source Files\RelMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelMessages\RelMsgRelayRepl.cpp">
+      <Filter>Source Files\RelMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CfgMgr\CfgMgr.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelCfgIface.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelCfgMgr.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelLexer.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelParser.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelParsGlobalOpt.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RelCfgMgr\RelParsIfaceOpt.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\addrpack.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\DHCPConst.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\DHCPRelay.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\DUID.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\hex.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\IPv6Addr.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\KeyList.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\Logger.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\long128.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\ScriptParams.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="lowlevel-win32.c">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="relay-win32.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="RelService.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="WinService.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\Iface.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelIfaceMgr\RelIfaceMgr.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\Opt.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptGeneric.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptInteger4.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptVendorData.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelOptions\RelOptGeneric.h">
+      <Filter>Header Files\RelOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelOptions\RelOptInterfaceID.h">
+      <Filter>Header Files\RelOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelOptions\RelOptRelayMsg.h">
+      <Filter>Header Files\RelOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CfgMgr\CfgMgr.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelCfgIface.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelCfgMgr.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelLexer.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelParser.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelParsGlobalOpt.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelCfgMgr\RelParsIfaceOpt.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Container.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\DHCPConst.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\DHCPRelay.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\DUID.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\IPv6Addr.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\KeyList.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Logger.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\long128.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Portable.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\ScriptParams.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\SmartPtr.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="RelService.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="WinService.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelMessages\RelMsg.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelMessages\RelMsgGeneric.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelMessages\RelMsgRelayForw.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelMessages\RelMsgRelayRepl.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RelTransMgr\RelTransMgr.h">
+      <Filter>Header Files\RelTransMgr</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Changelog" />
+    <None Include="..\RELNOTES" />
+    <None Include="..\TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="relay-win32.vs2013.rc" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,791 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{242774fd-4406-4970-8006-9b48c980c704}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\AddrMgr">
+      <UniqueIdentifier>{cc6e4705-b1d3-4206-b5dd-452f353117a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IfaceMgr">
+      <UniqueIdentifier>{63b963f1-23b7-4458-a01f-a08827a06276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Options">
+      <UniqueIdentifier>{3de376fe-4898-4c76-9dc5-10db1d0e5e73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ClntOptions">
+      <UniqueIdentifier>{8f6f070d-f852-4bad-82a8-1405713bc5fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ClntMessages">
+      <UniqueIdentifier>{122a366b-8da3-4ee0-873f-8c7b9cafe5dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CfgMgr">
+      <UniqueIdentifier>{7644d6c4-f7bd-4318-a7a9-d18a54fcb55b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\misc">
+      <UniqueIdentifier>{8b268bd3-6927-4ad4-b9be-43b8c1e2d7c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\port-win32">
+      <UniqueIdentifier>{15c2d4c7-7f03-49d1-a4ac-4a8039831ca3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\poslib">
+      <UniqueIdentifier>{6686d70e-0aeb-4b24-9c2a-184004d1f178}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ClntCfgMgr">
+      <UniqueIdentifier>{44a91e13-7b8b-4c01-bbee-28f52236980c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\nettle">
+      <UniqueIdentifier>{caa8fe45-0cc1-4bf8-9622-efbc2dbf7b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{db425f38-9c79-4b34-9a92-ff67049bd6da}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Header Files\AddrMgr">
+      <UniqueIdentifier>{826fa36e-50fa-4316-a7ad-a7fc77697dbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IfaceMgr">
+      <UniqueIdentifier>{ea1e644d-97de-48c3-9dd4-6588f3ab1729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CfgMgr">
+      <UniqueIdentifier>{713d37ab-da4e-4f6b-aae4-f0acf44f0154}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Options">
+      <UniqueIdentifier>{775f1d38-c8ce-4227-9f48-801aad64a46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ClntOptions">
+      <UniqueIdentifier>{781d476a-c527-4ebe-8f9e-642577c51eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ClntMessages">
+      <UniqueIdentifier>{7ef828f9-4c68-4e46-9562-0da1c0cfc791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\misc">
+      <UniqueIdentifier>{4ae8858f-f57f-46a1-9043-ea51715ad697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\port-win32">
+      <UniqueIdentifier>{2f0d553b-9f2c-4e59-8af7-66865c655784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\poslib">
+      <UniqueIdentifier>{3e2e835a-3c07-4c81-bae0-fcdbac59e42a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ClntTransMgr">
+      <UniqueIdentifier>{b898bb45-2f62-4d3c-9b8a-34922f67e312}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ClntCfgMgr">
+      <UniqueIdentifier>{ab3f67e7-9a2f-48b3-85e3-6e6930a01283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\nettle">
+      <UniqueIdentifier>{81a7c10c-3b1c-420b-8ad7-13d456ec29ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ClntTransMgr\ClntTransMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AddrMgr\AddrAddr.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AddrMgr\AddrClient.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AddrMgr\AddrIA.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AddrMgr\AddrMgr.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AddrMgr\AddrPrefix.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntAddrMgr\ClntAddrMgr.cpp">
+      <Filter>Source Files\AddrMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntIfaceMgr\ClntIfaceIface.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntIfaceMgr\ClntIfaceMgr.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\DNSUpdate.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\Iface.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\Opt.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptAddr.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptAddrLst.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptAuthentication.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptDomainLst.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptDUID.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptEmpty.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptFQDN.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptGeneric.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIA_NA.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIA_PD.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAAddress.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptInteger.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptOptionRequest.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptReconfigureMsg.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptRtPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptStatusCode.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptString.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptTA.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptUserClass.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptVendorData.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptVendorSpecInfo.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptAddrParams.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptElapsed.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptFQDN.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptIA_NA.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptIA_PD.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptIAAddress.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptIAPrefix.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptLifetime.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptOptionRequest.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptPreference.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptStatusCode.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptTA.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntOptions\ClntOptTimeZone.cpp">
+      <Filter>Source Files\ClntOptions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgPD.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgPrefix.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsg.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgAdvertise.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgConfirm.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgDecline.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgInfRequest.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgRebind.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgReconfigure.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgRelease.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgRenew.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgReply.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgRequest.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntMessages\ClntMsgSolicit.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Messages\Msg.cpp">
+      <Filter>Source Files\ClntMessages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CfgMgr\CfgMgr.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CfgMgr\HostID.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CfgMgr\HostRange.cpp">
+      <Filter>Source Files\CfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\addrpack.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\DHCPClient.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\DHCPConst.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\DUID.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\FQDN.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\hex.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\hmac-sha-md5.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\IPv6Addr.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\KeyList.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\Logger.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\misc\long128.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\md5-coreutils.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\ScriptParams.cpp">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\sha1.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\sha256.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\sha512.c">
+      <Filter>Source Files\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="client-win32.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="ClntService.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="lowlevel-win32.c">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="WinService.cpp">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\dnsmessage.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\dnssec-sign.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\domainfn.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\exception.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\lexfn.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\postime.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\random.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\resolver.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\rr.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\socket.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\poslib\w32poll.cpp">
+      <Filter>Source Files\poslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgAddr.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgIA.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgIface.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgMgr.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgTA.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntLexer.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsAddrOpt.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParser.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsGlobalOpt.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsIAOpt.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsIfaceOpt.cpp">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\base64-decode.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\base64-encode.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\base64-meta.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\hmac-md5.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\hmac.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\md5-meta.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\md5.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nettle\memxor.c">
+      <Filter>Source Files\nettle</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ClntCfgMgr\ClntParser.y">
+      <Filter>Source Files\ClntCfgMgr</Filter>
+    </None>
+    <None Include="..\AUTHORS" />
+    <None Include="..\Changelog" />
+    <None Include="..\Relnotes" />
+    <None Include="..\TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AddrMgr\AddrAddr.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AddrMgr\AddrClient.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AddrMgr\AddrIA.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AddrMgr\AddrMgr.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AddrMgr\AddrPrefix.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntAddrMgr\ClntAddrMgr.h">
+      <Filter>Header Files\AddrMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntIfaceMgr\ClntIfaceIface.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntIfaceMgr\ClntIfaceMgr.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\Iface.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CfgMgr\CfgMgr.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="FlexLexer.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CfgMgr\StationID.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CfgMgr\StationRange.h">
+      <Filter>Header Files\CfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Options\Opt.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptAddr.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptAddrLst.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptFQDN.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptGeneric.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Options\OptIA_NA.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptIA_NA.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptIA_PD.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Options\OptIAAddress.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptIAAddress.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptIAPrefix.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptInteger.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Options\OptInterfaceID.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sources\Options\OptOptionRequest.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptOptionRequest.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptReconfigureMsg.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptRtPrefix.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptStatusCode.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptString.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptTA.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptUserClass.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptVendorClass.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptVendorData.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptVendorSpecInfo.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptAddrParams.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptElapsed.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptFQDN.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptIA_NA.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptIA_PD.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptIAAddress.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptIAPrefix.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptLifetime.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptOptionRequest.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptPreference.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptStatusCode.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptTA.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntOptions\ClntOptTimeZone.h">
+      <Filter>Header Files\ClntOptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsg.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgAdvertise.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgConfirm.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgDecline.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgInfRequest.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgRebind.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgRelease.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgRenew.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgReply.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgRequest.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntMessages\ClntMsgSolicit.h">
+      <Filter>Header Files\ClntMessages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Container.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\DHCPClient.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\DHCPConst.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\DUID.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\hmac-sha-md5.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\IPv6Addr.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\KeyList.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Logger.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\long128.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\md5.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\Portable.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\ScriptParams.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\sha1.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\sha256.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\sha512.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\misc\SmartPtr.h">
+      <Filter>Header Files\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="ClntService.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="stdbool.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="WinService.h">
+      <Filter>Header Files\port-win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\lexfn.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\postime.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\random.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\resolver.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\rr.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\socket.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\sysstring.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\poslib\poslib\vsnprintf.h">
+      <Filter>Header Files\poslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntTransMgr\ClntTransMgr.h">
+      <Filter>Header Files\ClntTransMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgAddr.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgIA.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgIface.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgMgr.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgPD.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgPrefix.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgTA.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntParsAddrOpt.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntParser.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntParsGlobalOpt.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntParsIAOpt.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ClntCfgMgr\ClntParsIfaceOpt.h">
+      <Filter>Header Files\ClntCfgMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\base64.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\cbc.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\hmac.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\macros.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\md5.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\memxor.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\nettle-internal.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\nettle-meta.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\nettle-types.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\nettle\sha.h">
+      <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client-win32.vs2013.rc" />
+  </ItemGroup>
+</Project>

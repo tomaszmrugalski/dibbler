@@ -29,6 +29,18 @@ TClntService::TClntService()
                  "Dibbler - a portable DHCPv6. This is DHCPv6 client,"
                  " version " DIBBLER_VERSION ".")
 {
+	// Depend on 'tcpip6' service only if it's Windows XP or Windows 2003.
+	// Vista and above have IPv6 in the TCP stack and it's not a standalone service.
+	OSVERSIONINFO verinfo;
+	verinfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&verinfo);
+
+	char dependenciesV5[] = "RpcSS\0tcpip6\0winmgmt\0";
+	char dependenciesV6[] = "RpcSS\0winmgmt\0";
+	if ( verinfo.dwMajorVersion <= 5 )
+		memcpy(Dependencies, dependenciesV5, sizeof(dependenciesV5));
+	else
+		memcpy(Dependencies, dependenciesV6, sizeof(dependenciesV6));
 }
 
 EServiceState TClntService::ParseStandardArgs(int argc,char* argv[])

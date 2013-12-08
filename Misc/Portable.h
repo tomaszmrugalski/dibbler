@@ -29,32 +29,12 @@
 
 #ifdef WIN32
 #define strcasecmp strcmpi
-
 #define snprintf _snprintf
+
 #endif
 
-#if defined (BSD) || defined(SUNOS)
+#if defined (BSD) || defined(SUNOS) || defined(WIN32)
 #include <stdint.h>
-#endif
-
-#ifdef WIN32
-#if 1
-#ifndef uint8_t
-#define uint8_t  unsigned char
-#endif
-
-#ifndef uint16_t
-#define uint16_t unsigned short int
-#endif
-
-#ifndef uint32_t
-#define uint32_t unsigned int
-#endif
-#endif
-
-#ifndef uint64_t
-#define uint64_t unsigned long long int
-#endif
 #endif
 
 /* this should look like this: 

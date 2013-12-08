@@ -15,7 +15,9 @@ type _Bool is large enough to store
 the values 0 and 1. */
 /* We choose 8 bit to match C++ */
 /* It must also promote to integer */
+#ifndef WIN32
 typedef uint8_t _Bool; 
+#endif
 
 /* ISO C Standard: 7.16 Boolean type */
 #define bool _Bool
