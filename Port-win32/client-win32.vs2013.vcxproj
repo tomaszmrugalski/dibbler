@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug32|Win32">
+      <Configuration>Debug32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release32|Win32">
+      <Configuration>Release32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>client-win32</ProjectName>
+    <ProjectGuid>{F3A8782D-88E1-4604-AF79-CC225A3F64F4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>dibbler-client</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>dibbler-client</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;.;include;..\nettle;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;YYDEBUG; _WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <AdditionalIncludeDirectories>.;..;..\nettle;..\poslib;..\Options;..\misc;..\Messages;..\IfaceMgr;..\ClntTransMgr;..\ClntParser;..\ClntOptions;..\ClntMessages;..\ClntIfaceMgr;..\ClntCfgMgr;..\ClntAddrMgr;..\CfgMgr;..\AddrMgr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ClntTransMgr\ClntTransMgr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrAddr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrClient.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrIA.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrMgr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrPrefix.cpp" />
+    <ClCompile Include="..\ClntAddrMgr\ClntAddrMgr.cpp" />
+    <ClCompile Include="..\ClntIfaceMgr\ClntIfaceIface.cpp" />
+    <ClCompile Include="..\ClntIfaceMgr\ClntIfaceMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\DNSUpdate.cpp" />
+    <ClCompile Include="..\IfaceMgr\Iface.cpp" />
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp" />
+    <ClCompile Include="..\Options\Opt.cpp" />
+    <ClCompile Include="..\Options\OptAddr.cpp" />
+    <ClCompile Include="..\Options\OptAddrLst.cpp" />
+    <ClCompile Include="..\Options\OptAuthentication.cpp" />
+    <ClCompile Include="..\Options\OptDomainLst.cpp" />
+    <ClCompile Include="..\Options\OptDUID.cpp" />
+    <ClCompile Include="..\Options\OptEmpty.cpp" />
+    <ClCompile Include="..\Options\OptFQDN.cpp" />
+    <ClCompile Include="..\Options\OptGeneric.cpp" />
+    <ClCompile Include="..\Options\OptIA_NA.cpp" />
+    <ClCompile Include="..\Options\OptIA_PD.cpp" />
+    <ClCompile Include="..\Options\OptIAAddress.cpp" />
+    <ClCompile Include="..\Options\OptIAPrefix.cpp" />
+    <ClCompile Include="..\Options\OptInteger.cpp" />
+    <ClCompile Include="..\Options\OptOptionRequest.cpp" />
+    <ClCompile Include="..\Options\OptReconfigureMsg.cpp" />
+    <ClCompile Include="..\Options\OptRtPrefix.cpp" />
+    <ClCompile Include="..\Options\OptStatusCode.cpp" />
+    <ClCompile Include="..\Options\OptString.cpp" />
+    <ClCompile Include="..\Options\OptTA.cpp" />
+    <ClCompile Include="..\Options\OptUserClass.cpp" />
+    <ClCompile Include="..\Options\OptVendorData.cpp" />
+    <ClCompile Include="..\Options\OptVendorSpecInfo.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptAddrParams.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptElapsed.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptFQDN.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptIA_NA.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptIA_PD.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptIAAddress.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptIAPrefix.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptLifetime.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptOptionRequest.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptPreference.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptStatusCode.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptTA.cpp" />
+    <ClCompile Include="..\ClntOptions\ClntOptTimeZone.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgPD.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgPrefix.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsg.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgAdvertise.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgConfirm.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgDecline.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgInfRequest.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgRebind.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgReconfigure.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgRelease.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgRenew.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgReply.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgRequest.cpp" />
+    <ClCompile Include="..\ClntMessages\ClntMsgSolicit.cpp" />
+    <ClCompile Include="..\Messages\Msg.cpp" />
+    <ClCompile Include="..\CfgMgr\CfgMgr.cpp" />
+    <ClCompile Include="..\CfgMgr\HostID.cpp" />
+    <ClCompile Include="..\CfgMgr\HostRange.cpp" />
+    <ClCompile Include="..\misc\addrpack.c" />
+    <ClCompile Include="..\Misc\DHCPClient.cpp" />
+    <ClCompile Include="..\misc\DHCPConst.cpp" />
+    <ClCompile Include="..\misc\DUID.cpp" />
+    <ClCompile Include="..\Misc\FQDN.cpp" />
+    <ClCompile Include="..\Misc\hex.cpp" />
+    <ClCompile Include="..\Misc\hmac-sha-md5.c" />
+    <ClCompile Include="..\misc\IPv6Addr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Misc\KeyList.cpp" />
+    <ClCompile Include="..\misc\Logger.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\misc\long128.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Misc\md5-coreutils.c" />
+    <ClCompile Include="..\Misc\ScriptParams.cpp" />
+    <ClCompile Include="..\Misc\sha1.c" />
+    <ClCompile Include="..\Misc\sha256.c" />
+    <ClCompile Include="..\Misc\sha512.c" />
+    <ClCompile Include="client-win32.cpp" />
+    <ClCompile Include="ClntService.cpp" />
+    <ClCompile Include="lowlevel-win32.c" />
+    <ClCompile Include="WinService.cpp" />
+    <ClCompile Include="..\poslib\dnsmessage.cpp" />
+    <ClCompile Include="..\poslib\dnssec-sign.cpp" />
+    <ClCompile Include="..\poslib\domainfn.cpp" />
+    <ClCompile Include="..\poslib\exception.cpp" />
+    <ClCompile Include="..\poslib\lexfn.cpp" />
+    <ClCompile Include="..\poslib\postime.cpp" />
+    <ClCompile Include="..\poslib\random.cpp" />
+    <ClCompile Include="..\poslib\resolver.cpp" />
+    <ClCompile Include="..\poslib\rr.cpp" />
+    <ClCompile Include="..\poslib\socket.cpp" />
+    <ClCompile Include="..\poslib\w32poll.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgAddr.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgIA.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgIface.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgMgr.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntCfgTA.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntLexer.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntParsAddrOpt.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParser.cpp" />
+    <ClCompile Include="..\ClntCfgMgr\ClntParsGlobalOpt.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsIAOpt.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\ClntCfgMgr\ClntParsIfaceOpt.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\nettle\base64-decode.c" />
+    <ClCompile Include="..\nettle\base64-encode.c" />
+    <ClCompile Include="..\nettle\base64-meta.c" />
+    <ClCompile Include="..\nettle\hmac-md5.c" />
+    <ClCompile Include="..\nettle\hmac.c" />
+    <ClCompile Include="..\nettle\md5-meta.c" />
+    <ClCompile Include="..\nettle\md5.c" />
+    <ClCompile Include="..\nettle\memxor.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ClntCfgMgr\ClntParser.y" />
+    <None Include="..\AUTHORS" />
+    <None Include="..\Changelog" />
+    <None Include="..\Relnotes" />
+    <None Include="..\TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AddrMgr\AddrAddr.h" />
+    <ClInclude Include="..\AddrMgr\AddrClient.h" />
+    <ClInclude Include="..\AddrMgr\AddrIA.h" />
+    <ClInclude Include="..\AddrMgr\AddrMgr.h" />
+    <ClInclude Include="..\AddrMgr\AddrPrefix.h" />
+    <ClInclude Include="..\ClntAddrMgr\ClntAddrMgr.h" />
+    <ClInclude Include="..\ClntIfaceMgr\ClntIfaceIface.h" />
+    <ClInclude Include="..\ClntIfaceMgr\ClntIfaceMgr.h" />
+    <ClInclude Include="..\IfaceMgr\Iface.h" />
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h" />
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h" />
+    <ClInclude Include="..\CfgMgr\CfgMgr.h" />
+    <ClInclude Include="FlexLexer.h" />
+    <ClInclude Include="..\CfgMgr\StationID.h" />
+    <ClInclude Include="..\CfgMgr\StationRange.h" />
+    <ClInclude Include="..\sources\Options\Opt.h" />
+    <ClInclude Include="..\Options\OptAddr.h" />
+    <ClInclude Include="..\Options\OptAddrLst.h" />
+    <ClInclude Include="..\Options\OptFQDN.h" />
+    <ClInclude Include="..\Options\OptGeneric.h" />
+    <ClInclude Include="..\sources\Options\OptIA_NA.h" />
+    <ClInclude Include="..\Options\OptIA_NA.h" />
+    <ClInclude Include="..\Options\OptIA_PD.h" />
+    <ClInclude Include="..\sources\Options\OptIAAddress.h" />
+    <ClInclude Include="..\Options\OptIAAddress.h" />
+    <ClInclude Include="..\Options\OptIAPrefix.h" />
+    <ClInclude Include="..\Options\OptInteger.h" />
+    <ClInclude Include="..\sources\Options\OptInterfaceID.h" />
+    <ClInclude Include="..\sources\Options\OptOptionRequest.h" />
+    <ClInclude Include="..\Options\OptOptionRequest.h" />
+    <ClInclude Include="..\Options\OptReconfigureMsg.h" />
+    <ClInclude Include="..\Options\OptRtPrefix.h" />
+    <ClInclude Include="..\Options\OptStatusCode.h" />
+    <ClInclude Include="..\Options\OptString.h" />
+    <ClInclude Include="..\Options\OptTA.h" />
+    <ClInclude Include="..\Options\OptUserClass.h" />
+    <ClInclude Include="..\Options\OptVendorClass.h" />
+    <ClInclude Include="..\Options\OptVendorData.h" />
+    <ClInclude Include="..\Options\OptVendorSpecInfo.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptAddrParams.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptElapsed.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptFQDN.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptIA_NA.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptIA_PD.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptIAAddress.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptIAPrefix.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptLifetime.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptOptionRequest.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptPreference.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptStatusCode.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptTA.h" />
+    <ClInclude Include="..\ClntOptions\ClntOptTimeZone.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsg.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgAdvertise.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgConfirm.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgDecline.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgInfRequest.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgRebind.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgRelease.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgRenew.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgReply.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgRequest.h" />
+    <ClInclude Include="..\ClntMessages\ClntMsgSolicit.h" />
+    <ClInclude Include="..\misc\Container.h" />
+    <ClInclude Include="..\Misc\DHCPClient.h" />
+    <ClInclude Include="..\misc\DHCPConst.h" />
+    <ClInclude Include="..\misc\DUID.h" />
+    <ClInclude Include="..\Misc\hmac-sha-md5.h" />
+    <ClInclude Include="..\misc\IPv6Addr.h" />
+    <ClInclude Include="..\Misc\KeyList.h" />
+    <ClInclude Include="..\misc\Logger.h" />
+    <ClInclude Include="..\misc\long128.h" />
+    <ClInclude Include="..\Misc\md5.h" />
+    <ClInclude Include="..\misc\Portable.h" />
+    <ClInclude Include="..\Misc\ScriptParams.h" />
+    <ClInclude Include="..\Misc\sha1.h" />
+    <ClInclude Include="..\Misc\sha256.h" />
+    <ClInclude Include="..\Misc\sha512.h" />
+    <ClInclude Include="..\misc\SmartPtr.h" />
+    <ClInclude Include="ClntService.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="stdbool.h" />
+    <ClInclude Include="WinService.h" />
+    <ClInclude Include="..\poslib\poslib\lexfn.h" />
+    <ClInclude Include="..\poslib\poslib\postime.h" />
+    <ClInclude Include="..\poslib\poslib\random.h" />
+    <ClInclude Include="..\poslib\poslib\resolver.h" />
+    <ClInclude Include="..\poslib\poslib\rr.h" />
+    <ClInclude Include="..\poslib\poslib\socket.h" />
+    <ClInclude Include="..\poslib\poslib\sysstring.h" />
+    <ClInclude Include="..\poslib\poslib\vsnprintf.h" />
+    <ClInclude Include="..\ClntTransMgr\ClntTransMgr.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgAddr.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgIA.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgIface.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgMgr.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgPD.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgPrefix.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntCfgTA.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntParsAddrOpt.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntParser.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntParsGlobalOpt.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntParsIAOpt.h" />
+    <ClInclude Include="..\ClntCfgMgr\ClntParsIfaceOpt.h" />
+    <ClInclude Include="..\nettle\base64.h" />
+    <ClInclude Include="..\nettle\cbc.h" />
+    <ClInclude Include="..\nettle\hmac.h" />
+    <ClInclude Include="..\nettle\macros.h" />
+    <ClInclude Include="..\nettle\md5.h" />
+    <ClInclude Include="..\nettle\memxor.h" />
+    <ClInclude Include="..\nettle\nettle-internal.h" />
+    <ClInclude Include="..\nettle\nettle-meta.h" />
+    <ClInclude Include="..\nettle\nettle-types.h" />
+    <ClInclude Include="..\nettle\sha.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client-win32.vs2013.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="server-win32.vs2013.vcxproj">
+      <Project>{b4a3663c-44d7-46d2-b397-9d7e0e4eb557}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

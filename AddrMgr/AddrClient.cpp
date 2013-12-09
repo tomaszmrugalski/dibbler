@@ -355,9 +355,10 @@ std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
         strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
 
     // reconfigure-key
-    strum << "    <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
-          << hexToText(&x.ReconfKey_[0], x.ReconfKey_.size(), false)
-          << "</ReconfigureKey>" << endl;
+	if( x.ReconfKey_.size() )
+		strum << "    <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
+			  << hexToText(&x.ReconfKey_[0], x.ReconfKey_.size(), false)
+			  << "</ReconfigureKey>" << endl;
 
     strum << "    <!-- " << x.IAsLst.count() << " IA(s) -->" << endl;
     SPtr<TAddrIA> ptr;

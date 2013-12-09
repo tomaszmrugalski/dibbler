@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug32|Win32">
+      <Configuration>Debug32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release32|Win32">
+      <Configuration>Release32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>server-win32</ProjectName>
+    <ProjectGuid>{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}</ProjectGuid>
+    <RootNamespace>server-win32</RootNamespace>
+    <Keyword>ManagedCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>dibbler-server</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>dibbler-server</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..;.;..\nettle;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release32|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP /J %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..;.;include;..\TransMgr;..\SrvTransMgr;..\SrvOptions;..\SrvMessages;..\SrvIfaceMgr;..\SrvCfgMgr;..\SrvAddrMgr;..\Options;..\misc;..\Messages;..\IfaceMgr;..\CfgMgr;..\AddrMgr;..\poslib;..\nettle;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SrvTransMgr\SrvTransMgr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrAddr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrClient.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrIA.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrMgr.cpp" />
+    <ClCompile Include="..\AddrMgr\AddrPrefix.cpp" />
+    <ClCompile Include="..\SrvAddrMgr\SrvAddrMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\DNSUpdate.cpp" />
+    <ClCompile Include="..\IfaceMgr\Iface.cpp" />
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp" />
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp" />
+    <ClCompile Include="..\SrvIfaceMgr\SrvIfaceMgr.cpp" />
+    <ClCompile Include="..\Options\Opt.cpp" />
+    <ClCompile Include="..\Options\OptAddr.cpp" />
+    <ClCompile Include="..\Options\OptAddrLst.cpp" />
+    <ClCompile Include="..\Options\OptAuthentication.cpp" />
+    <ClCompile Include="..\Options\OptDomainLst.cpp" />
+    <ClCompile Include="..\Options\OptDUID.cpp" />
+    <ClCompile Include="..\Options\OptEmpty.cpp" />
+    <ClCompile Include="..\Options\OptFQDN.cpp" />
+    <ClCompile Include="..\Options\OptGeneric.cpp" />
+    <ClCompile Include="..\Options\OptIA_NA.cpp" />
+    <ClCompile Include="..\Options\OptIA_PD.cpp" />
+    <ClCompile Include="..\Options\OptIAAddress.cpp" />
+    <ClCompile Include="..\Options\OptIAPrefix.cpp" />
+    <ClCompile Include="..\Options\OptInteger.cpp" />
+    <ClCompile Include="..\Options\OptOptionRequest.cpp" />
+    <ClCompile Include="..\Options\OptReconfigureMsg.cpp" />
+    <ClCompile Include="..\Options\OptRtPrefix.cpp" />
+    <ClCompile Include="..\Options\OptStatusCode.cpp" />
+    <ClCompile Include="..\Options\OptString.cpp" />
+    <ClCompile Include="..\Options\OptTA.cpp" />
+    <ClCompile Include="..\Options\OptUserClass.cpp" />
+    <ClCompile Include="..\Options\OptVendorClass.cpp" />
+    <ClCompile Include="..\Options\OptVendorData.cpp" />
+    <ClCompile Include="..\Options\OptVendorSpecInfo.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptAddrParams.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptFQDN.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptIA_NA.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptIA_PD.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptIAAddress.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptIAPrefix.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptInterfaceID.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptLQ.cpp" />
+    <ClCompile Include="..\SrvOptions\SrvOptTA.cpp" />
+    <ClCompile Include="..\Messages\Msg.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsg.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgAdvertise.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgConfirm.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgDecline.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgInfRequest.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgLeaseQuery.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgLeaseQueryReply.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgRebind.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgReconfigure.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgRelease.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgRenew.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgReply.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgRequest.cpp" />
+    <ClCompile Include="..\SrvMessages\SrvMsgSolicit.cpp" />
+    <ClCompile Include="..\CfgMgr\CfgMgr.cpp" />
+    <ClCompile Include="..\CfgMgr\HostID.cpp" />
+    <ClCompile Include="..\CfgMgr\HostRange.cpp" />
+    <ClCompile Include="..\misc\addrpack.c" />
+    <ClCompile Include="..\Misc\base64.c" />
+    <ClCompile Include="..\misc\DHCPConst.cpp" />
+    <ClCompile Include="..\Misc\DHCPServer.cpp" />
+    <ClCompile Include="..\misc\DUID.cpp" />
+    <ClCompile Include="..\Misc\FQDN.cpp" />
+    <ClCompile Include="..\Misc\hex.cpp" />
+    <ClCompile Include="..\Misc\hmac-sha-md5.c" />
+    <ClCompile Include="..\misc\IPv6Addr.cpp" />
+    <ClCompile Include="..\Misc\Key.cpp" />
+    <ClCompile Include="..\Misc\KeyList.cpp" />
+    <ClCompile Include="..\misc\Logger.cpp" />
+    <ClCompile Include="..\misc\long128.cpp" />
+    <ClCompile Include="..\Misc\md5-coreutils.c" />
+    <ClCompile Include="..\Misc\ScriptParams.cpp" />
+    <ClCompile Include="..\Misc\sha1.c" />
+    <ClCompile Include="..\Misc\sha256.c" />
+    <ClCompile Include="..\Misc\sha512.c" />
+    <ClCompile Include="lowlevel-win32.c" />
+    <ClCompile Include="server-win32.cpp" />
+    <ClCompile Include="SrvService.cpp" />
+    <ClCompile Include="WinService.cpp" />
+    <ClCompile Include="..\poslib\dnsmessage.cpp" />
+    <ClCompile Include="..\poslib\dnssec-sign.cpp" />
+    <ClCompile Include="..\poslib\domainfn.cpp" />
+    <ClCompile Include="..\poslib\exception.cpp" />
+    <ClCompile Include="..\poslib\lexfn.cpp" />
+    <ClCompile Include="..\poslib\postime.cpp" />
+    <ClCompile Include="..\poslib\random.cpp" />
+    <ClCompile Include="..\poslib\resolver.cpp" />
+    <ClCompile Include="..\poslib\rr.cpp" />
+    <ClCompile Include="..\poslib\socket.cpp" />
+    <ClCompile Include="..\poslib\w32poll.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\Node.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\NodeClientSpecific.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\NodeConstant.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\NodeOperator.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgAddrClass.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgClientClass.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgIface.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgMgr.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgOptions.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgPD.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvCfgTA.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvLexer.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvParsClassOpt.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvParser.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvParsGlobalOpt.cpp" />
+    <ClCompile Include="..\SrvCfgMgr\SrvParsIfaceOpt.cpp" />
+    <ClCompile Include="..\nettle\base64-decode.c" />
+    <ClCompile Include="..\nettle\base64-encode.c" />
+    <ClCompile Include="..\nettle\base64-meta.c" />
+    <ClCompile Include="..\nettle\hmac-md5.c" />
+    <ClCompile Include="..\nettle\hmac.c" />
+    <ClCompile Include="..\nettle\md5-meta.c" />
+    <ClCompile Include="..\nettle\md5.c" />
+    <ClCompile Include="..\nettle\memxor.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\SrvCfgMgr\SrvLexer.l" />
+    <None Include="..\SrvCfgMgr\SrvParser.y" />
+    <None Include="..\Changelog" />
+    <None Include="..\GUIDELINES" />
+    <None Include="..\RELNOTES" />
+    <None Include="..\TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AddrMgr\AddrAddr.h" />
+    <ClInclude Include="..\AddrMgr\AddrClient.h" />
+    <ClInclude Include="..\AddrMgr\AddrIA.h" />
+    <ClInclude Include="..\AddrMgr\AddrMgr.h" />
+    <ClInclude Include="..\AddrMgr\AddrPrefix.h" />
+    <ClInclude Include="..\IfaceMgr\DNSUpdate.h" />
+    <ClInclude Include="..\IfaceMgr\Iface.h" />
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h" />
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h" />
+    <ClInclude Include="..\Options\Opt.h" />
+    <ClInclude Include="..\Options\OptAddr.h" />
+    <ClInclude Include="..\Options\OptAddrLst.h" />
+    <ClInclude Include="..\Options\OptAuthentication.h" />
+    <ClInclude Include="..\Options\OptDUID.h" />
+    <ClInclude Include="..\Options\OptFQDN.h" />
+    <ClInclude Include="..\Options\OptGeneric.h" />
+    <ClInclude Include="..\Options\OptIA_NA.h" />
+    <ClInclude Include="..\Options\OptIA_PD.h" />
+    <ClInclude Include="..\Options\OptIAAddress.h" />
+    <ClInclude Include="..\Options\OptIAPrefix.h" />
+    <ClInclude Include="..\Options\OptInteger.h" />
+    <ClInclude Include="..\Options\OptOptionRequest.h" />
+    <ClInclude Include="..\Options\OptRapidCommit.h" />
+    <ClInclude Include="..\Options\OptStatusCode.h" />
+    <ClInclude Include="..\Options\OptString.h" />
+    <ClInclude Include="..\Options\OptStringLst.h" />
+    <ClInclude Include="..\Options\OptTA.h" />
+    <ClInclude Include="..\Options\OptUserClass.h" />
+    <ClInclude Include="..\Options\OptVendorClass.h" />
+    <ClInclude Include="..\Options\OptVendorSpecInfo.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptAddrParams.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptAuthentication.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptDNSServers.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptDomainName.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptFQDN.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptIA_NA.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptIA_PD.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptIAAddress.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptIAPrefix.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptInterfaceID.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptNISDomain.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptNISPDomain.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptNISPServer.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptNISServer.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptNTPServers.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptRapidCommit.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptServerUnicast.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptSIPDomain.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptSIPServer.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptTA.h" />
+    <ClInclude Include="..\SrvOptions\SrvOptVendorSpec.h" />
+    <ClInclude Include="..\CfgMgr\CfgMgr.h" />
+    <ClInclude Include="..\SrvCfgMgr\Node.h" />
+    <ClInclude Include="..\SrvCfgMgr\NodeClientSpecific.h" />
+    <ClInclude Include="..\SrvCfgMgr\NodeConstant.h" />
+    <ClInclude Include="..\SrvCfgMgr\NodeOperator.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvCfgAddrClass.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvCfgClientClass.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvCfgIface.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvCfgMgr.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvCfgTA.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvParsClassOpt.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvParser.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvParsGlobalOpt.h" />
+    <ClInclude Include="..\SrvCfgMgr\SrvParsIfaceOpt.h" />
+    <ClInclude Include="..\Misc\base64.h" />
+    <ClInclude Include="..\misc\Container.h" />
+    <ClInclude Include="..\misc\DHCPConst.h" />
+    <ClInclude Include="..\Misc\DHCPServer.h" />
+    <ClInclude Include="..\misc\DUID.h" />
+    <ClInclude Include="..\Misc\FQDN.h" />
+    <ClInclude Include="..\misc\IPv6Addr.h" />
+    <ClInclude Include="..\Misc\KeyList.h" />
+    <ClInclude Include="..\misc\Logger.h" />
+    <ClInclude Include="..\misc\long128.h" />
+    <ClInclude Include="..\misc\Portable.h" />
+    <ClInclude Include="..\Misc\ScriptParams.h" />
+    <ClInclude Include="..\misc\SmartPtr.h" />
+    <ClInclude Include="dibbler-config.h" />
+    <ClInclude Include="SrvService.h" />
+    <ClInclude Include="stdint.h" />
+    <ClInclude Include="unistd.h" />
+    <ClInclude Include="WinService.h" />
+    <ClInclude Include="..\SrvIfaceMgr\SrvIfaceIface.h" />
+    <ClInclude Include="..\SrvIfaceMgr\SrvIfaceMgr.h" />
+    <ClInclude Include="..\SrvAddrMgr\SrvAddrMgr.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsg.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgAdvertise.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgConfirm.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgDecline.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgInfRequest.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgLeaseQuery.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgLeaseQueryReply.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgRebind.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgRelease.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgRenew.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgReply.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgRequest.h" />
+    <ClInclude Include="..\SrvMessages\SrvMsgSolicit.h" />
+    <ClInclude Include="..\SrvTransMgr\SrvTransMgr.h" />
+    <ClInclude Include="..\nettle\base64.h" />
+    <ClInclude Include="..\nettle\cbc.h" />
+    <ClInclude Include="..\nettle\hmac.h" />
+    <ClInclude Include="..\nettle\macros.h" />
+    <ClInclude Include="..\nettle\md5.h" />
+    <ClInclude Include="..\nettle\memxor.h" />
+    <ClInclude Include="..\nettle\nettle-internal.h" />
+    <ClInclude Include="..\nettle\nettle-meta.h" />
+    <ClInclude Include="..\nettle\nettle-types.h" />
+    <ClInclude Include="..\nettle\sha.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="server-win32.vs2013.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

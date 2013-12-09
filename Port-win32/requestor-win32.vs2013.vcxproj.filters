@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\port-win32">
+      <UniqueIdentifier>{e422e90a-1d0c-43c9-adf3-e3c1044cf99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Requestor">
+      <UniqueIdentifier>{224699c7-4f32-4c48-88ce-bde18088c0ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{6774e933-cee9-4e1a-81da-b19a9736f60a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Messages">
+      <UniqueIdentifier>{f45a4385-34c7-4657-ae86-0e098329f769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Options">
+      <UniqueIdentifier>{4d7a2f8d-4a96-407b-85c6-18cad89fb8f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IfaceMgr">
+      <UniqueIdentifier>{37fce8c8-fea1-44eb-996d-8d7f65677a14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Requestor">
+      <UniqueIdentifier>{453e4546-8b15-4947-8c01-3007edce0838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IfaceMgr">
+      <UniqueIdentifier>{d354f265-711f-4940-a2b7-898a43a7f283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{0c2f282f-fcd9-430d-a98a-1dc53dbc21c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Messages">
+      <UniqueIdentifier>{6839000f-9323-4959-9fb0-e1255af2886c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Options">
+      <UniqueIdentifier>{aabb7910-6759-431f-ad36-a90a9a5cdd84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lowlevel-win32.c">
+      <Filter>Source Files\port-win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Requestor\ReqCfgMgr.cpp">
+      <Filter>Source Files\Requestor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Requestor\ReqMsg.cpp">
+      <Filter>Source Files\Requestor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Requestor\ReqOpt.cpp">
+      <Filter>Source Files\Requestor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Requestor\ReqTransMgr.cpp">
+      <Filter>Source Files\Requestor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Requestor\Requestor.cpp">
+      <Filter>Source Files\Requestor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\addrpack.c">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\DHCPConst.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\DUID.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\hex.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\IPv6Addr.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\KeyList.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\Logger.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Misc\ScriptParams.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Messages\Msg.cpp">
+      <Filter>Source Files\Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\Opt.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptAuthentication.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptDUID.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptGeneric.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAAddress.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIAPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptInteger.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptRtPrefix.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\Iface.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\IfaceMgr.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IfaceMgr\SocketIPv6.cpp">
+      <Filter>Source Files\IfaceMgr</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource-requestor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Requestor\ReqCfgMgr.h">
+      <Filter>Header Files\Requestor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Requestor\ReqMsg.h">
+      <Filter>Header Files\Requestor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Requestor\ReqOpt.h">
+      <Filter>Header Files\Requestor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Requestor\ReqTransMgr.h">
+      <Filter>Header Files\Requestor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\Iface.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\IfaceMgr.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IfaceMgr\SocketIPv6.h">
+      <Filter>Header Files\IfaceMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\DHCPConst.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\Portable.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Misc\ScriptParams.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Messages\Msg.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\Opt.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptAddr.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptDUID.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptGeneric.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptInteger.h">
+      <Filter>Header Files\Options</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dibbler-requestor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="server-win32.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Requestor\TODO.txt" />
+  </ItemGroup>
+</Project>
