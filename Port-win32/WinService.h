@@ -18,8 +18,6 @@
 
 #define SERVICE_CONTROL_USER 128
 
-#define ADMIN_REQUIRED_STR "This action requires administrative privileges."
-
 typedef enum {
 	STATUS,
 	START,
@@ -69,6 +67,8 @@ class TWinService
   virtual bool OnUserControl(DWORD dwOpcode);
   
   ~TWinService(void);
+
+  static const char ADMIN_REQUIRED_STR[];
 
  protected:
   SERVICE_STATUS Status;

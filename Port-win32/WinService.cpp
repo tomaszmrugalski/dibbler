@@ -13,6 +13,8 @@
 #include "winservice.h"
 #include "Logger.h"
 
+const char TWinService::ADMIN_REQUIRED_STR[] = "This action requires administrative privileges.";
+
 TWinService* TWinService::ServicePtr= NULL;
 
 TWinService::TWinService(const char* serviceName, const char* dispName,

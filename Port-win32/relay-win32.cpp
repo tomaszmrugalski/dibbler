@@ -99,8 +99,8 @@ int main(int argc, char* argv[]) {
 	case INSTALL:
 	case UNINSTALL:
 		if ( !RelService->IsRunAsAdmin() ) {
-			Log(Crit) << ADMIN_REQUIRED_STR << LogEnd;
-			return 0;
+			Log(Crit) << RelService->ADMIN_REQUIRED_STR << LogEnd;
+			return -1;
 		}
 		break;
 	}

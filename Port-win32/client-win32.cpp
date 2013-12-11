@@ -102,8 +102,8 @@ int main(int argc, char* argv[])
 	case INSTALL:
 	case UNINSTALL:
 		if ( !Client->IsRunAsAdmin() ) {
-			Log(Crit) << ADMIN_REQUIRED_STR << LogEnd;
-			return 0;
+			Log(Crit) << Client->ADMIN_REQUIRED_STR << LogEnd;
+			return -1;
 		}
 		break;
 	}
@@ -118,8 +118,8 @@ int main(int argc, char* argv[])
 		break;
 	}
 	case STOP: { 
-        Client->StopService();
-        break;
+		Client->StopService();
+		break;
 	}
 	case INSTALL: {
 		Client->Install();
@@ -133,13 +133,13 @@ int main(int argc, char* argv[])
 		Client->Run();
 		break;
 	}
-    case SERVICE: {
-        Client->RunService();
-        break;
-    }
+	case SERVICE: {
+		Client->RunService();
+		break;
+	}
 	case INVALID: {
 		Log(Crit) << "Invalid usage." << endl;
-    }				  
+	}
 	case HELP: 
 	default: {
 		usage();
