@@ -1152,7 +1152,9 @@ iface "eth0" {
 It is possible to configure dibbler-server to provide vendor-specific
 information options. Since there are no dibbler-specific parameters,
 this implementation is quite flexible. Enterprise number as well as
-content of the option itself can be configured.
+content of the option itself can be configured. In the following
+example, we define a suboption 1027 for vendor-id 4491. The value
+of that option is 0x0013.
 
 \begin{lstlisting}
 # server.conf
@@ -1163,7 +1165,7 @@ iface "eth1" {
    pool 2000::1-2000::ff
  }
 
- option vendor-spec 1234-0x00002fedc
+ option vendor-spec 4491-1027-0x0013
 }
 \end{lstlisting}
 
@@ -1185,7 +1187,7 @@ iface "eth1" {
    pool 2000::1-2000::ff
  }
 
- option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
+ option vendor-spec 4491-1027-0x0013,1234-5678-0xabcd
 }
 \end{lstlisting}
 

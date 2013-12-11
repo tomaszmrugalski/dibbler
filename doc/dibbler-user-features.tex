@@ -1789,23 +1789,27 @@ examples.
 \subsection{Vendor specific information}
 \label{feature-vendor-spec}
 Dibbler supports vendor specific information options. As the name
-suggests, that option is specific to a particular vendor. To be able
+suggests, that option is specific to a particular vendor. For each
+vendor (or enterprise-id), there may be defined a number of
+sub-options. Let's assume that we want to define a suboption 1027 in
+vendor-id 4491. The value of that option should be 0x0013. To be able
 to support any vendor in a flexible manner, values are specified in a
 hex format in \verb+server.conf+. For example:
 
 \begin{lstlisting}
- option vendor-spec 1234-0x00002fedc
+ option vendor-spec 4491-1027-0x0013
 \end{lstlisting}
 
 When client asks for a vendor-specific info, server will send
-vendor-specific info option with enterprise number set to 1234 and
-value option-data will be 00002fedc.
+vendor-specific info option with enterprise number set to 4491 and
+option-data will contain one sub-option with code 1027. The
+value of that option will be 0x0013.
 
 Although uncommon, it is also possible to specify multiple vendor
 options. Another \verb+server.conf+ example:
 
 \begin{lstlisting}
- option vendor-spec 1234-0x00002fedc,5678-0x0002aaaa
+ option vendor-spec 4491-1027-0x0013,1234-5678-0x0002aaaa
 \end{lstlisting}
 
 Server algorithm for choosing, which vendor option should be sent,
@@ -1814,11 +1818,11 @@ works as follows:
 \begin{itemize}
 \item When client requests for a speficic vendor (i.e. sends
   \opt{vendor-spec info} option with vendor field set), it will
-  receive option for that specific vendor (i.e. requested 1234, got
-  1234).
+  receive option for that specific vendor (i.e. requested 4491, got
+  4491).
  \item When client requests any vendor (i.e. sends only \opt{option
    request} option with vendor-spec mentioned), it will receive first
-   \opt{vendor-spec info} option from the list (i.e. 5678/0002aaaa).
+   \opt{vendor-spec info} option from the list (i.e. 4491/1027/0x0013).
  \item When client requests for not supported vendor (i.e. 11111), it
    will receive first vendor-spec option from the list
    (i.e. 5678/0002aaaa).
@@ -1837,10 +1841,10 @@ following ways:
   sent with \opt{vendor-spec info} option mentioned, but also
   \opt{vendor-spec info} option with enterprise number set to 1234
   will be sent.
-\item[option vendor-spec 1234 0x0a0b0c0d] -- \opt{option request}
+\item[option vendor-spec 1234 - 5678] -- \opt{option request}
   option will be sent with \opt{vendor-spec info} option mentioned,
   but also \opt{vendor-spec info} option with enterprise number set to
-  1234 and option-data will be sent.
+  1234 and sub-option with code 5678 will be sent.
 \end{description}
 
 Although that is almost never needed, it is possible to configure

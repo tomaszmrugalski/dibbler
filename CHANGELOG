@@ -19,6 +19,8 @@
   - Support for ppc64le architecture added (thanks to Snehal for sending patches)
   - Cli/Srv: no longer crashes when reconfigure-key is empty (thanks to Hernan
     Martinez for fixing this!)
+  - Doc update: vendor-spec options examples are now updated
+    (thanks to Michael Rapoport for spotting this)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
