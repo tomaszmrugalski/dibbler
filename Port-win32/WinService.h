@@ -55,6 +55,7 @@ class TWinService
   int getStatus();
   bool isRunning(const char * name);
   bool isRunning();
+  bool IsRunAsAdmin(); // Check if the running process has administrative privileges
   
   virtual void Run();
   virtual bool OnInit();
@@ -66,6 +67,8 @@ class TWinService
   virtual bool OnUserControl(DWORD dwOpcode);
   
   ~TWinService(void);
+
+  static const char ADMIN_REQUIRED_STR[];
 
  protected:
   SERVICE_STATUS Status;

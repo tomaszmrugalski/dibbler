@@ -13,6 +13,8 @@
 #include "winservice.h"
 #include "Logger.h"
 
+const char TWinService::ADMIN_REQUIRED_STR[] = "This action requires administrative privileges.";
+
 TWinService* TWinService::ServicePtr= NULL;
 
 TWinService::TWinService(const char* serviceName, const char* dispName,
@@ -505,4 +507,29 @@ bool TWinService::verifyPort() {
          Log(Notice) << "Windows 8:     major=6 minor=2" << LogEnd;
     }
     return ok;
+}
+
+bool TWinService::IsRunAsAdmin()
+{
+	BOOL fIsRunAsAdmin = FALSE;
+	PSID pAdministratorsGroup = NULL;
+
+	// Allocate and initialize a SID of the administrators group. 
+	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+	if ( AllocateAndInitializeSid(
+		&NtAuthority,
+		2,
+		SECURITY_BUILTIN_DOMAIN_RID,
+		DOMAIN_ALIAS_RID_ADMINS,
+		0, 0, 0, 0, 0, 0,
+		&pAdministratorsGroup) )
+	{
+		// Determine whether the SID of administrators group is enabled in  
+		// the primary access token of the process. 
+		CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin);
+
+		// Cleanup for all allocated resources. 
+		FreeSid(pAdministratorsGroup);
+	}
+	return fIsRunAsAdmin == TRUE;
 }
