@@ -91,6 +91,20 @@ int main(int argc, char* argv[]) {
 
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
 
+	// Check for administrative privileges for some of the actions
+	switch ( status ) {
+	case STATUS:
+	case START:
+	case STOP:
+	case INSTALL:
+	case UNINSTALL:
+		if( !SrvService->IsRunAsAdmin() ) {
+			Log(Crit) << ADMIN_REQUIRED_STR << LogEnd;
+			return 0;
+		}
+		break;
+	}
+
     switch (status) {
     case STATUS: {
         SrvService->showStatus();
@@ -105,8 +119,8 @@ int main(int argc, char* argv[]) {
         break;
     }
     case INSTALL: {
-        SrvService->Install();
-        break;
+		SrvService->Install();
+		break;
     }
     case UNINSTALL: {
         SrvService->Uninstall();

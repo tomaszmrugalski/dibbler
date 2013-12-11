@@ -94,6 +94,20 @@ int main(int argc, char* argv[])
 		return -1;		
 	}
 
+	// Check for administrative privileges for some of the actions
+	switch ( status ) {
+	case STATUS:
+	case START:
+	case STOP:
+	case INSTALL:
+	case UNINSTALL:
+		if ( !Client->IsRunAsAdmin() ) {
+			Log(Crit) << ADMIN_REQUIRED_STR << LogEnd;
+			return 0;
+		}
+		break;
+	}
+
 	switch(status) {
 	case STATUS: { 
 		Client->showStatus();

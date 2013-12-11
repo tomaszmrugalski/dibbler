@@ -18,6 +18,8 @@
 
 #define SERVICE_CONTROL_USER 128
 
+#define ADMIN_REQUIRED_STR "This action requires administrative privileges."
+
 typedef enum {
 	STATUS,
 	START,
