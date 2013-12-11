@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
  *
  * Released under GNU GPL v2 licence
  *
@@ -26,17 +27,16 @@ extern TDHCPServer * srvPtr;
 using namespace std;
 
 void usage() {
-        cout << "Usage:" << endl;
-        cout << " dibbler-server.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
-                 << " ACTION = status|start|stop|install|uninstall|run" << endl
-                 << " status    - show status and exit" << endl
-                 << " start     - start installed service" << endl
-                 << " stop      - stop installed service" << endl
-                 << " install   - install service" << endl
-                 << " uninstall - uninstall service" << endl
-                 << " run       - run in console" << endl << endl
-                 << " -d paramters is now optional." << endl;
-
+    cout << "Usage:" << endl;
+    cout << " dibbler-server.exe ACTION [-d c:\\path\\to\\config\\file]" << endl
+         << " ACTION = status|start|stop|install|uninstall|run" << endl
+         << " status    - show status and exit" << endl
+         << " start     - start installed service" << endl
+         << " stop      - stop installed service" << endl
+         << " install   - install service" << endl
+         << " uninstall - uninstall service" << endl
+         << " run       - run in console" << endl << endl
+         << " -d paramters is now optional." << endl;
 }
 
 /*
@@ -44,16 +44,16 @@ void usage() {
  */
 BOOL CtrlHandler( DWORD fdwCtrlType )
 {
-  switch( fdwCtrlType )
-  {
-  case CTRL_C_EVENT: {
-          srvPtr->stop();
-      return TRUE;
-  }
+    switch( fdwCtrlType )
+    {
+    case CTRL_C_EVENT: {
+        srvPtr->stop();
+        return TRUE;
+    }
     case CTRL_BREAK_EVENT:
-      return FALSE;
-  }
-  return TRUE;
+        return FALSE;
+    }
+    return TRUE;
 }
 
 int main(int argc, char* argv[]) {
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     cout << DIBBLER_COPYRIGHT4 << endl;
     cout << endl;
 
-        // get the service object
+    // get the service object
     TSrvService * SrvService = TSrvService::getHandle();
 
     WSADATA wsaData;
@@ -91,19 +91,19 @@ int main(int argc, char* argv[]) {
 
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
 
-	// Check for administrative privileges for some of the actions
-	switch ( status ) {
-	case STATUS:
-	case START:
-	case STOP:
-	case INSTALL:
-	case UNINSTALL:
-		if( !SrvService->IsRunAsAdmin() ) {
-			Log(Crit) << SrvService->ADMIN_REQUIRED_STR << LogEnd;
-			return -1;
-		}
-		break;
-	}
+    // Check for administrative privileges for some of the actions
+    switch ( status ) {
+    case START:
+    case STOP:
+    case INSTALL:
+    case UNINSTALL:
+        if( !SrvService->isRunAsAdmin() ) {
+            Log(Crit) << SrvService->ADMIN_REQUIRED_STR << LogEnd;
+            return -1;
+        }
+        break;
+    default:
+    }
 
     switch (status) {
     case STATUS: {
@@ -119,8 +119,8 @@ int main(int argc, char* argv[]) {
         break;
     }
     case INSTALL: {
-		SrvService->Install();
-		break;
+        SrvService->Install();
+        break;
     }
     case UNINSTALL: {
         SrvService->Uninstall();
@@ -135,7 +135,8 @@ int main(int argc, char* argv[]) {
         break;
     }
     case INVALID: {
-        cout << "Invalid usage." << endl;
+        Log(Crit) << "Invalid usage." << LogEnd;
+        // No break here; fall through to help
     }
     case HELP:
     default: {

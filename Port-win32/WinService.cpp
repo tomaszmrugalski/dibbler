@@ -3,6 +3,7 @@
  *
  * authors: Tomasz Mrugalski <thomson@klub.com.pl>
  *          Marek Senderski <msend@o2.pl>
+ * changes: Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
  *
  * Released under GNU GPL v2 licence
  *
@@ -509,27 +510,30 @@ bool TWinService::verifyPort() {
     return ok;
 }
 
-bool TWinService::IsRunAsAdmin()
+/// @brief Check if the running process has administrative privileges
+///
+/// @return true if run as admin
+bool TWinService::isRunAsAdmin()
 {
-	BOOL fIsRunAsAdmin = FALSE;
-	PSID pAdministratorsGroup = NULL;
+    BOOL fIsRunAsAdmin = FALSE;
+    PSID pAdministratorsGroup = NULL;
 
-	// Allocate and initialize a SID of the administrators group. 
-	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
-	if ( AllocateAndInitializeSid(
-		&NtAuthority,
-		2,
-		SECURITY_BUILTIN_DOMAIN_RID,
-		DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0,
-		&pAdministratorsGroup) )
-	{
-		// Determine whether the SID of administrators group is enabled in  
-		// the primary access token of the process. 
-		CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin);
+    // Allocate and initialize a SID of the administrators group. 
+    SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+    if ( AllocateAndInitializeSid(
+             &NtAuthority,
+             2,
+             SECURITY_BUILTIN_DOMAIN_RID,
+             DOMAIN_ALIAS_RID_ADMINS,
+             0, 0, 0, 0, 0, 0,
+             &pAdministratorsGroup) )
+    {
+        // Determine whether the SID of administrators group is enabled in  
+        // the primary access token of the process. 
+        CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin);
 
-		// Cleanup for all allocated resources. 
-		FreeSid(pAdministratorsGroup);
-	}
-	return fIsRunAsAdmin == TRUE;
+        // Cleanup for all allocated resources. 
+        FreeSid(pAdministratorsGroup);
+    }
+    return fIsRunAsAdmin == TRUE;
 }

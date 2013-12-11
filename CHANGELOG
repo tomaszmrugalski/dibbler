@@ -21,6 +21,7 @@
     Martinez for fixing this!)
   - Doc update: vendor-spec options examples are now updated
     (thanks to Michael Rapoport for spotting this)
+  - Win: detection whether client is run with administrative privileges
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
