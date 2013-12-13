@@ -22,20 +22,15 @@
 
 #ifdef WIN32
 #include <winsock2.h>
+#define strcasecmp strcmpi
+#define snprintf _snprintf
 #endif
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
 #endif
 
-#ifdef WIN32
-#define strcasecmp strcmpi
-#define snprintf _snprintf
-
-#endif
-
-#if defined (BSD) || defined(SUNOS) || defined(WIN32)
 #include <stdint.h>
-#endif
+#include <unistd.h>
 
 /* this should look like this: 
 uint16_t readUint16(uint8_t* buf);

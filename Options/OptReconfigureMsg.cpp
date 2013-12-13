@@ -12,14 +12,7 @@
 #include <iostream>
 #include <string>
 #include "Logger.h"
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#if defined(LINUX) || defined(BSD)
-#include <arpa/inet.h>
-#endif
-
+#include "Portable.h"
 #include "DHCPConst.h"
 #include "OptReconfigureMsg.h"
 
@@ -53,11 +46,10 @@ size_t TOptReconfigureMsg::getSize()
 
 char * TOptReconfigureMsg::storeSelf( char* buf)
 {
-    *(short*)buf = htons(OptType);
-    buf+=2;
-    *(short*)buf = htons(1); // length
-    buf+=2;
-    *buf = (char)MsgType_;
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, 1); // length
+    buf = writeUint8(buf, MsgType_);
+    //*buf = (char)MsgType_;
     return buf+1;
 }
 
