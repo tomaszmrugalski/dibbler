@@ -53,10 +53,19 @@
 make
 make check
 @endverbatim
- * 
+ *
  * It would be great if contributted code included unittests. That is not necessary, however.
  * During writing this section (Oct. 2011) googletest support was very fresh, so number of
  * available tests was very limited. For example of a unittest, see tests for TOptAddr class
  * in Options/tests/OptAddr_unittest.cc.
+ *
+ * As of Feb. 2014 there are moderately extensive tests for the server side. They are located
+ * in tests/Srv directory.
+ *
+ * Author was experiencing odd linking errors about undefined reference to `pthread_key_create'
+ * and other pthread functions on Ubuntu 13.10 x64 and gtest 1.7.0 (some dibbler tests were
+ * linking fine, while others, namely Misc/tests, were failing) when linking dynamically.
+ * Therefore the gtest unittests are now being linked statically by default. If you don't like
+ * that behaviour, there's --enable-gtest-static=no option that will revert to the old way.
  *
  */

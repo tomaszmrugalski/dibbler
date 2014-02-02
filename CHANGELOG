@@ -17,11 +17,17 @@
   - Notify script called only when non-empty script name specified.
     (thanks to Hernan Martinez for contributed patches)
   - Support for ppc64le architecture added (thanks to Snehal for sending patches)
+    Dibbler now uses alpha version of libtool 2.4.2.418, which features
+    fixes for ppc64le.
   - Cli/Srv: no longer crashes when reconfigure-key is empty (thanks to Hernan
     Martinez for fixing this!)
   - Doc update: vendor-spec options examples are now updated
     (thanks to Michael Rapoport for spotting this)
   - Win: detection whether client is run with administrative privileges
+  - gtest tests linking problem on Ubuntu 13.10 fixed. Sort of. The tests are
+    not linked statically by default. There is a --enable-gtest-static flag
+    that controls that behaviour.
+  - Minor Developer's Guide update.
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

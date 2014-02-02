@@ -445,6 +445,23 @@ AC_ARG_WITH(gtest,
    gtest_path="$withval", 
    gtest_path="no")
 
+AC_ARG_ENABLE(gtest-static,
+     [  --enable-gtest-static   Enables static linking for gtest (default: yes)],
+     [  case "${enableval}" in
+          yes)
+            gtest_static=yes
+            ;;
+          no)
+            gtest_static=no
+            ;;
+          *)
+            AC_MSG_ERROR(bad value ${enableval} for --enable-gtest-static)
+            ;;
+        esac],
+     [ gtest_static=yes]
+   )
+
+
 #echo "After gtest"
 
 if test "$gtest_path" != "no"
@@ -455,6 +472,12 @@ then
         GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
         GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
         GTEST_LDADD=`${GTEST_CONFIG} --libs`
+
+        # Linking gtest statically
+        if test "$gtest_static" != "no"
+        then
+            GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
+        fi
     else
         AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
     fi

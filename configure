@@ -798,6 +798,7 @@ enable_resolvconf
 enable_dns_update
 enable_auth
 with_gtest
+enable_gtest_static
 enable_link_state
 enable_remote_autoconf
 '
@@ -1455,6 +1456,7 @@ Dibbler modular features:
   --enable-resolvconf	  Enables support for resolvconf (/sbin/resolvcof) (default: no)
   --enable-dns-update     Enables DNS Update mechanism (default: yes)
   --enable-auth           Enables authentication (default: yes)
+  --enable-gtest-static   Enables static linking for gtest (default: yes)
   --enable-link-state     Enables link-state change detections (default: yes)
  --enable-remote-autoconf Enables *experimental* remote autoconfiguration (default: no)
 
@@ -3279,7 +3281,12 @@ mkdir_p='$(MKDIR_P)'
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
 
+
+# We'll loop over all known methods to create a tar archive until one works.
+_am_tools='gnutar  pax cpio none'
+
 am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
+
 
 
 
@@ -17230,6 +17237,26 @@ else
 fi
 
 
+# Check whether --enable-gtest-static was given.
+if test "${enable_gtest_static+set}" = set; then :
+  enableval=$enable_gtest_static;   case "${enableval}" in
+          yes)
+            gtest_static=yes
+            ;;
+          no)
+            gtest_static=no
+            ;;
+          *)
+            as_fn_error $? "bad value ${enableval} for --enable-gtest-static" "$LINENO" 5
+            ;;
+        esac
+else
+   gtest_static=yes
+
+fi
+
+
+
 #echo "After gtest"
 
 if test "$gtest_path" != "no"
@@ -17240,6 +17267,12 @@ then
         GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
         GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
         GTEST_LDADD=`${GTEST_CONFIG} --libs`
+
+        # Linking gtest statically
+        if test "$gtest_static" != "no"
+        then
+            GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
+        fi
     else
         as_fn_error $? "Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config" "$LINENO" 5
     fi
@@ -19159,7 +19192,7 @@ $as_echo X"$mf" |
     DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
     test -z "$DEPDIR" && continue
     am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "am__include" && continue
+    test -z "$am__include" && continue
     am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
     # Find all dependency output files, they are included files with
     # $(DEPDIR) in their names.  We invoke sed twice because it is the

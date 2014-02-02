@@ -16,6 +16,12 @@ When Dibbler implementation will be complete, release number will reach
 1.0.0. Since DHCPv6 specification is extensive, don't expect this to
 happen anytime soon.
 
+The above paragraph was written in Feb. 2010, when author was still
+working for Intel, a company which sadly was not interested in supporting
+DHCPv6 development. Fortunately, after changing employer to a more DHCP friendly
+one, the author was able to dedicate more effort to Dibbler and 1.0.0RC1
+was published on 2013-07-30, on 10th DHCPv6 standard publication anniversary.
+
 Stable releases are often preceded by Release Candidate versions. For example
 0.8.1RC1 is a Release Candidate 1 for 0.8.1 release.
 
@@ -48,6 +54,11 @@ documentation separated. Those two documents are merged and are Doxygen
 based.
 
 @section generalMemoryCpu 4.4 Memory/CPU usage
+
+This section is very dated. Memory usage is not currently measured.
+The binary size is monitored on a daily basis on the following page:
+http://klub.com.pl/dhcpv6/stats/.
+
 This section provides basic insight about memory and CPU requirements
 for the dibbler components. Folowing paragraphs describe memory and 
 CPU usage measurements. They
