@@ -58,8 +58,12 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile, int port)
         }
     }
     
-    int clients = checkReconfigures();
-    Log(Info) << "Sent Reconfigure to " << clients << " client(s)." << LogEnd;
+    if (SrvCfgMgr().getReconfigureSupport()) {
+        int clients = checkReconfigures();
+        Log(Info) << "Sent Reconfigure to " << clients << " client(s)." << LogEnd;
+    } else {
+        Log(Info) << "Reconfigure support was not enabled." << LogEnd;
+    }
 
     SrvAddrMgr().setCacheSize(SrvCfgMgr().getCacheSize());
 }

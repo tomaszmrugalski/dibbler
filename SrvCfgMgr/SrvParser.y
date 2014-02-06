@@ -136,6 +136,7 @@ virtual ~SrvParser();
 %token CLIENT_VENDOR_SPEC_DATA_
 %token CLIENT_VENDOR_CLASS_EN_
 %token CLIENT_VENDOR_CLASS_DATA_
+%token RECONFIGURE_ENABLED_
 %token ALLOW_
 %token DENY_
 %token SUBSTRING_, STRING_KEYWORD_, ADDRESS_LIST_
@@ -194,6 +195,7 @@ GlobalOption
 | Key
 | ScriptName
 | PerformanceMode
+| ReconfigureEnabled
 ;
 
 InterfaceOptionDeclaration
@@ -1164,7 +1166,22 @@ PerformanceMode
     }
 
     CfgMgr->setPerformanceMode($2);
-}
+};
+
+ReconfigureEnabled
+: RECONFIGURE_ENABLED_ Number
+{
+    switch ($2) {
+    case 0:
+    case 1:
+        CfgMgr->setReconfigureSupport($2);
+        break;
+    default:
+        Log(Crit) << "Invalid reconfigure-enabled value " << $2
+                  << ", only 0 and 1 are supported." << LogEnd;
+        YYABORT;
+    }
+};
 
 
 InactiveMode

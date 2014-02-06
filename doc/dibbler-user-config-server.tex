@@ -482,6 +482,11 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
     caution. See Section \ref{feature-performance-mode} for details
     and warnings.
 
+\item[reconfigure-enabled] -- (scope: global). This directive controls
+whether server will attempt to send \msg{RECONFIGURE} message at
+start or not. It takes one integer parameter with allowed values being
+0 or 1. The default is 0 (disabled).
+
 \item[allow] -- (scope: class). Specifies that clients that belong to
   a specific client class are allowed to use that address class. Takes
   one string parameter that defines client class name. See Section

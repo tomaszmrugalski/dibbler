@@ -37,7 +37,7 @@ TSrvCfgMgr * TSrvCfgMgr::Instance = 0;
 int TSrvCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 
 TSrvCfgMgr::TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile), reconfigure(false), PerformanceMode_(false)
+    :TCfgMgr(), XmlFile(xmlFile), Reconfigure_(false), PerformanceMode_(false)
 {
     setDefaults();
 
@@ -952,10 +952,13 @@ void TSrvCfgMgr::InClientClass(SPtr<TSrvMsg> msg)
         }
 }
 
+void TSrvCfgMgr::setReconfigureSupport(bool reconf) {
+    Reconfigure_ = reconf;
+}
 
-bool TSrvCfgMgr::reconfigureSupport()
+bool TSrvCfgMgr::getReconfigureSupport()
 {
-    return reconfigure;
+    return Reconfigure_;
 }
 
 /// @brief removes reserved entries from the cache
