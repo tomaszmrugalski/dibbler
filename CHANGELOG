@@ -28,6 +28,8 @@
     not linked statically by default. There is a --enable-gtest-static flag
     that controls that behaviour.
   - Minor Developer's Guide update.
+  - Srv: reconfigure-enabled 0,1 directive added to the server. It controls
+    whether server sends RECONFIGURE messages at start-up.
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
