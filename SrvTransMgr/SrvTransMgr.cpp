@@ -153,8 +153,19 @@ int TSrvTransMgr::checkReconfigures() {
                 }
                 else
                 {
+                    if (!unicast) {
+                        Log(Warning) << "Unable to send RECONFIGURE to client " << cli->getDUID()->getPlain()
+                                  << ": no unicast address recorded." << LogEnd;
+                        check = false;
+                        // Can't do anything here if we don't have unicast address of the client.
+                        // (That's odd. Unicast should be in the database. Are we dealing with a
+                        // broken database here?)
+                        break;
+                    }
+
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << "uses outdated info. Sending RECONFIGURE." << LogEnd;
+
                     sendReconfigure(unicast, iface, RENEW_MSG, ptrDUID);
                     clients++;
                     check=false;
