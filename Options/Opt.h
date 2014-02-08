@@ -20,7 +20,9 @@
 class TMsg;
 class TOpt;
 
-typedef std::list< SPtr<TOpt> > TOptList;
+typedef SPtr<TOpt> TOptPtr;
+typedef std::list< TOptPtr > TOptList;
+typedef TContainer< TOptPtr > TOptContainer;
 
 class TOpt
 {
@@ -76,18 +78,18 @@ class TOpt
 
     int getOptType();
 
-    SPtr<TOpt> getOption(int type);
+    TOptPtr getOption(int type);
 
     // suboptions management
     void firstOption();
-    SPtr<TOpt> getOption();
-    void addOption(SPtr<TOpt> opt);
+    TOptPtr getOption();
+    void addOption(TOptPtr opt);
     bool delOption(uint16_t type);
     int countOption();
     void delAllOptions();
     void setParent(TMsg* Parent);
 
-    static bool parseOptions(TContainer< SPtr<TOpt> >& options,
+    static bool parseOptions(TOptContainer& options,
                              const char* buf,
                              size_t len,
                              TMsg* parent,
@@ -95,14 +97,14 @@ class TOpt
                              std::string place = "option" // "option" or "message"
                              );
 
-    static SPtr<TOpt> getOption(const TOptList& list, uint16_t opt_type);
+    static TOptPtr getOption(const TOptList& list, uint16_t opt_type);
 
  protected:
     char* storeHeader(char* buf);
     char* storeSubOpt(char* buf);
     int getSubOptSize();
 
-    TContainer< SPtr<TOpt> > SubOptions;
+    TOptContainer SubOptions;
     int OptType;
     TMsg* Parent;
     bool Valid;

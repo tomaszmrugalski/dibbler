@@ -22,7 +22,7 @@ TOpt::~TOpt() {
 
 }
 
-TOpt::TOpt( int optType, TMsg *parent)
+TOpt::TOpt(int optType, TMsg *parent)
     :Valid(true) {
     OptType=optType;
     Parent=parent;
@@ -31,7 +31,7 @@ TOpt::TOpt( int optType, TMsg *parent)
 int TOpt::getSubOptSize() {
     int size = 0;
     SubOptions.first();
-    SPtr<TOpt> ptr;
+    TOptPtr ptr;
     while (ptr = SubOptions.get())
         size += ptr->getSize();
     return size;
@@ -43,8 +43,8 @@ char* TOpt::storeHeader(char* buf) {
     return buf;
 }
 
-char* TOpt::storeSubOpt( char* buf){
-    SPtr<TOpt> ptr;
+char* TOpt::storeSubOpt(char* buf){
+    TOptPtr ptr;
     SubOptions.first();
     while ( ptr = SubOptions.get() ) {
         ptr->storeSelf(buf);
@@ -57,13 +57,13 @@ void TOpt::firstOption() {
     SubOptions.first();
 }
 
-SPtr<TOpt> TOpt::getOption() {
+TOptPtr TOpt::getOption() {
     return SubOptions.get();
 }
 
-SPtr<TOpt> TOpt::getOption(int optType) {
+TOptPtr TOpt::getOption(int optType) {
     firstOption();
-    SPtr<TOpt> opt = 0;
+    TOptPtr opt = 0;
     while(opt=getOption()) {
         if (opt->getOptType()==optType)
             return opt;
@@ -71,7 +71,7 @@ SPtr<TOpt> TOpt::getOption(int optType) {
     return 0;
 }
 
-void TOpt::addOption(SPtr<TOpt> opt) {
+void TOpt::addOption(TOptPtr opt) {
     SubOptions.append(opt);
 }
 
@@ -98,7 +98,7 @@ bool TOpt::isValid() const {
 /// @return
 bool TOpt::delOption(uint16_t type) {
     firstOption();
-    SPtr<TOpt> opt = 0;
+    TOptPtr opt = 0;
     bool del = false;
     while(opt=getOption()) {
         if (opt->getOptType()==type) {
@@ -114,33 +114,31 @@ std::string TOpt::getPlain() {
     return "[generic]";
 }
 
-SPtr<TOpt> TOpt::getOption(const TOptList& list, uint16_t opt_type) {
+TOptPtr TOpt::getOption(const TOptList& list, uint16_t opt_type) {
     for (TOptList::const_iterator opt = list.begin(); opt != list.end();
          ++opt) {
         if ((*opt)->getOptType() == opt_type) {
             return *opt;
         }
     }
-    return SPtr<TOpt>(); // NULL
+    return TOptPtr(); // NULL
 }
 
-/// Parses options or suboptions, creates appropriate objects and store them in options container
+/// @brief Parses options or suboptions, creates appropriate objects and store them
+///        in options container
 ///
 /// @param options options container (new options will be added here)
 /// @param buf buffer to be parsed
 /// @param len length of the buffer
 /// @param parent pointer to parent message
-/// @param placeId specifies location of the message (option number for option parsing or 0 for message parsing)
+/// @param placeId specifies location of the message (option number for option parsing
+///        or 0 for message parsing)
 /// @param place text representation of the parsed scope
 ///
 /// @return true if parsing was successful, false if anomalies are detected
-bool TOpt::parseOptions(TContainer< SPtr<TOpt> >& options,
-                        const char* buf,
-                        size_t len,
-                        TMsg* parent,
-                        uint16_t placeId /*= 0*/, // 5 (option 5) or (message 5)
-                        std::string place /*= "option"*/ // "option" or "message"
-                        ) {
+bool TOpt::parseOptions(TOptContainer& options, const char* buf, size_t len,
+                        TMsg* parent, uint16_t placeId /*= 0*/, // 5 (option 5) or (message 5)
+                        std::string place) { /*= "option"*/ // "option" or "message"
 
     // parse suboptions
     while (len>0) {
@@ -157,18 +155,19 @@ bool TOpt::parseOptions(TContainer< SPtr<TOpt> >& options,
         len -= sizeof(uint16_t);
 
         if (optLen>len) {
-            Log(Warning) << "Truncated suboption " << optType << " in " << place << " " << placeId << LogEnd;
+            Log(Warning) << "Truncated suboption " << optType << " in " << place << " "
+                         << placeId << LogEnd;
             return false;
         }
 
         switch (optType) {
         case OPTION_RTPREFIX: {
-            SPtr<TOpt> opt = new TOptRtPrefix(buf, len, parent);
+            TOptPtr opt = new TOptRtPrefix(buf, len, parent);
             options.append(opt);
             break;
         }
         default: {
-            SPtr<TOpt> opt = new TOptGeneric(optType, buf, len, parent);
+            TOptPtr opt = new TOptGeneric(optType, buf, len, parent);
             options.append(opt);
             break;
         }
