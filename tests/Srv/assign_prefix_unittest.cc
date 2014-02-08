@@ -15,6 +15,8 @@ using namespace std;
 
 namespace test {
 
+// This test checks that the server will properly assign a prefix from the
+// specified pool when client sends a IA_PD without any hint.
 TEST_F(ServerTest, SARR_prefix_single_class) {
 
     // check that an interface was successfully selected
@@ -45,7 +47,8 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
     SPtr<TIPv6Addr> maxRange = new TIPv6Addr("2001:db8:123:ffff:ffff:ffff:ffff:ffff", true);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102, SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 101, 102,
+                            SERVER_DEFAULT_MAX_PREF, SERVER_DEFAULT_MAX_VALID, 64) );
 
     SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface_->getID());
     ASSERT_TRUE(cfgIface);
@@ -95,6 +98,8 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     EXPECT_EQ(0u, cfgPD->getAssignedCount());
 }
 
+// This test check that the server sets T1,T2,preferred,valid lifetimes
+// properly and that the client's hints are ignored.
 TEST_F(ServerTest, SARR_prefix_single_class_params) {
 
     // check that an interface was successfully selected
@@ -153,6 +158,8 @@ TEST_F(ServerTest, SARR_prefix_single_class_params) {
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 65));
 }
 
+// Test checks that that the in-pool reservation is handle properly, i.e.
+// values specified in the reservation are used, not the onces from pd-class
 TEST_F(ServerTest, SARR_prefix_inpool_reservation) {
 
     // check that an interface was successfully selected
@@ -399,6 +406,27 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     ASSERT_TRUE(rcvPD);
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 32));
+}
+
+// This test checks that the server will properly handle a hint
+// sent by the client. The hint is in pool.
+TEST_F(ServerTest, SARR_prefix_single_class_hint) {
+
+    // Create configuration with the following config file
+    string cfg = "iface REPLACE_ME {\n"
+        "  pd-class {\n"
+        "    pd-pool 2001:db8::/32\n"
+        "    pd-length 64\n"
+        "  }\n"
+        "}\n";
+
+    // Include the following IA_PD in the SOLCIT and REQUEST
+    SPtr<TOptIA_PD> pd(new TSrvOptIA_PD(123, 100, 200, NULL));
+    pd->addOption(createPrefix("2001:db8:123::", 64, 1000, 2000));
+
+    prefixText(cfg, (Ptr*)pd, "2001:db8:123::", "2001:db8:123::", 64,
+               pd->getIAID(), pd->getT1(), pd->getT2(),
+               SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
 }
 
 }

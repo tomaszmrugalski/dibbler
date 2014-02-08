@@ -31,7 +31,11 @@ TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, int Code,
 
 TSrvOptIA_PD::TSrvOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
     :TOptIA_PD(iaid, t1, t2, parent), PDLength(0) {
-    Iface = parent->getIface();
+    if (parent) {
+        Iface = parent->getIface();
+    } else {
+        Iface = -1;
+    }
 }
 
 /*

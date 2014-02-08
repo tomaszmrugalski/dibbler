@@ -25,8 +25,95 @@ bool NakedSrvIfaceMgr::send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr
     return TSrvIfaceMgr::send(iface, msg, size, addr, port);
 }
 
-int NakedSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer) {
+int NakedSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
+                              SPtr<TIPv6Addr> peer) {
     return TSrvIfaceMgr::receive(timeout, buf, bufsize, peer);
+}
+
+ServerTest::ServerTest() {
+    clntDuid_ = new TDUID("00:01:00:0a:0b:0c:0d:0e:0f");
+    clntId_ = new TOptDUID(OPTION_CLIENTID, clntDuid_, NULL);
+    clntAddr_ = new TIPv6Addr("fe80::1234", true);
+
+    ifacemgr_ = new NakedSrvIfaceMgr("testdata/server-IfaceMgr.xml");
+
+    // try to pick up an up and running interface
+    ifacemgr_->firstIface();
+    while ( (iface_ = ifacemgr_->getIface()) && (!iface_->flagUp() || !iface_->flagRunning())) {
+    }
+}
+
+void ServerTest::createIAs(TMsg* msg) {
+    ia_iaid_ = 123;
+    ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, msg);
+    ta_iaid_ = 456;
+    ta_ = new TOptTA(ta_iaid_, msg);
+    pd_iaid_ = 789;
+    pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
+}
+
+SPtr<TSrvMsgSolicit> ServerTest::createSolicit() {
+    char empty[] = { SOLICIT_MSG, 0x1, 0x2, 0x3};
+    SPtr<TSrvMsgSolicit> sol =
+        new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*sol));
+    return sol;
+}
+
+SPtr<TSrvMsgRequest> ServerTest::createRequest() {
+    char empty[] = { REQUEST_MSG, 0x1, 0x2, 0x4};
+    SPtr<TSrvMsgRequest> request =
+        new TSrvMsgRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*request));
+    return request;
+}
+
+SPtr<TSrvMsgRenew> ServerTest::createRenew() {
+    char empty[] = { RENEW_MSG, 0x1, 0x2, 0x5};
+    SPtr<TSrvMsgRenew> renew =
+        new TSrvMsgRenew(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*renew));
+    return renew;
+}
+
+SPtr<TSrvMsgRebind> ServerTest::createRebind() {
+    char empty[] = { REBIND_MSG, 0x1, 0x2, 0x6};
+    SPtr<TSrvMsgRebind> rebind =
+        new TSrvMsgRebind(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*rebind));
+    return rebind;
+}
+
+SPtr<TSrvMsgRelease> ServerTest::createRelease() {
+    char empty[] = { RELEASE_MSG, 0x1, 0x2, 0x7};
+    SPtr<TSrvMsgRelease> release =
+        new TSrvMsgRelease(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*release));
+    return release;
+}
+
+SPtr<TSrvMsgDecline> ServerTest::createDecline() {
+    char empty[] = { DECLINE_MSG, 0x1, 0x2, 0x8};
+    SPtr<TSrvMsgDecline> decline =
+        new TSrvMsgDecline(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*decline));
+    return decline;
+}
+
+SPtr<TSrvMsgConfirm> ServerTest::createConfirm() {
+    char empty[] = { CONFIRM_MSG, 0x1, 0x2, 0x9};
+    SPtr<TSrvMsgConfirm> confirm =
+        new TSrvMsgConfirm(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*confirm));
+    return confirm;
+}
+
+SPtr<TSrvMsgInfRequest> ServerTest::createInfRequest() {
+    char empty[] = { INFORMATION_REQUEST_MSG, 0x1, 0x2, 0xa};
+    SPtr<TSrvMsgInfRequest> infrequest =
+        new TSrvMsgInfRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
+    createIAs(&(*infrequest));
+    return infrequest;
 }
 
 bool ServerTest::checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
@@ -236,6 +323,96 @@ void ServerTest::sendHex(const std::string& src_addr, uint16_t src_port,
     EXPECT_TRUE(status);
 
     delete [] buffer;
+}
+
+TOptPtr ServerTest::createPrefix(const std::string& addr_txt, uint8_t len, uint32_t pref, uint32_t valid) {
+    SPtr<TIPv6Addr> addr(new TIPv6Addr(addr_txt.c_str(), true));
+    TOptPtr iaprefix = new TSrvOptIAPrefix(addr, len, pref, valid, NULL);
+    return (iaprefix);
+}
+
+
+void ServerTest::prefixText(const std::string& config,
+                            const TOptPtr& pd_to_be_sent,
+                            const std::string& min_range,
+                            const std::string& max_range,
+                            uint8_t expected_prefix_len,
+                            uint32_t expected_iaid,
+                            uint32_t expected_t1,
+                            uint32_t expected_t2,
+                            uint32_t expected_pref,
+                            uint32_t expected_valid) {
+
+    // Create configuration with the following config file
+    ASSERT_TRUE( createMgrs(config) );
+
+    // Get the server configuration. We'll use it later for verification
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface_->getID());
+    ASSERT_TRUE(cfgIface);
+    cfgIface->firstPD();
+    SPtr<TSrvCfgPD> cfgPD = cfgIface->getPD();
+    ASSERT_TRUE(cfgPD);
+
+    // Now generate SOLICIT with a single IA_PD and one IAPREFIX hint in it
+    // That's a perfect hint (valid, within scope, exact length, not used)
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_); // include client-id
+    sol->addOption(pd_to_be_sent); // include IA_PD
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv); // Check that there is a response
+
+    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    ASSERT_TRUE(rcvPD);
+
+    // The server should return exactly the hint, because it is available
+    SPtr<TIPv6Addr> minRange = new TIPv6Addr(min_range.c_str(), true);
+    SPtr<TIPv6Addr> maxRange = new TIPv6Addr(max_range.c_str(), true);
+
+    // Check that the IA_PD included in the response matches expectations
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, expected_iaid, expected_t1,
+                            expected_t2, expected_pref, expected_valid,
+                            expected_prefix_len));
+
+    // Nothing should be assigned (this is SOLICIT/ADVERTISE only)
+    EXPECT_EQ(0u, cfgPD->getAssignedCount());
+
+    // now generate REQUEST
+    SPtr<TSrvMsgRequest> req = createRequest();
+    req->addOption((Ptr*)clntId_);
+    req->addOption(pd_to_be_sent);
+
+    ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
+    req->addOption(adv->getOption(OPTION_SERVERID));
+
+    // ... and get REPLY from the server
+    cout << "Pretending to send REQUEST" << endl;
+    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    ASSERT_TRUE(reply);
+
+    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    ASSERT_TRUE(rcvPD);
+
+
+    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, expected_iaid, expected_t1,
+                            expected_t2, expected_pref, expected_valid,
+                            expected_prefix_len));
+
+    // Check that the lease was indeed assigned
+    EXPECT_EQ(1u, cfgPD->getAssignedCount());
+
+    // let's release it
+    SPtr<TSrvMsgRelease> rel = createRelease();
+    rel->addOption((Ptr*)clntId_);
+    rel->addOption(req->getOption(OPTION_SERVERID));
+    rcvPD->delOption(OPTION_STATUS_CODE);
+    rel->addOption((Ptr*)rcvPD);
+
+    cout << "Pretending to send RELEASE" << endl;
+    SPtr<TSrvMsgReply> releaseReply = (Ptr*)sendAndReceive((Ptr*)rel, 3);
+
+    // Check that the lease is now released.
+    EXPECT_EQ(0u, cfgPD->getAssignedCount());
 }
 
 ServerTest::~ServerTest() {
