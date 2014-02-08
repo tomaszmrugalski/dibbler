@@ -10,7 +10,7 @@ namespace {
 TEST(IPv6AddrTest, constructor) {
 
     SPtr<TIPv6Addr> addr = new TIPv6Addr("fe80::abcd", true);
-    
+
     EXPECT_EQ(string(addr->getPlain()), string("fe80::abcd"));
     EXPECT_TRUE(addr->linkLocal());
     // EXPECT_FALSE(addr->isLopback());
@@ -39,6 +39,41 @@ TEST(IPv6AddrTest, randomDecrease) {
         cout << "x=" << x.getPlain() << " y=" << y.getPlain() << endl;
         EXPECT_TRUE(y <= x);
     }
+}
+
+// Tests if truncation operation is conducted properly.
+TEST(IPv6AddrTest, truncate) {
+    TIPv6Addr x("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true);
+
+    x.truncate(0, 128);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", string(x.getPlain()));
+
+    x.truncate(0, 127);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe", string(x.getPlain()));
+
+    x.truncate(0, 126);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffc", string(x.getPlain()));
+
+    x.truncate(0, 125);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff8", string(x.getPlain()));
+
+    x.truncate(0, 124);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0", string(x.getPlain()));
+
+    x.truncate(0, 120);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00", string(x.getPlain()));
+
+    x.truncate(0, 112);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", string(x.getPlain()));
+
+    x.truncate(0, 96);
+    EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff::", string(x.getPlain()));
+
+    x.truncate(0, 64);
+    EXPECT_EQ("ffff:ffff:ffff:ffff::", string(x.getPlain()));
+
+    x.truncate(0, 8);
+    EXPECT_EQ("ff00::", string(x.getPlain()));
 }
 
 }

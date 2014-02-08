@@ -30,7 +30,7 @@ TIPv6Addr::TIPv6Addr(const char* addr, bool plain) {
         inet_pton6(Plain,Addr);
     } else {
         memcpy(Addr,addr,16);
-	inet_ntop6(Addr,Plain);
+        inet_ntop6(Addr,Plain);
     }
 }
 
@@ -38,10 +38,10 @@ TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength) {
 
     int offset = prefixLength/8;
     if (prefixLength%8==0) {
-	memmove(Addr, host, 16);
-	memmove(Addr, prefix, offset);
-	inet_ntop6(Addr, Plain);
-	return;
+        memmove(Addr, host, 16);
+        memmove(Addr, prefix, offset);
+        inet_ntop6(Addr, Plain);
+        return;
     }
 
     memmove(Addr, host, 16);  // copy whole host address, but...
@@ -52,8 +52,8 @@ TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength) {
 
 bool TIPv6Addr::linkLocal() {
     if (this->Addr[0]==0xfe &&
-	this->Addr[1]==0x80)
-	return true;
+        this->Addr[1]==0x80)
+        return true;
     return false;
 }
 
@@ -87,25 +87,26 @@ bool TIPv6Addr::operator!=(const TIPv6Addr &other) {
 void TIPv6Addr::truncate(int minPrefix, int maxPrefix) {
 
     if (minPrefix>128 || minPrefix<0 || maxPrefix>128 || maxPrefix<0) {
-	Log(Error) << "Unable to truncate address: invalid prefix lengths: minPrefix=" << minPrefix << ", maxPrefix=" << maxPrefix << LogEnd;
-	return;
+        Log(Error) << "Unable to truncate address: invalid prefix lengths: minPrefix="
+                   << minPrefix << ", maxPrefix=" << maxPrefix << LogEnd;
+        return;
     }
 
-    // truncating from the left 
+    // truncating from the left
     int x = minPrefix/8;
     memset(this->Addr, 0, x);
     if (minPrefix%8) {
-	this->Addr[x] = this->Addr[x] & truncLeft[minPrefix%8];
+        this->Addr[x] = this->Addr[x] & truncLeft[minPrefix%8];
     }
 
     // truncating from the right
     x = maxPrefix/8;
     if (maxPrefix%8)
-	x++;
+        x++;
     memset(this->Addr+x, 0, 16-x);
     if (maxPrefix%8) {
-	x = maxPrefix/8;
-	this->Addr[x] = this->Addr[x] & truncRight[maxPrefix%8];
+        x = maxPrefix/8;
+        this->Addr[x] = this->Addr[x] & truncRight[maxPrefix%8];
     }
 
     // update plain form
@@ -126,16 +127,16 @@ bool TIPv6Addr::operator<=(const TIPv6Addr &other)
         if (Addr[i]<other.Addr[i])
             return true;
         if(Addr[i]>other.Addr[i])
-	    return false;
+            return false;
     }
     return true; //hmm: are they equal
 }
 
 TIPv6Addr TIPv6Addr::operator-(const TIPv6Addr &other)
-{   
+{
     char result[16];
     memset(result,0,16);
-	char carry=0;
+        char carry=0;
     for (int i=15;i>=0;i--)
     {
         unsigned int left=Addr[i];
@@ -155,7 +156,7 @@ TIPv6Addr TIPv6Addr::operator-(const TIPv6Addr &other)
 }
 
 TIPv6Addr TIPv6Addr::operator+(const TIPv6Addr &other)
-{   
+{
     char result[16];
     memset(result,0,16);
     unsigned int carry=0;
@@ -177,11 +178,11 @@ TIPv6Addr TIPv6Addr::operator+(const TIPv6Addr &other)
     return TIPv6Addr(result);
 }
 
-/** 
+/**
  *  Decreases randomly an address
- *  
- * 
- * @return 
+ *
+ *
+ * @return
  */
 TIPv6Addr& TIPv6Addr::operator--()
 {
@@ -191,7 +192,7 @@ TIPv6Addr& TIPv6Addr::operator--()
 #define NEW_AWESOME_CODE
 
 #ifdef ALGO_ANIA
-    // Start with first non-zero most significant byte. 
+    // Start with first non-zero most significant byte.
     // For i-th byte randomize a value from 0..Addr[i]
     // If randomized value equals i-th (randomized max allowed
     // value, then continue)
@@ -232,7 +233,7 @@ TIPv6Addr& TIPv6Addr::operator--()
         {
             Addr[j]--;
             for(j++;j<i;j++)
-				Addr[j]=255;
+                                Addr[j]=255;
             Addr[i]=char(int(256)+int(Addr[i])-r);
         }
         else Addr[i]=r;
@@ -275,7 +276,7 @@ TIPv6Addr& TIPv6Addr::operator--()
 
             // Borrow one from the next byte (it becomes 256 in this byte)
             Addr[j] = static_cast<uint8_t>( (int16_t)(256) + (int16_t)(Addr[i]) - r);
-            r = 1; // subtract from the next 
+            r = 1; // subtract from the next
             j--;
         }
         if (j >= 0) {
@@ -313,7 +314,7 @@ TIPv6Addr& TIPv6Addr::operator--()
             Addr[i] = rand()%(div);
             return *this;
         }
-            
+
         // Let's decrease this byte by a random value
         short int r = rand() % 256;
 
