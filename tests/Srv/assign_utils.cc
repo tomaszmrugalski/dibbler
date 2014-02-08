@@ -117,8 +117,8 @@ SPtr<TSrvMsgInfRequest> ServerTest::createInfRequest() {
 }
 
 bool ServerTest::checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
-                            SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1, uint32_t t2,
-                            uint32_t pref, uint32_t valid) {
+                            SPtr<TIPv6Addr> maxRange, uint32_t iaid, uint32_t t1,
+                            uint32_t t2, uint32_t pref, uint32_t valid) {
     THostRange range(minRange, maxRange);
     int count = 0;
 

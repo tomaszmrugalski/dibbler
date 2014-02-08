@@ -410,7 +410,7 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
 
 // This test checks that the server will properly handle a hint
 // sent by the client. The hint is in pool.
-TEST_F(ServerTest, SARR_prefix_single_class_hint) {
+TEST_F(ServerTest, SARR_prefix_hint) {
 
     // Create configuration with the following config file
     string cfg = "iface REPLACE_ME {\n"
@@ -425,6 +425,49 @@ TEST_F(ServerTest, SARR_prefix_single_class_hint) {
     pd->addOption(createPrefix("2001:db8:123::", 64, 1000, 2000));
 
     prefixText(cfg, (Ptr*)pd, "2001:db8:123::", "2001:db8:123::", 64,
+               pd->getIAID(), pd->getT1(), pd->getT2(),
+               SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
+}
+
+// This test checks that the hint specified from out of pool will not
+// be accepted and som address from the pool will be assigned instead.
+TEST_F(ServerTest, SARR_prefix_out_of_pool_hint) {
+
+    // Create configuration with the following config file
+    string cfg = "iface REPLACE_ME {\n"
+        "  pd-class {\n"
+        "    pd-pool 2001:db8::/48\n"
+        "    pd-length 64\n"
+        "  }\n"
+        "}\n";
+
+    // Include the following IA_PD in the SOLCIT and REQUEST
+    SPtr<TOptIA_PD> pd(new TSrvOptIA_PD(123, 100, 200, NULL));
+    pd->addOption(createPrefix("3000::", 64, 1000, 2000));
+
+    prefixText(cfg, (Ptr*)pd, "2001:db8::", "2001:db8::ffff:ffff:ffff:ffff:ffff:ffff",
+               64, pd->getIAID(), pd->getT1(), pd->getT2(),
+               SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
+}
+
+// This test checks that the hint specified from in pool, but with
+// the bits set in host part will be sanitized correctly.
+TEST_F(ServerTest, SARR_prefix_hint_nonzero_host_part) {
+
+    // Create configuration with the following config file
+    string cfg = "iface REPLACE_ME {\n"
+        "  pd-class {\n"
+        "    pd-pool 2001:db8::/48\n"
+        "    pd-length 64\n"
+        "  }\n"
+        "}\n";
+
+    // Include the following IA_PD in the SOLCIT and REQUEST
+    SPtr<TOptIA_PD> pd(new TSrvOptIA_PD(123, 100, 200, NULL));
+    pd->addOption(createPrefix("2001:db8::1:2:3:4:5", 64, 1000, 2000));
+    // The 2:3:4:5 should be zeroed, because they are chopped by /64
+
+    prefixText(cfg, (Ptr*)pd, "2001:db8:0:1::", "2001:db8:0:1::", 64,
                pd->getIAID(), pd->getT1(), pd->getT2(),
                SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
 }
