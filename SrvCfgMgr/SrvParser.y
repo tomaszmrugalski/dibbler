@@ -717,12 +717,42 @@ VendorSpecList
     ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
 								    $5.duid, $5.length, 0), false);
 }
+| Number '-' Number '-' IPV6ADDR_ 
+{
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
+	       << $3 << ", valuelen=" << 16 << LogEnd;
+
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
+								    new TIPv6Addr($5), 0), false);
+}
+| Number '-' Number '-' STRING_ 
+{
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
+	       << $3 << ", valuelen=" << strlen($5) << LogEnd;
+
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
+								    $5, 0), false);
+}
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
 	       << $5 << ", valuelen=" << $7.length << LogEnd;
     ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
 								    $7.duid, $7.length, 0), false);
+}
+| VendorSpecList ',' Number '-' Number '-' IPV6ADDR_ 
+{
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
+	       << $5 << ", valuelen=" << 16 << LogEnd;
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
+								    new TIPv6Addr($7), 0), false);
+}
+| VendorSpecList ',' Number '-' Number '-' STRING_
+{
+    Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
+	       << $5 << ", valuelen=" << strlen($7) << LogEnd;
+    ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
+								    $7, 0), false);
 }
 ;
 
