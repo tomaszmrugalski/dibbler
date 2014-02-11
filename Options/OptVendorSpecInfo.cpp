@@ -61,9 +61,8 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t type, char * buf,  int n, TMsg* 
     Valid = true;
 }
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise,
-				       uint16_t sub_option_code,
-                                       char *data, int dataLen, TMsg* parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+                                       const char *data, int dataLen, TMsg* parent)
     :TOpt(code, parent), Vendor_(enterprise)
 {
     if (sub_option_code) {
