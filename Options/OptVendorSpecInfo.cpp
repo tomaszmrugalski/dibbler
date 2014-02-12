@@ -61,15 +61,26 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t type, char * buf,  int n, TMsg* 
     Valid = true;
 }
 
-TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise,
-				       uint16_t sub_option_code,
-                                       char *data, int dataLen, TMsg* parent)
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+                                       const char *data, int dataLen, TMsg* parent)
     :TOpt(code, parent), Vendor_(enterprise)
 {
     if (sub_option_code) {
         SPtr<TOptGeneric> opt = new TOptGeneric(sub_option_code, data, dataLen, parent);
         addOption( (Ptr*) opt);
     }
+}
+
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+									   SPtr<TIPv6Addr> addr, TMsg* parent) : TOpt(code, parent), Vendor_(enterprise)
+{
+	TOptVendorSpecInfo( code, enterprise, sub_option_code, addr->getAddr(), 16, parent );
+}
+
+TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+									   const std::string& str, TMsg* parent) : TOpt(code, parent), Vendor_(enterprise)
+{
+	TOptVendorSpecInfo( code, enterprise, sub_option_code, str.c_str(), str.length()+1, parent );
 }
 
 TOptVendorSpecInfo::~TOptVendorSpecInfo() 

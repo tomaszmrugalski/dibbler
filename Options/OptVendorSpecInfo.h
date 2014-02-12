@@ -11,14 +11,20 @@
 #define OPTVENDORSPECINFO_H
 
 #include "Opt.h"
+#include "SmartPtr.h"
+#include "IPv6Addr.h"
 #include <stdint.h>
 
 class TOptVendorSpecInfo : public TOpt
 {
   public:
     TOptVendorSpecInfo(uint16_t type, char * buf,  int n, TMsg* parent);
-    TOptVendorSpecInfo(uint16_t type, uint32_t enterprise, uint16_t sub_option_code,
-		       char *data, int dataLen, TMsg* parent);
+    TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+                       const char *data, int dataLen, TMsg* parent);
+    TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+                       SPtr<TIPv6Addr> addr, TMsg* parent);
+    TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
+                      const std::string& str, TMsg* parent);
 
     size_t getSize();
     char * storeSelf(char* buf);
