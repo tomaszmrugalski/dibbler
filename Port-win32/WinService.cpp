@@ -87,7 +87,6 @@ void TWinService::Handler(DWORD dwOpcode) {
     case SERVICE_CONTROL_STOP: // 1
         pService->SetStatus(SERVICE_STOP_PENDING);
         pService->OnStop();
-        pService->SetStatus(SERVICE_STOPPED);
         pService->IsRunning = FALSE;
     break;
 

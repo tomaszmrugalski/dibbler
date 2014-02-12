@@ -33,6 +33,8 @@
   - Srv: received prefix is now being truncated to appropriate length, so
     client sending prefix hints with host part set should no longer confuse
     the server (bug #295)
+  - Win: Better shutdown when shutting down from Microsoft Mgmt Console (bug #162)
+    Thanks to Hernan Martinez for the fix!)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
