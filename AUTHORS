@@ -111,7 +111,8 @@
     2013-11: Migration to Visual Studio 2013
     2013-11: Fix for reconfigure-key
     2013-12: Win32: detection of admin privileges
-	2014-02: Win32: Proper shutdown from Microsft Mgmt Console (bug #162)
+    2014-02: Win32: Proper shutdown from Microsft Mgmt Console (bug #162)
+    2014-02: Vendor-spec info option with IPv6 address in it
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

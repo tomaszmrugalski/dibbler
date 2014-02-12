@@ -65,22 +65,29 @@ TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint1
                                        const char *data, int dataLen, TMsg* parent)
     :TOpt(code, parent), Vendor_(enterprise)
 {
+    createSuboption(sub_option_code, data, dataLen);
+}
+
+void TOptVendorSpecInfo::createSuboption(uint16_t sub_option_code, const char* data,
+                                    size_t data_len) {
     if (sub_option_code) {
-        SPtr<TOptGeneric> opt = new TOptGeneric(sub_option_code, data, dataLen, parent);
+        SPtr<TOptGeneric> opt = new TOptGeneric(sub_option_code, data, data_len, Parent);
         addOption( (Ptr*) opt);
     }
 }
 
 TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
-									   SPtr<TIPv6Addr> addr, TMsg* parent) : TOpt(code, parent), Vendor_(enterprise)
+                                       SPtr<TIPv6Addr> addr, TMsg* parent)
+    :TOpt(code, parent), Vendor_(enterprise)
 {
-	TOptVendorSpecInfo( code, enterprise, sub_option_code, addr->getAddr(), 16, parent );
+    createSuboption(sub_option_code, addr->getAddr(), 16);
 }
 
 TOptVendorSpecInfo::TOptVendorSpecInfo(uint16_t code, uint32_t enterprise, uint16_t sub_option_code,
-									   const std::string& str, TMsg* parent) : TOpt(code, parent), Vendor_(enterprise)
+                                       const std::string& str, TMsg* parent)
+    :TOpt(code, parent), Vendor_(enterprise)
 {
-	TOptVendorSpecInfo( code, enterprise, sub_option_code, str.c_str(), str.length()+1, parent );
+    createSuboption(sub_option_code, str.c_str(), str.length());
 }
 
 TOptVendorSpecInfo::~TOptVendorSpecInfo() 

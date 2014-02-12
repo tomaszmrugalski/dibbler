@@ -35,6 +35,9 @@
     the server (bug #295)
   - Win: Better shutdown when shutting down from Microsoft Mgmt Console (bug #162)
     Thanks to Hernan Martinez for the fix!)
+  - Added support for IPv6 address in vendor-specific information option, and
+    fixed bugs in other vendor-specific options formats (based on a patch
+    provided by Herman Martinez, thanks!)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

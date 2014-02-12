@@ -719,9 +719,9 @@ VendorSpecList
 }
 | Number '-' Number '-' IPV6ADDR_ 
 {
+    SPtr<TIPv6Addr> addr(new TIPv6Addr($5));
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
-	       << $3 << ", valuelen=" << 16 << LogEnd;
-
+               << $3 << ", value=" << addr->getPlain() << LogEnd;
     ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
 								    new TIPv6Addr($5), 0), false);
 }
@@ -742,10 +742,11 @@ VendorSpecList
 }
 | VendorSpecList ',' Number '-' Number '-' IPV6ADDR_ 
 {
+    SPtr<TIPv6Addr> addr(new TIPv6Addr($7));
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
-	       << $5 << ", valuelen=" << 16 << LogEnd;
+               << $5 << ", value=" << addr->getPlain() << LogEnd;
     ParserOptStack.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
-								    new TIPv6Addr($7), 0), false);
+								    addr, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' STRING_
 {

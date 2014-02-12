@@ -396,7 +396,8 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
   \ref{example-relay} for details.
 
  \item[vendor-spec] -- (scope: interface, type: integer-hexstring,
-   default: not defined). This parameter can be used to configure some
+   regular string or an IPv6 address, default: not defined). This
+   parameter can be used to configure some
    vendor-specific information option. Since there are no
    dibbler-specific options, this implementation is flexible. User can
    specify in the configuration file, how should this option look
@@ -1115,22 +1116,22 @@ fqdn-ddns-address 2001::1
 iface "eth0" {
 
 # assign addresses from this class
- class {
-   pool 2001:db8:1::/64
- }
+  class {
+    pool 2001:db8:1::/64
+  }
 
 # provide DNS server location to the clients
 # also server will use this address to perform DNS Update,
 # so it must be valid and DNS server must accept DNS Updates.
- option dns-server 2000::1
+  option dns-server 2000::1
 
 # provide their domain name
- option domain example.com
+  option domain example.com
 
 # provide fully qualified domain names for clients
 # note that first, second and third entry is reserved
 # for a specific address or a DUID
- option fqdn 1 64
+  option fqdn 1 64
              zebuline.example.com - 2000::1,
              kael.example.com - 2000::2,
              wash.example.com - 0x0001000043ce25b40013d4024bf5,
@@ -1147,8 +1148,7 @@ iface "eth0" {
 # 3 - accept any name client sends, but append specified domain suffix
 # 4 - ignore client's hint, generate name based on his address, append domain name
 
- accept-unknown-fqdn 4 example.org
-
+  accept-unknown-fqdn 4 example.org
 }
 \end{lstlisting}
 
@@ -1166,11 +1166,23 @@ of that option is 0x0013.
 log-level 8
 log-mode precise
 iface "eth1" {
- class {
-   pool 2000::1-2000::ff
- }
+  class {
+    pool 2000::1-2000::ff
+  }
 
- option vendor-spec 4491-1027-0x0013
+  # Vendor-spec option can be specified as a hexstring
+  option vendor-spec 4491-1027-0x0013
+
+  # String format syntax is also allowed
+  # option vendor-spec 4491-1028-"this-is-a-string"
+
+  # The third format supported is IPv6 address
+  # option vendor-spec 4491-1029-2001:db8::1
+
+  # Several vendor-specific options can be coma separated
+  option vendor-spec 4491-2-0xfedc,
+                       4491-1027-0a:0b:0c:0d,
+                       4491-1029-2001:db8::1
 }
 \end{lstlisting}
 
