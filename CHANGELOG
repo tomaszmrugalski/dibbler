@@ -38,6 +38,8 @@
   - Added support for IPv6 address in vendor-specific information option, and
     fixed bugs in other vendor-specific options formats (based on a patch
     provided by Herman Martinez, thanks!)
+  - Srv: Unicast address of IA_PD stored in the database is no longer lost after
+    server restarts. That should make the reconfigure mechanism usable again.
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

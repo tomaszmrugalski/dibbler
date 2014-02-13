@@ -173,24 +173,23 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
                                         this->Parent);
         SubOptions.append((Ptr*)optPrefix);
 
-        /// @todo: master had if (!fake) here, assign branch didn't. Find out which one was right
-        // if (!fake)
-        {
-            SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
-            if (!cfgIface) {
-                Log(Error) << "Missing configuration interface with ifindex=" << Iface << LogEnd;
-                return false;
-            }
-
-            // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
-            // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
-            SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, cfgIface->getName(),
-                                   Iface, IAID_, T1_, T2_, prefix, Prefered, Valid,
-                                   this->PDLength, false);
-
-            // but CfgMgr has to increase usage only once. Don't ask my why :)
-            SrvCfgMgr().incrPrefixCount(Iface, prefix);
+        // We do actual reservation here, even if it is SOLICIT. For SOLICIT, we will release
+        // the prefix before sending ADVERTISE. We need to do this. Otherwise we could start
+        // sending duplicate prefixes if client requested multiple IA_PDs.
+        SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
+        if (!cfgIface) {
+            Log(Error) << "Missing configuration interface with ifindex=" << Iface << LogEnd;
+            return false;
         }
+
+        // every prefix has to be remembered in AddrMgr, e.g. when there are 2 pools defined,
+        // prefixLst contains entries from each pool, so 2 prefixes has to be remembered
+        SrvAddrMgr().addPrefix(this->ClntDuid, this->ClntAddr, cfgIface->getName(),
+                               Iface, IAID_, T1_, T2_, prefix, Prefered, Valid,
+                               this->PDLength, false);
+
+        // Increase prefix pool usage counter
+        SrvCfgMgr().incrPrefixCount(Iface, prefix);
     }
     Log(Info) << "PD:" << (fake?"(would be)":"") << " assigned prefix(es):" << buf.str() << LogEnd;
 
@@ -245,8 +244,6 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
 
     switch (msgType) {
     case SOLICIT_MSG:
-        solicitRequest(clientMsg, queryOpt, ptrIface, fake);
-        break;
     case REQUEST_MSG:
         solicitRequest(clientMsg, queryOpt, ptrIface, fake);
         break;
@@ -269,7 +266,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
         Log(Warning) << "Unknown message type (" << msgType
                      << "). Cannot generate OPTION_PD."<< LogEnd;
         SubOptions.append(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
-                                                "Unknown message type.",this->Parent));
+                                             "Unknown message type.",this->Parent));
         break;
     }
     }

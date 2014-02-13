@@ -819,6 +819,12 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
             if (ptrpd = parseAddrPD(xmlFile, f, t1, t2, pdid, ifacename, ifindex, unicast)) {
                 if (!ptrpd || !clnt)
                     continue;
+
+		if (unicast) {
+                    ptrpd->setUnicast(unicast);
+                    unicast = 0;
+                }
+
                 if (ptrpd->countPrefix()) {
                     clnt->addPD(ptrpd);
                 } else {
