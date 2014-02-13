@@ -40,6 +40,9 @@
     provided by Herman Martinez, thanks!)
   - Srv: Unicast address of IA_PD stored in the database is no longer lost after
     server restarts. That should make the reconfigure mechanism usable again.
+  - Linux: daemon shutdown improvement. There was a possibility that the daemon
+    will stall while shutting down. Thanks to Petr Pisar for providing a patch!
+    (bug #251)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
