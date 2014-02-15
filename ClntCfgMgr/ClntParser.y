@@ -118,7 +118,8 @@ namespace std
 %token <ival>       INTNUMBER_
 %token <addrval>    IPV6ADDR_
 %token <duidval>    DUID_
-%token STRICT_RFC_NO_ROUTING_, SKIP_CONFIRM_, OBEY_RA_BITS_
+%token STRICT_RFC_NO_ROUTING_
+%token SKIP_CONFIRM_, OBEY_RA_BITS_
 %token PD_, PREFIX_, DOWNLINK_PREFIX_IFACES_
 %token DUID_TYPE_, DUID_TYPE_LLT_, DUID_TYPE_LL_, DUID_TYPE_EN_
 %token AUTH_METHODS_, AUTH_PROTOCOL_, AUTH_ALGORITHM_, AUTH_REPLAY_, AUTH_REALM_
@@ -547,9 +548,31 @@ WorkDirOption
 StrictRfcNoRoutingOption
 : STRICT_RFC_NO_ROUTING_
 {
-    Log(Notice) << "Strict-rfc-no-routing directive set: addresses will be added with 128 prefix." << LogEnd;
-    ParserOptStack.getLast()->setOnLinkPrefixLength(128);
-    // by default prefix is set to 128
+    Log(Warning) << "strict-rfc-no-routing has changed in 1.0.0RC2: it now takes one argument: "
+                 << " 0 (address configured with guessed /64 prefix length that may be wrong in "
+                 << "some cases; dibbler clients prior to 1.0.0RC2 used this) or 1 (address "
+                 << "configured with /128, as RFC specifies); the default has changed in 1.0.0RC2: "
+                 << "Dibbler is now RFC conformant." << LogEnd;
+}
+| STRICT_RFC_NO_ROUTING_ Number
+{
+    switch ($2) {
+    case 0:
+        // This is pre 1.0.0RC2 behaviour
+        Log(Warning) << "Strict-rfc-no-routing disabled: addresses will be "
+                     << "configured with /64 prefix." << LogEnd;
+        ParserOptStack.getLast()->setOnLinkPrefixLength(64);
+        break;
+    case 1:
+        // The default is now /128 anyway, so this is a no-op
+        Log(Warning) << "Strict-rfc-no-routing enabled (it is the default): "
+                     << "addresses will be configured with /128 prefix." << LogEnd;
+        break;
+    default:
+        Log(Crit) << "Invalid parameter passed to strict-rfc-no-routing: " << $2
+                  << ", only 0 or 1" << LogEnd;
+        YYABORT;
+    }
 }
 ;
 

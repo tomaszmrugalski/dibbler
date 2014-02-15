@@ -43,6 +43,11 @@
   - Linux: daemon shutdown improvement. There was a possibility that the daemon
     will stall while shutting down. Thanks to Petr Pisar for providing a patch!
     (bug #251)
+  - Cli: Dibbler now configures received addresses with /128 prefix, as mandated
+    by the RFCs. In versions 0.5.0 to 1.0.0RC1 it used to be /64, which was an
+    arbitrarily chosen value that happened to work in most, but not all cases.
+    Please see discussion in https://klub.com.pl/bugzilla3/show_bug.cgi?id=222
+    for details (bug #222)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

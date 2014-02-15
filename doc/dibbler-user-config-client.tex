@@ -320,19 +320,25 @@ parameter. Defines than name, which will be used during logging.
   messy on systems that do not support colors, it is disabled by
   default. The default is off.
 
- \item[strict-rfc-no-routing] -- (scope: global) During normal
-  operation, DHCPv6 client should add IPv6 address only
-  (i.e. configure it with /128 prefix), without configuring routing.
-  Routing is expected to be configured with i.e. router
-  advertisements \cite{rfc4861}. However, this behavior is confusing
-  and lots of users complained about it. Therefore since the 0.5.0RC1
-  release, this has been changed in Dibbler. Right now when Dibbler
-  client configures address, it also configures routing, so every host
-  is able to communicate with other hosts, which have obtained address
-  from the same server. If you don't like this behavior, you might
-  want to use this option. Note that draft \cite{draft-route-option} was
-  introduced to solve this DHCPv6 protocol limitation. It is expected
-  to be supported in the next Dibbler release.
+ \item[strict-rfc-no-routing] -- (scope: global) Takes one boolean
+  parameter. The default value is 0. During normal operation, DHCPv6
+  client should add IPv6 address only (i.e. configure it with /128
+  prefix), without configuring routing. Routing is expected to be
+  configured with Router Advertisements \cite{rfc4861}. Please see
+  \href{http://klub.com.pl/bugzilla3/show_bug.cgi?id=222}{discussion
+  in bug 222} for detailed discussion about that behavior. Note that
+  Dibbler versions between 0.5.0RC1 and 1.0.0RC1 used to configure
+  addressed with arbitrarily chosen (guessed) prefix length of /64.
+  Although it was convenient for users, as in most cases the guess
+  was correct and clients connected to the same link could ping each
+  other immediately, its correct operation was based on the assumption
+  that the guess is correct. If it isn't, tricky to debug problems
+  will appear. Hosts will incorrectly assume that some off-the link
+  hosts are on link (or vice versa) and will attempt to reach them
+  directly. If you really understand the repercussions and still
+  willing to use that old behavior, you can
+  use \emph{strict-rfc-no-routing 0}. Author recommends against
+  that, though.
 
 \item[obey-ra-bits] -- (scope: global). Rounter Advertisements contain
   two bits that inform what kind of DHCPv6 services are available on

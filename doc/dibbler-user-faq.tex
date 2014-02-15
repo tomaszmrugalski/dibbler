@@ -35,6 +35,16 @@ releases configured received address with /128 prefix. To restore old,
 more RFC conformant behavior, see \emph{strict-rfc-no-routing}
 directive in the Section \ref{client-cfg-file}.
 
+\Note The original pre-0.5.0 behaviour is correct. This was reverted
+in 1.0.0RC2 release. The \emph{strict-rfc-no-routing} now takes one
+boolean parameter. Setting it to 1 (which is the default value) makes
+dibbler to configure addresses with /128 prefix, as expected. Please
+see \href{http://klub.com.pl/bugzilla3/show_bug.cgi?id=222}{discussion
+in bug 222} for more details. Setting it to 0 reverts to the behavior
+that Dibbler was offering between 0.5.0 and 1.0.0RC1, i.e. configuring
+an address with /64 prefix. Please note that it was chosen (guessed)
+arbitrarily and in some cases may be completely wrong. Use with caution!
+
 There was a proposed solution in a form of \cite{draft-route-option}
 draft. See section \ref{feature-routing}. Unfortunately, MIF working
 group in IETF decided to abandon this work.
