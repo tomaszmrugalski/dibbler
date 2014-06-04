@@ -89,6 +89,9 @@ public:
     const TOptList& getForcedOptions();
 
 private:
+
+    void addOption(TOptList& list, SPtr<TOpt> opt);
+
     /// @todo: Preference should be a global value
     char Preference_;
     bool RapidCommit_;

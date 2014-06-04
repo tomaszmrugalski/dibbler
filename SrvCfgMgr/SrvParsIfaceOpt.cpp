@@ -192,16 +192,46 @@ bool TSrvParsIfaceOpt::supportFQDN() {
     return FQDNSupport_;
 }
 
+/// @brief adds option to the list (and merges vendor-options if possible)
+///
+/// Adds new option to the list. However, if the option being added in vendor-option,
+/// it tries to find if there's existing vendor option with the same vendor-id. If
+/// there is, it just copies sub-options from the option being added to the option
+/// that is already defined.
+///
+/// @param list list of options (new option will be added or merged here)
+/// @param custom new option to be added
+void TSrvParsIfaceOpt::addOption(TOptList& list, TOptPtr custom) {
+
+    if (custom->getOptType() == OPTION_VENDOR_OPTS) {
+
+        SPtr<TOptVendorSpecInfo> newone = (Ptr*) (custom);
+        for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+        {
+            if ((*opt)->getOptType() != OPTION_VENDOR_OPTS)
+                continue;
+            SPtr<TOptVendorSpecInfo> existing = (Ptr*) (*opt);
+
+            if (existing->getVendor() == newone->getVendor()) {
+                newone->firstOption();
+                while (TOptPtr subopt = newone->getOption()) {
+                    existing->addOption(subopt);
+                }
+                return;
+            }
+        }
+    }
+
+    // This wasn't vendor-option or vendor-id didn't match, add it the usual way
+    list.push_back(custom);
+}
 
 void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
-    //Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
-    //           << custom->getOptType() << " generic option (length="
-    //           << custom->getSize() << ")." << LogEnd;
 
-    ExtraOpts.push_back(custom); // allways add to extra options
+    addOption(ExtraOpts, custom);
 
     if (always)
-        ForcedOpts.push_back(custom); // also add to forced, if requested so
+        addOption(ForcedOpts, custom); // also add to forced, if requested so
 }
 
 const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
