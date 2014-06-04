@@ -50,6 +50,9 @@
     for details (bug #222)
   - Srv: Fix in remote-id option support. Thanks to Richard Ouseph for providing
     a patch. (bug #299)
+  - Srv: Multiple instances of vendor-options with the same vendor-id are now
+    sent as one option with multiple sub-options, as clarified in RFC3315bis
+    (bug #304)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
