@@ -23,32 +23,32 @@ DIST_SUBDIRS += Port-win32 bison++ @EXTRA_DIST_SUBDIRS@ tests
 sbin_PROGRAMS = dibbler-client dibbler-server dibbler-relay dibbler-requestor
 
 common-libs:
-        for dir in $(COMMON_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(COMMON_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 client-libs:
-        for dir in $(CLNT_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(CLNT_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 server-libs:
-        for dir in $(SRV_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(SRV_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 relay-libs:
-        for dir in $(REL_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(REL_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 requestor-libs:
-        for dir in $(REQ_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(REQ_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 client: common-libs client-libs
-        $(MAKE) dibbler-client
+	$(MAKE) dibbler-client
 
 dibbler_client_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
 dibbler_client_SOURCES += $(top_srcdir)/Misc/DHCPClient.cpp $(top_srcdir)/Misc/DHCPClient.h
@@ -80,7 +80,7 @@ dibbler_client_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_client_LDADD += -L$(top_builddir)/Misc -lMisc -lClntOptions -lOptions
 
 server: common-libs server-libs
-        $(MAKE) dibbler-server
+	$(MAKE) dibbler-server
 
 dibbler_server_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp
 dibbler_server_SOURCES += $(top_srcdir)/Misc/DHCPServer.cpp $(top_srcdir)/Misc/DHCPServer.h
@@ -112,7 +112,7 @@ dibbler_server_LDADD += -lIfaceMgr -lPoslib -lMisc
 dibbler_server_LDADD += -L$(top_builddir)/nettle -lNettle
 
 relay: common-libs relay-libs
-        $(MAKE) dibbler-relay
+	$(MAKE) dibbler-relay
 
 dibbler_relay_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
 dibbler_relay_SOURCES += $(top_srcdir)/Misc/DHCPRelay.cpp $(top_srcdir)/Misc/DHCPRelay.h
@@ -140,7 +140,7 @@ dibbler_relay_LDADD += -L$(top_builddir)/@PORT_SUBDIR@ -lLowLevel
 dibbler_relay_LDADD += -L$(top_builddir)/Misc -lMisc
 
 requestor: common-libs requestor-libs
-        $(MAKE) dibbler-requestor
+	$(MAKE) dibbler-requestor
 
 dibbler_requestor_SOURCES = $(top_srcdir)/Requestor/Requestor.cpp $(top_srcdir)/Requestor/Requestor.h
 
@@ -173,14 +173,14 @@ dist_noinst_DATA += tests
 bison: bison/bison++
 
 bison/bison++:
-                @echo "[CONFIG ] /bison++/"
-                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-                @echo "[MAKE   ] /bison++/bison++"
-                $(MAKE) -C $(top_srcdir)/bison++
+	@echo "[CONFIG ] /bison++/"
+	cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+	@echo "[MAKE   ] /bison++/bison++"
+	$(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-                $(MAKE) -C SrvCfgMgr parser
-                $(MAKE) -C ClntCfgMgr parser
-                $(MAKE) -C RelCfgMgr parser
+	$(MAKE) -C SrvCfgMgr parser
+	$(MAKE) -C ClntCfgMgr parser
+	$(MAKE) -C RelCfgMgr parser
 
 .PHONY: common-libs

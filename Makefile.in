@@ -1235,41 +1235,41 @@ uninstall-am: uninstall-nobase_dist_docDATA uninstall-sbinPROGRAMS
 
 
 common-libs:
-        for dir in $(COMMON_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(COMMON_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 client-libs:
-        for dir in $(CLNT_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(CLNT_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 server-libs:
-        for dir in $(SRV_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(SRV_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 relay-libs:
-        for dir in $(REL_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(REL_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 requestor-libs:
-        for dir in $(REQ_SUBDIRS) ; do \
-                $(MAKE) -C $$dir ; \
-        done
+	for dir in $(REQ_SUBDIRS) ; do \
+	    $(MAKE) -C $$dir ; \
+	done
 
 client: common-libs client-libs
-        $(MAKE) dibbler-client
+	$(MAKE) dibbler-client
 
 server: common-libs server-libs
-        $(MAKE) dibbler-server
+	$(MAKE) dibbler-server
 
 relay: common-libs relay-libs
-        $(MAKE) dibbler-relay
+	$(MAKE) dibbler-relay
 
 requestor: common-libs requestor-libs
-        $(MAKE) dibbler-requestor
+	$(MAKE) dibbler-requestor
 
 # these are conditional directories. Therefore they are not added to
 # dist directory.
@@ -1277,15 +1277,15 @@ requestor: common-libs requestor-libs
 bison: bison/bison++
 
 bison/bison++:
-                @echo "[CONFIG ] /bison++/"
-                cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
-                @echo "[MAKE   ] /bison++/bison++"
-                $(MAKE) -C $(top_srcdir)/bison++
+	@echo "[CONFIG ] /bison++/"
+	cd $(top_srcdir)/bison++; ./configure --host=$(CHOST) --build=$(CBUILD) >configure.log
+	@echo "[MAKE   ] /bison++/bison++"
+	$(MAKE) -C $(top_srcdir)/bison++
 
 parser:
-                $(MAKE) -C SrvCfgMgr parser
-                $(MAKE) -C ClntCfgMgr parser
-                $(MAKE) -C RelCfgMgr parser
+	$(MAKE) -C SrvCfgMgr parser
+	$(MAKE) -C ClntCfgMgr parser
+	$(MAKE) -C RelCfgMgr parser
 
 .PHONY: common-libs
 
