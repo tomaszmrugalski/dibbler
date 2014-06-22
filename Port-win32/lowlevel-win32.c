@@ -623,7 +623,13 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
 
     sprintf(buf, "%s %s %s %s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
     i=_spawnl(_P_WAIT,netshPath,netshPath,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10, NULL);
-    if (i) { i = _spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, "set", arg4, arg5, arg6, arg7, arg8, arg9, arg10, NULL); }
+
+    // if error code is non-zero, then the addition failed. One of the reasons why this
+    // could happen is because the address or prefix already exists, so we'll try
+    // to update its parameters (if this is RENEW/REBIND)
+    if (i) {
+        i = _spawnl(_P_WAIT, netshPath, netshPath, arg1, arg2, "set", arg4, arg5, arg6, arg7, arg8, arg9, arg10, NULL);
+    }
     return i;
 }
 

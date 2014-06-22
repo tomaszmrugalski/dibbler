@@ -115,5 +115,8 @@
     2014-02: Win32: Proper shutdown from Microsft Mgmt Console (bug #162)
     2014-02: Vendor-spec info option with IPv6 address in it
 
+  - Shine- (https://github.com/Shine-)
+    2014-06: Address renewals on WIN32 systems.
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
