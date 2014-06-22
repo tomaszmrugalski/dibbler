@@ -118,5 +118,8 @@
   - Shine- (https://github.com/Shine-)
     2014-06: Address renewals on WIN32 systems.
 
+  - Maciek Fijalkowski (macfij7(at)wp(dot)pl)
+    2014-06: Prefix scope added to the client parser.
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

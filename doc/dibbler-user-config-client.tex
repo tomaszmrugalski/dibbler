@@ -752,6 +752,8 @@ address, it would like to renew addresses once in 30 minutes (T1 timer
 is set to 1800 seconds). Client also would like to have address, which
 is prefered for an hour and is valid for 2 hours.
 
+Note: The format has changed in 1.0.0RC2.
+
 \begin{lstlisting}
 # client.conf
 log-mode short
@@ -762,10 +764,53 @@ iface eth0 {
   prefered-lifetime 3600
   valid-lifetime 7200
   ia {
-    address {
-      2000::1:2:3
-    }
+    address 2000::1:2:3
   }
+}
+\end{lstlisting}
+
+There are multiple ways in which addresses can be requested in
+ia. This syntax was implemented more for completeness, rather than
+having practical utility. It is mentioned here for reference.
+
+\begin{lstlisting}
+# client.conf
+
+iface eth0 {
+   T1 1800
+   T2 2700
+
+   ia // Send just an empty IA
+
+   ia { // Send an IA with one (any, ::) address
+       address
+   }
+
+   ia { // Send an IA with five (any, ::) addresses
+       address 5
+   }
+
+   ia { // Send an IA with address 2001:db8::1
+       address 2001:db8::1
+   }
+
+   ia { // Send an IA with one (any, ::) address with specific parameters
+       address {
+          preferred-lifetime 3600
+       }
+   }
+
+   ia { // Send an IA with five (any, ::) addresses with specific parameters
+       address 5 {
+          preferred-lifetime 3600
+       }
+   }
+
+   ia { // Send an IA with address 2001:db8::1
+       address 2001:db8::1 {
+          preferred-lifetime 3600
+       }
+   }
 }
 \end{lstlisting}
 

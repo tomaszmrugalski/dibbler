@@ -71,6 +71,7 @@ void EmptyAddr();                                                           \
 TClntCfgMgr * CfgMgr;                                                       \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
+unsigned int AddrCount_;                                                    \
 virtual ~ClntParser();                                                      \
 EDUIDType DUIDType;                                                         \
 int DUIDEnterpriseNumber;                                                   \
@@ -83,6 +84,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;                                                   \
+    AddrCount_ = 0;                                                         \
     CfgMgr = 0;                                                             \
     iaidSet = false;                                                        \
     iaid = 0xffffffff;                                                      \
@@ -90,7 +92,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     yynerrs = 0;                                                            \
     yychar = 0;
 
-#line 89 "ClntParser.y"
+#line 91 "ClntParser.y"
 typedef union
 {
     int ival;

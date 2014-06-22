@@ -65,6 +65,7 @@ void EmptyAddr();                                                           \
 TClntCfgMgr * CfgMgr;                                                       \
 bool iaidSet;                                                               \
 unsigned int iaid;                                                          \
+unsigned int AddrCount_;                                                    \
 virtual ~ClntParser();                                                      \
 EDUIDType DUIDType;                                                         \
 int DUIDEnterpriseNumber;                                                   \
@@ -79,6 +80,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
     DUIDEnterpriseID = 0;                                                   \
+    AddrCount_ = 0;                                                         \
     CfgMgr = 0;                                                             \
     iaidSet = false;                                                        \
     iaid = 0xffffffff;                                                      \
@@ -208,7 +210,7 @@ IAOptionDeclaration
 : T1Option
 | T2Option
 | RapidCommitOption
-| ADDRESOptionDeclaration
+| AddressParameter
 | ExperimentalAddrParams
 ;
 
@@ -417,80 +419,100 @@ IADeclarationList
 |IADeclarationList ADDRESDeclaration
 ;
 
+// This covers the following declarations:
+// 1. address (send an empty address)
+// 2. address 2001:db8::1 (send this specific address)
+// 3. address 5 (send 5 addresses)
+// 4. address { ... } (send an empty address with the following parameters)
+// 5. address 2001:d8b::1 { ... } (spend specific address with the following parameters)
+// 6. address 5 { ... } (send 5 addresses with the following parameters)
 ADDRESDeclaration
-: ADDRESS_KEYWORD_ '{'
+
+// 1. address (send an empty address)
+: ADDRESS_KEYWORD_
 {
+    EmptyAddr();
+}
+
+// 2. address 2001:db8::1 (send this specific address)
+| ADDRESS_KEYWORD_ IPV6ADDR_ {
+    ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr($2)));
+    ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
+}
+
+// 3. address 5 (send 5 addresses)
+|ADDRESS_KEYWORD_ Number
+{
+    for (int i = 0; i < $2; i++) {
+        EmptyAddr();
+    }
+}
+
+// 4. address { ... } (send an empty address with the following parameters)
+| ADDRESS_KEYWORD_ '{'
+{
+    // Get last context
+    SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
+
+    // Create new context based on the current one
+    SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
+
+    // Add this new context to the contexts stack
+    ParserOptStack.append(newOpt);
+}
+AddressParametersList '}'
+{
+    EmptyAddr(); // Create an empty address
+    ParserOptStack.delLast(); // Delete new context
+}
+
+// 5. address 2001:d8b::1 { ... } (spend specific address with the following parameters)
+| ADDRESS_KEYWORD_ IPV6ADDR_ '{'
+{
+    // We need to store just one address, but let's use PresentAddrLst
+    // We'll need that address to create an actual object when the context is closed
+    PresentAddrLst.clear();
+    PresentAddrLst.append(SPtr<TIPv6Addr> (new TIPv6Addr($2)));
+
     SPtr<TClntParsGlobalOpt> globalOpt = ParserOptStack.getLast();
     SPtr<TClntParsGlobalOpt> newOpt = new TClntParsGlobalOpt(*globalOpt);
     ParserOptStack.append(newOpt);
 }
-ADDRESDeclarationList '}'
+AddressParametersList '}'
 {
-    //ClntCfgAddrLst.append(SPtr<TClntCfgAddr> (new TClntCfgAddr()));
-    //set proper options specific for this Address
-    //ClntCfgAddrLst.getLast()->setOptions(&(*ParserOptStack.getLast()));
+    ClntCfgAddrLst.append(new TClntCfgAddr(PresentAddrLst.getLast()));
+    ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
     if (ParserOptStack.count())
 	ParserOptStack.delLast();
+    PresentAddrLst.clear();
 }
-//In this agregated declaration no address hints are allowed
+
+// 6. address 5 { ... } (send 5 addresses with the following parameters)
 |ADDRESS_KEYWORD_ Number '{'
 {
+    //In this agregated declaration no address hints are allowed
     ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
     ParserOptStack.getLast()->setAddrHint(false);
+
+    AddrCount_ = $2;
 }
-ADDRESDeclarationList '}'
+AddressParametersList '}'
 {
-    for (int i=0;i<$2; i++) EmptyAddr();
+    for (unsigned int i = 0; i < AddrCount_; i++) {
+        EmptyAddr();
+        ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
+    }
     ParserOptStack.delLast();
-}
-
-|ADDRESS_KEYWORD_ Number '{' '}'
-{
-    for (int i=0;i<$2; i++) EmptyAddr();
-}
-
-|ADDRESS_KEYWORD_ '{' '}'
-{
-    EmptyAddr();
-}
-
-|ADDRESS_KEYWORD_ Number
-{
-    for (int i=0;i<$2; i++) EmptyAddr();
-}
-
-|ADDRESS_KEYWORD_
-{
-    EmptyAddr();
+    AddrCount_ = 0;
 }
 ;
 
-ADDRESDeclarationList
-:  ADDRESOptionDeclaration
-|  ADDRESDeclarationList ADDRESOptionDeclaration
-|  IPV6ADDR_
-{
-    if (ParserOptStack.getLast()->getAddrHint())
-    {
-	ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr($1)));
-	ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
-    }
-    else
-	YYABORT;  //this is aggregated version of IA
-}
-|  ADDRESDeclarationList IPV6ADDR_
-{
-    if (ParserOptStack.getLast()->getAddrHint())
-    {
-	ClntCfgAddrLst.append(new TClntCfgAddr(new TIPv6Addr($2)));
-	ClntCfgAddrLst.getLast()->setOptions(ParserOptStack.getLast());
-    }
-    else
-	YYABORT; //here is agregated version of IA
-}
+AddressParametersList
+:  AddressParameter
+|  AddressParametersList AddressParameter
 ;
 
-ADDRESOptionDeclaration
+AddressParameter
 : PreferredTimeOption
 | ValidTimeOption
 ;
@@ -874,6 +896,8 @@ PDOption
 | T2Option
 ;
 
+
+
 Prefix
 : PREFIX_ IPV6ADDR_ '/' Number
 {
@@ -887,7 +911,48 @@ Prefix
     Log(Debug) << "PD: Adding single prefix." << LogEnd;
     SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(new TIPv6Addr("::",true), 0);
     PrefixLst.append(prefix);
-};
+}
+
+| PREFIX_ '{' '}'
+{
+    Log(Debug) << "PD: Adding single prefix." << LogEnd;
+    SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(new TIPv6Addr("::",true), 0);
+    PrefixLst.append(prefix);
+}
+
+| PREFIX_ '{'
+{
+}
+PrefixOptionsList '}'
+{
+    Log(Debug) << "PD: Adding single (any) prefix." << LogEnd;
+    SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(new TIPv6Addr("::",true), 0);
+    prefix->setOptions(ParserOptStack.getLast());
+    PrefixLst.append(prefix);
+}
+
+| PREFIX_ IPV6ADDR_ '/' Number '{'
+{
+    SPtr<TIPv6Addr> addr = new TIPv6Addr($2);
+    SPtr<TClntCfgPrefix> prefix = new TClntCfgPrefix(addr, ($4));
+    PrefixLst.append(prefix);
+    Log(Debug) << "PD: Adding single prefix " << addr->getPlain() << "/" << ($4) << "." << LogEnd;
+}
+PrefixOptionsList '}'
+{
+    PrefixLst.getLast()->setOptions(ParserOptStack.getLast());
+}
+;
+
+PrefixOptionsList
+: PrefixOption
+| PrefixOptionsList PrefixOption
+;
+
+PrefixOption
+: ValidTimeOption
+| PreferredTimeOption
+;
 
 UnicastOption
 :UNICAST_ Number
@@ -1486,7 +1551,9 @@ void ClntParser::EmptyIA()
     EmptyAddr();
     ClntCfgIALst.append(new TClntCfgIA());
     ClntCfgIALst.getLast()->setOptions(ParserOptStack.getLast());
-    //ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
+
+    // Commented out: by default sent empty IA, without any addresses
+    // ClntCfgIALst.getLast()->addAddr(ClntCfgAddrLst.getLast());
 }
 
 /**
