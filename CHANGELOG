@@ -55,6 +55,8 @@
     (bug #304)
   - Win32 Cli: Address lifetimes are now properly renewed. Thanks to Shine for
     the patch!
+  - Srv: Fixed calculations for available prefixes if the was many prefixes
+    (more than 2^30) (bug #295)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

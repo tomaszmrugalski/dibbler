@@ -95,11 +95,13 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
         return false;
     }
     PD_Count_ = prefixLength - pool->getPrefixLength();
-    if (PD_Count_ > 31)
-        PD_Count_ = DHCPV6_INFINITY;
-    if (PD_Count_!=0)
+    if (PD_Count_ > 0)
     {
-        PD_Count_ = 2 << (PD_Count_-1);
+        if (PD_Count_ > 32) {
+            PD_Count_ = DHCPV6_INFINITY;
+        } else {
+            PD_Count_ = ((unsigned long)2) << (PD_Count_ - 1);
+        }
     } else {
         PD_Count_ = 1; // only 1 prefix available
     }
@@ -110,7 +112,7 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
         PoolLst_.append(pool);
         Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - "
                    << pool->getAddrR()->getPlain() << ", pool length: "
-                   << pool->getPrefixLength() << "." << LogEnd;
+                   << pool->getPrefixLength() << ", " << PD_Count_ << " prefix(es) total." << LogEnd;
         /** @todo: this code is fishy. It behave erraticaly, when there is only 1 prefix to be assigned
         if (PD_Count_ > pool->rangeCount())
             PD_Count_ = pool->rangeCount();

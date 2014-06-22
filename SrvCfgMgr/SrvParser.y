@@ -935,6 +935,11 @@ PDPoolOption
 PDLength
 : PD_LENGTH_ Number
 {
+    if ( (($2) > 128) || (($2) < 1) ) {
+        Log(Crit) << "Invalid pd-length:" << $2 << ", allowed range is 1..128."
+                  << LogEnd;
+        YYABORT;
+    }
    this->PDPrefix = $2;
 }
 ;
