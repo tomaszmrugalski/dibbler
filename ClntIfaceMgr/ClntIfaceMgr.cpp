@@ -474,7 +474,19 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     // get a list of interfaces that we will assign prefixes to
     TIfaceIfaceLst ifaceLst;
     vector<string> ifaceNames = ClntCfgMgr().getDownlinkPrefixIfaces();
+
+    // skip PD split, because it was administratively disabled
+    // (i.e. user specified downlink-prefix-ifaces none
+    bool skip = false;
+    if (ifaceNames.size() == 1 && (ifaceNames[0] == "none")) {
+        skip = true;
+    }
+
     for (vector<string>::const_iterator name = ifaceNames.begin(); name != ifaceNames.end(); ++name) {
+        if (*name == "none") {
+            break;
+        }
+
         SPtr<TIfaceIface> x = getIfaceByName(*name);
         if (x)
             ifaceLst.push_back(x);
@@ -482,7 +494,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             Log(Warning) << "Interface " << *name << " specified in downlink-prefix-ifaces is missing." << LogEnd;
     }
 
-    if (ifaceLst.size() == 0) {
+    if (!skip && (ifaceLst.empty()) ) {
         SPtr<TIfaceIface> x;
         firstIface();
         while ( x = (Ptr*)getIface() ) {
@@ -529,6 +541,9 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
       dl_ifaces += string((*i)->getName()) + " ";
     }
+    if (skip) {
+        dl_ifaces += string("[none]");
+    }
     Log(Info) << "PD: Using " << ifaceLst.size() << " suitable interface(s):"
 	      << dl_ifaces << LogEnd;
 
@@ -537,7 +552,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         params->addParam("DOWNLINK_PREFIX_IFACES", dl_ifaces);
     }
 
-    if (ifaceLst.size() == 0) {
+    if (!skip && ifaceLst.empty()) {
         Log(Warning) << "Suitable interfaces not found. Delegated prefix not split." << LogEnd;
         return true;
     }
@@ -613,10 +628,14 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
       params->addParam("DOWNLINK_PREFIXES", prefix_split.str());
     }
 
-    if (conf) // at least one prefix configured successfully
+    // If at least one prefix configured successfully (or we were told to skip)
+    // then it's a great success!
+    if (conf || skip) {
         return true;
-    else
+    } else {
+        // We failed again... dammit.
         return false;
+    }
 }
 
 void TClntIfaceMgr::redetectIfaces() {

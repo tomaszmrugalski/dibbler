@@ -1039,10 +1039,29 @@ downlink-prefix-ifaces eth1, eth5
 
 # Ask for prefix over eth0
 iface eth0 {
-    pd 
+    pd
 }
 \end{lstlisting}
 
+If you do not want Dibbler to split the prefixes automatically, it is
+possible to do so by specifying \emph{"none"} as the interface
+name. Note that this will render PD mechanism useless, unless you also
+use a script and do the delegated prefix processing on your own.
+
+\begin{lstlisting}
+# client.conf
+
+# Dibbler client should not split received prefixes on its own
+downlink-prefix-ifaces "none"
+
+# You need to provide your own script to handle prefixes
+script "/var/lib/dibbler/client-pd-split.sh"
+
+# Ask for prefix over eth0
+iface eth0 {
+    pd
+}
+\end{lstlisting}
 
 \subsubsection{Example 12: Insist mode}
 \label{example-client-insistmode}
