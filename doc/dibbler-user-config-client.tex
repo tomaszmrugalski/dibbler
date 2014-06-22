@@ -740,7 +740,7 @@ iface eth0 {
 \end{lstlisting}
 
 \subsubsection{Example 3: Timeouts and specific address}
-
+\label{example-specific-addrs}
 Automatic configuration is being driven by several timers, which define,
 what action should be performed at various intervals. Since all
 values are provided by the server, client can only define values, which
@@ -1107,6 +1107,43 @@ iface eth0 {
     pd
 }
 \end{lstlisting}
+
+Prefix hints can be specified in the similar way as addresses (see
+\ref{example-specific-addrs}, except that multiple prefixes syntax
+is not supported.
+
+\begin{lstlisting}
+# client.conf
+log-level 8
+
+iface eth0 {
+   T1 1800
+   T2 2700
+
+   pd // Send just an empty PD
+
+   pd { // Send a PD with one (any, ::/0) prefix
+       prefix
+   }
+
+   pd { // Send an PD with a specific prefix
+       prefix 2001:db8::1 / 64
+   }
+
+   pd { // Send an PD with one (any, ::/0) prefix with specific parameters
+       prefix {
+          preferred-lifetime 3600
+       }
+   }
+
+   pd { // Send an PD with a specific prefix and specific parameters
+       prefix 2001:db8::1 /64 {
+          preferred-lifetime 3600
+       }
+   }
+}
+\end{lstlisting}
+
 
 \subsubsection{Example 12: Insist mode}
 \label{example-client-insistmode}
