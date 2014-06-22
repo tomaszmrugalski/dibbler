@@ -717,7 +717,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         // Log(Debug) << "Retured FQDN  " << newEntry->getName() <<LogEnd;
         return newEntry;
     }
-    case UKNNOWN_FQDN_APPEND:
+    case UNKNOWN_FQDN_APPEND:
     {
         string assignedDomain = hint;
         std::string::size_type j = assignedDomain.find(".");
@@ -734,10 +734,11 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         assignedDomain += "." + FQDNDomain_;
         SPtr<TFQDN> newEntry = new TFQDN(duid, assignedDomain, false);
         FQDNLst_.append(newEntry);
-        Log(Info) << "FQDN: Client requested (" << hint <<"), assigning (" << assignedDomain << ")." <<LogEnd;
+        Log(Info) << "FQDN: Client requested " << hint <<", assigning " << assignedDomain
+                  << "." <<LogEnd;
         return newEntry;
     }
-    case UKNNOWN_FQDN_PROCEDURAL:
+    case UNKNOWN_FQDN_PROCEDURAL:
     {
         string tmp = addr->getPlain();
         std::string::size_type j = 0;
@@ -748,7 +749,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
         tmp = tmp + "." + FQDNDomain_;
         SPtr<TFQDN> newEntry = new TFQDN(duid, tmp, false);
         FQDNLst_.append(newEntry);
-        Log(Info) << "FQDN: Client requested (" << hint <<"), assiging (" << tmp << ")." <<LogEnd;
+        Log(Info) << "FQDN: Client requested " << hint <<", assigning " << tmp << "." <<LogEnd;
         return newEntry;
     }
 

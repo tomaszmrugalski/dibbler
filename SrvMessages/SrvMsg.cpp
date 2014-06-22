@@ -544,7 +544,6 @@ void TSrvMsg::appendReconfigureKey() {
 #endif
 
 void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN) {
-    /// @todo: Make this method also usable for RELEASE message
     string hint = requestFQDN->getFQDN();
     SPtr<TSrvOptFQDN> optFQDN;
 
@@ -977,7 +976,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // --- option: NISP DOMAIN is now handled with common extra options mechanism ---
 
     // --- option: FQDN ---
-    // see prepareFQDN() method
+    // see processFQDN() method
 
     // --- option: VENDOR SPEC ---
     if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {
@@ -1051,18 +1050,6 @@ string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
     }
     return x.str();
 }
-
-#if 0
-SPtr<TSrvOptFQDN> TSrvMsg::prepareFQDN(SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid,
-                                       SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate) {
-    return SrvTransMgr().addFQDN(this->Iface, requestFQDN, clntDuid, clntAddr, hint, doRealUpdate);
-}
-
-void TSrvMsg::fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn)
-{
-    SrvTransMgr().removeFQDN(ptrIface, ptrIA, fqdn);
-}
-#endif
 
 bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);

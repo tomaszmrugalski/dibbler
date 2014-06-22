@@ -218,8 +218,8 @@ enum EUnknownFQDNMode {
     UNKNOWN_FQDN_REJECT = 0,      // reject unknown FQDNs (do not assign a name from pool)
     UNKKOWN_FQDN_ACCEPT_POOL = 1, // assign other name available in pool
     UNKNOWN_FQDN_ACCEPT = 2,      // accept unknown FQDNs
-    UKNNOWN_FQDN_APPEND = 3,      // accept, but append defined domain suffix
-    UKNNOWN_FQDN_PROCEDURAL = 4   // generate name procedurally, append defined domain suffix
+    UNKNOWN_FQDN_APPEND = 3,      // accept, but append defined domain suffix
+    UNKNOWN_FQDN_PROCEDURAL = 4   // generate name procedurally, append defined domain suffix
 };
 
 // defines Identity assotiation type
