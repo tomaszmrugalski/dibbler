@@ -112,8 +112,12 @@ private:
     bool validateIface(SPtr<TClntCfgIface> iface);
     bool validateIA(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgIA> ptrIA);
     bool validateAddr(SPtr<TClntCfgIface> ptrIface, 
-		      SPtr<TClntCfgIA> ptrIA,
-		      SPtr<TClntCfgAddr> ptrAddr);
+	        	      SPtr<TClntCfgIA> ptrIA,
+		              SPtr<TClntCfgAddr> ptrAddr);
+    bool validatePD(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgPD> ptrPD);
+    bool validatePrefix(SPtr<TClntCfgIface> ptrIface, 
+                        SPtr<TClntCfgPD> ptrPD,
+                        SPtr<TClntCfgPrefix> ptrPrefix);
     bool parseConfigFile(const std::string& cfgFile);
     bool matchParsedSystemInterfaces(ClntParser *parser);
 
