@@ -131,16 +131,16 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 
 	if (prefOpt && (prefOpt->getValue() == 255) )
 	{
-	    Log(Info) << "ADVERTISE message with prefrence set to 255 received, so wait time for"
+	    Log(Info) << "ADVERTISE message with preference set to 255 received, so wait time for"
 		" other possible ADVERTISE messages is skipped." << LogEnd;
-	    ClntTransMgr().sendRequest(Options,Iface);
+	    ClntTransMgr().sendRequest(Options, Iface);
 	    IsDone = true;
 	    return;
 	}
 
 	if (this->RC > 1)
 	{
-	    ClntTransMgr().sendRequest(Options,Iface);
+	    ClntTransMgr().sendRequest(Options, Iface);
 	    IsDone = true;
 	    return;
 	}

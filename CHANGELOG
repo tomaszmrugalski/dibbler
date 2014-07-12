@@ -34,7 +34,7 @@
     client sending prefix hints with host part set should no longer confuse
     the server (bug #295)
   - Win: Better shutdown when shutting down from Microsoft Mgmt Console (bug #162)
-    Thanks to Hernan Martinez for the fix!)
+    (Thanks to Hernan Martinez for the fix!)
   - Added support for IPv6 address in vendor-specific information option, and
     fixed bugs in other vendor-specific options formats (based on a patch
     provided by Herman Martinez, thanks!)
@@ -55,7 +55,7 @@
     (bug #304)
   - Win32 Cli: Address lifetimes are now properly renewed. Thanks to Shine for
     the patch!
-  - Srv: Fixed calculations for available prefixes if the was many prefixes
+  - Srv: Fixed calculations for available prefixes if the was a lot of prefixes
     (more than 2^30) (bug #295)
   - Cli: It is possible to disable prefix split by passing "none" to
     downlink-prefix-ifaces (bug #306, github #10)
