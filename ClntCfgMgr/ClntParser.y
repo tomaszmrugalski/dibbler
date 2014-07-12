@@ -1274,6 +1274,10 @@ NISPDomainOption
 LifetimeOption
 :OPTION_ LIFETIME_
 {
+    if (ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Information refresh time (lifetime) option can only be used in stateless mode." << LogEnd;
+        YYABORT;
+    }
     ParserOptStack.getLast()->setLifetime();
 }
 ;

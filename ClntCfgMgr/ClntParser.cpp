@@ -994,8 +994,8 @@ static const short yyrline[] = { 0,
   1068,  1069,  1076,  1082,  1086,  1095,  1100,  1103,  1112,  1118,
   1121,  1130,  1134,  1144,  1150,  1153,  1162,  1167,  1170,  1179,
   1188,  1195,  1210,  1216,  1219,  1228,  1234,  1237,  1246,  1250,
-  1261,  1265,  1275,  1282,  1287,  1295,  1296,  1297,  1298,  1302,
-  1309,  1316,  1325,  1330,  1336,  1343,  1349,  1356,  1362
+  1261,  1265,  1275,  1286,  1291,  1299,  1300,  1301,  1302,  1306,
+  1313,  1320,  1329,  1334,  1340,  1347,  1353,  1360,  1366
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","T1_","T2_",
@@ -2812,47 +2812,51 @@ case 222:
 case 223:
 #line 1276 "ClntParser.y"
 {
+    if (ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Information refresh time (lifetime) option can only be used in stateless mode." << LogEnd;
+        YYABORT;
+    }
     ParserOptStack.getLast()->setLifetime();
 ;
     break;}
 case 224:
-#line 1283 "ClntParser.y"
+#line 1287 "ClntParser.y"
 {
     Log(Debug) << "VendorSpec defined (no details)." << LogEnd;
     ParserOptStack.getLast()->setVendorSpec();
 ;
     break;}
 case 225:
-#line 1288 "ClntParser.y"
+#line 1292 "ClntParser.y"
 {
     ParserOptStack.getLast()->setVendorSpec();
     Log(Debug) << "VendorSpec defined (multiple times)." << LogEnd;
 ;
     break;}
 case 226:
-#line 1295 "ClntParser.y"
+#line 1299 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 227:
-#line 1296 "ClntParser.y"
+#line 1300 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 228:
-#line 1297 "ClntParser.y"
+#line 1301 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[0].ival,0,0,0,0) ); ;
     break;}
 case 229:
-#line 1298 "ClntParser.y"
+#line 1302 "ClntParser.y"
 { VendorSpec.append( new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, yyvsp[-2].ival,yyvsp[0].ival,0,0,0) ); ;
     break;}
 case 230:
-#line 1303 "ClntParser.y"
+#line 1307 "ClntParser.y"
 {
     ClntCfgIfaceLst.getLast()->addExtraOption(OPTION_AFTR_NAME, TOpt::Layout_String, false);
 ;
     break;}
 case 231:
-#line 1310 "ClntParser.y"
+#line 1314 "ClntParser.y"
 {
     // option 123 hex 0x1234abcd
     SPtr<TOpt> opt = new TOptGeneric(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0);
@@ -2861,7 +2865,7 @@ case 231:
 ;
     break;}
 case 232:
-#line 1317 "ClntParser.y"
+#line 1321 "ClntParser.y"
 {
     // option 123 address 2001:db8::1
     SPtr<TIPv6Addr> addr(new TIPv6Addr(yyvsp[0].addrval));
@@ -2872,14 +2876,14 @@ case 232:
 ;
     break;}
 case 233:
-#line 1326 "ClntParser.y"
+#line 1330 "ClntParser.y"
 {
     // option 123 address-list 2001:db8::1,2001:db8::cafe
     PresentAddrLst.clear();
 ;
     break;}
 case 234:
-#line 1330 "ClntParser.y"
+#line 1334 "ClntParser.y"
 {
     SPtr<TOpt> opt = new TOptAddrLst(yyvsp[-3].ival, PresentAddrLst, 0);
     ClntCfgIfaceLst.getLast()->addExtraOption(opt, TOpt::Layout_AddrLst, true);
@@ -2888,7 +2892,7 @@ case 234:
 ;
     break;}
 case 235:
-#line 1337 "ClntParser.y"
+#line 1341 "ClntParser.y"
 {
     // option 123 string "foobar"
     SPtr<TOpt> opt = new TOptString(yyvsp[-2].ival, string(yyvsp[0].strval), 0);
@@ -2897,7 +2901,7 @@ case 235:
 ;
     break;}
 case 236:
-#line 1344 "ClntParser.y"
+#line 1348 "ClntParser.y"
 {
     // just request option 123 and interpret responses as hex
     Log(Debug) << "Will request option " << yyvsp[-1].ival << " and iterpret response as hex." << LogEnd;
@@ -2905,7 +2909,7 @@ case 236:
 ;
     break;}
 case 237:
-#line 1350 "ClntParser.y"
+#line 1354 "ClntParser.y"
 {
     // just request this option and expect OptAddr layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival 
@@ -2914,7 +2918,7 @@ case 237:
 ;
     break;}
 case 238:
-#line 1357 "ClntParser.y"
+#line 1361 "ClntParser.y"
 {
     // just request this option and expect OptString layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival << " and interpret response as a string." << LogEnd;
@@ -2922,7 +2926,7 @@ case 238:
 ;
     break;}
 case 239:
-#line 1363 "ClntParser.y"
+#line 1367 "ClntParser.y"
 {
     // just request this option and expect OptAddrLst layout
     Log(Debug) << "Will request option " << yyvsp[-1].ival
@@ -3134,7 +3138,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1039 "../bison++/bison.cc"
-#line 1370 "ClntParser.y"
+#line 1374 "ClntParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3298,7 +3302,7 @@ void ClntParser::EmptyIface()
 bool ClntParser::StartIADeclaration(bool aggregation)
 {
     if (!ParserOptStack.getLast()->getStateful()) {
-        Log(Crit) << "Attempted to define IA in stateless mode." << LogEnd;
+        Log(Crit) << "Attempted to use IA (stateful option) in stateless mode." << LogEnd;
         return (false);
     }
 
@@ -3342,7 +3346,7 @@ void ClntParser::EndIADeclaration()
 bool ClntParser::StartPDDeclaration()
 {
     if (!ParserOptStack.getLast()->getStateful()) {
-        Log(Crit) << "Attempted to define PD in stateless mode." << LogEnd;
+        Log(Crit) << "Attempted to use PD (stateful option) in stateless mode." << LogEnd;
         return (false);
     }
 

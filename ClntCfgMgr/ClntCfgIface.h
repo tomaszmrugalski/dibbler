@@ -264,7 +264,8 @@ private:
     bool ReqVendorSpec;
     bool RoutingEnabled;
 
-    TOptionStatusLst ExtraOpts; // extra options to be sent to server
+    /// @brief Extra options to be sent to server
+    TOptionStatusLst ExtraOpts;
 };
 
 #endif

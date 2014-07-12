@@ -44,7 +44,15 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
         Log(Info) << "Sending anonymous INF-REQUEST (ClientID not included)." << LogEnd;
     }
 
-    this->appendRequestedOptions();
+    // Append the options we want to configure
+    appendRequestedOptions();
+
+    // If there is no ORO (or it is empty), skip the message.
+    SPtr<TClntOptOptionRequest> oro = (Ptr*) getOption(OPTION_ORO);
+    if (!oro || !oro->count()) {
+        IsDone = true;
+        return;
+    }
 
     appendAuthenticationOption();
     appendElapsedOption();
