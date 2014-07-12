@@ -60,11 +60,19 @@ public:
     }
 
     TYP getLast() {
-        return lista.back();
+        if (lista.empty()) {
+            return TYP();
+        } else {
+            return lista.back();
+        }
     }
 
     TYP getFirst() {
-        return lista.front();
+        if (lista.empty()) {
+            return TYP();
+        } else {
+            return lista.front();
+        }
     }
 
     void delLast() {
