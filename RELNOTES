@@ -21,7 +21,7 @@
    if the client connected via relays. See bug #303.
  - There are reports that Dibbler has problems on Ubuntu 14.04. That was
    traced to a Linux kernel issue and is fixed in 3.15.2. See bug #302.
- - Windows port improved.
+ - Windows port improved, now using Visual Studio 2013 Express.
  - Issue tracker on github has been disabled. It was awkward to use both
    bugzilla and github.
 

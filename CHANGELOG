@@ -71,6 +71,8 @@
   - Cli: invalid prefixes (pref > valid) are now rejected (bug #308)
   - Srv: Support for remote-id fixed. Thanks to Richard Ouseph for the patch
     (bug #299)
+  - Win: Migrated to Visual Studio 2013 Express. All files from previous
+    VS were removed.
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)
