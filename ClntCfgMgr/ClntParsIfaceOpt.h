@@ -30,8 +30,8 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getUnicast();
     bool getRapidCommit();
     void setRapidCommit(bool rapid);
-    bool getIsIAs();
-    void setIsIAs(bool state);
+    bool getStateful();
+    void setStateful(bool state);
 
     //-- options related methods --
     // option: DNS Servers
@@ -106,8 +106,13 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
 
 private:
-    bool NoIAs;
-    bool Unicast; // do we accept unicast?
+    /// defined whether this interface is running in stateless mode
+    bool Stateless_;
+
+    /// do we accept unicast?
+    bool Unicast;
+
+    /// should we try to use rapid-commit?
     bool RapidCommit;
 
     List(TIPv6Addr) DNSServerLst;

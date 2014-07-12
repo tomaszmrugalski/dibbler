@@ -76,7 +76,7 @@ void TClntCfgIface::setDefaults() {
 }
 
 void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    Stateful_   = opt->getIsIAs();
+    Stateful_   = opt->getStateful();
     Unicast     = opt->getUnicast();
     RapidCommit = opt->getRapidCommit();
 

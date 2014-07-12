@@ -61,14 +61,14 @@ TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
     // parse configuration file
     if (!parseConfigFile(cfgFile)) {
         IsDone = true;
-            return;
+        return;
     }
 
     // load or create DUID
     string duidFile = (string)CLNTDUID_FILE;
     if (!setDUID(duidFile, ClntIfaceMgr())) {
         IsDone = true;
-            return;
+        return;
     }
     this->dump();
 
@@ -103,7 +103,8 @@ bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
     ClntParser parser(&lexer);
     parser.CfgMgr = this; // just a workaround to access CfgMgr while still being in constructor
     int result = parser.yyparse();
-    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result
+               << (result?"(failure)":"(success)") << LogEnd;
     f.close();
 
     if (result) {

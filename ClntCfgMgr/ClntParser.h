@@ -62,9 +62,9 @@ bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
-void StartIADeclaration(bool aggregation);                                  \
+bool StartIADeclaration(bool aggregation);                                  \
 void EndIADeclaration();                                                    \
-void StartPDDeclaration();                                                  \
+bool StartPDDeclaration();                                                  \
 bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \

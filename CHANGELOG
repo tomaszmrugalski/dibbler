@@ -63,6 +63,8 @@
     Maciek Fijalkowski for the patch!
   - Cli: Updated syntax for sending address hints. See section 6.8.3 in the
     User's Guide for details.
+  - Cli: Sanity checks added: client now refuses to mix stateless with ia,ta,pd
+    options
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

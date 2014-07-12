@@ -18,7 +18,7 @@
 using namespace std;
 
 TClntParsIfaceOpt::TClntParsIfaceOpt()
-    : TClntParsIAOpt(), NoIAs(false), Unicast(CLIENT_DEFAULT_UNICAST),
+    : TClntParsIAOpt(), Stateless_(false), Unicast(CLIENT_DEFAULT_UNICAST),
       RapidCommit(CLIENT_DEFAULT_RAPID_COMMIT), Timezone(""), FQDN(""),
       NISDomain(""), Lifetime(false), ReqDNSServer(false), ReqDomain(false),
       ReqNTPServer(false), ReqTimezone(false), ReqSIPServer(false),
@@ -28,14 +28,14 @@ TClntParsIfaceOpt::TClntParsIfaceOpt()
 {
 }
 
-bool TClntParsIfaceOpt::getIsIAs()
+bool TClntParsIfaceOpt::getStateful()
 {
-    return !NoIAs;
+    return !Stateless_;
 }
 
-void TClntParsIfaceOpt::setIsIAs(bool state)
+void TClntParsIfaceOpt::setStateful(bool state)
 {
-    NoIAs=!state;
+    Stateless_ = !state;
 }
 
 void TClntParsIfaceOpt::setUnicast(bool unicast)

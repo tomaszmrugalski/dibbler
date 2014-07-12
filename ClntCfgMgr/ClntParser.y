@@ -56,9 +56,9 @@ bool StartIfaceDeclaration(const std::string& ifaceName);                   \
 bool StartIfaceDeclaration(int ifindex);                                    \
 bool EndIfaceDeclaration();                                                 \
 void EmptyIface();                                                          \
-void StartIADeclaration(bool aggregation);                                  \
+bool StartIADeclaration(bool aggregation);                                  \
 void EndIADeclaration();                                                    \
-void StartPDDeclaration();                                                  \
+bool StartPDDeclaration();                                                  \
 bool EndPDDeclaration();                                                    \
 void EmptyIA();                                                             \
 void EmptyAddr();                                                           \
@@ -322,12 +322,20 @@ TADeclaration
 /////////////////////////////////////////////////////////////////////////////
 :TA_
 {
-    //Log(Crit) << "TA without params." << LogEnd;
+    if (!ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Attempted to use TA (stateful option) in stateless mode." << LogEnd;
+        YYABORT;
+    }
+
     this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
 }
 |TA_ '{'
 {
-    //Log(Crit) << "TA with params started." << LogEnd;
+    if (!ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Attempted to use TA (stateful option) in stateless mode." << LogEnd;
+        YYABORT;
+    }
+
     this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
     this->iaidSet = false;
 }
@@ -335,12 +343,15 @@ TADeclarationList
 {
     if (this->iaidSet)
 	this->ClntCfgTALst.getLast()->setIAID(this->iaid);
-    //Log(Crit) << "TA with params ended." << LogEnd;
 }
 '}'
 |TA_ '{' '}'
 {
-    //Log(Crit) << "TA without params." << LogEnd;
+    if (!ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Attempted to use TA (stateful option) in stateless mode." << LogEnd;
+        YYABORT;
+    }
+
     this->ClntCfgTALst.append( new TClntCfgTA() ); // append new TA
 }
 ;
@@ -365,7 +376,9 @@ IADeclaration
 /////////////////////////////////////////////////////////////////////////////
 :IA_ '{'
 {
-    StartIADeclaration(false);
+    if (!StartIADeclaration(false)) {
+        YYABORT;
+    }
 }
 IADeclarationList '}'
 {
@@ -374,7 +387,9 @@ IADeclarationList '}'
 
 |IA_ Number '{'
 {
-    StartIADeclaration(false);
+    if (!StartIADeclaration(false)) {
+        YYABORT;
+    }
     this->iaid = $2;
 }
 IADeclarationList '}'
@@ -389,7 +404,9 @@ IADeclarationList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IA_ '{' '}'
 {
-    StartIADeclaration(true);
+    if (!StartIADeclaration(true)) {
+        YYABORT;
+    }
     EndIADeclaration();
 }
 
@@ -398,13 +415,17 @@ IADeclarationList '}'
 /////////////////////////////////////////////////////////////////////////////
 |IA_
 {
-    StartIADeclaration(true);
+    if (!StartIADeclaration(true)) {
+        YYABORT;
+    }
     EndIADeclaration();
 }
 
 |IA_ Number
 {
-    StartIADeclaration(true);
+    if (!StartIADeclaration(true)) {
+        YYABORT;
+    }
     EndIADeclaration();
     Log(Info) << "Setting IAID to " << $2 << LogEnd;
     ClntCfgIALst.getLast()->setIAID($2);
@@ -556,7 +577,22 @@ DuidTypeOption
 StatelessMode
 :   STATELESS_
 {
-    ParserOptStack.getLast()->setIsIAs(false);
+    if (!ClntCfgIALst.empty()) {
+        Log(Crit) << "Attempting to enable statelss, but IA (stateful option) is already defined." << LogEnd;
+        YYABORT;
+    }
+
+    if (!ClntCfgTALst.empty()) {
+        Log(Crit) << "Attempting to enable statelss, but TA (stateful option) is already defined." << LogEnd;
+        YYABORT;
+    }
+
+    if (!ClntCfgPDLst.empty()) {
+        Log(Crit) << "Attempting to enable statelss, but PD (stateful option) is already defined." << LogEnd;
+        YYABORT;
+    }
+
+    ParserOptStack.getLast()->setStateful(false);
 }
 ;
 
@@ -848,19 +884,26 @@ T2Option
 PDDeclaration
 :PD_
 {
-    Log(Debug) << "Prefix delegation option found." << LogEnd;
-    StartPDDeclaration();
+    Log(Debug) << "Prefix delegation option (no parameters) found." << LogEnd;
+    if (!StartPDDeclaration()) {
+        YYABORT;
+    }
     EndPDDeclaration();
 }
 |PD_ '{' '}'
 {
-    Log(Debug) << "Prefix delegation option found." << LogEnd;
-    StartPDDeclaration();
+    Log(Debug) << "Prefix delegation option (empty scope) found." << LogEnd;
+    if (!StartPDDeclaration()) {
+        YYABORT;
+    }
     EndPDDeclaration();
 }
 |PD_ '{'
 {
-    StartPDDeclaration();
+    Log(Debug) << "Prefix delegation option (with scope) found." << LogEnd;
+    if (!StartPDDeclaration()) {
+        YYABORT;
+    }
 }
 PDOptionsList '}'
 {
@@ -868,14 +911,18 @@ PDOptionsList '}'
 }
 |PD_ Number 
 {
-    Log(Debug) << "Prefix delegation option found, setting IAID to" << $2 << LogEnd;
-    StartPDDeclaration();
+    Log(Debug) << "Prefix delegation option (with IAID set to " << $2 << " found." << LogEnd;
+    if (!StartPDDeclaration()) {
+        YYABORT;
+    }
     EndPDDeclaration();
     ClntCfgPDLst.getLast()->setIAID($2);
 }
 |PD_ Number '{'
 {
-    StartPDDeclaration();
+    if (!StartPDDeclaration()) {
+        YYABORT;
+    }
     this->iaid = $2;
 }
 PDOptionsList '}'
@@ -1475,17 +1522,23 @@ void ClntParser::EmptyIface()
     ClntCfgIfaceLst.getLast()->addIA(ClntCfgIALst.getLast());
 }
 
-/**
- * method creates new scope appropriately for interface options and declarations
- * clears list of addresses
- *
- * @param aggregation - does this IA contains suboptions ( ia { ... } )
- */
-void ClntParser::StartIADeclaration(bool aggregation)
+/// method creates new scope appropriately for interface options and declarations
+/// clears list of addresses
+///
+/// @param aggregation - does this IA contains suboptions ( ia { ... } )
+/// @return true if creation was successful
+bool ClntParser::StartIADeclaration(bool aggregation)
 {
-  ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-  ParserOptStack.getLast()->setAddrHint(!aggregation);
-  ClntCfgAddrLst.clear();
+    if (!ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Attempted to use IA (stateful option) in stateless mode." << LogEnd;
+        return (false);
+    }
+
+    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+    ParserOptStack.getLast()->setAddrHint(!aggregation);
+    ClntCfgAddrLst.clear();
+
+    return (true);
 }
 
 /**
@@ -1515,11 +1568,20 @@ void ClntParser::EndIADeclaration()
     //so it's should be left on the list and be appended with them to present list
 }
 
-void ClntParser::StartPDDeclaration()
+/// @brief creates PD context
+///
+/// @return true if initialization was successful
+bool ClntParser::StartPDDeclaration()
 {
-  ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
-  ClntCfgAddrLst.clear();
-  PrefixLst.clear();
+    if (!ParserOptStack.getLast()->getStateful()) {
+        Log(Crit) << "Attempted to use PD (stateful option) in stateless mode." << LogEnd;
+        return (false);
+    }
+
+    ParserOptStack.append(new TClntParsGlobalOpt(*ParserOptStack.getLast()));
+    ClntCfgAddrLst.clear();
+    PrefixLst.clear();
+    return (true);
 }
 
 bool ClntParser::EndPDDeclaration()
