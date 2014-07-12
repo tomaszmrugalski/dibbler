@@ -101,7 +101,7 @@ TEST_F(ServerTest, parseDoubleRelay) {
     EXPECT_EQ(*interfaceid, expected_ifaceId);
 
     // Check that remote-id was stored
-    EXPECT_FALSE(received->getRemoteID());
+    EXPECT_TRUE(received->getRemoteID());
 
     interfaceid = (Ptr*) TOpt::getOption(rcvRelay[1].EchoList_,
                                          OPTION_INTERFACE_ID);
@@ -111,7 +111,7 @@ TEST_F(ServerTest, parseDoubleRelay) {
     EXPECT_EQ(*interfaceid, expected_ifaceId2);
 
     // Check that remote-id was stored
-    EXPECT_FALSE(received->getRemoteID());
+    EXPECT_TRUE(received->getRemoteID());
 }
 
 }
