@@ -12,6 +12,7 @@
 #define CONTAINER_H
 
 #include <list>
+#include <stdlib.h>
 
 #define List(x) TContainer< SPtr< x > >
 
