@@ -67,6 +67,7 @@
     options
   - Cli: empty inf-request messages should no longer be sent.
   - Cli: information refresh time option can only be used in stateless mode.
+  - Cli: invalid prefixes (pref > valid) are now rejected (bug #308)
 
 1.0.0RC1 [2013-07-30]
   - Reconfigure support (original patch by Grzegorz Pluto + tons of fixes)

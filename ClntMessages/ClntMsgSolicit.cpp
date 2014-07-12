@@ -208,8 +208,9 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     bool iaOk = true;
     if (this->getOption(OPTION_IA_NA))
     {
-        ///@todo Check if proper IAIDs are returned, also if all IA were answered (if requested several IAs were requested)
-        ///@todo Check all IA_NAs, not just first one
+        /// @todo Check if proper IAIDs are returned, also if all IA were answered (if requested
+        ///       several IAs were requested)
+        /// @todo Check all IA_NAs, not just first one
         SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
         if (!ia)  {
             Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
@@ -267,6 +268,13 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 		Log(Notice) << "Received PD without any prefixes." << LogEnd;
 		pdOk = false;
 	    }
+
+            /// @todo: We should check all iaprefix instances, not just one.
+            /// We should accept the PD if there's at least one valid prefix.
+            if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
+                Log(Warning) << "IA_Prefix option is not valid." << LogEnd;
+                pdOk = false;
+            }
 
 	    SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
 	    if (st && st->getCode()!= STATUSCODE_SUCCESS) {

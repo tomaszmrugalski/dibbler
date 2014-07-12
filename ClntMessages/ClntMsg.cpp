@@ -908,6 +908,18 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		break;
 	    }
 
+            if (!pd->getOption(OPTION_IAPREFIX)) {
+                Log(Notice) << "Received IA_PD without prefixes, ingoring." << LogEnd;
+                break;
+            }
+
+            /// @todo: We should check all iaprefix instances, not just one.
+            /// We should accept the PD if there's at least one valid prefix.
+            if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
+                Log(Warning) << "Option IA_Prefix is not valid." << LogEnd;
+                break;
+            }
+
 	    // configure received PD
 	    pd->setContext(duid, 0/* srvAddr used in unicast */, this);
 	    pd->doDuties();

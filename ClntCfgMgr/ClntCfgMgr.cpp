@@ -574,6 +574,15 @@ bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
         if (!this->validateIA(ptrIface, ptrIA))
             return false;
     }
+
+    SPtr<TClntCfgPD> ptrPD;
+    ptrIface->firstPD();
+    while(ptrPD=ptrIface->getPD())
+    {
+        if (!this->validatePD(ptrIface, ptrPD))
+            return false;
+    }
+
     return true;
 }
 
@@ -617,6 +626,50 @@ bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface,
                   << ptrIface->getName() << "/" << ptrIface->getName() << " interface." << LogEnd;
         return false;
     }
+
+    return true;
+}
+
+bool TClntCfgMgr::validatePD(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgPD> ptrPD) {
+
+    if ( ptrPD->getT1() && ptrPD->getT2() && (ptrPD->getT2() < ptrPD->getT1()) )
+    {
+        Log(Crit) << "Non-zero T1 can't be lower than non-zero T2 for PD " << *ptrPD
+                  << " on the " << ptrIface->getFullName() << " interface." << LogEnd;
+        return false;
+    }
+    SPtr<TClntCfgPrefix> ptrPrefix;
+    ptrPD->firstPrefix();
+    while(ptrPrefix = ptrPD->getPrefix())
+    {
+        if (!this->validatePrefix(ptrIface, ptrPD, ptrPrefix))
+            return false;
+    }
+    return true;
+}
+
+bool TClntCfgMgr::validatePrefix(SPtr<TClntCfgIface> ptrIface,
+                                 SPtr<TClntCfgPD> ptrPD,
+                                 SPtr<TClntCfgPrefix> ptrPrefix) {
+    if( ptrPrefix->getPref() > ptrPrefix->getValid() ) {
+        Log(Crit) << "Preferred time " << ptrPrefix->getPref() << " can't be lower than valid lifetime "
+                  << ptrPrefix->getValid() << " for PD " << ptrPD->getIAID() << " on the "
+                  << ptrIface->getFullName() << " interface." << LogEnd;
+        return false;
+    }
+
+    // Note that valid-lifetime can be larger than the T1. This is uncommon, but
+    // valid scenario. It's a way to tell the client to never renew.
+    // This may be useful if ISP wants his clients to periodically change their
+    // delegated prefixes.
+    //
+    // Quote from RFC3633, section 10:
+    // A requesting router discards any prefixes for which the preferred
+    // lifetime is greater than the valid lifetime.  A delegating router
+    // ignores the lifetimes set by the requesting router if the preferred
+    // lifetime is greater than the valid lifetime and ignores the values
+    // for T1 and T2 set by the requesting router if those values are
+    // greater than the preferred lifetime.
 
     return true;
 }
