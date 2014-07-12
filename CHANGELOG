@@ -64,8 +64,9 @@
   - Cli: Updated syntax for sending address hints. See section 6.8.3 in the
     User's Guide for details.
   - Cli: Sanity checks added: client now refuses to mix stateless with ia,ta,pd
-    options
-  - Cli: empty inf-request messages should no longer be sent.
+    options. Thanks to Arifumi Matsumoto for reporting this issue!
+  - Cli: empty inf-request messages should no longer be sent. Thanks to
+    Arifumi Matsumoto for reporting this issue!
   - Cli: information refresh time option can only be used in stateless mode.
   - Cli: invalid prefixes (pref > valid) are now rejected (bug #308)
 
