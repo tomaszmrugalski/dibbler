@@ -11,6 +11,8 @@ TESTS += Misc_tests
 Misc_tests_SOURCES = run_tests.cc
 Misc_tests_SOURCES += IPv6Addr_unittest.cc
 Misc_tests_SOURCES += DUID_unittest.cc
+Misc_tests_SOURCES += SPtr_unittest.cc
+Misc_tests_SOURCES += Container_unittest.cc
 
 Misc_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 

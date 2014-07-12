@@ -99,10 +99,12 @@ CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_2 = $(am__EXEEXT_1)
 PROGRAMS = $(noinst_PROGRAMS)
 am__Misc_tests_SOURCES_DIST = run_tests.cc IPv6Addr_unittest.cc \
-	DUID_unittest.cc
+	DUID_unittest.cc SPtr_unittest.cc Container_unittest.cc
 @HAVE_GTEST_TRUE@am_Misc_tests_OBJECTS = run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	IPv6Addr_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	DUID_unittest.$(OBJEXT)
+@HAVE_GTEST_TRUE@	DUID_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	SPtr_unittest.$(OBJEXT) \
+@HAVE_GTEST_TRUE@	Container_unittest.$(OBJEXT)
 Misc_tests_OBJECTS = $(am_Misc_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Misc_tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -515,7 +517,8 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr \
 	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@Misc_tests_SOURCES = run_tests.cc \
-@HAVE_GTEST_TRUE@	IPv6Addr_unittest.cc DUID_unittest.cc
+@HAVE_GTEST_TRUE@	IPv6Addr_unittest.cc DUID_unittest.cc \
+@HAVE_GTEST_TRUE@	SPtr_unittest.cc Container_unittest.cc
 @HAVE_GTEST_TRUE@Misc_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
 @HAVE_GTEST_TRUE@Misc_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a
@@ -573,8 +576,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Container_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DUID_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IPv6Addr_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SPtr_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_tests.Po@am__quote@
 
 .cc.o:
