@@ -52,9 +52,12 @@
 \definecolor{myBgTableColor}{rgb}{0.9, 0.9, 0.9}
 \pagecolor{myBgColor}
 
+%% include auto-generated version number
+\input{version.tex}
+
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\bfseries Dibbler -- a portable DHCPv6}
+\fancyhead[L]{\small\bfseries Dibbler \version}
 \fancyhead[C]{\small\bfseries User's Guide}
 \fancyhead[R]{\small\bfseries\thepage}
 %%\fancyhead[C]{\small\bfseries\leftmark}
@@ -93,9 +96,6 @@
 \usepackage{listings}
 \lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{myBgTableColor},frame=lines}
 %or columns=fullflexible
-
-%% include auto-generated version number
-\input{version.tex}
 
 %% message names should be printed this way: \msg{SOLICIT}
 %% options should be printed this way:       \opt{Option Request}
