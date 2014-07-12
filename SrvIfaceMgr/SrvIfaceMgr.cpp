@@ -427,7 +427,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                 optRelayCnt++;
                 break;
             case OPTION_REMOTE_ID:
-                gen = (Ptr*)new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
+                remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
+                gen = (Ptr*) remoteID;
                 break;
             case OPTION_ERO:
                 Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
