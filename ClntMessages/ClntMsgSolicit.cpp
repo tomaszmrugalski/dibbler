@@ -267,6 +267,10 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 		Log(Notice) << "Received PD without any prefixes." << LogEnd;
 		pdOk = false;
 	    }
+        if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
+            Log(Warning) << "IA_Prefix option is not valid." << LogEnd;
+            pdOk = false;
+        }
 
 	    SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
 	    if (st && st->getCode()!= STATUSCODE_SUCCESS) {

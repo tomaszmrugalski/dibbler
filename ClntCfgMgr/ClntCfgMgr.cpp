@@ -574,6 +574,15 @@ bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
         if (!this->validateIA(ptrIface, ptrIA))
             return false;
     }
+
+    SPtr<TClntCfgPD> ptrPD;
+    ptrIface->firstPD();
+    while(ptrPD=ptrIface->getPD())
+    {
+        if (!this->validatePD(ptrIface, ptrPD))
+            return false;
+    }
+
     return true;
 }
 
@@ -614,6 +623,43 @@ bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface,
     if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid()) {
         Log(Crit) << "Valid lifetime " << ptrAddr->getValid() << " can't be lower than T1 " <<ptrIA->getT1()
                   << "(address can't be renewed) in IA " << ptrIA->getIAID() << " on the "
+                  << ptrIface->getName() << "/" << ptrIface->getName() << " interface." << LogEnd;
+        return false;
+    }
+
+    return true;
+}
+
+bool TClntCfgMgr::validatePD(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgPD> ptrPD) {
+
+    if ( ptrPD->getT2() < ptrPD->getT1() )
+    {
+        Log(Crit) << "T1 can't be lower than T2 for PD " << *ptrPD << "on the " << ptrIface->getName()
+                  << "/" << ptrIface->getID() << " interface." << LogEnd;
+        return false;
+    }
+    SPtr<TClntCfgPrefix> ptrPrefix;
+    ptrPD->firstPrefix();
+    while(ptrPrefix = ptrPD->getPrefix())
+    {
+        if (!this->validatePrefix(ptrIface, ptrPD, ptrPrefix))
+            return false;
+    }
+    return true;
+}
+
+bool TClntCfgMgr::validatePrefix(SPtr<TClntCfgIface> ptrIface,
+                                 SPtr<TClntCfgPD> ptrPD,
+                                 SPtr<TClntCfgPrefix> ptrPrefix) {
+    if( ptrPrefix->getPref() > ptrPrefix->getValid() ) {
+        Log(Crit) << "Preferred time " << ptrPrefix->getPref() << " can't be lower than valid lifetime "
+                  << ptrPrefix->getValid() << " for PD " << ptrPD->getIAID() << " on the "
+                  << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+        return false;
+    }
+    if ((unsigned long)ptrPD->getT1() > (unsigned long)ptrPrefix->getValid()) {
+        Log(Crit) << "Valid lifetime " << ptrPrefix->getValid() << " can't be lower than T1 " <<ptrPD->getT1()
+                  << "(prefix can't be renewed) in PD " << ptrPD->getIAID() << " on the "
                   << ptrIface->getName() << "/" << ptrIface->getName() << " interface." << LogEnd;
         return false;
     }
