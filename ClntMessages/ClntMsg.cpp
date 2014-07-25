@@ -908,38 +908,38 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 		break;
 	    }
 
-        if (!pd->getOption(OPTION_IAPREFIX)) {
-            Log(Notice) << "Received IA_PD without prefixes, ignoring." << LogEnd;
-            break;
-        }
+            if (!pd->getOption(OPTION_IAPREFIX)) {
+                Log(Notice) << "Received IA_PD without prefixes, ignoring." << LogEnd;
+                break;
+            }
 
-        bool pdOk = true;
-        int prefixCount = pd->countPrefixes();
-        pd->firstPrefix();
-        SPtr<TClntOptIAPrefix> ppref;
-        while (ppref = pd->getPrefix()) {
-            if (!ppref->isValid()) {
-                Log(Warning) << "Option IA_PREFIX from IA_PD " <<
-                             pd->getIAID() << " is not valid." << LogEnd;
-                // RFC 3633, section 10:
-                // A requesting router discards any prefixes for which the
-                // preferred lifetime is greater than the valid lifetime.
-                pd->deletePrefix(ppref);
-                prefixCount--;
-                if (!prefixCount) {
-                    // ia_pd hasn't got any valid prefixes.
-                    if (ClntCfgMgr().insistMode()) {
-                        // if insist-mode is enabled and one of received
-                        // pd's has no valid prefixes, answer is rejected.
-                        pdOk = false;
+            bool pdOk = true;
+            int prefixCount = pd->countPrefixes();
+            pd->firstPrefix();
+            SPtr<TClntOptIAPrefix> ppref;
+            while (ppref = pd->getPrefix()) {
+                if (!ppref->isValid()) {
+                    Log(Warning) << "Option IA_PREFIX from IA_PD " <<
+                                 pd->getIAID() << " is not valid." << LogEnd;
+                    // RFC 3633, section 10:
+                    // A requesting router discards any prefixes for which the
+                    // preferred lifetime is greater than the valid lifetime.
+                    pd->deletePrefix(ppref);
+                    prefixCount--;
+                    if (!prefixCount) {
+                        // ia_pd hasn't got any valid prefixes.
+                        if (ClntCfgMgr().insistMode()) {
+                            // if insist-mode is enabled and one of received
+                            // pd's has no valid prefixes, answer is rejected.
+                            pdOk = false;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
-        }
-        if (!pdOk) {
-            break;
-        }
+            if (!pdOk) {
+                break;
+            }
 
 	    // configure received PD
 	    pd->setContext(duid, 0/* srvAddr used in unicast */, this);
