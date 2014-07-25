@@ -31,6 +31,7 @@ class TClntOptIA_PD : public TOptIA_PD
     void setIface(int iface);
 
     SPtr<TClntOptIAPrefix> getPrefix();
+    void deletePrefix(SPtr<TClntOptIAPrefix> prefix);
     SPtr<TClntOptIAPrefix> getPrefix(SPtr<TIPv6Addr> prefix);
     void firstPrefix();
     int countPrefix() const;
