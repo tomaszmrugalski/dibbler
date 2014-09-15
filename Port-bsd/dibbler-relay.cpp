@@ -10,6 +10,7 @@
  */
 
 #include <signal.h>
+#include <string.h>
 #include "DHCPRelay.h"
 #include "Portable.h"
 #include "Logger.h"
