@@ -259,7 +259,11 @@ int ipaddr_add(const char * ifacename, int ifaceid, const char * addr,
         unsigned long pref, unsigned long valid, int prefixLength) {
     char buf[512];
     int status;
+#ifdef NETBSD
+    sprintf(buf, "ifconfig %s inet6 %s prefixlen %d", ifacename, addr, prefixLength);
+#else
     sprintf(buf, "ifconfig %s inet6 %s prefixlen %d add", ifacename, addr, prefixLength);
+#endif
     status = system(buf);
     if (!status)
         return LOWLEVEL_NO_ERROR;

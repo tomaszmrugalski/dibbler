@@ -8,6 +8,8 @@
  */
 
 #include <signal.h>
+#include <string.h>
+#include <stdlib.h>
 #include "DHCPClient.h"
 #include "Portable.h"
 #include "Logger.h"
