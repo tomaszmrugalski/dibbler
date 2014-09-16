@@ -122,5 +122,8 @@
     2014-06: Prefix scope added to the client parser.
     2014-07: Prefix sanity checks on the client side.
 
+  - Justin Cormack (justin(at)specialbusservice(dot)com)
+    2014-09: Added missing includes for NetBSD (and probably other BSDs)
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
