@@ -4,6 +4,8 @@
 1.0.0 [not-released-yet]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to
     Justin Cormack for providing a patch.
+  - Fix for client crash if PD was requested, but the server returned IA_PD,
+    but without any IAPREFIX options inside.
 
 1.0.0RC2 [2014-07-12]
   - Cli: segfault when invalid or incomplete auth parameters are specified

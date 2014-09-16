@@ -267,13 +267,14 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 	    if (!pd->getOption(OPTION_IAPREFIX)) {
 		Log(Notice) << "Received PD without any prefixes." << LogEnd;
 		pdOk = false;
-	    }
+            } else {
 
-            /// @todo: We should check all iaprefix instances, not just one.
-            /// We should accept the PD if there's at least one valid prefix.
-            if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
-                Log(Warning) << "IA_Prefix option is not valid." << LogEnd;
-                pdOk = false;
+                /// @todo: We should check all iaprefix instances, not just one.
+                /// We should accept the PD if there's at least one valid prefix.
+                if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
+                    Log(Warning) << "IA_Prefix option is not valid." << LogEnd;
+                    pdOk = false;
+                }
             }
 
 	    SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
