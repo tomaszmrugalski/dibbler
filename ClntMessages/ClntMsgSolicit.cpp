@@ -177,6 +177,8 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 /// - are all requested options present?
 /// - is there requested IA option?
 /// - is there requested TA option?
+/// - is there requested PD option?
+/// - is requested PD option valid?
 ///
 /// @param msg server's REPLY
 ///
@@ -256,37 +258,117 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     }
 
     // have we asked for PD?
+    int msgPd = 0; // number of the IA_PDs requested
+    msg->firstOption();
+    SPtr<TOpt> optTemp;
+    while (optTemp = msg->getOption()) {
+        if (optTemp->getOptType() == OPTION_IA_PD) {
+            msgPd++;
+        }
+    }
+
     bool pdOk = true;
-    if (getOption(OPTION_IA_PD)) {
-        SPtr<TClntOptIA_PD> pd = (Ptr*) msg->getOption(OPTION_IA_PD);
-        if (!pd) {
-            Log(Notice) << "PD option requested, but not returned in this message. Ignored." << LogEnd;
-            pdOk = false;
-        } else {
+    bool pdFound = false;
+    int pdcnt = 0; // number of usable IA_PD options in the response
 
-	    if (!pd->getOption(OPTION_IAPREFIX)) {
-		Log(Notice) << "Received PD without any prefixes." << LogEnd;
-		pdOk = false;
-            } else {
+    SPtr<TOpt> opt1; // iterates over options in solicit
+    SPtr<TOpt> opt2; // iterates over options in received response
+    firstOption();
 
-                /// @todo: We should check all iaprefix instances, not just one.
-                /// We should accept the PD if there's at least one valid prefix.
-                if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
-                    Log(Warning) << "IA_Prefix option is not valid." << LogEnd;
+    while (opt1 = getOption()) {
+        if (opt1->getOptType() != OPTION_IA_PD)
+           continue; // ignore all options except IA_PD
+
+        SPtr<TClntOptIA_PD> pdSol = (Ptr*) opt1;
+
+        msg->firstOption();
+        while (opt2 = msg->getOption()) {
+            if (opt2->getOptType() != OPTION_IA_PD)
+                continue;
+
+            SPtr<TClntOptIA_PD> pdResp = (Ptr*) opt2;
+            if (pdSol->getIAID() != pdResp->getIAID())
+                continue;
+            // found in response ia_pd that matches ia_pd from solicit
+            pdFound = true;
+
+            pdcnt++;
+            if (!pdResp->getOption(OPTION_IAPREFIX)) {
+                Log(Notice) << "Received PD with IAID = " << pdResp->getIAID() << " without "
+                               "any prefixes." << LogEnd;
+                pdcnt--;
+                if (ClntCfgMgr().insistMode()) {
+                    Log(Notice) << "Received response with IA_PD without any prefixes, "
+                                << "insist mode enabled, so rejecting this answer." << LogEnd;
                     pdOk = false;
+                    break;
+                } else {
+                    //insist-mode off
+                    if (msgPd == 1) {
+                        //if there was only one PD and it has no prefixes, reject.
+                        pdOk = false;
+                        break;
+                    }
+                    else if (msgPd > 1) {
+                        // if there were more than 1 PDs, delete the one without prefixes.
+                        deletePD(opt2);
+                    }
+                    continue;
                 }
             }
 
-	    SPtr<TClntOptStatusCode> st = (Ptr*)pd->getOption(OPTION_STATUS_CODE);
-	    if (st && st->getCode()!= STATUSCODE_SUCCESS) {
-		Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
-			    << "(" << st->getText() << "). Ignored." << LogEnd;
-		pdOk = false;
-	    }
+            // ia_pd has some ia_prefix options, let's take a look at them
+            int prefixCount = pdResp->countPrefixes();
+            pdResp->firstPrefix();
+            SPtr<TClntOptIAPrefix> ppref;
+            while (ppref = pdResp->getPrefix()) {
+                if (!ppref->isValid()) {
+                    Log(Warning) << "Option IA_PREFIX from IA_PD " <<
+                                 pdResp->getIAID() << " is not valid." << LogEnd;
+                    // RFC 3633, section 10:
+                    // A requesting router discards any prefixes for which the
+                    // preferred lifetime is greater than the valid lifetime.
+                    pdResp->deletePrefix(ppref);
+                    prefixCount--;
+                    if (!prefixCount) {
+                        // ia_pd hasn't got any valid prefixes.
+                        pdcnt--;
+                        if (ClntCfgMgr().insistMode()) {
+                            // if insist-mode is enabled and one of received
+                            // pd's has no valid prefixes, answer is rejected.
+                            pdOk = false;
+                            Log(Notice) << "Received IA_PD with a prefix that has lifetime 0."
+                                        << "Insist mode enabled, so rejecting this answer." << LogEnd;
+                        }
+                        // no valid prefixes and insist-mode is off? delete PD;
+                        // if not deleted, it will be copied to REQUEST message;
+                        // this leads to situation where IA_PD in REQUEST has no prefixes;
+                        deletePD(opt2);
+                        break;
+                    }
+                }
+            }
+            SPtr<TClntOptStatusCode> st = (Ptr*)pdResp->getOption(OPTION_STATUS_CODE);
+            if (st && st->getCode()!= STATUSCODE_SUCCESS) {
+                Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
+                << "(" << st->getText() << "). Ignored." << LogEnd;
+                pdOk = false;
+            }
         }
-        if (pdOk)
-            somethingAssigned = true;
+        if (!pdFound) {
+            Log(Notice) << "PD option(s) requested, but not returned in this message."
+                           " Ignored." << LogEnd;
+            pdOk = false;
+            break;
+        }
     }
+
+    if (!pdcnt) {
+        // if all of ia_pd's in received answer were malformed, reject answer.
+        pdOk = false;
+    }
+    if (pdOk)
+        somethingAssigned = true;
 
     if (!somethingAssigned)
         return true; // this advertise does not offers us anything
@@ -295,6 +377,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         return false; // accept this advertise
 
     // insist-mode enabled. We MUST get everything we wanted or we reject this answer
+
     if (iaOk && taOk && pdOk)
         return false;
     else

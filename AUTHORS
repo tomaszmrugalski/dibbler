@@ -121,6 +121,7 @@
   - Maciek Fijalkowski (macfij7(at)wp(dot)pl)
     2014-06: Prefix scope added to the client parser.
     2014-07: Prefix sanity checks on the client side.
+    2014-09: More thorough sanity checks for multiple IA_PDs on the client side.
 
   - Justin Cormack (justin(at)specialbusservice(dot)com)
     2014-09: Added missing includes for NetBSD (and probably other BSDs)
