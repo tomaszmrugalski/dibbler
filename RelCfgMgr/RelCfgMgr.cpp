@@ -328,7 +328,7 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
 }
 
 
-void TRelCfgMgr::setRelayID(SPtr<TOptV> relayID)
+void TRelCfgMgr::setRelayID(SPtr<TOpt> relayID)
 {
     RelayID_ = relayID;
 }
