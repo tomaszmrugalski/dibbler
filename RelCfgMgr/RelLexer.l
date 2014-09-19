@@ -61,6 +61,7 @@ interface-id-order  { return RelParser::IFACE_ID_ORDER_; }
 guess-mode          { return RelParser::GUESS_MODE_; }
 option              { return RelParser::OPTION_; }
 remote-id           { return RelParser::REMOTE_ID_; }
+relay-id            { return RelParser::RELAY_ID_; }
 echo-request        { return RelParser::ECHO_REQUEST_; }
 
 log-name            { return RelParser::LOGNAME_;}

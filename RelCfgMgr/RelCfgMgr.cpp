@@ -326,3 +326,14 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
     out << "</RelCfgMgr>" << std::endl;
     return out;
 }
+
+
+void TRelCfgMgr::setRelayID(SPtr<TOptV> relayID)
+{
+    RelayID_ = relayID;
+}
+
+SPtr<TOpt> TRelCfgMgr::getRelayID()
+{
+    return RelayID_;
+}
