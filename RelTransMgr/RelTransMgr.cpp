@@ -190,7 +190,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
         relayID->storeSelf(buf + offset);
         offset += relayID->getSize();
 
-        Log(Debug) << "Appended Relay-ID with " << relayID->getSize() << " bytes." << LogEndl
+        Log(Debug) << "Appended Relay-ID with " << relayID->getSize() << " bytes." << LogEnd;
     }
 
     SPtr<TRelOptEcho> echo = RelCfgMgr().getEcho();
