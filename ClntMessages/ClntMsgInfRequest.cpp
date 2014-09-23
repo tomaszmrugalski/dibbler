@@ -124,6 +124,12 @@ TClntMsgInfRequest::TClntMsgInfRequest(TOptList ReqOpts,
 
 void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
 {
+
+    copyAAASPI(msg);
+
+    TClntMsg::answer(msg);
+
+#if 0
     //which option have we requested from server
     SPtr<TClntOptOptionRequest> ptrORO;
     ptrORO = (Ptr*)getOption(OPTION_ORO);
@@ -171,6 +177,8 @@ void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
         IsDone=true;
     }
     return;
+
+#endif
 }
     
 void TClntMsgInfRequest::doDuties()
