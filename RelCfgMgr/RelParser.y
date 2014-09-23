@@ -14,6 +14,7 @@
 #include "RelCfgIface.h"
 #include "RelCfgMgr.h"
 #include "OptVendorData.h"
+#include "OptDUID.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -241,8 +242,9 @@ RemoteID
 RelayID
 :OPTION_ RELAY_ID_ DUID_
 {
-    Log(Debug) << "Relay-id set: length=" $3.length << LogEnd;
-    RelCfgMgr()->setRelayID(new TOptDUID(OPTION_RELAY_ID, $3.duid, $3.length, NULL));
+    Log(Debug) << "Relay-id set: length=" << $3.length << LogEnd;
+    RelCfgMgr().setRelayID(new TOptDUID(OPTION_RELAY_ID, $3.duid, $3.length, NULL));
+}
 }
 
 EchoRequest

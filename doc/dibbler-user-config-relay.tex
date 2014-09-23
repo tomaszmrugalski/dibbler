@@ -106,6 +106,14 @@ sometimes allowed range.
         guess-mode is enabled, dibbler-relay tries to guess the destination interface.
         Luckily, it is often trivial to guess as there are usually 2 interfaces: one
         connected to server and second connected to the clients.
+\item[option remote-id] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert remote-id option. It is followed by a
+        number (enterprise-id), a dash (``-'') and a hex string that specifies
+        the actual content of the remote-id option being inserted.
+\item[option relay-id] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert relay-id option. It takes one parameter,
+        which specifies the actual content of the relay-id. The parameter must
+        be specified as a hex string.
 \end{description}
 
 \subsection{Relay configuration examples}
