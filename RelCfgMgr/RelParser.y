@@ -65,7 +65,7 @@ virtual ~RelParser();
 
 %token IFACE_, CLIENT_, SERVER_, UNICAST_, MULTICAST_, IFACE_ID_, IFACE_ID_ORDER_
 %token LOGNAME_, LOGLEVEL_, LOGMODE_, WORKDIR_
-%token DUID_, OPTION_, REMOTE_ID_, ECHO_REQUEST_, RELAY_ID_
+%token DUID_, OPTION_, REMOTE_ID_, ECHO_REQUEST_, RELAY_ID_, LINK_LAYER_
 %token GUESS_MODE_
 
 %token <strval>     STRING_
@@ -103,6 +103,7 @@ GlobalOption
 | IfaceIDOrder
 | RemoteID
 | RelayID
+| LinkLayerOption
 | EchoRequest
 ;
 
@@ -245,6 +246,12 @@ RelayID
     Log(Debug) << "Relay-id set: length=" << $3.length << LogEnd;
     RelCfgMgr().setRelayID(new TOptDUID(OPTION_RELAY_ID, $3.duid, $3.length, NULL));
 }
+
+LinkLayerOption
+:OPTION_ LINK_LAYER_
+{
+    Log(Debug) << "Client link-local address option (RFC6939) enabled." << LogEnd;
+    RelCfgMgr().setClientLinkLayerAddress(true);
 }
 
 EchoRequest

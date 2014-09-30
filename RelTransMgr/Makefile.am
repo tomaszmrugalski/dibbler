@@ -1,3 +1,9 @@
+SUBDIRS = .
+
+if HAVE_GTEST
+  SUBDIRS += tests
+endif
+
 noinst_LIBRARIES = libRelTransMgr.a
 
 libRelTransMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc

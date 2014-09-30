@@ -45,7 +45,7 @@ class TRelIfaceMgr: public TIfaceMgr {
     // ---receives messages---
     SPtr<TRelMsg> select(unsigned long timeout);
 
-  private:
+protected:
     TRelIfaceMgr(const std::string& xmlFile);
     static TRelIfaceMgr * Instance;
 };

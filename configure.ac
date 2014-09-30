@@ -607,6 +607,7 @@ SrvCfgMgr/tests/Makefile
 CfgMgr/tests/Makefile
 poslib/tests/Makefile
 Misc/tests/Makefile
+RelTransMgr/tests/Makefile
 tests/Makefile
 tests/Srv/Makefile
 tests/utils/Makefile)

@@ -114,6 +114,13 @@ sometimes allowed range.
         Tells the relay agent to insert relay-id option. It takes one parameter,
         which specifies the actual content of the relay-id. The parameter must
         be specified as a hex string.
+\item[option link-layer-address] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert client link-layer address option, as
+        specified in \cite{rfc6939}. It should be noted that the source MAC
+        address is extracted from incoming link-local (fe80:...) address or
+        from client-id. Both methods are not reliable and susceptible for
+        spoofing. This was implemented mostly as a testing feature for the
+        server implementation.
 \end{description}
 
 \subsection{Relay configuration examples}

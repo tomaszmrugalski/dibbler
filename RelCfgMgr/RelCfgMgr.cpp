@@ -26,7 +26,7 @@ int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
 TRelCfgMgr::TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile)
+    :TCfgMgr(), XmlFile(xmlFile), ClientLinkLayerAddress_(false)
 {
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -336,4 +336,12 @@ void TRelCfgMgr::setRelayID(SPtr<TOpt> relayID)
 SPtr<TOpt> TRelCfgMgr::getRelayID()
 {
     return RelayID_;
+}
+
+void TRelCfgMgr::setClientLinkLayerAddress(bool enabled) {
+    ClientLinkLayerAddress_ = enabled;
+}
+
+bool TRelCfgMgr::getClientLinkLayerAddress() {
+    return ClientLinkLayerAddress_;
 }
