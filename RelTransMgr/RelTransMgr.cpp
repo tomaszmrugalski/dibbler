@@ -334,26 +334,36 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
 
+        // Now store hardware type + MAC
         linkaddr.resize(len + sizeof(uint16_t));
-
         char* out = (char*)&linkaddr[0];
         out = writeUint16(out, hw_type); // hw type (2)
-
         memcpy(out, buf, len);
+
         return SPtr<TOpt>(new TOptGeneric(OPTION_CLIENT_LINKLAYER_ADDR,
                                           (const char*)&linkaddr[0], linkaddr.size(),
                                           NULL));
     }
     case DUID_TYPE_LL: {
-
         // 3: hw type (16 bits), at least 1 byte of MAC
         if (len < 3) {
             return 0;
         }
-        len -= 2; // remove duid type (2)
+
+        // Read hardware type
+        uint16_t hw_type = readUint16(buf);
+        buf += sizeof(uint16_t);
+        len -= sizeof(uint16_t);
+
+        // Now store hardware type + MAC
+        linkaddr.resize(len + sizeof(uint16_t));
+        char* out = (char*)&linkaddr[0];
+        out = writeUint16(out, hw_type);
+        memcpy(out, buf, len);
 
         return SPtr<TOpt>(new TOptGeneric(OPTION_CLIENT_LINKLAYER_ADDR,
-                                          buf, len, NULL));
+                                          (const char*)&linkaddr[0], linkaddr.size(),
+                                          NULL));
     }
     default:
         return 0;
