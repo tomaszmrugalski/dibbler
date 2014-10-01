@@ -373,7 +373,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
 
 SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
     SPtr<TIPv6Addr> srcAddr = msg->getAddr();
-    if (!srcAddr->linkLocal())
+    if (!srcAddr || !srcAddr->linkLocal())
         return 0;
 
     std::vector<uint8_t> mac(8,0);
@@ -388,6 +388,10 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
 
     // now extract MAC address from the source address
     char* addr = srcAddr->getAddr();
+    if ( (addr[11] != 0xff) || (addr[12] != 0xfe) ) {
+        return 0;
+    }
+
     memcpy(&mac[2], addr + 8, 3);
     memcpy(&mac[5], addr + 13, 3);
 
@@ -398,7 +402,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
 
 SPtr<TOpt> TRelTransMgr::getClientLinkLayerAddr(SPtr<TRelMsg> msg) {
 
-    // Ignore messages that are not
+    // Ignore messages that are not directly from client
     if ( (msg->getType() == RELAY_FORW_MSG) ||
          (msg->getType() == RELAY_REPL_MSG))
         return 0;
