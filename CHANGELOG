@@ -6,6 +6,10 @@
     Justin Cormack for providing a patch.
   - Fix for client crash if PD was requested, but the server returned IA_PD,
     but without any IAPREFIX options inside.
+  - Rel: remote-id option is now being inserted correctly (RFC4649)
+  - Rel: Relay agent is now able to insert relay-id option (RFC5460)
+  - Rel: Relay agent is now able to insert client link-layer address option
+    (RFC6939)
 
 1.0.0RC2 [2014-07-12]
   - Cli: segfault when invalid or incomplete auth parameters are specified
