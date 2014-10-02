@@ -112,7 +112,9 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 #include "RelParsGlobalOpt.h"
 #include "RelParsIfaceOpt.h"
 #include "RelCfgIface.h"
+#include "RelCfgMgr.h"
 #include "OptVendorData.h"
+#include "OptDUID.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -120,7 +122,7 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
 using namespace std;
 
 #define YY_USE_CLASS
-#line 25 "RelParser.y"
+#line 27 "RelParser.y"
 
 #include "FlexLexer.h"
 #define YY_RelParser_MEMBERS  FlexLexer * lex;                                                     \
@@ -135,6 +137,7 @@ bool CheckIsIface(int ifaceNr);                                                 
 bool CheckIsIface(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
+TRelCfgMgr* CfgMgr;                                                                  \
 virtual ~RelParser();
 #define YY_RelParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_RelParser_CONSTRUCTOR_CODE                                                           \
@@ -143,7 +146,7 @@ virtual ~RelParser();
     yynerrs = 0;                                                                  \
     yychar = 0;
 
-#line 52 "RelParser.y"
+#line 55 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -367,11 +370,13 @@ typedef
 #define	OPTION_	270
 #define	REMOTE_ID_	271
 #define	ECHO_REQUEST_	272
-#define	GUESS_MODE_	273
-#define	STRING_	274
-#define	HEXNUMBER_	275
-#define	INTNUMBER_	276
-#define	IPV6ADDR_	277
+#define	RELAY_ID_	273
+#define	LINK_LAYER_	274
+#define	GUESS_MODE_	275
+#define	STRING_	276
+#define	HEXNUMBER_	277
+#define	INTNUMBER_	278
+#define	IPV6ADDR_	279
 
 
 #line 263 "../bison++/bison.cc"
@@ -436,6 +441,8 @@ static const int DUID_;
 static const int OPTION_;
 static const int REMOTE_ID_;
 static const int ECHO_REQUEST_;
+static const int RELAY_ID_;
+static const int LINK_LAYER_;
 static const int GUESS_MODE_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -464,11 +471,13 @@ enum YY_RelParser_ENUM_TOKEN { YY_RelParser_NULL_TOKEN=0
 	,OPTION_=270
 	,REMOTE_ID_=271
 	,ECHO_REQUEST_=272
-	,GUESS_MODE_=273
-	,STRING_=274
-	,HEXNUMBER_=275
-	,INTNUMBER_=276
-	,IPV6ADDR_=277
+	,RELAY_ID_=273
+	,LINK_LAYER_=274
+	,GUESS_MODE_=275
+	,STRING_=276
+	,HEXNUMBER_=277
+	,INTNUMBER_=278
+	,IPV6ADDR_=279
 
 
 #line 310 "../bison++/bison.cc"
@@ -520,11 +529,13 @@ const int YY_RelParser_CLASS::DUID_=269;
 const int YY_RelParser_CLASS::OPTION_=270;
 const int YY_RelParser_CLASS::REMOTE_ID_=271;
 const int YY_RelParser_CLASS::ECHO_REQUEST_=272;
-const int YY_RelParser_CLASS::GUESS_MODE_=273;
-const int YY_RelParser_CLASS::STRING_=274;
-const int YY_RelParser_CLASS::HEXNUMBER_=275;
-const int YY_RelParser_CLASS::INTNUMBER_=276;
-const int YY_RelParser_CLASS::IPV6ADDR_=277;
+const int YY_RelParser_CLASS::RELAY_ID_=273;
+const int YY_RelParser_CLASS::LINK_LAYER_=274;
+const int YY_RelParser_CLASS::GUESS_MODE_=275;
+const int YY_RelParser_CLASS::STRING_=276;
+const int YY_RelParser_CLASS::HEXNUMBER_=277;
+const int YY_RelParser_CLASS::INTNUMBER_=278;
+const int YY_RelParser_CLASS::IPV6ADDR_=279;
 
 
 #line 341 "../bison++/bison.cc"
@@ -543,18 +554,18 @@ YY_RelParser_CONSTRUCTOR_CODE;
  #line 352 "../bison++/bison.cc"
 
 
-#define	YYFINAL		72
+#define	YYFINAL		77
 #define	YYFLAG		-32768
-#define	YYNTBASE	27
+#define	YYNTBASE	29
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 277 ? yytranslate[x] : 53)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 279 ? yytranslate[x] : 57)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,    26,    25,     2,     2,     2,     2,     2,
+     2,     2,     2,    28,    27,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -562,7 +573,7 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    23,     2,    24,     2,     2,     2,     2,     2,
+     2,     2,    25,     2,    26,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -577,129 +588,131 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
      6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22
+    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YY_RelParser_DEBUG != 0
 static const short yyprhs[] = {     0,
      0,     2,     5,     7,    10,    12,    14,    16,    18,    20,
-    22,    24,    26,    28,    31,    33,    36,    38,    40,    42,
-    44,    46,    47,    54,    55,    62,    64,    66,    70,    74,
-    78,    81,    85,    88,    91,    94,    97,   100,   102,   105,
-   111,   112,   117,   119,   123
+    22,    24,    26,    28,    30,    32,    35,    37,    40,    42,
+    44,    46,    48,    50,    51,    58,    59,    66,    68,    70,
+    74,    78,    82,    85,    89,    92,    95,    98,   101,   104,
+   106,   109,   115,   119,   122,   123,   128,   130,   134
 };
 
-static const short yyrhs[] = {    28,
-     0,    29,    31,     0,    30,     0,    29,    30,     0,    43,
-     0,    42,     0,    44,     0,    45,     0,    46,     0,    52,
-     0,    48,     0,    49,     0,    34,     0,    31,    34,     0,
-    33,     0,    32,    33,     0,    39,     0,    38,     0,    41,
-     0,    40,     0,    47,     0,     0,     3,    19,    23,    35,
-    32,    24,     0,     0,     3,    37,    23,    36,    32,    24,
-     0,    20,     0,    21,     0,     5,     6,    22,     0,     4,
-     6,    22,     0,     5,     7,    37,     0,     5,     7,     0,
-     4,     7,    37,     0,     4,     7,     0,    11,    37,     0,
-    12,    19,     0,    10,    19,     0,    13,    19,     0,    18,
-     0,     8,    37,     0,    15,    16,    37,    25,    14,     0,
-     0,    15,    17,    50,    51,     0,    37,     0,    51,    26,
-    37,     0,     9,    19,     0
+static const short yyrhs[] = {    30,
+     0,    31,    33,     0,    32,     0,    31,    32,     0,    45,
+     0,    44,     0,    46,     0,    47,     0,    48,     0,    56,
+     0,    50,     0,    51,     0,    52,     0,    53,     0,    36,
+     0,    33,    36,     0,    35,     0,    34,    35,     0,    41,
+     0,    40,     0,    43,     0,    42,     0,    49,     0,     0,
+     3,    21,    25,    37,    34,    26,     0,     0,     3,    39,
+    25,    38,    34,    26,     0,    22,     0,    23,     0,     5,
+     6,    24,     0,     4,     6,    24,     0,     5,     7,    39,
+     0,     5,     7,     0,     4,     7,    39,     0,     4,     7,
+     0,    11,    39,     0,    12,    21,     0,    10,    21,     0,
+    13,    21,     0,    20,     0,     8,    39,     0,    15,    16,
+    39,    27,    14,     0,    15,    18,    14,     0,    15,    19,
+     0,     0,    15,    17,    54,    55,     0,    39,     0,    55,
+    28,    39,     0,     9,    21,     0
 };
 
 #endif
 
 #if (YY_RelParser_DEBUG != 0) || defined(YY_RelParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    83,    87,    91,    92,    96,    97,    98,    99,   100,   101,
-   102,   103,   107,   108,   112,   113,   117,   118,   119,   120,
-   121,   125,   130,   138,   143,   154,   155,   159,   166,   173,
-   177,   184,   188,   195,   201,   206,   213,   220,   226,   233,
-   240,   246,   251,   256,   263
+    86,    90,    94,    95,    99,   100,   101,   102,   103,   104,
+   105,   106,   107,   108,   112,   113,   117,   118,   122,   123,
+   124,   125,   126,   130,   135,   143,   148,   159,   160,   164,
+   171,   178,   182,   189,   193,   200,   206,   211,   218,   225,
+   231,   238,   245,   252,   259,   265,   270,   275,   282
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","CLIENT_",
 "SERVER_","UNICAST_","MULTICAST_","IFACE_ID_","IFACE_ID_ORDER_","LOGNAME_","LOGLEVEL_",
-"LOGMODE_","WORKDIR_","DUID_","OPTION_","REMOTE_ID_","ECHO_REQUEST_","GUESS_MODE_",
-"STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_","'{'","'}'","'-'","','","Grammar",
-"GlobalList","GlobalOptionsList","GlobalOption","IfaceList","IfaceOptionList",
-"IfaceOptions","Iface","@1","@2","Number","ServerUnicastOption","ClientUnicastOption",
-"ServerMulticast","ClientMulticastOption","LogLevelOption","LogModeOption","LogNameOption",
-"WorkDirOption","GuessMode","IfaceID","RemoteID","EchoRequest","@3","OptionIdList",
-"IfaceIDOrder",""
+"LOGMODE_","WORKDIR_","DUID_","OPTION_","REMOTE_ID_","ECHO_REQUEST_","RELAY_ID_",
+"LINK_LAYER_","GUESS_MODE_","STRING_","HEXNUMBER_","INTNUMBER_","IPV6ADDR_",
+"'{'","'}'","'-'","','","Grammar","GlobalList","GlobalOptionsList","GlobalOption",
+"IfaceList","IfaceOptionList","IfaceOptions","Iface","@1","@2","Number","ServerUnicastOption",
+"ClientUnicastOption","ServerMulticast","ClientMulticastOption","LogLevelOption",
+"LogModeOption","LogNameOption","WorkDirOption","GuessMode","IfaceID","RemoteID",
+"RelayID","LinkLayerOption","EchoRequest","@3","OptionIdList","IfaceIDOrder",
+""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    27,    28,    29,    29,    30,    30,    30,    30,    30,    30,
-    30,    30,    31,    31,    32,    32,    33,    33,    33,    33,
-    33,    35,    34,    36,    34,    37,    37,    38,    39,    40,
-    40,    41,    41,    42,    43,    44,    45,    46,    47,    48,
-    50,    49,    51,    51,    52
+    29,    30,    31,    31,    32,    32,    32,    32,    32,    32,
+    32,    32,    32,    32,    33,    33,    34,    34,    35,    35,
+    35,    35,    35,    37,    36,    38,    36,    39,    39,    40,
+    41,    42,    42,    43,    43,    44,    45,    46,    47,    48,
+    49,    50,    51,    52,    54,    53,    55,    55,    56
 };
 
 static const short yyr2[] = {     0,
      1,     2,     1,     2,     1,     1,     1,     1,     1,     1,
-     1,     1,     1,     2,     1,     2,     1,     1,     1,     1,
-     1,     0,     6,     0,     6,     1,     1,     3,     3,     3,
-     2,     3,     2,     2,     2,     2,     2,     1,     2,     5,
-     0,     4,     1,     3,     2
+     1,     1,     1,     1,     1,     2,     1,     2,     1,     1,
+     1,     1,     1,     0,     6,     0,     6,     1,     1,     3,
+     3,     3,     2,     3,     2,     2,     2,     2,     2,     1,
+     2,     5,     3,     2,     0,     4,     1,     3,     2
 };
 
 static const short yydefact[] = {     0,
-     0,     0,     0,     0,     0,     0,    38,     1,     0,     3,
-     6,     5,     7,     8,     9,    11,    12,    10,    45,    36,
-    26,    27,    34,    35,    37,     0,    41,     0,     4,     2,
-    13,     0,     0,     0,     0,    14,     0,    43,    42,    22,
-    24,    40,     0,     0,     0,    44,     0,     0,     0,     0,
-    15,    18,    17,    20,    19,    21,     0,     0,    33,     0,
-    31,    39,    23,    16,    25,    29,    32,    28,    30,     0,
-     0,     0
+     0,     0,     0,     0,     0,     0,    40,     1,     0,     3,
+     6,     5,     7,     8,     9,    11,    12,    13,    14,    10,
+    49,    38,    28,    29,    36,    37,    39,     0,    45,     0,
+    44,     0,     4,     2,    15,     0,     0,    43,     0,     0,
+    16,     0,    47,    46,    24,    26,    42,     0,     0,     0,
+    48,     0,     0,     0,     0,    17,    20,    19,    22,    21,
+    23,     0,     0,    35,     0,    33,    41,    25,    18,    27,
+    31,    34,    30,    32,     0,     0,     0
 };
 
-static const short yydefgoto[] = {    70,
-     8,     9,    10,    30,    50,    51,    31,    44,    45,    23,
-    52,    53,    54,    55,    11,    12,    13,    14,    15,    56,
-    16,    17,    33,    39,    18
+static const short yydefgoto[] = {    75,
+     8,     9,    10,    34,    55,    56,    35,    49,    50,    25,
+    57,    58,    59,    60,    11,    12,    13,    14,    15,    61,
+    16,    17,    18,    19,    37,    44,    20
 };
 
-static const short yypact[] = {    37,
-   -18,   -16,     6,   -13,    -7,    15,-32768,-32768,    27,-32768,
+static const short yypact[] = {     4,
+   -18,   -13,    -1,    -9,     6,    28,-32768,-32768,    22,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,     6,-32768,     1,-32768,    22,
--32768,   -11,     6,    18,    20,-32768,    14,-32768,     8,-32768,
--32768,-32768,     6,    11,    11,-32768,    47,    50,     6,     0,
--32768,-32768,-32768,-32768,-32768,-32768,     5,    29,     6,    36,
-     6,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    44,
-    59,-32768
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,    -1,-32768,    39,
+-32768,    27,-32768,    38,-32768,    29,    -1,-32768,    30,    32,
+-32768,    40,-32768,    31,-32768,-32768,-32768,    -1,    35,    35,
+-32768,    23,    45,    -1,    -3,-32768,-32768,-32768,-32768,-32768,
+-32768,     2,    34,    -1,    36,    -1,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,    61,    62,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,-32768,    51,-32768,    16,   -39,    32,-32768,-32768,   -26,
+-32768,-32768,    54,-32768,    14,   -44,    33,-32768,-32768,   -28,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768
+-32768,-32768,-32768,-32768,-32768,-32768,-32768
 };
 
 
-#define	YYLAST		62
+#define	YYLAST		67
 
 
-static const short yytable[] = {    32,
-    19,    35,    20,    47,    48,    24,    38,    49,    47,    48,
-    64,    25,    49,    37,    47,    48,    46,    64,    49,    34,
-    21,    22,    62,    63,    28,    21,    22,    42,    65,    28,
-    26,    27,    67,    43,    69,     1,     2,     3,     4,     5,
-    40,     6,    41,    71,     7,     1,     2,     3,     4,     5,
-    66,     6,    58,    59,     7,    60,    61,    68,    72,    29,
-    57,    36
+static const short yytable[] = {    36,
+    52,    53,    21,    40,    54,    52,    53,    22,    43,    54,
+    69,    26,     1,     2,     3,     4,     5,    69,     6,    51,
+    23,    24,    68,     7,    32,    67,    27,    70,    63,    64,
+     1,     2,     3,     4,     5,    72,     6,    74,    52,    53,
+    32,     7,    54,    28,    29,    30,    31,    39,    23,    24,
+    65,    66,    38,    47,    45,    42,    46,    71,    48,    73,
+    76,    77,    33,    62,     0,     0,    41
 };
 
-static const short yycheck[] = {    26,
-    19,    28,    19,     4,     5,    19,    33,     8,     4,     5,
-    50,    19,     8,    25,     4,     5,    43,    57,     8,    19,
-    20,    21,    49,    24,     3,    20,    21,    14,    24,     3,
-    16,    17,    59,    26,    61,     9,    10,    11,    12,    13,
-    23,    15,    23,     0,    18,     9,    10,    11,    12,    13,
-    22,    15,     6,     7,    18,     6,     7,    22,     0,     9,
-    45,    30
+static const short yycheck[] = {    28,
+     4,     5,    21,    32,     8,     4,     5,    21,    37,     8,
+    55,    21,     9,    10,    11,    12,    13,    62,    15,    48,
+    22,    23,    26,    20,     3,    54,    21,    26,     6,     7,
+     9,    10,    11,    12,    13,    64,    15,    66,     4,     5,
+     3,    20,     8,    16,    17,    18,    19,    21,    22,    23,
+     6,     7,    14,    14,    25,    27,    25,    24,    28,    24,
+     0,     0,     9,    50,    -1,    -1,    34
 };
 
 #line 352 "../bison++/bison.cc"
@@ -1196,15 +1209,15 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
-case 22:
-#line 126 "RelParser.y"
+case 24:
+#line 131 "RelParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
-case 23:
-#line 131 "RelParser.y"
+case 25:
+#line 136 "RelParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1213,137 +1226,151 @@ case 23:
     EndIfaceDeclaration();
 ;
     break;}
-case 24:
-#line 139 "RelParser.y"
+case 26:
+#line 144 "RelParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
-case 25:
-#line 144 "RelParser.y"
+case 27:
+#line 149 "RelParser.y"
 {
     RelCfgIfaceLst.append(new TRelCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
-case 26:
-#line 154 "RelParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
-case 27:
-#line 155 "RelParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
 case 28:
+#line 159 "RelParser.y"
+{yyval.ival=yyvsp[0].ival;;
+    break;}
+case 29:
 #line 160 "RelParser.y"
+{yyval.ival=yyvsp[0].ival;;
+    break;}
+case 30:
+#line 165 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
-case 29:
-#line 167 "RelParser.y"
+case 31:
+#line 172 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
-case 30:
-#line 174 "RelParser.y"
+case 32:
+#line 179 "RelParser.y"
 { 
     ParserOptStack.getLast()->setServerMulticast(yyvsp[0].ival);
 ;
     break;}
-case 31:
-#line 178 "RelParser.y"
+case 33:
+#line 183 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerMulticast(true);
 ;
     break;}
-case 32:
-#line 185 "RelParser.y"
+case 34:
+#line 190 "RelParser.y"
 { 
     ParserOptStack.getLast()->setClientMulticast(yyvsp[0].ival);
 ;
     break;}
-case 33:
-#line 189 "RelParser.y"
+case 35:
+#line 194 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientMulticast(true);
 ;
     break;}
-case 34:
-#line 195 "RelParser.y"
+case 36:
+#line 200 "RelParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
-case 35:
-#line 201 "RelParser.y"
+case 37:
+#line 206 "RelParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
-case 36:
-#line 207 "RelParser.y"
+case 38:
+#line 212 "RelParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
-case 37:
-#line 214 "RelParser.y"
+case 39:
+#line 219 "RelParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
-case 38:
-#line 221 "RelParser.y"
+case 40:
+#line 226 "RelParser.y"
 {
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
-case 39:
-#line 227 "RelParser.y"
+case 41:
+#line 232 "RelParser.y"
 {
     ParserOptStack.getLast()->setInterfaceID(yyvsp[0].ival);
 ;
     break;}
-case 40:
-#line 234 "RelParser.y"
+case 42:
+#line 239 "RelParser.y"
 {
     Log(Debug) << "RemoteID set: enterprise-number=" << yyvsp[-2].ival << ", remote-id length=" << yyvsp[0].duidval.length << LogEnd;
-    ParserOptStack.getLast()->setRemoteID( new TOptVendorData(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
+    ParserOptStack.getLast()->setRemoteID( new TOptVendorData(OPTION_REMOTE_ID, yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
-case 41:
-#line 241 "RelParser.y"
+case 43:
+#line 246 "RelParser.y"
+{
+    Log(Debug) << "Relay-id set: length=" << yyvsp[0].duidval.length << LogEnd;
+    CfgMgr->setRelayID(new TOptDUID(OPTION_RELAY_ID, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, NULL));
+;
+    break;}
+case 44:
+#line 253 "RelParser.y"
+{
+    Log(Debug) << "Client link-local address option (RFC6939) enabled." << LogEnd;
+    CfgMgr->setClientLinkLayerAddress(true);
+;
+    break;}
+case 45:
+#line 260 "RelParser.y"
 {
     EchoOpt = new TRelOptEcho(0);
     ParserOptStack.getLast()->setEcho(EchoOpt);
     Log(Debug) << "Echo Request option will be added with opt(s): ";
 ;
     break;}
-case 42:
-#line 246 "RelParser.y"
+case 46:
+#line 265 "RelParser.y"
 {
     Log(Cont) << ", " << EchoOpt->count() << " opt(s) total." << LogEnd;
 ;
     break;}
-case 43:
-#line 252 "RelParser.y"
+case 47:
+#line 271 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
-case 44:
-#line 257 "RelParser.y"
+case 48:
+#line 276 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
-case 45:
-#line 264 "RelParser.y"
+case 49:
+#line 283 "RelParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -1567,7 +1594,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1039 "../bison++/bison.cc"
-#line 284 "RelParser.y"
+#line 303 "RelParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////

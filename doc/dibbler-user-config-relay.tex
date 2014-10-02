@@ -106,6 +106,22 @@ sometimes allowed range.
         guess-mode is enabled, dibbler-relay tries to guess the destination interface.
         Luckily, it is often trivial to guess as there are usually 2 interfaces: one
         connected to server and second connected to the clients.
+\item[option remote-id] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert remote-id option. It is followed by a
+        number (enterprise-id), a dash (``-'') and a hex string that specifies
+        the actual content of the remote-id option being
+        inserted. Remote-id is specified in \cite{rfc4649}.
+\item[option relay-id] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert relay-id option. It takes one parameter,
+        which specifies the actual content of the relay-id. The parameter must
+        be specified as a hex string.
+\item[option link-layer] -- (scope: global, type: option, default: none)
+        Tells the relay agent to insert client link-layer address option, as
+        specified in \cite{rfc6939}. It should be noted that the source MAC
+        address is extracted from incoming link-local (fe80:...) address or
+        from client-id. Both methods are not reliable and susceptible for
+        spoofing. This was implemented mostly as a testing feature for the
+        server implementation.
 \end{description}
 
 \subsection{Relay configuration examples}
@@ -299,7 +315,93 @@ iface eth1 {
 }
 \end{lstlisting}
 
+\subsubsection{Example 7: Options inserted by the relay}
+Typically relay agent receives messages from clients, encapsulates
+them and sends towards the server. The only option being added is
+interface-id option (if specified). However, in some cases it makes
+sense for the relay agent to insert additional options. Dibbler relay
+supports several options that can be inserted:
+
+\begin{description}
+\item[remote-id] -- Remote-id option may identify the remote client.
+Dibbler implementation is very simple, as it allows setting only
+one specific value, not unique value, one for each client. That makes
+this feature useful for testing purposes, but its deployment in a
+production network is unlikely. Remote-id takes two parameters. The
+first one is enterprise-id, a 32bit unique identifier that
+characterises a vendor. The second parameter is arbitrary length hex
+string. Remote-id is specified in \cite{rfc4649}.
+\item[echo-request] -- In some cases, relay inserts options and would
+like the server to send them back in its responses. Typically, those
+options are then processed by the relay to correctly send back to the
+client. Dibbler relay does not need such options to operate, but is
+able to simulate them. It is possible to specify one or more options
+that the relay requests the server to echo back. This option takes a
+list of coma separated values that designate option codes. Dibbler
+relay will insert options with specified option codes, but they will
+not carry any useful value. Echo Request Option is specified
+in \cite{rfc4994}.
+\item[relay-id] -- Relay agent may be configured to insert
+interface-id option. However, that option identifies an interface
+within each relay, but not necessarily the relay itself. In some cases
+it is useful for the relay agent to insert an option that identifies
+itself. That is implemented as relay-id option. This is particularly
+useful for bulk leasequery. This option is defined in \cite{rfc5460}.
+\item[link-layer] -- The initial DHCPv6 spec lacked information about client
+MAC addresses. In principle, the server is able to discover client's
+MAC address when receiving direct traffic. Unfortunately, it can't do
+that if the packet traverses a relay agent. That deficiency was
+addressed in \cite{rfc6939}. It defines an option that relays can
+insert when receiving incoming traffic from a client. Note that this
+implementation is not perfect. Instead of getting that information
+from layer 2 directly (there is no API to do that as of late 2014), it
+tries to get the information from client-id (DUID-LLT or DUID-LL) or
+from message source address (if it is link-local and uses
+EUI-64). This is not a bullet-proof solution, but it should work in
+most cases.
+\end{description}
+
+\begin{lstlisting}
+log-level 8
+log-mode short
+
+# Uncomment the following line to force relay to start including remote-id
+# option with entreprise-id 5 and content of 01:02:03:04
+option remote-id 5-0x01020304
+
+# Uncomment the following line to force relay to send Echo Request Option
+# asking the server to echo back options 100, 101 and 102
+option echo-request 100,101,102
+
+# Uncommenting this option will make relay to insert relay-id option
+# into forwarded RELAY-FORW messages.
+option relay-id aa:bb:cc:dd:ee:ff
+
+# Uncomment this line to tell relay to attempt to insert client link-layer
+# address option. Relay will attempt to get that info from client's DUID
+# or source IPv6 link-layer address. These are not 100% reliable methods!
+option link-layer
+
+# The relay should listen on eth1 interface for incoming client's traffic.
+# Clients by default send their traffic to multicast.
+iface eth1 {
+  client multicast yes
+
+  # When forwarding traffic from that interface, please add interface-id
+  # with value 5555, so the server will know where the clients are connected.
+  interface-id 5555
+}
+
+# This is a second interface. It is used to reach the server.
+iface eth2 {
+
+  # Send message on this interface to the server multicast (ff05::1:3)
+  server multicast yes
+}
+\end{lstlisting}
+
 \newpage
+
 \section{Requestor configuration}
 Requestor (entity used for leasequery) does not use configuration
 files. All parameters are specified by command-line switches. See

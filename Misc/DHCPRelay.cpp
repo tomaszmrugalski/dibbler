@@ -62,7 +62,8 @@ void TDHCPRelay::run()
 	
 	RelTransMgr().doDuties();
 	unsigned int timeout = DHCPV6_INFINITY/2;
-	if (serviceShutdown)     timeout = 0;
+	if (serviceShutdown)
+            timeout = 0;
 	
 	if (!silent)
 	    Log(Debug) << "Accepting messages." << LogEnd;

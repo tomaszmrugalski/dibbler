@@ -26,7 +26,7 @@ int TRelCfgMgr::NextRelayID = RELAY_MIN_IFINDEX;
 TRelCfgMgr * TRelCfgMgr::Instance = 0;
 
 TRelCfgMgr::TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile)
-    :TCfgMgr(), XmlFile(xmlFile)
+    :TCfgMgr(), XmlFile(xmlFile), ClientLinkLayerAddress_(false)
 {
     // load config file
     if (!this->parseConfigFile(cfgFile)) {
@@ -53,6 +53,7 @@ bool TRelCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     RelParser parser(&lexer);
+    parser.CfgMgr = this; // just a workaround to access CfgMgr while still being in constructor
     result = parser.yyparse();
     Log(Debug) << "Parsing config done." << LogEnd;
     f.close();
@@ -325,4 +326,23 @@ ostream & operator<<(ostream &out, TRelCfgMgr &x) {
     }
     out << "</RelCfgMgr>" << std::endl;
     return out;
+}
+
+
+void TRelCfgMgr::setRelayID(SPtr<TOpt> relayID)
+{
+    RelayID_ = relayID;
+}
+
+SPtr<TOpt> TRelCfgMgr::getRelayID()
+{
+    return RelayID_;
+}
+
+void TRelCfgMgr::setClientLinkLayerAddress(bool enabled) {
+    ClientLinkLayerAddress_ = enabled;
+}
+
+bool TRelCfgMgr::getClientLinkLayerAddress() {
+    return ClientLinkLayerAddress_;
 }

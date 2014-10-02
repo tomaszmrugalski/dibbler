@@ -38,16 +38,21 @@ class TRelTransMgr
 
     bool isDone();
     void shutdown();
-    
+
     char * getCtrlAddr();
     int    getCtrlIface();
-    
-  private:
+
+protected:
     TRelTransMgr(const std::string& xmlFile);
     static TRelTransMgr * Instance;
+
+    SPtr<TOpt> getClientLinkLayerAddr(SPtr<TRelMsg> msg);
+    SPtr<TOpt> getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg);
+    SPtr<TOpt> getLinkAddrFromDuid(SPtr<TOpt> duid_opt);
+
+  private:
     std::string XmlFile;
     bool IsDone;
-
     int ctrlIface;
     char ctrlAddr[48];
 };
@@ -55,5 +60,3 @@ class TRelTransMgr
 
 
 #endif
-
-

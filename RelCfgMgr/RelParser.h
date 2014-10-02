@@ -25,7 +25,9 @@
 #include "RelParsGlobalOpt.h"
 #include "RelParsIfaceOpt.h"
 #include "RelCfgIface.h"
+#include "RelCfgMgr.h"
 #include "OptVendorData.h"
+#include "OptDUID.h"
 #include "DUID.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -45,6 +47,7 @@ bool CheckIsIface(int ifaceNr);                                                 
 bool CheckIsIface(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
+TRelCfgMgr* CfgMgr;                                                                  \
 virtual ~RelParser();
 #define YY_RelParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_RelParser_CONSTRUCTOR_CODE                                                           \
@@ -53,7 +56,7 @@ virtual ~RelParser();
     yynerrs = 0;                                                                  \
     yychar = 0;
 
-#line 52 "RelParser.y"
+#line 55 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -250,11 +253,13 @@ typedef
 #define	OPTION_	270
 #define	REMOTE_ID_	271
 #define	ECHO_REQUEST_	272
-#define	GUESS_MODE_	273
-#define	STRING_	274
-#define	HEXNUMBER_	275
-#define	INTNUMBER_	276
-#define	IPV6ADDR_	277
+#define	RELAY_ID_	273
+#define	LINK_LAYER_	274
+#define	GUESS_MODE_	275
+#define	STRING_	276
+#define	HEXNUMBER_	277
+#define	INTNUMBER_	278
+#define	IPV6ADDR_	279
 
 
 #line 169 "../bison++/bison.h"
@@ -318,6 +323,8 @@ static const int DUID_;
 static const int OPTION_;
 static const int REMOTE_ID_;
 static const int ECHO_REQUEST_;
+static const int RELAY_ID_;
+static const int LINK_LAYER_;
 static const int GUESS_MODE_;
 static const int STRING_;
 static const int HEXNUMBER_;
@@ -346,11 +353,13 @@ static const int IPV6ADDR_;
 	,OPTION_=270
 	,REMOTE_ID_=271
 	,ECHO_REQUEST_=272
-	,GUESS_MODE_=273
-	,STRING_=274
-	,HEXNUMBER_=275
-	,INTNUMBER_=276
-	,IPV6ADDR_=277
+	,RELAY_ID_=273
+	,LINK_LAYER_=274
+	,GUESS_MODE_=275
+	,STRING_=276
+	,HEXNUMBER_=277
+	,INTNUMBER_=278
+	,IPV6ADDR_=279
 
 
 #line 215 "../bison++/bison.h"

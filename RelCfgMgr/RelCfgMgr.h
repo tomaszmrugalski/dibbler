@@ -53,9 +53,17 @@ public:
     SPtr<TOptVendorData> getRemoteID();
     SPtr<TRelOptEcho>     getEcho();
 
-private:
+    void setRelayID(SPtr<TOpt> relayID);
+    SPtr<TOpt> getRelayID();
+
+    void setClientLinkLayerAddress(bool enabled);
+    bool getClientLinkLayerAddress();
+
+protected:
     static TRelCfgMgr * Instance;
     TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
+
+private:
 
     std::string XmlFile;
 
@@ -75,6 +83,9 @@ private:
 
     SPtr<TOptVendorData> RemoteID;
     SPtr<TRelOptEcho> Echo;
+    SPtr<TOpt> RelayID_;
+
+    bool ClientLinkLayerAddress_;
 };
 
 #endif /* RELCONFMGR_H */

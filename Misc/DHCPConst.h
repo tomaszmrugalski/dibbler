@@ -151,8 +151,13 @@
 #define OPTION_LQ_RELAY_DATA    47
 #define OPTION_LQ_CLIENT_LINK   48
 
+#define OPTION_RELAY_ID         53
+
 // draft-ietf-softwire-ds-lite-tunnel-option-10, approved by IESG
 #define OPTION_AFTR_NAME        64
+
+// RFC6939
+#define OPTION_CLIENT_LINKLAYER_ADDR 79
 
 // draft-ietf-mif-dhcpv6-route-option-04
 #define OPTION_NEXT_HOP         242

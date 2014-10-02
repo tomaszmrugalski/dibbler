@@ -24,10 +24,10 @@ public:
     SPtr<TIPv6Addr> getDestAddr();
     void decodeOpts(char * data, int dataLen);
     int getHopCount();
-    
+
  protected:
     int DestIface;
-    SPtr<TIPv6Addr>   DestAddr;
+    SPtr<TIPv6Addr> DestAddr;
 
     int HopCount; // mormal messages =0, RELAY_FORW, RELAY_REPL = (0..32)
 };
