@@ -47,6 +47,7 @@ bool CheckIsIface(int ifaceNr);                                                 
 bool CheckIsIface(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
+TRelCfgMgr* CfgMgr;                                                                  \
 virtual ~RelParser();
 #define YY_RelParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_RelParser_CONSTRUCTOR_CODE                                                           \
@@ -55,7 +56,7 @@ virtual ~RelParser();
     yynerrs = 0;                                                                  \
     yychar = 0;
 
-#line 54 "RelParser.y"
+#line 55 "RelParser.y"
 typedef union    
 {
     unsigned int ival;

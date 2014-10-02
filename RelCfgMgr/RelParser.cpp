@@ -137,6 +137,7 @@ bool CheckIsIface(int ifaceNr);                                                 
 bool CheckIsIface(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
+TRelCfgMgr* CfgMgr;                                                                  \
 virtual ~RelParser();
 #define YY_RelParser_CONSTRUCTOR_PARAM  yyFlexLexer * lex
 #define YY_RelParser_CONSTRUCTOR_CODE                                                           \
@@ -145,7 +146,7 @@ virtual ~RelParser();
     yynerrs = 0;                                                                  \
     yychar = 0;
 
-#line 54 "RelParser.y"
+#line 55 "RelParser.y"
 typedef union    
 {
     unsigned int ival;
@@ -620,11 +621,11 @@ static const short yyrhs[] = {    30,
 
 #if (YY_RelParser_DEBUG != 0) || defined(YY_RelParser_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    85,    89,    93,    94,    98,    99,   100,   101,   102,   103,
-   104,   105,   106,   107,   111,   112,   116,   117,   121,   122,
-   123,   124,   125,   129,   134,   142,   147,   158,   159,   163,
-   170,   177,   181,   188,   192,   199,   205,   210,   217,   224,
-   230,   237,   244,   251,   258,   264,   269,   274,   281
+    86,    90,    94,    95,    99,   100,   101,   102,   103,   104,
+   105,   106,   107,   108,   112,   113,   117,   118,   122,   123,
+   124,   125,   126,   130,   135,   143,   148,   159,   160,   164,
+   171,   178,   182,   189,   193,   200,   206,   211,   218,   225,
+   231,   238,   245,   252,   259,   265,   270,   275,   282
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IFACE_","CLIENT_",
@@ -1209,14 +1210,14 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 24:
-#line 130 "RelParser.y"
+#line 131 "RelParser.y"
 {
     CheckIsIface(string(yyvsp[-1].strval)); //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 25:
-#line 135 "RelParser.y"
+#line 136 "RelParser.y"
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
@@ -1226,122 +1227,122 @@ case 25:
 ;
     break;}
 case 26:
-#line 143 "RelParser.y"
+#line 144 "RelParser.y"
 {
     CheckIsIface(yyvsp[-1].ival);   //If no - everything is ok
     StartIfaceDeclaration();
 ;
     break;}
 case 27:
-#line 148 "RelParser.y"
+#line 149 "RelParser.y"
 {
     RelCfgIfaceLst.append(new TRelCfgIface(yyvsp[-4].ival));
     EndIfaceDeclaration();
 ;
     break;}
 case 28:
-#line 158 "RelParser.y"
-{yyval.ival=yyvsp[0].ival;;
-    break;}
-case 29:
 #line 159 "RelParser.y"
 {yyval.ival=yyvsp[0].ival;;
     break;}
+case 29:
+#line 160 "RelParser.y"
+{yyval.ival=yyvsp[0].ival;;
+    break;}
 case 30:
-#line 164 "RelParser.y"
+#line 165 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 31:
-#line 171 "RelParser.y"
+#line 172 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientUnicast(new TIPv6Addr(yyvsp[0].addrval));
 ;
     break;}
 case 32:
-#line 178 "RelParser.y"
+#line 179 "RelParser.y"
 { 
     ParserOptStack.getLast()->setServerMulticast(yyvsp[0].ival);
 ;
     break;}
 case 33:
-#line 182 "RelParser.y"
+#line 183 "RelParser.y"
 {
     ParserOptStack.getLast()->setServerMulticast(true);
 ;
     break;}
 case 34:
-#line 189 "RelParser.y"
+#line 190 "RelParser.y"
 { 
     ParserOptStack.getLast()->setClientMulticast(yyvsp[0].ival);
 ;
     break;}
 case 35:
-#line 193 "RelParser.y"
+#line 194 "RelParser.y"
 {
     ParserOptStack.getLast()->setClientMulticast(true);
 ;
     break;}
 case 36:
-#line 199 "RelParser.y"
+#line 200 "RelParser.y"
 {
     logger::setLogLevel(yyvsp[0].ival);
 ;
     break;}
 case 37:
-#line 205 "RelParser.y"
+#line 206 "RelParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
 ;
     break;}
 case 38:
-#line 211 "RelParser.y"
+#line 212 "RelParser.y"
 {
     logger::setLogName(yyvsp[0].strval);
 ;
     break;}
 case 39:
-#line 218 "RelParser.y"
+#line 219 "RelParser.y"
 {
     ParserOptStack.getLast()->setWorkDir(yyvsp[0].strval);
 ;
     break;}
 case 40:
-#line 225 "RelParser.y"
+#line 226 "RelParser.y"
 {
     ParserOptStack.getLast()->setGuessMode(true);
 ;
     break;}
 case 41:
-#line 231 "RelParser.y"
+#line 232 "RelParser.y"
 {
     ParserOptStack.getLast()->setInterfaceID(yyvsp[0].ival);
 ;
     break;}
 case 42:
-#line 238 "RelParser.y"
+#line 239 "RelParser.y"
 {
     Log(Debug) << "RemoteID set: enterprise-number=" << yyvsp[-2].ival << ", remote-id length=" << yyvsp[0].duidval.length << LogEnd;
-    ParserOptStack.getLast()->setRemoteID( new TOptVendorData(yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
+    ParserOptStack.getLast()->setRemoteID( new TOptVendorData(OPTION_REMOTE_ID, yyvsp[-2].ival, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, 0));
 ;
     break;}
 case 43:
-#line 245 "RelParser.y"
+#line 246 "RelParser.y"
 {
     Log(Debug) << "Relay-id set: length=" << yyvsp[0].duidval.length << LogEnd;
-    RelCfgMgr().setRelayID(new TOptDUID(OPTION_RELAY_ID, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, NULL));
+    CfgMgr->setRelayID(new TOptDUID(OPTION_RELAY_ID, yyvsp[0].duidval.duid, yyvsp[0].duidval.length, NULL));
 ;
     break;}
 case 44:
-#line 252 "RelParser.y"
+#line 253 "RelParser.y"
 {
     Log(Debug) << "Client link-local address option (RFC6939) enabled." << LogEnd;
-    RelCfgMgr().setClientLinkLayerAddress(true);
+    CfgMgr->setClientLinkLayerAddress(true);
 ;
     break;}
 case 45:
-#line 259 "RelParser.y"
+#line 260 "RelParser.y"
 {
     EchoOpt = new TRelOptEcho(0);
     ParserOptStack.getLast()->setEcho(EchoOpt);
@@ -1349,27 +1350,27 @@ case 45:
 ;
     break;}
 case 46:
-#line 264 "RelParser.y"
+#line 265 "RelParser.y"
 {
     Log(Cont) << ", " << EchoOpt->count() << " opt(s) total." << LogEnd;
 ;
     break;}
 case 47:
-#line 270 "RelParser.y"
+#line 271 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
 case 48:
-#line 275 "RelParser.y"
+#line 276 "RelParser.y"
 {
     EchoOpt->addOption(yyvsp[0].ival);
     Log(Cont) << " " << yyvsp[0].ival;
 ;
     break;}
 case 49:
-#line 282 "RelParser.y"
+#line 283 "RelParser.y"
 {
     if (!strncasecmp(yyvsp[0].strval,"before",6)) 
     {
@@ -1593,7 +1594,7 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1039 "../bison++/bison.cc"
-#line 302 "RelParser.y"
+#line 303 "RelParser.y"
 
 
 /////////////////////////////////////////////////////////////////////////////
