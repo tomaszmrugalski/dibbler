@@ -53,6 +53,7 @@ bool TRelCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
     yyFlexLexer lexer(&f,&clog);
     RelParser parser(&lexer);
+    parser.CfgMgr = this; // just a workaround to access CfgMgr while still being in constructor
     result = parser.yyparse();
     Log(Debug) << "Parsing config done." << LogEnd;
     f.close();

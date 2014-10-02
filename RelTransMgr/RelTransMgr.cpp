@@ -198,6 +198,8 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     if (RelCfgMgr().getClientLinkLayerAddress()) {
         SPtr<TOpt> lladdr = getClientLinkLayerAddr(msg);
         if (lladdr) {
+            Log(Debug) << "Appended client link-layer address option with "
+		       << lladdr->getSize() << " bytes." << LogEnd;
             lladdr->storeSelf(buf + offset);
             offset += lladdr->getSize();
         }

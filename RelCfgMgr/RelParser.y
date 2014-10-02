@@ -41,6 +41,7 @@ bool CheckIsIface(int ifaceNr);                                                 
 bool CheckIsIface(string ifaceName);                                                 \
 void StartIfaceDeclaration();                                                        \
 bool EndIfaceDeclaration();                                                          \
+TRelCfgMgr* CfgMgr;                                                                  \
 virtual ~RelParser();
 
 // constructor
@@ -237,21 +238,21 @@ RemoteID
 :OPTION_ REMOTE_ID_ Number '-' DUID_
 {
     Log(Debug) << "RemoteID set: enterprise-number=" << $3 << ", remote-id length=" << $5.length << LogEnd;
-    ParserOptStack.getLast()->setRemoteID( new TOptVendorData($3, $5.duid, $5.length, 0));
+    ParserOptStack.getLast()->setRemoteID( new TOptVendorData(OPTION_REMOTE_ID, $3, $5.duid, $5.length, 0));
 };
 
 RelayID
 :OPTION_ RELAY_ID_ DUID_
 {
     Log(Debug) << "Relay-id set: length=" << $3.length << LogEnd;
-    RelCfgMgr().setRelayID(new TOptDUID(OPTION_RELAY_ID, $3.duid, $3.length, NULL));
+    CfgMgr->setRelayID(new TOptDUID(OPTION_RELAY_ID, $3.duid, $3.length, NULL));
 }
 
 LinkLayerOption
 :OPTION_ LINK_LAYER_
 {
     Log(Debug) << "Client link-local address option (RFC6939) enabled." << LogEnd;
-    RelCfgMgr().setClientLinkLayerAddress(true);
+    CfgMgr->setClientLinkLayerAddress(true);
 }
 
 EchoRequest

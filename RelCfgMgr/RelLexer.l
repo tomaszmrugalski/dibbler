@@ -204,7 +204,7 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
 }
 
 0x{hexdigit}+ {
-    // DUID
+    // DUID in 0x010203 format
     int len;
     char * ptr;
     if (strlen(yytext)%2) {
@@ -232,6 +232,34 @@ false               { yylval.ival=0; return RelParser::INTNUMBER_;}
             yylval.duidval.duid[i>>1]|=ptr[i]-'0';
         }
    }
+   return RelParser::DUID_;
+}
+
+{hexdigit}{2}(:{hexdigit}{2})+ {
+   // DUID in 00:01:02:03 format
+   int len = (strlen(yytext)+1)/3;
+   char * pos = 0;
+   yylval.duidval.length = len;
+   yylval.duidval.duid   = new char[len];
+
+   int i=0;
+   for (pos = yytext; pos<=yytext+strlen(yytext)-2; pos+=3)
+   {
+      char x;
+      if (isalpha(*pos))
+        x = (toupper(*pos)-'A' + 10);
+      else
+        x = *pos-'0';
+      x *= 16;
+
+      if (isalpha(*(pos+1)))
+        x += (toupper(*(pos+1))-'A' + 10);
+      else
+        x += *(pos+1) - '0';
+      yylval.duidval.duid[i] = x;
+      i++;
+   }
+
    return RelParser::DUID_;
 }
 
