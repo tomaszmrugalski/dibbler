@@ -532,6 +532,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
                 continue;
             }
 
+            Log(Debug) << "PD: Interface " << x->getFullName() << " is suitable for PD." << LogEnd;
             ifaceLst.push_back(x);
         }
     }
