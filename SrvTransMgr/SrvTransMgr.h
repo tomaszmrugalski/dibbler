@@ -35,6 +35,15 @@ class TSrvTransMgr
 
     long getTimeout();
     void relayMsg(SPtr<TSrvMsg> msg);
+
+    /// @brief Checks whether message was sent to unicast when it was forbidden
+    ///
+    /// Client is allowed to send data to unicast only if the server is
+    /// configured with server-unicast option. Otherwise it will send
+    /// back message with only status-code=UseMulticast, client-id and server-id
+    /// @return true (accept message) or false (drop it)
+    bool unicastCheck(SPtr<TSrvMsg> msg);
+
     void doDuties();
     void dump();
 

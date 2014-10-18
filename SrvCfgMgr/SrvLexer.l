@@ -76,6 +76,7 @@ preferred-lifetime  { return SrvParser::PREF_TIME_;}
 prefered-lifetime   { return SrvParser::PREF_TIME_;}
 valid-lifetime      { return SrvParser::VALID_TIME_;}
 
+drop-unicast        { return SrvParser::DROP_UNICAST_; }
 unicast             { return SrvParser::UNICAST_;}
 preference          { return SrvParser::PREFERENCE_;}
 pool                { return SrvParser::POOL_;}

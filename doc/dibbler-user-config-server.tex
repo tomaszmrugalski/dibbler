@@ -471,6 +471,16 @@ braces that create a new route scope. See Section \ref{server-route-scope}.
             accept-only list is defined, only client from that list
             will be supported.
 
+\item[drop-unicast] -- (scope: global). In general, clients are
+            supposed to send their messages to multicast, unless the
+            server explicitly allows unicast. \cite{rfc3315} says
+            that packets sent to unicast should be dropped and
+            server must respond with status code set to UseMulticast.
+            That's a bit harsh in author's opinion, so this behavior
+            is not set by default. However, if you want strict RFC
+            compliance, you can enable this by adding drop-unicast
+            in your global scope.
+
 \item[addr-params] -- (scope: class). Experimental feature that takes
   one boolean parameter. It defines prefix length that is configured
   in addr-params option. See Section \ref{feature-addr-params} for

@@ -91,10 +91,11 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
     int dataLen=2048;
 
     SPtr<TIPv6Addr> peer (new TIPv6Addr());
+    SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
     int sockid;
 
     // read data
-    sockid = TIfaceMgr::select(timeout, data, dataLen, peer);
+    sockid = TIfaceMgr::select(timeout, data, dataLen, peer, myaddr);
     if (sockid < 0) {
         Log(Warning) << "Socket read error: " << sockid << LogEnd;
         return 0;

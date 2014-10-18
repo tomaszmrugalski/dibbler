@@ -27,6 +27,7 @@ public:
     char* getPlain();
     char* storeSelf(char *buf);
     bool linkLocal();
+    bool multicast();
     TIPv6Addr operator-(const TIPv6Addr &other);
     TIPv6Addr operator+(const TIPv6Addr &other);
     TIPv6Addr& operator--();

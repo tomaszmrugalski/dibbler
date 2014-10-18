@@ -172,11 +172,13 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 /// @param bufsize reference to buffer size (will be updated to received packet size
 ///        if reception is successful)
 /// @param peer address of the pkt sender
+/// @param myaddr address the packet was received on
 ///
 /// @return socket descriptor (or negative values for errors)
 ///
-int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer) {
-    return TIfaceMgr::select(timeout, buf, bufsize, peer);
+int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
+                          SPtr<TIPv6Addr> peer, SPtr<TIPv6Addr> myaddr) {
+    return TIfaceMgr::select(timeout, buf, bufsize, peer, myaddr);
 }
 
 // @brief reads messages from all interfaces
@@ -193,11 +195,12 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     int bufsize=maxBufsize;
     static char buf[maxBufsize];
 
-    SPtr<TIPv6Addr> peer (new TIPv6Addr());
+    SPtr<TIPv6Addr> peer(new TIPv6Addr());
+    SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
     int sockid;
 
     // read data
-    sockid = receive(timeout, buf, bufsize, peer);
+    sockid = receive(timeout, buf, bufsize, peer, myaddr);
     if (sockid < 0) {
         return 0;
     }
@@ -260,6 +263,8 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
     if (!ptr)
         return 0;
+
+    ptr->setLocalAddr(myaddr);
 
 #ifndef MOD_DISABLE_AUTH
     if (!ptr->validateReplayDetection()) {

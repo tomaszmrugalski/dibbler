@@ -215,7 +215,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
 {
     int msgType = clientMsg->getType();
     ClntDuid  = clientMsg->getClientDUID();
-    ClntAddr  = clientMsg->getAddr();
+    ClntAddr  = clientMsg->getRemoteAddr();
     Iface     = clientMsg->getIface();
 
     SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(Iface);

@@ -57,6 +57,11 @@ bool TIPv6Addr::linkLocal() {
     return false;
 }
 
+bool TIPv6Addr::multicast() {
+    return Addr[0] == 0xff;
+}
+
+
 char* TIPv6Addr::getAddr() {
     return Addr;
 }

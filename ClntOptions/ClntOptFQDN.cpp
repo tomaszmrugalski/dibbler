@@ -42,7 +42,7 @@ bool TClntOptFQDN::doDuties() {
     }
 
     int ifindex = this->Parent->getIface();
-    SPtr<TIPv6Addr> addr = this->Parent->getAddr();
+    SPtr<TIPv6Addr> addr = this->Parent->getRemoteAddr();
     
     SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
     

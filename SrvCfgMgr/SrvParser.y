@@ -111,7 +111,7 @@ virtual ~SrvParser();
 %token FQDN_, ACCEPT_UNKNOWN_FQDN_, FQDN_DDNS_ADDRESS_, DDNS_PROTOCOL_, DDNS_TIMEOUT_
 %token ACCEPT_ONLY_,REJECT_CLIENTS_,POOL_, SHARE_
 %token T1_,T2_,PREF_TIME_,VALID_TIME_
-%token UNICAST_,PREFERENCE_,RAPID_COMMIT_
+%token UNICAST_, DROP_UNICAST_, PREFERENCE_,RAPID_COMMIT_
 %token IFACE_MAX_LEASE_, CLASS_MAX_LEASE_, CLNT_MAX_LEASE_
 %token STATELESS_
 %token CACHE_SIZE_
@@ -196,6 +196,7 @@ GlobalOption
 | ScriptName
 | PerformanceMode
 | ReconfigureEnabled
+| DropUnicast
 ;
 
 InterfaceOptionDeclaration
@@ -1111,6 +1112,12 @@ UnicastAddressOption
     ParserOptStack.getLast()->setUnicast(new TIPv6Addr($2));
 }
 ;
+
+DropUnicast
+: DROP_UNICAST_
+{
+    CfgMgr->dropUnicast(true);
+}
 
 RapidCommitOption
 :   RAPID_COMMIT_ Number

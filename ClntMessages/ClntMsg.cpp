@@ -335,7 +335,7 @@ void TClntMsg::setDefaults()
 #endif
 
     /// @todo: This should be moved to TMsg
-    PeerAddr = 0;
+    PeerAddr_ = 0;
 }
 
 unsigned long TClntMsg::getTimeout()
@@ -373,7 +373,7 @@ void TClntMsg::send()
         delete [] pkt;
         return;
     }
-    if (PeerAddr) {
+    if (PeerAddr_) {
 	Log(Debug) << "Sending " << this->getName() << "(opts:";
 	SPtr<TOpt> opt;
 	firstOption();
@@ -381,8 +381,8 @@ void TClntMsg::send()
 	    Log(Cont) << opt->getOptType() << " ";
 	}
 	Log(Cont) << ") on " << ptrIface->getName()
-		   << "/" << Iface << " to unicast addr " << *PeerAddr << "." << LogEnd;
-	ClntIfaceMgr().sendUnicast(Iface,pkt,getSize(),PeerAddr);
+		   << "/" << Iface << " to unicast addr " << *PeerAddr_ << "." << LogEnd;
+	ClntIfaceMgr().sendUnicast(Iface,pkt,getSize(),PeerAddr_);
     } else {
 	Log(Debug) << "Sending " << this->getName() << "(opts:";
 	SPtr<TOpt> opt;
@@ -968,49 +968,49 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             {
                 SPtr<TOptAddrLst> dnsservers = (Ptr*) option;
                 cfgIface->setDNSServerState(STATE_CONFIGURED);
-                iface->setDNSServerLst(duid, reply->getAddr(), dnsservers->getAddrLst());
+                iface->setDNSServerLst(duid, reply->getRemoteAddr(), dnsservers->getAddrLst());
                 break;
             }
         case OPTION_NIS_SERVERS:
             {
                 SPtr<TOptAddrLst> nisservers = (Ptr*) option;
                 cfgIface->setNISServerState(STATE_CONFIGURED);
-                iface->setNISServerLst(duid, reply->getAddr(), nisservers->getAddrLst());
+                iface->setNISServerLst(duid, reply->getRemoteAddr(), nisservers->getAddrLst());
                 break;
             }
         case OPTION_NISP_SERVERS:
             {
                 SPtr<TOptAddrLst> nispservers = (Ptr*) option;
                 cfgIface->setNISPServerState(STATE_CONFIGURED);
-                iface->setNISPServerLst(duid, reply->getAddr(), nispservers->getAddrLst());
+                iface->setNISPServerLst(duid, reply->getRemoteAddr(), nispservers->getAddrLst());
                 break;
             }
         case OPTION_SNTP_SERVERS:
             {
                 SPtr<TOptAddrLst> ntpservers = (Ptr*) option;
                 cfgIface->setNTPServerState(STATE_CONFIGURED);
-                iface->setNTPServerLst(duid, reply->getAddr(), ntpservers->getAddrLst());
+                iface->setNTPServerLst(duid, reply->getRemoteAddr(), ntpservers->getAddrLst());
                 break;
             }
         case OPTION_SIP_SERVER_A:
             {
                 SPtr<TOptAddrLst> sipservers = (Ptr*) option;
                 cfgIface->setSIPServerState(STATE_CONFIGURED);
-                iface->setSIPServerLst(duid, reply->getAddr(), sipservers->getAddrLst());
+                iface->setSIPServerLst(duid, reply->getRemoteAddr(), sipservers->getAddrLst());
                 break;
             }
         case OPTION_DOMAIN_LIST:
             {
                 SPtr<TOptDomainLst> domains = (Ptr*) option;
                 cfgIface->setDomainState(STATE_CONFIGURED);
-                iface->setDomainLst(duid, reply->getAddr(), domains->getDomainLst() );
+                iface->setDomainLst(duid, reply->getRemoteAddr(), domains->getDomainLst() );
                 break;
             }
         case OPTION_SIP_SERVER_D:
             {
                 SPtr<TOptDomainLst> sipdomains = (Ptr*) option;
                 cfgIface->setSIPDomainState(STATE_CONFIGURED);
-                iface->setSIPDomainLst(duid, reply->getAddr(), sipdomains->getDomainLst() );
+                iface->setSIPDomainLst(duid, reply->getRemoteAddr(), sipdomains->getDomainLst() );
                 break;
             }
         case OPTION_NIS_DOMAIN_NAME:
@@ -1019,7 +1019,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
                 List(string) domains = nisdomain->getDomainLst();
                 if (domains.count() == 1) {
                     cfgIface->setNISDomainState(STATE_CONFIGURED);
-                    iface->setNISDomain(duid, reply->getAddr(), nisdomain->getDomain());
+                    iface->setNISDomain(duid, reply->getRemoteAddr(), nisdomain->getDomain());
                 } else {
                     Log(Warning) << "Malformed NIS Domain option received. " << domains.count()
                                  << " domain(s) received, expected exactly 1." << LogEnd;
@@ -1033,7 +1033,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
                 List(string) domains = nispdomain->getDomainLst();
                 if (domains.count() == 1) {
                     cfgIface->setNISPDomainState(STATE_CONFIGURED);
-                    iface->setNISPDomain(duid, reply->getAddr(), nispdomain->getDomain());
+                    iface->setNISPDomain(duid, reply->getRemoteAddr(), nispdomain->getDomain());
                 } else {
                     Log(Warning) << "Malformed NIS+ Domain option received. " << domains.count()
                                  << " domain(s) received, expected exactly 1." << LogEnd;

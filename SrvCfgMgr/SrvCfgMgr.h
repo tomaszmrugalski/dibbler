@@ -136,6 +136,9 @@ public:
     void setPerformanceMode(bool mode);
     bool getPerformanceMode();
 
+    void dropUnicast(bool drop);
+    bool dropUnicast();
+
     // used to be private, but we need access in tests
 protected:
     TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
@@ -179,6 +182,7 @@ protected:
     unsigned int BulkLQTimeout;
 
     bool PerformanceMode_;
+    bool DropUnicast_;
 };
 
 #endif /* SRVCONFMGR_H */

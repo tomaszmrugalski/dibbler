@@ -12,6 +12,9 @@
   - Rel: Relay agent is now able to insert relay-id option (RFC5460)
   - Rel: Relay agent is now able to insert client link-layer address option
     (RFC6939)
+  - Srv: drop-unicast added. Server is now able to respond with status code
+    set to UseMulticast if a client sent his packets to unicast. According
+    to author's knowledge this was the last missing functionality of RFC3315.
 
 1.0.0RC2 [2014-07-12]
   - Cli: segfault when invalid or incomplete auth parameters are specified

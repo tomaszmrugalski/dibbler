@@ -81,8 +81,10 @@ void TDHCPServer::run()
 
         SrvTransMgr().doDuties();
         unsigned int timeout = SrvTransMgr().getTimeout();
-        if (timeout == 0)        timeout = 1;
-        if (serviceShutdown)     timeout = 0;
+        if (timeout == 0)
+            timeout = 1;
+        if (serviceShutdown)
+            timeout = 0;
 
         if (!silent)
             Log(Notice) << "Accepting connections. Next event in " << timeout

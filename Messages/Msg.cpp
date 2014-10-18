@@ -50,7 +50,7 @@ TMsg::TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType,  long transID)
 
 void TMsg::setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
 {
-    PeerAddr = addr;
+    PeerAddr_ = addr;
 
     Iface = iface;
     TransID = transID;
@@ -236,8 +236,8 @@ TMsg::~TMsg() {
     }
 }
 
-SPtr<TIPv6Addr> TMsg::getAddr() {
-    return PeerAddr;
+SPtr<TIPv6Addr> TMsg::getRemoteAddr() {
+    return PeerAddr_;
 }
 
 int TMsg::getIface() {
@@ -589,4 +589,12 @@ void* TMsg::getNotifyScriptParams() {
     }
 
     return NotifyScripts;
+}
+
+void TMsg::setLocalAddr(SPtr<TIPv6Addr> myaddr) {
+    LocalAddr_ = myaddr;
+}
+
+SPtr<TIPv6Addr> TMsg::getLocalAddr() {
+    return LocalAddr_;
 }

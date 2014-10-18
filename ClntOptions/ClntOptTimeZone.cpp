@@ -48,7 +48,7 @@ bool TClntOptTimeZone::doDuties() {
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
     cfgIface->setTimezoneState(STATE_CONFIGURED);
 
-    return iface->setTimezone(duid->getDUID(), Parent->getAddr(), Str);
+    return iface->setTimezone(duid->getDUID(), Parent->getRemoteAddr(), Str);
 }
 
 /// @todo remove this

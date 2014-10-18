@@ -140,7 +140,7 @@ void TRelTransMgr::relayMsg(SPtr<TRelMsg> msg)
     offset += 16;
 
     // store peer-addr
-    addr = msg->getAddr();
+    addr = msg->getRemoteAddr();
     addr->storeSelf(buf+offset);
     offset += 16;
 
@@ -374,7 +374,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
 }
 
 SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
-    SPtr<TIPv6Addr> srcAddr = msg->getAddr();
+    SPtr<TIPv6Addr> srcAddr = msg->getRemoteAddr();
     if (!srcAddr || !srcAddr->linkLocal())
         return 0;
 

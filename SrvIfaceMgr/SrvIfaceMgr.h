@@ -41,7 +41,8 @@ class TSrvIfaceMgr :public TIfaceMgr {
 
    // --- transmission/reception methods ---
    virtual bool send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port);
-   virtual int receive(unsigned long timeout, char* buf, int& bufsize, SPtr<TIPv6Addr> peer);
+   virtual int receive(unsigned long timeout, char* buf, int& bufsize,
+                       SPtr<TIPv6Addr> peer, SPtr<TIPv6Addr> myaddr);
 
    // ---receives messages---
    SPtr<TSrvMsg> select(unsigned long timeout);

@@ -26,8 +26,9 @@ bool NakedSrvIfaceMgr::send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr
 }
 
 int NakedSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
-                              SPtr<TIPv6Addr> peer) {
-    return TSrvIfaceMgr::receive(timeout, buf, bufsize, peer);
+                              SPtr<TIPv6Addr> peer, SPtr<TIPv6Addr> myaddr) {
+
+    return TSrvIfaceMgr::receive(timeout, buf, bufsize, peer, myaddr);
 }
 
 ServerTest::ServerTest() {

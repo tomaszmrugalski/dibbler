@@ -189,10 +189,11 @@ bool ReqTransMgr::WaitForRsp()
     int bufLen = 1024;
     memset(buf, 0, bufLen);
     SPtr<TIPv6Addr> sender = new TIPv6Addr();
+    SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
 
     int sockFD;
     Log(Debug) << "Waiting " << CfgMgr->timeout << " seconds for reply reception." << LogEnd;
-    sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender);
+    sockFD = this->IfaceMgr->select(CfgMgr->timeout, buf, bufLen, sender, myaddr);
     
     Log(Debug) << "Returned socketID=" << sockFD << LogEnd;
     if (sockFD>0) {

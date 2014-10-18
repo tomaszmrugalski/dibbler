@@ -101,9 +101,10 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
     int bufsize=4096;
     static char buf[4096];
     SPtr<TIPv6Addr> peer(new TIPv6Addr());
+    SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
     int sockid;
 
-    sockid = TIfaceMgr::select(timeout, buf, bufsize, peer);
+    sockid = TIfaceMgr::select(timeout, buf, bufsize, peer, myaddr);
 
     if (sockid>0) {
         if (bufsize<4) {

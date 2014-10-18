@@ -115,7 +115,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     :TOptIA_NA(queryOpt->getIAID(), queryOpt->getT1(), queryOpt->getT2(), parent) {
 
     Iface = parent->getIface();
-    ClntAddr = queryMsg->getAddr();
+    ClntAddr = queryMsg->getRemoteAddr();
     ClntDuid  = queryMsg->getClientDUID();
 
     // true for advertise, false for everything else

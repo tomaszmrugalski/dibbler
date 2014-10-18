@@ -22,7 +22,7 @@
 using namespace std;
 
 TSrvMsgLeaseQueryReply::TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query)
-    :TSrvMsg(query->getIface(), query->getAddr(), LEASEQUERY_REPLY_MSG,
+    :TSrvMsg(query->getIface(), query->getRemoteAddr(), LEASEQUERY_REPLY_MSG,
 	     query->getTransID())
 {
   if (!answer(query)) {

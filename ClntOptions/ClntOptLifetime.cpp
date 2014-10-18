@@ -50,5 +50,5 @@ bool TClntOptLifetime::doDuties()
     }
 
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(ifindex);
-    return iface->setLifetime(duid->getDUID(), Parent->getAddr(), Value);
+    return iface->setLifetime(duid->getDUID(), Parent->getRemoteAddr(), Value);
 }

@@ -36,7 +36,8 @@ class TIfaceMgr {
     int countIface();
 
     // ---other---
-    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer);
+    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer,
+               SPtr<TIPv6Addr> myaddr);
     std::string printMac(char * mac, int macLen);
     void dump();
     bool isDone();

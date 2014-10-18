@@ -201,7 +201,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         Log(Error) << "Unable to find iface=" << this->Iface << "." << LogEnd;
         return true;
     }
-    if (iface->isServerRejected(msg->getAddr(), srvDUID->getDUID())) {
+    if (iface->isServerRejected(msg->getRemoteAddr(), srvDUID->getDUID())) {
 	Log(Notice) << "Server was rejected (duid=" << srvDUID->getDUID() << ")." << LogEnd;
         return true;
     }

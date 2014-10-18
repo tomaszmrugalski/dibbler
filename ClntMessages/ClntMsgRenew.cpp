@@ -61,7 +61,7 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
 
     MRD      = ia->getT2Timeout();  
     Iface    = ia->getIfindex();
-    PeerAddr = ia->getSrvAddr();
+    PeerAddr_ = ia->getSrvAddr();
 
     if (RT>MRD) 
         RT=MRD;

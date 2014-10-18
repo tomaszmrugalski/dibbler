@@ -227,7 +227,7 @@ void TSrvMsg::setDefaults() {
 void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
     SPtr<TOpt> opt;
-    SPtr<TIPv6Addr> clntAddr = PeerAddr;
+    SPtr<TIPv6Addr> clntAddr = PeerAddr_;
 
     // --- process this message ---
     clientMsg->firstOption();
@@ -465,7 +465,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
         port = dstPort;
     }
 
-    SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+    SrvIfaceMgr().send(ptrIface->getID(), buf, offset, PeerAddr_, port);
     delete [] buf;
 }
 
@@ -555,7 +555,7 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
 
     SPtr<TIPv6Addr> clntAssignedAddr = SrvAddrMgr().getFirstAddr(ClientDUID);
     if (!clntAssignedAddr) {
-        clntAssignedAddr = PeerAddr; // it's better than nothing. Put it in FQDN option,
+        clntAssignedAddr = PeerAddr_; // it's better than nothing. Put it in FQDN option,
         // doRealUpdate = false; // but do not do the actual update
     }
 
@@ -726,7 +726,7 @@ SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
     if (!RelayInfo_.empty()) {
        return RelayInfo_[0].PeerAddr_; //first hop ?
    }
-   return PeerAddr;
+   return PeerAddr_;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {

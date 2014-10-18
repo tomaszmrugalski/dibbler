@@ -60,7 +60,7 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
                      int msgType, TMsg* parent)
     :TOptTA(queryOpt->getIAID(), parent) {
     ClntDuid  = clientMsg->getClientDUID();
-    ClntAddr  = clientMsg->getAddr();
+    ClntAddr  = clientMsg->getRemoteAddr();
     Iface     = clientMsg->getIface();
     this->OrgMessage = msgType;
     switch (msgType) {

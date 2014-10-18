@@ -36,6 +36,7 @@ class TSrvMsgReply : public TSrvMsg
     TSrvMsgReply(SPtr<TSrvMsgRequest> question);
     TSrvMsgReply(SPtr<TSrvMsgSolicit> question);
     TSrvMsgReply(SPtr<TSrvMsgInfRequest> question);
+    TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList& options);
 
     void doDuties();
     unsigned long getTimeout();

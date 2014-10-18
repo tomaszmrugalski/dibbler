@@ -6,12 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: OptStatusCode.h,v 1.3 2008-08-29 00:07:31 thomson Exp $
- *
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004-12-08 00:17:04  thomson
- * DOS end of lines removed, header added.
- *
  */
 
 #ifndef OPTSTATUSCODE_H

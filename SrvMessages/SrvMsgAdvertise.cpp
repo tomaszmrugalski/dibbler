@@ -1,12 +1,12 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  * changes: Michal Kowalczuk <michal@kowalczuk.eu>
- *                                                                           
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #include "SrvMsgAdvertise.h"
@@ -24,8 +24,8 @@
 using namespace std;
 
 TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
-    :TSrvMsg(solicit->getIface(),solicit->getAddr(), ADVERTISE_MSG, 
-	     solicit->getTransID())
+    :TSrvMsg(solicit->getIface(),solicit->getRemoteAddr(), ADVERTISE_MSG,
+             solicit->getTransID())
 {
     getORO((Ptr*)solicit);
     copyClientID((Ptr*)solicit);
@@ -46,9 +46,9 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
 
     // append serverID, preference and possibly unicast
     appendMandatoryOptions(ORO);
-    
+
     //if client requested parameters and policy doesn't forbid from answering
-    appendRequestedOptions(ClientDUID, PeerAddr, Iface, ORO);
+    appendRequestedOptions(ClientDUID, PeerAddr_, Iface, ORO);
 
     appendStatusCode();
 
