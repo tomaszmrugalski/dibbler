@@ -4,8 +4,9 @@
 1.0.0 [not-released-yet]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to
     Justin Cormack for providing a patch.
-  - Fix for client crash if PD was requested, but the server returned IA_PD,
-    but without any IAPREFIX options inside.
+  - Fix for client crash if PD was requested, the server returned IA_PD,
+    but without any IAPREFIX options inside. Added better checks. Thanks to
+    Maciej Fijalkowski for providing a patch.
   - Cli: Received options are now applied in stateless mode (bug #246)
   - Rel: remote-id option is now being inserted correctly (RFC4649)
   - Rel: Relay agent is now able to insert relay-id option (RFC5460)

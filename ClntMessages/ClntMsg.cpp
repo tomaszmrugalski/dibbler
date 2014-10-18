@@ -909,14 +909,35 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 
             if (!pd->getOption(OPTION_IAPREFIX)) {
-                Log(Notice) << "Received IA_PD without prefixes, ingoring." << LogEnd;
+                Log(Notice) << "Received IA_PD without prefixes, ignoring." << LogEnd;
                 break;
             }
 
-            /// @todo: We should check all iaprefix instances, not just one.
-            /// We should accept the PD if there's at least one valid prefix.
-            if (!pd->getOption(OPTION_IAPREFIX)->isValid()) {
-                Log(Warning) << "Option IA_Prefix is not valid." << LogEnd;
+            bool pdOk = true;
+            int prefixCount = pd->countPrefixes();
+            pd->firstPrefix();
+            SPtr<TClntOptIAPrefix> ppref;
+            while (ppref = pd->getPrefix()) {
+                if (!ppref->isValid()) {
+                    Log(Warning) << "Option IA_PREFIX from IA_PD " <<
+                                 pd->getIAID() << " is not valid." << LogEnd;
+                    // RFC 3633, section 10:
+                    // A requesting router discards any prefixes for which the
+                    // preferred lifetime is greater than the valid lifetime.
+                    pd->deletePrefix(ppref);
+                    prefixCount--;
+                    if (!prefixCount) {
+                        // ia_pd hasn't got any valid prefixes.
+                        if (ClntCfgMgr().insistMode()) {
+                            // if insist-mode is enabled and one of received
+                            // pd's has no valid prefixes, answer is rejected.
+                            pdOk = false;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (!pdOk) {
                 break;
             }
 
@@ -1276,4 +1297,19 @@ bool TClntMsg::validateReplayDetection() {
 
     return true; // not really needed
 #endif
+}
+
+void TClntMsg::deletePD(SPtr<TOpt> pd_) {
+    SPtr<TClntOptIA_PD> pd = (Ptr*) pd_;
+    for (TOptList::iterator opt = Options.begin(); opt != Options.end(); ++opt)
+    {
+        if ( (*opt)->getOptType() != OPTION_IA_PD)
+            continue;
+        SPtr<TClntOptIA_PD> delPD = (Ptr*) (*opt);
+        if ( pd->getIAID() == delPD->getIAID() )
+        {
+            opt = Options.erase(opt);
+            break;
+        }
+    }
 }

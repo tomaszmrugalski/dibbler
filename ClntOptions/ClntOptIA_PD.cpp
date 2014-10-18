@@ -204,6 +204,21 @@ bool TClntOptIA_PD::doDuties()
     return true;
 }
 
+void TClntOptIA_PD::deletePrefix(SPtr<TClntOptIAPrefix> prefix)
+{
+    TOptList& opts = SubOptions.getSTL();
+
+    for (TOptList::iterator opt = opts.begin(); opt != opts.end(); ++opt) {
+        if ((*opt)->getOptType() == OPTION_IAPREFIX) {
+            SPtr<TClntOptIAPrefix> iaprefix = (Ptr*) *opt;
+            if ((*prefix->getPrefix()) == (*iaprefix->getPrefix())) {
+                opts.erase(opt);
+                break;
+            }
+        }
+    }
+}
+
 SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
 {
     TOptList& opts = SubOptions.getSTL();
