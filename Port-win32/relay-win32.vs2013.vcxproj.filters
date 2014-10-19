@@ -194,6 +194,9 @@
     <ClCompile Include="WinService.cpp">
       <Filter>Source Files\port-win32</Filter>
     </ClCompile>
+    <ClCompile Include="..\Options\OptDUID.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource3.h">
@@ -306,6 +309,9 @@
     </ClInclude>
     <ClInclude Include="..\RelTransMgr\RelTransMgr.h">
       <Filter>Header Files\RelTransMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptDUID.h">
+      <Filter>Header Files\Options</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

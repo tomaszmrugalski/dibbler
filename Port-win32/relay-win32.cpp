@@ -59,7 +59,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 
 int main(int argc, char* argv[]) {
 
-    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista/7 port)" << endl;
+    cout << DIBBLER_COPYRIGHT1 << " (RELAY, WinXP/2003/Vista/7/8 port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
     cout << DIBBLER_COPYRIGHT3 << endl;
     cout << DIBBLER_COPYRIGHT4 << endl;
