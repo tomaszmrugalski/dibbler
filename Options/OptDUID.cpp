@@ -36,8 +36,6 @@ TOptDUID::TOptDUID(int type, const char* buf, int bufsize, TMsg* parent)
     :TOpt(type, parent)
 {
     this->DUID = new TDUID(buf,bufsize);
-    // buf+=DUID->getLen(); 
-    // bufsize-=DUID->getLen();
 }
 
 SPtr<TDUID> TOptDUID::getDUID() const
