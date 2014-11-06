@@ -1,29 +1,36 @@
 
-  Dibbler 1.0.0 Release Candidate 2 [2014-07-12]
+  Dibbler 1.0.0 [2014-11-07]
  ------------------------------------------------
 
- This is a second Release Candidate for 1.0.0 release of the Dibbler software.
+ This is the 1.0.0 release of the Dibbler software.
 
- Due to other obligations, 1.0.0RC1 was available for a very long time
- and I never had a chance to release 1.0.0 final. In the mean time, quite
- a few of fixes and small features were added (Changelog mentions 35 items,
- but I'm sure some of them were not listed). So formally this is a second
- RC, but it contains unexpectedly large changes for an RC. Keep that in
- mind. This time I expect the delay between RC and final to be much shorter
- (couple weeks).
+ After over 11 years, Dibbler project finally reaches 1.0.0. This significant
+ milestone was planned when all features described in RFC3315, a document
+ that specifies DHCPv6, were implemented. It took radically more time
+ then I initially thought. But here it is - a portable DHCPv6 implementation
+ that features a server, a client, relay agent and a leasequery requestor.
 
- Couple changes worth mentioning:
- - dibbler client now configures received prefix with /128, not /64. This
-   will likely raise some eyebrows, but that how DHCPv6 is supposed to work.
-   Please see https://klub.com.pl/bugzilla3/show_bug.cgi?id=222 for extra
-   details.
- - There are reports that Reconfigure messages are sent to the wrong address
-   if the client connected via relays. See bug #303.
- - There are reports that Dibbler has problems on Ubuntu 14.04. That was
-   traced to a Linux kernel issue and is fixed in 3.15.2. See bug #302.
- - Windows port improved, now using Visual Studio 2013 Express.
- - Issue tracker on github has been disabled. It was awkward to use both
-   bugzilla and github.
+ It works on a variety of Windows operating systems, starting from XP to 8,
+ Linux, Mac OS, FreeBSD, NetBSD and OpenBSD. It may compile or even partially
+ work on other systems.
+
+ There is a handful of fixes since 1.0.0RC2 and one small feature: the
+ server may be told to reject incoming unicast traffic with status code
+ UseMulticast. According to my knowledge, this was the last missing feature.
+
+ As you may have noticed, Dibbler development slowed down considerably
+ in the last couple years. The reason is that I'm now involved in a new
+ DHCP implementation, which takes more than 40 hours a week. It's simply
+ a matter of work/life balance. I'm no longer able to dedicate significant
+ amount of time for further Dibbler development.
+
+ So is the project dead? No, I will still fix bugs occasionally. If
+ there are patches that do not require significant rework, I may review and
+ accept them. Even new features may appear occasionally, but they will
+ be infrequent. My plan is to keep Dibbler alive long enough for Kea, the
+ new project I'm involved in , to be a viable alternative. As of today, it
+ has many of the server features, but still lacks client, relay and requestor
+ components.
 
  See CHANGELOG for a complete list of changes.
 
@@ -33,6 +40,8 @@
  of two mailing lists: dibbler or dibbler-devel. Please do not contact
  author directly, unless you want to report security issues or discuss
  confidential matters.
+
+ Thank you for using Dibbler.
 
 			       Tomek Mrugalski,
 			       author

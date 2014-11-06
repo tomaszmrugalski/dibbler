@@ -1,7 +1,7 @@
 
   Dibbler changelog
  -------------------
-1.0.0 [not-released-yet]
+1.0.0 [2014-11-07]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to
     Justin Cormack for providing a patch.
   - Fix for client crash if PD was requested, the server returned IA_PD,
