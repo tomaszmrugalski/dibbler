@@ -732,6 +732,20 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				invarg("invalid \"scope\" value\n", *argv);
 			req.r.rtm_scope = scope;
 			scope_ok = 1;
+
+                } else if (strcmp(*argv, "lifetime") == 0) {
+                    /* this one is added by thomson */
+                        static struct ifa_cacheinfo ci;
+                        memset(&ci, 0, sizeof(ci));
+
+                        NEXT_ARG();
+                        __u32 validlft;
+                        if (get_u32(&validlft, *argv, 0))
+                            invarg("\lifetime value is invalid\n", *argv);
+
+                        ci.ifa_valid = validlft;
+                        ci.ifa_prefered = validlft - 1;
+                        addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
 		} else if (strcmp(*argv, "mtu") == 0) {
 			unsigned mtu;
 			NEXT_ARG();

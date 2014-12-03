@@ -451,27 +451,8 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return LOWLEVEL_NO_ERROR;
 }
 
-/**
- * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
- * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
- * to all other up, running and multicast capable interfaces.
- * In both cases, radvd.conf file will be created.
- * 
- * @param ifname interface name
- * @param ifindex interface index
- * @param prefixPlain prefix (specified in human readable format)
- * @param prefixLength prefix length
- * @param prefered preferred lifetime
- * @param valid valid lifetime
- * 
- * @return negative error code or 0 if successful
- */
-int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
-	       unsigned long prefered, unsigned long valid)
-{
-    char *argv[3];
-    int result;
-    char buf[128];
+void write_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLength,
+                      unsigned long preferred) {
     char * errorMsg = error_message();
 
     FILE * f;
@@ -486,7 +467,6 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     }
     if (!f) {
 	sprintf(errorMsg, "Unable to open %s file.", RADVD_FILE);
-	return LOWLEVEL_ERROR_FILE;
     }
     fseek(f, 0, SEEK_END);
     
@@ -497,7 +477,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     fprintf(f, "     prefix %s/%d\n", prefixPlain, prefixLength);
     fprintf(f, "     { \n");
     fprintf(f, "         AdvOnLink on;\n");
-    fprintf(f, "         AdvPreferredLifetime %u;\n", prefered);
+    fprintf(f, "         AdvPreferredLifetime %lu;\n", preferred);
     fprintf(f, "         AdvAutonomous on;\n");
     fprintf(f, "     };\n");
     fprintf(f, "};\n");
@@ -505,12 +485,47 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     fprintf(f, "\n");
 
     fclose(f);
+}
+
+/**
+ * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
+ * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
+ * to all other up, running and multicast capable interfaces.
+ * In both cases, radvd.conf file will be created.
+ *
+ * @param ifname interface name
+ * @param ifindex interface index
+ * @param prefixPlain prefix (specified in human readable format)
+ * @param prefixLength prefix length
+ * @param prefered preferred lifetime
+ * @param valid valid lifetime
+ *
+ * @return negative error code or 0 if successful
+ */
+int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
+	       unsigned long preferred, unsigned long valid)
+{
+    char *argv[5];
+    int result;
+    char buf[128];
+    int numargs = 0;
+    /* char buf2[128]; */
+
+    write_radvd_conf(ifname, prefixPlain, prefixLength, preferred);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
     argv[1] = "dev";
     argv[2] = (char*)ifname;
-    result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL, 3, argv);
+    numargs = 3;
+
+    /* this is not supported in the kernel:
+    snprintf(buf2, 127, "%d", valid);
+    argv[3] = "lifetime";
+    argv[4] = buf2;
+    numargs = 5; */
+
+    result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL, numargs, argv);
 
     if (result == 0)
         return LOWLEVEL_NO_ERROR;
@@ -521,8 +536,28 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
 int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
 		  unsigned long prefered, unsigned long valid)
 {
-    /* update is not supported in Linux */
-    return LOWLEVEL_NO_ERROR;
+    char *argv[3];
+    int result;
+    char buf[128];
+
+q    write_radvd_conf(ifname, prefixPlain, prefixLength, prefered);
+
+    snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
+    argv[0] = buf;
+    argv[1] = "dev";
+    argv[2] = (char*)ifname;
+
+    /* iproute2:
+    ip route change uses iproute_modify(RTM_NEWROUTE, NLM_F_REPLACE, ...)
+    ip route replace uses iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_REPLACE, ...)
+    */
+
+    result = iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_REPLACE, 3, argv);
+
+    if (result == 0)
+        return LOWLEVEL_NO_ERROR;
+    else
+        return LOWLEVEL_ERROR_UNSPEC;
 }
 
 
