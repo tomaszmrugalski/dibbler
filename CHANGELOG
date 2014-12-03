@@ -1,6 +1,9 @@
 
   Dibbler changelog
  -------------------
+1.0.1 [not-released-yet]
+  - prefix update is now implemented for Linux (both kernel and radvd.conf)
+
 1.0.0 [2014-11-07]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to
     Justin Cormack for providing a patch.

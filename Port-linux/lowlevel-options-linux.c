@@ -451,8 +451,8 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
     return LOWLEVEL_NO_ERROR;
 }
 
-void write_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLength,
-                      unsigned long preferred) {
+void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLength,
+                    unsigned long preferred) {
     char * errorMsg = error_message();
 
     FILE * f;
@@ -487,6 +487,41 @@ void write_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLen
     fclose(f);
 }
 
+void delete_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLen) {
+
+    FILE *f, *f2;
+    struct stat st;
+    int found = 0;
+    char buf[512];
+    char buf2[512];
+
+    memset(&st,0,sizeof(st));
+    stat(RADVD_FILE, &st);
+    unlink(RADVD_FILE".old");
+    rename(RADVD_FILE,RADVD_FILE".old");
+
+    f = fopen(RADVD_FILE".old","r");
+    f2 = fopen(RADVD_FILE,"w"); 
+
+    snprintf(buf2, 511, "### %s start ###\n", ifname);
+    while (fgets(buf,511,f)) {
+	if ( (!found) && (strstr(buf, buf2)) ) {
+	    found = 1;
+	    snprintf(buf2, 511, "### %s end ###\n", ifname);
+	    continue;
+	}
+	if ( (found) && (strstr(buf, buf2)) ) {
+	    found = 0;
+	    continue;
+	}
+
+	if (!found)
+	    fprintf(f2,"%s",buf);
+    }
+    fclose(f);
+    fclose(f2);
+}
+
 /**
  * adds prefix - if this node has IPv6 forwarding disabled, it will configure that prefix on the
  * interface, which prefix has been received on. If the forwarding is enabled, it will be assigned
@@ -511,7 +546,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     int numargs = 0;
     /* char buf2[128]; */
 
-    write_radvd_conf(ifname, prefixPlain, prefixLength, preferred);
+    add_radvd_conf(ifname, prefixPlain, prefixLength, preferred);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
@@ -540,7 +575,8 @@ int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int 
     int result;
     char buf[128];
 
-q    write_radvd_conf(ifname, prefixPlain, prefixLength, prefered);
+    delete_radvd_conf(ifname, prefixPlain, prefixLength);
+    add_radvd_conf(ifname, prefixPlain, prefixLength, prefered);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
@@ -566,36 +602,8 @@ int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int pre
     int result;
     char *argv[3];
     char buf[512];
-    char buf2[512];
-    FILE *f, *f2;
-    struct stat st;
-    int found = 0;
 
-    memset(&st,0,sizeof(st));
-    stat(RADVD_FILE, &st);
-    unlink(RADVD_FILE".old");
-    rename(RADVD_FILE,RADVD_FILE".old");
-
-    f = fopen(RADVD_FILE".old","r");
-    f2 = fopen(RADVD_FILE,"w"); 
-
-    snprintf(buf2, 511, "### %s start ###\n", ifname);
-    while (fgets(buf,511,f)) {
-	if ( (!found) && (strstr(buf, buf2)) ) {
-	    found = 1;
-	    snprintf(buf2, 511, "### %s end ###\n", ifname);
-	    continue;
-	}
-	if ( (found) && (strstr(buf, buf2)) ) {
-	    found = 0;
-	    continue;
-	}
-
-	if (!found)
-	    fprintf(f2,"%s",buf);
-    }
-    fclose(f);
-    fclose(f2);
+    delete_radvd_conf(ifname, prefixPlain, prefixLength);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
