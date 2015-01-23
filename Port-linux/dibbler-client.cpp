@@ -118,7 +118,7 @@ int run() {
 
 int help() {
     cout << "Usage:" << endl;
-    cout << " dibbler-client ACTION" << endl
+    cout << " dibbler-client ACTION OPTION" << endl
 	 << " ACTION = status|start|stop|install|uninstall|run" << endl
 	 << " status    - show status and exit" << endl
 	 << " start     - start installed service" << endl
@@ -126,55 +126,90 @@ int help() {
 	 << " install   - Not available in Linux/Unix systems." << endl
 	 << " uninstall - Not available in Linux/Unix systems." << endl
 	 << " run       - run in the console" << endl
-	 << " help      - displays usage info." << endl;
+	 << " help      - displays usage info." << endl
+	 << " OPTIONS: " << endl
+	 << " -C FILEPATH - Specify the config file. " << endl
+	 << " -P FILEPATH - Specify the PID file. " << endl;
     return 0;
 }
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
+
+    CLNTCONF_FILE = "/etc/dibbler/client.conf";
+
     char command[256];
     int result = -1;
 
     logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
-    // parse command line parameters
-    if (argc>1) {
-	int len = strlen(argv[1])+1;
-	if (len>255)
-	    len = 255;
-	strncpy(command,argv[1],len);
-    } else {
-	memset(command,0,256);
+    //parse command line parameters
+//    if (argc>1) {
+//	int len = strlen(argv[1])+1;
+//	if (len>255)
+//	    len = 255;
+//	strncpy(command,argv[1],len);
+//    } else {
+//	memset(command,0,256);
+//    }
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        // Parse actions
+        if (arg == "start") {
+	        result = start(CLNTPID_FILE, WORKDIR);
+        } else if (arg == "run") {
+            result = run();
+        } else if (arg == "stop") {
+            result = stop(CLNTPID_FILE);
+        } else if (arg == "status") {
+            result = status();
+        } else if (arg == "help") {
+            result = help();
+        }
+        // Parse options
+        if (arg == "-C") {
+            if (i + 1 < argc) {
+                //const char NEW_CONF[25] = argv[i++];
+                CLNTCONF_FILE = argv[i++];
+            }
+        }
+        if (arg == "-P") {
+            if (i + 1 < argc) {
+                //const char NEW_CONF[25] = argv[i++];
+                cout << argv[i+1];
+                CLNTPID_FILE = argv[i++];
+            }
+        }
     }
 
-    if (!strncasecmp(command,"start",5) ) {
-	result = start(CLNTPID_FILE, WORKDIR);
-    } else
-    if (!strncasecmp(command,"run",3) ) {
-	result = run();
-    } else
-    if (!strncasecmp(command,"stop",4)) {
-	result = stop(CLNTPID_FILE);
-    } else
-    if (!strncasecmp(command,"status",6)) {
-	result = status();
-    } else
-    if (!strncasecmp(command,"help",4)) {
-	result = help();
-    } else
-    if (!strncasecmp(command,"install",7)) {
-	cout << "Function not available in Linux/Unix systems." << endl;
-	result = 0;
-    } else
-    if (!strncasecmp(command,"uninstall",9)) {
-	cout << "Function not available in Linux/Unix systems." << endl;
-	result = 0;
-    } else
-    {
-	help();
-    }
-
-    logEnd();
+//    if (!strncasecmp(command,"start",5) ) {
+//	result = start(CLNTPID_FILE, WORKDIR);
+//    } else
+//    if (!strncasecmp(command,"run",3) ) {
+//	result = run();
+//    } else
+//    if (!strncasecmp(command,"stop",4)) {
+//	result = stop(CLNTPID_FILE);
+//    } else
+//    if (!strncasecmp(command,"status",6)) {
+//	result = status();
+//    } else
+//    if (!strncasecmp(command,"help",4)) {
+//	result = help();
+//    } else
+//    if (!strncasecmp(command,"install",7)) {
+//	cout << "Function not available in Linux/Unix systems." << endl;
+//	result = 0;
+//   } else
+//    if (!strncasecmp(command,"uninstall",9)) {
+//	cout << "Function not available in Linux/Unix systems." << endl;
+//	result = 0;
+//   } else
+//    {
+//	help();
+//    }
+//    logEnd();
 
     return result? EXIT_FAILURE: EXIT_SUCCESS;
 }
