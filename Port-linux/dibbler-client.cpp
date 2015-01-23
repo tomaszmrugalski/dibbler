@@ -28,6 +28,8 @@ using std::map;
 
 extern pthread_mutex_t lock;
 
+char *CLNTCONF_FILE = "/etc/dibbler/client.conf";
+
 TDHCPClient * ptr;
 //static const char *TOOL_NAME = "ifplugstatus";
 
@@ -135,11 +137,8 @@ int help() {
 
 int main(int argc, char* argv[])
 {
-
-    CLNTCONF_FILE = "/etc/dibbler/client.conf";
-
-    char command[256];
-    int result = -1;
+//    char command[256];
+//    int result = -1;
 
     logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
@@ -166,19 +165,17 @@ int main(int argc, char* argv[])
             result = status();
         } else if (arg == "help") {
             result = help();
-        }
-        // Parse options
-        if (arg == "-C") {
+        } else if (arg == "-C") {
             if (i + 1 < argc) {
-                //const char NEW_CONF[25] = argv[i++];
                 CLNTCONF_FILE = argv[i++];
-            }
-        }
-        if (arg == "-P") {
+            } else {
+                std::cerr << "-C requires config location." << std::endl;
+                return 1;
+            }  
+        } else if (arg == "-P") {
             if (i + 1 < argc) {
-                //const char NEW_CONF[25] = argv[i++];
                 cout << argv[i+1];
-                CLNTPID_FILE = argv[i++];
+                //CLNTPID_FILE = argv[i++];
             }
         }
     }

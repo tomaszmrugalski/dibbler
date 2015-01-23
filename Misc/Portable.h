@@ -153,7 +153,7 @@ extern char *CLNTCONF_FILE;
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
-extern char *CLNTPID_FILE;
+#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
 #define RELPID_FILE        "/var/lib/dibbler/relay.pid"
 #define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
