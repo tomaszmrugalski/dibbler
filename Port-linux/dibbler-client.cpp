@@ -135,29 +135,39 @@ int help() {
     return 0;
 }
 
+int parse_options(std::string option, char* value)
+{
+    cout << "You've used option: " << option << " with: " << value << endl;
+    if (option == "-C") {
+        cout << "You passed me a config file!" << endl;
+        CLNTCONF_FILE = value;
+        cout << "My new config file is: " << CLNTCONF_FILE << endl;
+    } else if (option == "-P") {
+        //CLNTPID_FILE = value;
+    }
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
-//    char command[256];
-//    int result = -1;
+    int result = -1;
 
     logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
-    //parse command line parameters
-//    if (argc>1) {
-//	int len = strlen(argv[1])+1;
-//	if (len>255)
-//	    len = 255;
-//	strncpy(command,argv[1],len);
-//    } else {
-//	memset(command,0,256);
-//    }
-
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        // Parse actions
         if (arg == "start") {
+            if (i + 2 < argc) {
+                cout << "You've passed me an argument!" << endl;
+                parse_options(argv[i+1],argv[i+2]);
+            }
 	        result = start(CLNTPID_FILE, WORKDIR);
         } else if (arg == "run") {
+            cout << "I'm running!" << endl;
+            if (i + 2 < argc) {
+                cout << "You've passed me an argument!" << endl;
+                parse_options(argv[i+1],argv[i+2]);
+            }
             result = run();
         } else if (arg == "stop") {
             result = stop(CLNTPID_FILE);
@@ -165,48 +175,14 @@ int main(int argc, char* argv[])
             result = status();
         } else if (arg == "help") {
             result = help();
-        } else if (arg == "-C") {
-            if (i + 1 < argc) {
-                CLNTCONF_FILE = argv[i++];
-            } else {
-                std::cerr << "-C requires config location." << std::endl;
-                return 1;
-            }  
-        } else if (arg == "-P") {
-            if (i + 1 < argc) {
-                cout << argv[i+1];
-                //CLNTPID_FILE = argv[i++];
-            }
+        } else if (arg == "install") {
+            cout << "Function not available in Linux/Unix systems." << endl;
+            result = 0;
+        } else if (arg == "uninstall") {
+            cout << "Function not available in Linux/Unix systems." << endl;
+            result = 0;
         }
     }
-
-//    if (!strncasecmp(command,"start",5) ) {
-//	result = start(CLNTPID_FILE, WORKDIR);
-//    } else
-//    if (!strncasecmp(command,"run",3) ) {
-//	result = run();
-//    } else
-//    if (!strncasecmp(command,"stop",4)) {
-//	result = stop(CLNTPID_FILE);
-//    } else
-//    if (!strncasecmp(command,"status",6)) {
-//	result = status();
-//    } else
-//    if (!strncasecmp(command,"help",4)) {
-//	result = help();
-//    } else
-//    if (!strncasecmp(command,"install",7)) {
-//	cout << "Function not available in Linux/Unix systems." << endl;
-//	result = 0;
-//   } else
-//    if (!strncasecmp(command,"uninstall",9)) {
-//	cout << "Function not available in Linux/Unix systems." << endl;
-//	result = 0;
-//   } else
-//    {
-//	help();
-//    }
-//    logEnd();
 
     return result? EXIT_FAILURE: EXIT_SUCCESS;
 }
