@@ -29,6 +29,7 @@ using std::map;
 extern pthread_mutex_t lock;
 
 char *CLNTCONF_FILE = "/etc/dibbler/client.conf";
+char *CLNTPID_FILE = "/var/lib/dibbler/client.pid";
 
 TDHCPClient * ptr;
 //static const char *TOOL_NAME = "ifplugstatus";
@@ -143,7 +144,9 @@ int parse_options(std::string option, char* value)
         CLNTCONF_FILE = value;
         cout << "My new config file is: " << CLNTCONF_FILE << endl;
     } else if (option == "-P") {
-        //CLNTPID_FILE = value;
+        cout << "You passed me a PID file!" << endl;
+        CLNTPID_FILE = value;
+        cout << "My new PID file is: " << CLNTPID_FILE << endl;
     }
     return 0;
 }
