@@ -164,12 +164,20 @@ int main(int argc, char* argv[])
                 cout << "You've passed me an argument!" << endl;
                 parse_options(argv[i+1],argv[i+2]);
             }
+            if (i + 4 < argc) {
+                cout << "You've passed me another argument!" << endl;
+                parse_options(argv[i+3],argv[i+4]);
+            }
 	        result = start(CLNTPID_FILE, WORKDIR);
         } else if (arg == "run") {
             cout << "I'm running!" << endl;
             if (i + 2 < argc) {
                 cout << "You've passed me an argument!" << endl;
                 parse_options(argv[i+1],argv[i+2]);
+            }
+            if (i + 4 < argc) {
+                cout << "You've passed me another argument!" << endl;
+                parse_options(argv[i+3],argv[i+4]);
             }
             result = run();
         } else if (arg == "stop") {
