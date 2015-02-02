@@ -29,7 +29,7 @@
 extern int status();
 extern int run();
 
-char *CLNTPID_FILE = CLNTPID_FILE;
+char *CLNTPID_FILE;
 
 using namespace std;
 
