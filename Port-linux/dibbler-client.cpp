@@ -130,15 +130,14 @@ int help() {
 	 << " uninstall - Not available in Linux/Unix systems." << endl
 	 << " run       - run in the console" << endl
 	 << " help      - displays usage info." << endl
-	 << " OPTIONS: " << endl
-	 << " -C FILEPATH - Specify the config file. " << endl
-	 << " -P FILEPATH - Specify the PID file. " << endl;
+	 << " OPTIONS = -C <filepath> | -P <filepath> " << endl
+	 << " -C <filepath> - Specify the config file location. " << endl
+	 << " -P <filepath> - Specify the PID file location. " << endl;
     return 0;
 }
 
 int parse_options(std::string option, char* value)
 {
-    cout << "You've used option: " << option << " with: " << value << endl;
     if (option == "-C") {
         cout << "You passed me a config file!" << endl;
         CLNTCONF_FILE = value;
@@ -161,22 +160,18 @@ int main(int argc, char* argv[])
         std::string arg = argv[i];
         if (arg == "start") {
             if (i + 2 < argc) {
-                cout << "You've passed me an argument!" << endl;
                 parse_options(argv[i+1],argv[i+2]);
             }
             if (i + 4 < argc) {
-                cout << "You've passed me another argument!" << endl;
                 parse_options(argv[i+3],argv[i+4]);
             }
 	        result = start(CLNTPID_FILE, WORKDIR);
         } else if (arg == "run") {
             cout << "I'm running!" << endl;
             if (i + 2 < argc) {
-                cout << "You've passed me an argument!" << endl;
                 parse_options(argv[i+1],argv[i+2]);
             }
             if (i + 4 < argc) {
-                cout << "You've passed me another argument!" << endl;
                 parse_options(argv[i+3],argv[i+4]);
             }
             result = run();
