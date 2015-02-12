@@ -28,12 +28,14 @@ using std::map;
 
 extern pthread_mutex_t lock;
 
-char *CLNTCONF_FILE = "/etc/dibbler/client.conf";
-char *CLNTPID_FILE = "/var/lib/dibbler/client.pid";
-
 TDHCPClient * ptr;
 //static const char *TOOL_NAME = "ifplugstatus";
 
+char * workdir = NULL;
+char *CLNTCONF_FILE = (char*) "/etc/dibbler/client.conf";
+char *CLNTLOG_FILE = (char*) "/var/log/dibbler/dibbler-client.log";
+extern char *CLNTPID_FILE;
+char CLNT_LLAADDR[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
@@ -77,7 +79,7 @@ int status() {
 }
 
 int run() {
-    if (!init(CLNTPID_FILE, WORKDIR)) {
+    if (!init(CLNTPID_FILE, workdir)) {
 	die(CLNTPID_FILE);
 	return -1;
     }
@@ -129,67 +131,96 @@ int help() {
 	 << " install   - Not available in Linux/Unix systems." << endl
 	 << " uninstall - Not available in Linux/Unix systems." << endl
 	 << " run       - run in the console" << endl
-	 << " help      - displays usage info." << endl
-	 << " OPTIONS = -C <filepath> | -P <filepath> " << endl
-	 << " -C <filepath> - Specify the config file location. " << endl
-	 << " -P <filepath> - Specify the PID file location. " << endl;
+         << " OPTION = -W <filepath> -A <LLA_ADDR>" << endl
+         << " -W <filepath> - specify the client's working directory." << endl
+         << " -A <LLA_ADDR> - specify the client's srouce LLA address." << endl
+	 << " help      - displays usage info." << endl;
     return 0;
 }
 
-int parse_options(std::string option, char* value)
+int main(int argc, char * argv[])
 {
-    if (option == "-C") {
-        cout << "You passed me a config file!" << endl;
-        CLNTCONF_FILE = value;
-        cout << "My new config file is: " << CLNTCONF_FILE << endl;
-    } else if (option == "-P") {
-        cout << "You passed me a PID file!" << endl;
-        CLNTPID_FILE = value;
-        cout << "My new PID file is: " << CLNTPID_FILE << endl;
-    }
-    return 0;
-}
-
-int main(int argc, char* argv[])
-{
+    char command[256];
     int result = -1;
+
+    // parse command line parameters
+    memset(command,0,256);
+    if (argc>1) {
+	int len = strlen(argv[1])+1;
+        int c;
+        if (len>255)
+            len = 255;
+        strncpy(command,argv[1],len);
+
+        workdir = (char *) WORKDIR;
+        memset(CLNT_LLAADDR, 0, sizeof(CLNT_LLAADDR));
+
+        while ((c = getopt(argc-1, argv + 1, "W:A:")) != -1)
+          switch (c)
+            {
+            case 'W':
+                len = strlen(optarg) + 1;
+                workdir = (char *) calloc(len, 1);
+                strncpy(workdir,optarg,len);
+
+                len = strlen(workdir) + strlen("/client.pid") + 1;
+                CLNTPID_FILE = (char *) calloc(len, 1);
+                sprintf(CLNTPID_FILE, "%s/client.pid", workdir);
+
+                len = strlen(workdir) + strlen("/client.conf") + 1;
+                CLNTCONF_FILE = (char *) calloc(len, 1);
+                sprintf(CLNTCONF_FILE, "%s/client.conf", workdir);
+ 
+                len = strlen(workdir) + strlen("/client.log") + 1;
+                CLNTLOG_FILE = (char *) calloc(len, 1);
+                sprintf(CLNTLOG_FILE, "%s/client.log", workdir);
+                break;
+            case 'A':
+                strcpy(CLNT_LLAADDR, optarg);
+                break;
+            default:
+                help();
+                return EXIT_FAILURE;
+            }
+    }
 
     logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg == "start") {
-            if (i + 2 < argc) {
-                parse_options(argv[i+1],argv[i+2]);
-            }
-            if (i + 4 < argc) {
-                parse_options(argv[i+3],argv[i+4]);
-            }
-	        result = start(CLNTPID_FILE, WORKDIR);
-        } else if (arg == "run") {
-            cout << "I'm running!" << endl;
-            if (i + 2 < argc) {
-                parse_options(argv[i+1],argv[i+2]);
-            }
-            if (i + 4 < argc) {
-                parse_options(argv[i+3],argv[i+4]);
-            }
-            result = run();
-        } else if (arg == "stop") {
-            result = stop(CLNTPID_FILE);
-        } else if (arg == "status") {
-            result = status();
-        } else if (arg == "help") {
-            result = help();
-        } else if (arg == "install") {
-            cout << "Function not available in Linux/Unix systems." << endl;
-            result = 0;
-        } else if (arg == "uninstall") {
-            cout << "Function not available in Linux/Unix systems." << endl;
-            result = 0;
-        }
+    if (!strncasecmp(command,"start",5) ) {
+	result = start(CLNTPID_FILE, workdir);
+    } else
+    if (!strncasecmp(command,"run",3) ) {
+	result = run();
+    } else
+    if (!strncasecmp(command,"stop",4)) {
+	result = stop(CLNTPID_FILE);
+    } else
+    if (!strncasecmp(command,"status",6)) {
+	result = status();
+    } else
+    if (!strncasecmp(command,"help",4)) {
+	result = help();
+    } else
+    if (!strncasecmp(command,"install",7)) {
+	cout << "Function not available in Linux/Unix systems." << endl;
+	result = 0;
+    } else
+    if (!strncasecmp(command,"uninstall",9)) {
+	cout << "Function not available in Linux/Unix systems." << endl;
+	result = 0;
+    } else
+    {
+	help();
     }
 
+    logEnd();
+
+    if (workdir && workdir!=(char *) WORKDIR) {
+        free(workdir);
+        free(CLNTPID_FILE);
+        free(CLNTCONF_FILE);
+        free(CLNTLOG_FILE);
+    }
     return result? EXIT_FAILURE: EXIT_SUCCESS;
 }
 

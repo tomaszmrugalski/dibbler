@@ -36,6 +36,8 @@ using namespace std;
 
 TClntTransMgr * TClntTransMgr::Instance = 0;
 
+extern char CLNT_LLAADDR[];
+
 void TClntTransMgr::instanceCreate(const std::string& config)
 {
     if (Instance) {
@@ -163,7 +165,8 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
         return false;
     }
 
-    SPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
+    SPtr<TIPv6Addr> addr;
+    addr = CLNT_LLAADDR[0] != '\0' ? new TIPv6Addr(CLNT_LLAADDR, true) : new TIPv6Addr(llAddr);
 
     // it's very important to open unicast socket first as it will be used for
     // unicast communication
