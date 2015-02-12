@@ -156,7 +156,7 @@ extern char *CLNTCONF_FILE;
 extern char *CLNTPID_FILE;
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
 #define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
+extern char *CLNTLOG_FILE;
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
