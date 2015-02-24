@@ -31,10 +31,9 @@ extern pthread_mutex_t lock;
 TDHCPClient * ptr;
 //static const char *TOOL_NAME = "ifplugstatus";
 
-char * workdir = NULL;
+char *WORKDIR = (char*) "/var/lib/dibbler";
 char *CLNTCONF_FILE = (char*) "/etc/dibbler/client.conf";
 char *CLNTLOG_FILE = (char*) "/var/log/dibbler/dibbler-client.log";
-extern char *CLNTPID_FILE;
 char CLNT_LLAADDR[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];
 
 void signal_handler(int n) {
@@ -79,7 +78,7 @@ int status() {
 }
 
 int run() {
-    if (!init(CLNTPID_FILE, workdir)) {
+    if (!init(CLNTPID_FILE, WORKDIR)) {
 	die(CLNTPID_FILE);
 	return -1;
     }
@@ -142,6 +141,7 @@ int main(int argc, char * argv[])
 {
     char command[256];
     int result = -1;
+    bool default_workdir = true;
 
     // parse command line parameters
     memset(command,0,256);
@@ -152,28 +152,28 @@ int main(int argc, char * argv[])
             len = 255;
         strncpy(command,argv[1],len);
 
-        workdir = (char *) WORKDIR;
         memset(CLNT_LLAADDR, 0, sizeof(CLNT_LLAADDR));
 
         while ((c = getopt(argc-1, argv + 1, "W:A:")) != -1)
           switch (c)
             {
             case 'W':
+                default_workdir = false;
                 len = strlen(optarg) + 1;
-                workdir = (char *) calloc(len, 1);
-                strncpy(workdir,optarg,len);
+                WORKDIR = (char *) calloc(len, 1);
+                strncpy(WORKDIR,optarg,len);
 
-                len = strlen(workdir) + strlen("/client.pid") + 1;
+                len = strlen(WORKDIR) + strlen("/client.pid") + 1;
                 CLNTPID_FILE = (char *) calloc(len, 1);
-                sprintf(CLNTPID_FILE, "%s/client.pid", workdir);
+                sprintf(CLNTPID_FILE, "%s/client.pid", WORKDIR);
 
-                len = strlen(workdir) + strlen("/client.conf") + 1;
+                len = strlen(WORKDIR) + strlen("/client.conf") + 1;
                 CLNTCONF_FILE = (char *) calloc(len, 1);
-                sprintf(CLNTCONF_FILE, "%s/client.conf", workdir);
- 
-                len = strlen(workdir) + strlen("/client.log") + 1;
+                sprintf(CLNTCONF_FILE, "%s/client.conf", WORKDIR);
+
+                len = strlen(WORKDIR) + strlen("/client.log") + 1;
                 CLNTLOG_FILE = (char *) calloc(len, 1);
-                sprintf(CLNTLOG_FILE, "%s/client.log", workdir);
+                sprintf(CLNTLOG_FILE, "%s/client.log", WORKDIR);
                 break;
             case 'A':
                 strcpy(CLNT_LLAADDR, optarg);
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
     logStart("(CLIENT, Linux port)", "Client", CLNTLOG_FILE);
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(CLNTPID_FILE, workdir);
+	result = start(CLNTPID_FILE, WORKDIR);
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();
@@ -215,8 +215,8 @@ int main(int argc, char * argv[])
 
     logEnd();
 
-    if (workdir && workdir!=(char *) WORKDIR) {
-        free(workdir);
+    if (!default_workdir) {
+        free(WORKDIR);
         free(CLNTPID_FILE);
         free(CLNTCONF_FILE);
         free(CLNTLOG_FILE);

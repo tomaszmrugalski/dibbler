@@ -145,18 +145,27 @@ struct link_state_notify_t
 #endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)
-#define WORKDIR            "/var/lib/dibbler"
-#define DEFAULT_SCRIPT     ""
+
+#if defined(LINUX)
+extern char *WORKDIR;
 extern char *CLNTCONF_FILE;
+extern char *CLNTPID_FILE;
+extern char *CLNTLOG_FILE;
+#else
+#define WORKDIR            "/var/lib/dibbler"
+#define CLNTCONF_FILE      "/etc/dibbler/client.conf"
+#define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
+#define CLNTLOG_FILE       "/var/log/dibbler/dibbler-client.log"
+#endif
+
+#define DEFAULT_SCRIPT     ""
 #define SRVCONF_FILE       "/etc/dibbler/server.conf"
 #define RELCONF_FILE       "/etc/dibbler/relay.conf"
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
-extern char *CLNTPID_FILE;
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
 #define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-extern char *CLNTLOG_FILE;
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"

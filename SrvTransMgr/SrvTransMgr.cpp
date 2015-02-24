@@ -329,8 +329,6 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     MsgLst.first();
     while(answ=(Ptr*)MsgLst.get())
     {
-        Log(Cont) << " Peer " << answ->getClientPeer()->getPlain()
-                  << " New Peer " << msg->getClientPeer()->getPlain() << LogEnd;
         if (*(answ->getClientPeer()) != *(msg->getClientPeer()))
             continue;
         if (answ->getTransID()==msg->getTransID() && msg->getType() != RELEASE_MSG ) {

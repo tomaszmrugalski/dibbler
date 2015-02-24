@@ -38,16 +38,16 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
 
     DnsConfigured = ! FLUSH_OTHER_CONFIGURED_DNS_SERVERS;
 
-    unlink(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME);
-    unlink(WORKDIR"/"OPTION_DOMAINS_FILENAME);
-    unlink(WORKDIR"/"OPTION_NTP_SERVERS_FILENAME);
-    unlink(WORKDIR"/"OPTION_TIMEZONE_FILENAME);
-    unlink(WORKDIR"/"OPTION_SIP_SERVERS_FILENAME);
-    unlink(WORKDIR"/"OPTION_SIP_DOMAINS_FILENAME);
-    unlink(WORKDIR"/"OPTION_NIS_SERVERS_FILENAME);
-    unlink(WORKDIR"/"OPTION_NIS_DOMAIN_FILENAME);
-    unlink(WORKDIR"/"OPTION_NISP_SERVERS_FILENAME);
-    unlink(WORKDIR"/"OPTION_NISP_DOMAIN_FILENAME);
+    unlink(OPTION_DNS_SERVERS_FILENAME);
+    unlink(OPTION_DOMAINS_FILENAME);
+    unlink(OPTION_NTP_SERVERS_FILENAME);
+    unlink(OPTION_TIMEZONE_FILENAME);
+    unlink(OPTION_SIP_SERVERS_FILENAME);
+    unlink(OPTION_SIP_DOMAINS_FILENAME);
+    unlink(OPTION_NIS_SERVERS_FILENAME);
+    unlink(OPTION_NIS_DOMAIN_FILENAME);
+    unlink(OPTION_NISP_SERVERS_FILENAME);
+    unlink(OPTION_NISP_DOMAIN_FILENAME);
 
     setPrefixLength(CLIENT_DEFAULT_PREFIX_LENGTH);
 }
@@ -96,7 +96,7 @@ bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Removing DNS server " << *old << " on interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             dns_del(this->getName(), this->getID(), old->getPlain());
-            this->delString(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME,old->getPlain());
+            this->delString(OPTION_DNS_SERVERS_FILENAME,old->getPlain());
             this->DNSServerLst.del();
         }
     }
@@ -121,7 +121,7 @@ bool TClntIfaceIface::setDNSServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Setting up DNS server " << * addr << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             dns_add(this->getName(), this->getID(), addr->getPlain());
-            this->addString(WORKDIR"/"OPTION_DNS_SERVERS_FILENAME,addr->getPlain());
+            this->addString(OPTION_DNS_SERVERS_FILENAME,addr->getPlain());
             this->DNSServerLst.append(addr);
         }
     }
@@ -148,7 +148,7 @@ bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(s
             Log(Notice) << "Removing domain " << *old << " from interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             domain_del(this->getName(), this->getID(), old->c_str());
-            this->delString(WORKDIR"/"OPTION_DOMAINS_FILENAME,old->c_str());
+            this->delString(OPTION_DOMAINS_FILENAME,old->c_str());
             this->DomainLst.del();
         }
     }
@@ -173,7 +173,7 @@ bool TClntIfaceIface::setDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, List(s
             Log(Notice) << "Setting up Domain " << * domain << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             domain_add(this->getName(), this->getID(), domain->c_str());
-            this->addString(WORKDIR"/"OPTION_DOMAINS_FILENAME,domain->c_str());
+            this->addString(OPTION_DOMAINS_FILENAME,domain->c_str());
             this->DomainLst.append(domain);
         }
     }
@@ -201,7 +201,7 @@ bool TClntIfaceIface::setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Removing NTP server " << *old << " on interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             ntp_del(this->getName(), this->getID(), old->getPlain());
-            this->delString(WORKDIR"/"OPTION_NTP_SERVERS_FILENAME,old->getPlain());
+            this->delString(OPTION_NTP_SERVERS_FILENAME,old->getPlain());
             this->NTPServerLst.del();
         }
     }
@@ -226,7 +226,7 @@ bool TClntIfaceIface::setNTPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Setting up NTP server " << * addr << " on the interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             ntp_add(this->getName(), this->getID(), addr->getPlain());
-            this->addString(WORKDIR"/"OPTION_NTP_SERVERS_FILENAME,addr->getPlain());
+            this->addString(OPTION_NTP_SERVERS_FILENAME,addr->getPlain());
             this->NTPServerLst.append(addr);
         }
     }
@@ -245,7 +245,7 @@ bool TClntIfaceIface::setTimezone(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const s
     Log(Notice) << "Setting up timezone " << timezone << " (obtained on the interface "
                 << this->getName() << "/" << this->getID() << ")." << LogEnd;
     timezone_set(this->getName(), this->getID(), timezone.c_str());
-    this->setString(WORKDIR"/"OPTION_TIMEZONE_FILENAME,timezone.c_str());
+    this->setString(OPTION_TIMEZONE_FILENAME,timezone.c_str());
     return true;
 }
 
@@ -270,7 +270,7 @@ bool TClntIfaceIface::setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Removing SIP server " << *old << " on interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             sipserver_del(this->getName(), this->getID(), old->getPlain());
-            this->delString(WORKDIR"/"OPTION_SIP_SERVERS_FILENAME,old->getPlain());
+            this->delString(OPTION_SIP_SERVERS_FILENAME,old->getPlain());
             this->SIPServerLst.del();
         }
     }
@@ -295,7 +295,7 @@ bool TClntIfaceIface::setSIPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv,
             Log(Notice) << "Setting up SIP server " << * addr << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             sipserver_add(this->getName(), this->getID(), addr->getPlain());
-            this->addString(WORKDIR"/"OPTION_SIP_SERVERS_FILENAME,addr->getPlain());
+            this->addString(OPTION_SIP_SERVERS_FILENAME,addr->getPlain());
             this->SIPServerLst.append(addr);
         }
     }
@@ -321,7 +321,7 @@ bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             Log(Notice) << "Removing SIP domain " << *old << " from interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             sipdomain_del(this->getName(), this->getID(), old->c_str());
-            this->delString(WORKDIR"/"OPTION_SIP_DOMAINS_FILENAME,old->c_str());
+            this->delString(OPTION_SIP_DOMAINS_FILENAME,old->c_str());
             this->SIPDomainLst.del();
         }
     }
@@ -346,7 +346,7 @@ bool TClntIfaceIface::setSIPDomainLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             Log(Notice) << "Setting up SIP domain " << * domain << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             sipdomain_add(this->getName(), this->getID(), domain->c_str());
-            this->addString( WORKDIR"/"OPTION_SIP_DOMAINS_FILENAME, domain->c_str() );
+            this->addString( OPTION_SIP_DOMAINS_FILENAME, domain->c_str() );
             this->SIPDomainLst.append(domain);
         }
     }
@@ -378,7 +378,7 @@ bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             Log(Notice) << "Removing NIS server " << *old << " on interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             nisserver_del(this->getName(), this->getID(), old->getPlain());
-            this->delString(WORKDIR"/"OPTION_NIS_SERVERS_FILENAME,old->getPlain());
+            this->delString(OPTION_NIS_SERVERS_FILENAME,old->getPlain());
             this->NISServerLst.del();
         }
     }
@@ -403,7 +403,7 @@ bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
             Log(Notice) << "Setting up NIS server " << * addr << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             nisserver_add(this->getName(), this->getID(), addr->getPlain());
-            this->addString(WORKDIR"/"OPTION_NIS_SERVERS_FILENAME, addr->getPlain());
+            this->addString(OPTION_NIS_SERVERS_FILENAME, addr->getPlain());
             this->NISServerLst.append(addr);
         }
     }
@@ -421,7 +421,7 @@ bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const 
     Log(Notice) << "Setting up NIS domain " << domain << " on the interface "
                 << this->getName() << "/" << this->getID() << "." << LogEnd;
     nisdomain_set(this->getName(), this->getID(), domain.c_str());
-    this->setString( WORKDIR"/"OPTION_NIS_DOMAIN_FILENAME, domain.c_str() );
+    this->setString( OPTION_NIS_DOMAIN_FILENAME, domain.c_str() );
     return true;
 }
 
@@ -445,7 +445,7 @@ bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Li
             Log(Notice) << "Removing NIS+ server " << *old << " on interface "
                         << this->getName() << "/" << this->getID() << " (no longer valid)." << LogEnd;
             nisplusserver_del(this->getName(), this->getID(), old->getPlain());
-            this->delString(WORKDIR"/"OPTION_NISP_SERVERS_FILENAME,old->getPlain());
+            this->delString(OPTION_NISP_SERVERS_FILENAME,old->getPlain());
             this->NISPServerLst.del();
         }
     }
@@ -470,7 +470,7 @@ bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Li
             Log(Notice) << "Setting up NIS+ server " << * addr << " on interface "
                         << this->getName() << "/" << this->getID() << "." << LogEnd;
             nisplusserver_add(this->getName(), this->getID(), addr->getPlain());
-            this->addString(WORKDIR"/"OPTION_NISP_SERVERS_FILENAME,addr->getPlain());
+            this->addString(OPTION_NISP_SERVERS_FILENAME,addr->getPlain());
             this->NISPServerLst.append(addr);
         }
     }
@@ -488,7 +488,7 @@ bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const
     Log(Notice) << "Setting up NIS+ domain " << domain << " on the interface "
                 << this->getName() << "/" << this->getID() << "." << LogEnd;
     nisplusdomain_set(this->getName(), this->getID(), domain.c_str());
-    this->setString(WORKDIR"/"OPTION_NISP_DOMAIN_FILENAME, domain.c_str());
+    this->setString(OPTION_NISP_DOMAIN_FILENAME, domain.c_str());
     return true;
 }
 

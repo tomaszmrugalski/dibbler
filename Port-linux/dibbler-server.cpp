@@ -21,6 +21,8 @@ using namespace std;
 
 TDHCPServer * ptr = 0;
 
+char *WORKDIR = (char*) "/var/lib/dibbler";
+
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
