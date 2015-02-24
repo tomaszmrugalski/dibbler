@@ -36,7 +36,7 @@ using namespace std;
 
 TClntTransMgr * TClntTransMgr::Instance = 0;
 
-extern char CLNT_LLAADDR[];
+char CLNT_LLAADDR[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")] = "\0";
 
 void TClntTransMgr::instanceCreate(const std::string& config)
 {

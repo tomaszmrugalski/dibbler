@@ -34,7 +34,7 @@ TDHCPClient * ptr;
 char *WORKDIR = (char*) "/var/lib/dibbler";
 char *CLNTCONF_FILE = (char*) "/etc/dibbler/client.conf";
 char *CLNTLOG_FILE = (char*) "/var/log/dibbler/dibbler-client.log";
-char CLNT_LLAADDR[sizeof("0000:0000:0000:0000:0000:0000:0000.000.000.000.000")];
+extern char CLNT_LLAADDR[];
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
@@ -151,8 +151,6 @@ int main(int argc, char * argv[])
         if (len>255)
             len = 255;
         strncpy(command,argv[1],len);
-
-        memset(CLNT_LLAADDR, 0, sizeof(CLNT_LLAADDR));
 
         while ((c = getopt(argc-1, argv + 1, "W:A:")) != -1)
           switch (c)
