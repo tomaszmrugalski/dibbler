@@ -8,6 +8,7 @@
  */
 
 #include <signal.h>
+#include <sys/stat.h>
 #include <sys/wait.h>  //CHANGED: the following two headers are added.
 #include <unistd.h>
 #include <stdlib.h>
@@ -82,7 +83,9 @@ int run() {
 	die(CLNTPID_FILE);
 	return -1;
     }
-
+    
+    chmod(CLNTPID_FILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    
     if (lowlevelInit()<0) {
 	cout << "Lowlevel init failed:" << error_message() << endl;
 	die(CLNTPID_FILE);
