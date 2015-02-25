@@ -329,6 +329,8 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     MsgLst.first();
     while(answ=(Ptr*)MsgLst.get())
     {
+        if (*(answ->getClientPeer()) != *(msg->getClientPeer()))
+            continue;
         if (answ->getTransID()==msg->getTransID() && msg->getType() != RELEASE_MSG ) {
             Log(Cont) << " Old reply with transID=" << hex << msg->getTransID()
                       << dec << " found. Sending old reply." << LogEnd;
