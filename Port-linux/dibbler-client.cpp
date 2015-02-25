@@ -174,11 +174,18 @@ int main(int argc, char * argv[])
                 sprintf(CLNTLOG_FILE, "%s/client.log", WORKDIR);
                 break;
             case 'A':
-                strcpy(CLNT_LLAADDR, optarg);
+                char addr[16];
+                if (inet_pton6(optarg, addr))
+                    strcpy(CLNT_LLAADDR, optarg);
+                else {
+	            cout << "Invalid IPv6 address: " << optarg << endl;
+                    help();
+                    goto exit_failure;
+                }
                 break;
             default:
                 help();
-                return EXIT_FAILURE;
+                goto exit_failure;
             }
     }
 
@@ -213,6 +220,7 @@ int main(int argc, char * argv[])
 
     logEnd();
 
+exit_failure:
     if (!default_workdir) {
         free(WORKDIR);
         free(CLNTPID_FILE);
