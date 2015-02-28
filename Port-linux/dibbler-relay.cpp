@@ -19,6 +19,9 @@ using namespace std;
 
 TDHCPRelay * ptr = 0;
 
+/// the default working directory
+std::string WORKDIR(DEFAULT_WORKDIR);
+
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
@@ -50,7 +53,7 @@ int status() {
 }
 
 int run() {
-    if (!init(RELPID_FILE, WORKDIR)) {
+    if (!init(RELPID_FILE, WORKDIR.c_str())) {
 	die(RELPID_FILE);
 	return -1;
     }
@@ -105,7 +108,7 @@ int main(int argc, char * argv[])
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(RELPID_FILE, WORKDIR);
+	result = start(RELPID_FILE, WORKDIR.c_str());
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();

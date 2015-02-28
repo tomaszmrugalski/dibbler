@@ -33,6 +33,8 @@ TClntCfgMgr * TClntCfgMgr::Instance = 0;
 static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
 #endif
 
+extern std::string CLNTCONF_FILE;
+
 TClntCfgMgr & TClntCfgMgr::instance()
 {
     if (!Instance) {

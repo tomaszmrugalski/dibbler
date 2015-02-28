@@ -200,6 +200,14 @@ public:
     void setMbit(bool m_bit);
     void setObit(bool o_bit);
 
+    /// @brief sets link-local address to bind to
+    /// @param link_local the link local address the client will bind to
+    void setBindToAddr(SPtr<TIPv6Addr> link_local);
+
+    /// @brief Returns link-local address to which the client should bind (if set)
+    /// @return the address to bind to (or NULL if not set)
+    SPtr<TIPv6Addr> getBindToAddr();
+
 private:
     void setDefaults();
     std::string IfaceName;
@@ -266,6 +274,9 @@ private:
 
     /// @brief Extra options to be sent to server
     TOptionStatusLst ExtraOpts;
+
+    /// @brief Specify bind-to address (may be null)
+    SPtr<TIPv6Addr> BindToAddr_;
 };
 
 #endif

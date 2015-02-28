@@ -21,6 +21,9 @@ using namespace std;
 
 TDHCPServer * ptr = 0;
 
+/// the default working directory
+std::string WORKDIR(DEFAULT_WORKDIR);
+
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
@@ -53,7 +56,7 @@ int status() {
 }
 
 int run() {
-    if (!init(SRVPID_FILE, WORKDIR)) {
+    if (!init(SRVPID_FILE, WORKDIR.c_str())) {
 	die(SRVPID_FILE);
 	return -1;
     }
@@ -109,7 +112,7 @@ int main(int argc, char * argv[])
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(SRVPID_FILE, WORKDIR);
+	result = start(SRVPID_FILE, WORKDIR.c_str());
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();

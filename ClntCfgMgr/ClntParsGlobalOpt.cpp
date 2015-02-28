@@ -17,7 +17,7 @@ using namespace std;
 
 TClntParsGlobalOpt::TClntParsGlobalOpt()
     :TClntParsIfaceOpt() {
-    this->WorkDir        = WORKDIR;
+    this->WorkDir        = DEFAULT_WORKDIR;
     this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
     this->AnonInfRequest = false;
     this->InactiveMode   = false;

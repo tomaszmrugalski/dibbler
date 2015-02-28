@@ -128,7 +128,7 @@ digest-hmac-sha512    { return ClntParser::DIGEST_HMAC_SHA512_; }
 skip-confirm          { return ClntParser::SKIP_CONFIRM_; }
 aftr                  { return ClntParser::AFTR_; }
 downlink-prefix-ifaces { return ClntParser::DOWNLINK_PREFIX_IFACES_; }
-
+bind-to-address       { return ClntParser::BIND_TO_ADDR_; }
 experimental          { return ClntParser::EXPERIMENTAL_; }
 addr-params           { return ClntParser::ADDR_PARAMS_; }
 

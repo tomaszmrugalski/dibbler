@@ -130,7 +130,7 @@ namespace std
 %token STATELESS_, ANON_INF_REQUEST_, INSIST_MODE_, INACTIVE_MODE_
 %token EXPERIMENTAL_, ADDR_PARAMS_, REMOTE_AUTOCONF_
 %token AFTR_
-%token ROUTING_
+%token ROUTING_, BIND_TO_ADDR_
 %token ADDRESS_LIST_KEYWORD_, STRING_KEYWORD_, DUID_KEYWORD_, HEX_KEYWORD_
 %token RECONFIGURE_
 %type  <ival> Number
@@ -204,6 +204,7 @@ InterfaceOptionDeclaration
 | PreferServersOption
 | ExtraOption
 | ExperimentalRemoteAutoconf
+| BindToAddress
 ;
 
 IAOptionDeclaration
@@ -772,6 +773,11 @@ PreferServersOption
 }
 ;
 
+BindToAddress
+:BIND_TO_ADDR_ IPV6ADDR_
+{
+    ClntCfgIfaceLst.getLast()->setBindToAddr(SPtr<TIPv6Addr>(new TIPv6Addr($2)));
+}
 
 PreferredTimeOption
 :PREF_TIME_ Number

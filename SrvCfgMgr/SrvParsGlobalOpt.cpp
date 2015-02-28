@@ -15,7 +15,7 @@
 using namespace std;
 
 TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) 
-    :Experimental_(false), WorkDir_(WORKDIR), Stateless_(false),
+    :Experimental_(false), WorkDir_(DEFAULT_WORKDIR), Stateless_(false),
      InactiveMode_(false), GuessMode_(false), CacheSize_(SERVER_DEFAULT_CACHE_SIZE),
      InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE)
 {

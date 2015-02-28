@@ -28,6 +28,7 @@
 
 extern int status();
 extern int run();
+extern std::string WORKDIR;
 
 using namespace std;
 
@@ -54,15 +55,18 @@ pid_t getPID(const char * file) {
 }
 
 pid_t getClientPID() {
-    return getPID(CLNTPID_FILE);
+    std::string clntpid_file = WORKDIR + "/client.pid";
+    return getPID(clntpid_file.c_str());
 }
 
 pid_t getServerPID() {
-    return getPID(SRVPID_FILE);
+    std::string srvpid_file = WORKDIR + "/server.pid";
+    return getPID(srvpid_file.c_str());
 }
 
 pid_t getRelayPID() {
-    return getPID(RELPID_FILE);
+    std::string relpid_file = WORKDIR + "/relay.pid";
+    return getPID(relpid_file.c_str());
 }
 
 void daemon_init() {
@@ -74,7 +78,6 @@ void daemon_init() {
     fclose(stderr);
 
     pid_t childpid;
-    cout << "Starting daemon..." << endl;
     logger::EchoOff();
 
     if (getppid()!=1) {

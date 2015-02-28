@@ -14,7 +14,8 @@
 using namespace std;
 
 TRelParsGlobalOpt::TRelParsGlobalOpt(void) 
-    : WorkDir_(WORKDIR), GuessMode_(false), InterfaceIDOrder_(REL_IFACE_ID_ORDER_BEFORE) {
+    : WorkDir_(DEFAULT_WORKDIR), GuessMode_(false),
+      InterfaceIDOrder_(REL_IFACE_ID_ORDER_BEFORE) {
 }
 
 TRelParsGlobalOpt::~TRelParsGlobalOpt(void) {

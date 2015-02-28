@@ -548,6 +548,13 @@ void TClntCfgIface::setObit(bool o_bit) {
     }
 }
 
+void TClntCfgIface::setBindToAddr(SPtr<TIPv6Addr> link_local) {
+    BindToAddr_ = link_local;
+}
+
+SPtr<TIPv6Addr> TClntCfgIface::getBindToAddr() {
+    return (BindToAddr_);
+}
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------

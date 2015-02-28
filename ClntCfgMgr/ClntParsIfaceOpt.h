@@ -104,7 +104,6 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqVendorSpec();
     List(TOptVendorSpecInfo) getVendorSpec();
 
-
 private:
     /// defined whether this interface is running in stateless mode
     bool Stateless_;

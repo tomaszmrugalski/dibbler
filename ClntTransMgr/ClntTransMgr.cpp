@@ -163,7 +163,15 @@ bool TClntTransMgr::openSockets(SPtr<TClntCfgIface> iface) {
         return false;
     }
 
+    // By default, we use the first link-local address on the interface
     SPtr<TIPv6Addr> addr = new TIPv6Addr(llAddr);
+
+    // However, if the user specified bind-to address, we'll use that instead.
+    if (iface->getBindToAddr()) {
+        addr = iface->getBindToAddr();
+        Log(Debug) << "Using bind-to address " << addr->getPlain() << " on interface "
+                   << iface->getFullName() << LogEnd;
+    }
 
     // it's very important to open unicast socket first as it will be used for
     // unicast communication

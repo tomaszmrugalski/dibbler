@@ -348,11 +348,12 @@ typedef
 #define	REMOTE_AUTOCONF_	330
 #define	AFTR_	331
 #define	ROUTING_	332
-#define	ADDRESS_LIST_KEYWORD_	333
-#define	STRING_KEYWORD_	334
-#define	DUID_KEYWORD_	335
-#define	HEX_KEYWORD_	336
-#define	RECONFIGURE_	337
+#define	BIND_TO_ADDR_	333
+#define	ADDRESS_LIST_KEYWORD_	334
+#define	STRING_KEYWORD_	335
+#define	DUID_KEYWORD_	336
+#define	HEX_KEYWORD_	337
+#define	RECONFIGURE_	338
 
 
 #line 169 "../bison++/bison.h"
@@ -476,6 +477,7 @@ static const int ADDR_PARAMS_;
 static const int REMOTE_AUTOCONF_;
 static const int AFTR_;
 static const int ROUTING_;
+static const int BIND_TO_ADDR_;
 static const int ADDRESS_LIST_KEYWORD_;
 static const int STRING_KEYWORD_;
 static const int DUID_KEYWORD_;
@@ -564,11 +566,12 @@ static const int RECONFIGURE_;
 	,REMOTE_AUTOCONF_=330
 	,AFTR_=331
 	,ROUTING_=332
-	,ADDRESS_LIST_KEYWORD_=333
-	,STRING_KEYWORD_=334
-	,DUID_KEYWORD_=335
-	,HEX_KEYWORD_=336
-	,RECONFIGURE_=337
+	,BIND_TO_ADDR_=333
+	,ADDRESS_LIST_KEYWORD_=334
+	,STRING_KEYWORD_=335
+	,DUID_KEYWORD_=336
+	,HEX_KEYWORD_=337
+	,RECONFIGURE_=338
 
 
 #line 215 "../bison++/bison.h"
