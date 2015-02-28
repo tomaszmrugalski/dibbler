@@ -3,6 +3,12 @@
  -------------------
 1.0.1 [not-released-yet]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)
+  - It is now possible to specify the address client will use to communicate
+    (bind-to-address) in the client.conf
+  - The client's working directory can be overridden with -w on command line.
+    This will cause all files (.conf, .pid, etc.) to be created or read from
+    that directory).
+  - Removed server caching
 
 1.0.0 [2014-11-07]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to
