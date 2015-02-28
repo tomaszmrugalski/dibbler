@@ -95,7 +95,7 @@ public:
         RelayInfo_.clear();
     }
 
-    /// relay information
+    /// @brief Relay information
     ///
     /// Let's make this public, so there are issues with reference
     /// being returned and then used past them message lifetime
@@ -145,5 +145,7 @@ protected:
     /// physical interface from/to which message was received/should be sent
     int physicalIface_;
 };
+
+typedef std::vector< SPtr<TSrvMsg> > SrvMsgList;
 
 #endif

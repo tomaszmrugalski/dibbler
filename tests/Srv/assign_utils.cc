@@ -195,23 +195,25 @@ bool ServerTest::checkIA_PD(SPtr<TSrvOptIA_PD> pd, SPtr<TIPv6Addr> minRange,
 
 SPtr<TSrvMsg> ServerTest::sendAndReceive(SPtr<TSrvMsg> clntMsg,
                                          unsigned int expectedMsgCount/* = 1*/) {
-    EXPECT_EQ(expectedMsgCount - 1, transmgr_->getMsgLst().count());
+    EXPECT_EQ(expectedMsgCount - 1, transmgr_->getMsgLst().size());
 
     // process it through server usual routines
     transmgr_->relayMsg(clntMsg);
 
-    EXPECT_EQ(expectedMsgCount, transmgr_->getMsgLst().count());
+    EXPECT_EQ(expectedMsgCount, transmgr_->getMsgLst().size());
 
-    List(TSrvMsg) & msglst = transmgr_->getMsgLst();
-    msglst.first();
+    SrvMsgList& msglst = transmgr_->getMsgLst();
+
     SPtr<TSrvMsg> rsp;
-    while (rsp = msglst.get()) {
-        if (rsp->getTransID() == clntMsg->getTransID())
-            break;
+    for (SrvMsgList::const_iterator it = msglst.begin(); it != msglst.end(); ++it) {
+        if ((*it)->getTransID() == clntMsg->getTransID()) {
+            rsp = *it;
+        }
     }
 
     if (!rsp) {
-        ADD_FAILURE() << "Response with transid=" << std::hex << clntMsg->getTransID() << " not found.";
+        ADD_FAILURE() << "Response with transid=" << std::hex << clntMsg->getTransID()
+                      << " not found.";
         return 0;
     }
 
@@ -223,6 +225,12 @@ SPtr<TSrvMsg> ServerTest::sendAndReceive(SPtr<TSrvMsg> clntMsg,
 
     return rsp;
 }
+
+void NakedSrvTransMgr::sendPacket(SPtr<TSrvMsg> msg) {
+    std::cout << "Pretending to send packet" << std::endl;
+    MsgLst_.push_back(msg);
+}
+
 
 bool ServerTest::createMgrs(std::string config) {
 

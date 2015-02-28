@@ -75,13 +75,17 @@ class TSrvTransMgr
 
     bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
 
+    /// @brief sends specified packet
+    ///
+    /// @param msg message to be sent
+    virtual void sendPacket(SPtr<TSrvMsg> msg);
+
     // not private, as we need to instantiate derived SrvTransMgr in tests
   protected:
     TSrvTransMgr(std::string xmlFile, int port);
-    ~TSrvTransMgr();
+    virtual ~TSrvTransMgr();
 
     std::string XmlFile;
-    List(TSrvMsg) MsgLst;
     bool IsDone;
 
     int ctrlIface;

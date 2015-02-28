@@ -54,7 +54,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
 
     this->MRT_ = 31;
     IsDone = false;
-    this->send();
 }
 
 
@@ -278,7 +277,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 
     IsDone = false;
     MRT_ = 31;
-    this->send();
 }
 
 /**
@@ -346,8 +344,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
 
     IsDone = false;
     MRT_ = 0;
-    this->send();
-
 }
 
 /**
@@ -529,7 +525,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
     IsDone = false;
     MRT_ = 46;
-    this->send();
 }
 
 // used as RENEW reply
@@ -541,11 +536,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     copyRelayInfo((Ptr*)renew);
     copyAAASPI((Ptr*)renew);
     copyRemoteID((Ptr*)renew);
-
-    // uncomment this to test REBIND
-    //IsDone = true;
-    //return;
-    // uncomment this to test REBIND
 
     unsigned long addrCount=0;
     SPtr<TOpt> ptrOpt;
@@ -596,7 +586,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
 
     IsDone = false;
     MRT_ = 0;
-    this->send();
 }
 
 /**
@@ -628,7 +617,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 
     IsDone = false;
     MRT_ = 330;
-    send();
 }
 
 /// @brief ctor used for generating REPLY message as SOLICIT response (in rapid-commit mode)
@@ -653,9 +641,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     appendAuthenticationOption(ClientDUID);
 
     IsDone = false;
-    SPtr<TIPv6Addr> ptrAddr;
     MRT_ = 330;
-    this->send();
 }
 
 // INFORMATION-REQUEST answer
@@ -708,7 +694,6 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
 
     IsDone = false;
     MRT_ = 330;
-    send();
 }
 
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList& options)
@@ -730,8 +715,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList& options)
     Options.push_back((Ptr*)ptrSrvID);
 
     MRT_ = 330;
-    send();
-    IsDone = true;
+    IsDone = false;
 }
 
 void TSrvMsgReply::doDuties() {

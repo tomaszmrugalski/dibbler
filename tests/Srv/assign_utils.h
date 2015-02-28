@@ -74,10 +74,16 @@ namespace test {
             :TSrvTransMgr(xmlFile, port) {
             TSrvTransMgr::Instance = this;
         }
-        List(TSrvMsg)& getMsgLst() { return MsgLst; }
+
+        virtual void sendPacket(SPtr<TSrvMsg> msg);
+
+        SrvMsgList& getMsgLst() { return MsgLst_; }
+
         ~NakedSrvTransMgr() {
             TSrvTransMgr::Instance =  NULL;
         }
+
+        SrvMsgList MsgLst_;
     };
 
     class ServerTest : public ::testing::Test {

@@ -277,16 +277,15 @@ long TSrvTransMgr::getTimeout()
     unsigned long ifaceRecheckPeriod = 10;
     unsigned long addrTimeout = 0xffffffff;
     SPtr<TSrvMsg> ptrMsg;
-    MsgLst.first();
-    while (ptrMsg = MsgLst.get() )
-    {
-        if (ptrMsg->getTimeout() < min)
-            min = ptrMsg->getTimeout();
-    }
-    if (SrvCfgMgr().inactiveIfacesCnt() && ifaceRecheckPeriod<min)
+    if (SrvCfgMgr().inactiveIfacesCnt() && ifaceRecheckPeriod<min) {
         min = ifaceRecheckPeriod;
+    }
     addrTimeout = SrvAddrMgr().getValidTimeout();
-    return min<addrTimeout?min:addrTimeout;
+    if (min < addrTimeout) {
+        return min;
+    } else {
+        return addrTimeout;
+    }
 }
 
 void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
@@ -322,25 +321,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         return;
     }
 
-    /// @todo remove (or at least disable by default) answer buffering mechanism
-    SPtr<TSrvMsg> answ;
-    Log(Debug) << MsgLst.count() << " answers buffered.";
-
-    MsgLst.first();
-    while(answ=(Ptr*)MsgLst.get())
-    {
-        if (answ->getTransID()==msg->getTransID() && msg->getType() != RELEASE_MSG ) {
-            Log(Cont) << " Old reply with transID=" << hex << msg->getTransID()
-                      << dec << " found. Sending old reply." << LogEnd;
-            answ->send();
-            return;
-        }
-    }
-    Log(Cont) << " Old reply for transID=" << hex << msg->getTransID()
-              << " not found. Generating new answer." << dec << LogEnd;
-
     SPtr<TMsg> q, a; // question and answer
-
     q = (Ptr*) msg;
 
     switch(msg->getType()) {
@@ -426,14 +407,26 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     if (a && !a->isDone()) {
-        /// @todo: messages should not call send() in their ctors, send should be done here
-        MsgLst.append((Ptr*)a);
+        SPtr<TSrvMsg> answ = (Ptr*)a;
+
+        // Send the packet
+        sendPacket(answ);
+
+        // Call notify script
         SrvIfaceMgr().notifyScripts(SrvCfgMgr().getScriptName(), q, a);
     }
 
     // save DB state regardless of action taken
     SrvAddrMgr().dump();
     SrvCfgMgr().dump();
+}
+
+void TSrvTransMgr::sendPacket(SPtr<TSrvMsg> msg) {
+    if (!msg) {
+        return;
+    }
+
+    msg->send();
 }
 
 bool TSrvTransMgr::unicastCheck(SPtr<TSrvMsg> msg) {
@@ -489,7 +482,6 @@ bool TSrvTransMgr::unicastCheck(SPtr<TSrvMsg> msg) {
 
 void TSrvTransMgr::doDuties()
 {
-    int deletedCnt = 0;
     // are there any outdated addresses?
     std::vector<TSrvAddrMgr::TExpiredInfo> addrLst;
     std::vector<TSrvAddrMgr::TExpiredInfo> tempAddrLst;
@@ -498,27 +490,6 @@ void TSrvTransMgr::doDuties()
     if (!SrvAddrMgr().getValidTimeout()) {
         SrvAddrMgr().doDuties(addrLst, tempAddrLst, prefixLst);
         removeExpired(addrLst, tempAddrLst, prefixLst);
-    }
-
-    // for each message on list, let it do its duties, if timeout is reached
-    SPtr<TSrvMsg> msg;
-    MsgLst.first();
-    while (msg=MsgLst.get())
-        if ( (!msg->getTimeout()) && (!msg->isDone()) )
-            msg->doDuties();
-
-    // now delete messages marked as done
-    MsgLst.first();
-    while (msg = MsgLst.get() )
-    {
-        if (msg->isDone())
-        {
-            MsgLst.del();
-            deletedCnt++;
-        }
-    }
-    if (deletedCnt) {
-        Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
     }
 
     // Open socket on interface which becames ready during server run

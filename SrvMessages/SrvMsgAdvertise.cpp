@@ -58,7 +58,6 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
     appendAuthenticationOption(ClientDUID);
 
     MRT_ = 0;
-    send();
     return true;
 }
 
