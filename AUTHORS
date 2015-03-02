@@ -118,15 +118,16 @@
   - Shine- (https://github.com/Shine-)
     2014-06: Address renewals on WIN32 systems.
 
-  - Maciek Fijalkowski (macfij7(at)wp(dot)pl)
+  - Maciek Fijalkowski <macfij7(at)wp(dot)pl>
     2014-06: Prefix scope added to the client parser.
     2014-07: Prefix sanity checks on the client side.
     2014-09: More thorough sanity checks for multiple IA_PDs on the client side.
 
-  - Justin Cormack (justin(at)specialbusservice(dot)com)
+  - Justin Cormack <justin(at)specialbusservice(dot)com>
     2014-09: Added missing includes for NetBSD (and probably other BSDs)
 
-  - John Davidge and John Robert, OpenStack project
+  - John Davidge <jodavidg(at)cisco(dot)com> and
+    Baodong (Robert) Li <baoli(at)cisco(dot)com>
     2015-03: it is possible for the client to select an address to be used
     2015-03: client's working directory can be selected with -w dir
 
