@@ -126,5 +126,9 @@
   - Justin Cormack (justin(at)specialbusservice(dot)com)
     2014-09: Added missing includes for NetBSD (and probably other BSDs)
 
+  - John Davidge and John Robert, OpenStack project
+    2015-03: it is possible for the client to select an address to be used
+    2015-03: client's working directory can be selected with -w dir
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
