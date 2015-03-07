@@ -130,6 +130,8 @@
     Baodong (Robert) Li <baoli(at)cisco(dot)com>
     2015-03: it is possible for the client to select an address to be used
     2015-03: client's working directory can be selected with -w dir
+    2015-03: time calculation workarounds
+    2015-03: bind-to-address improvements
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

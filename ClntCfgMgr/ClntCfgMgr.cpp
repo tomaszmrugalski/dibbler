@@ -220,8 +220,13 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             // Check if the interface is during bring-up phase
             // (i.e. DAD procedure for link-local addr is not complete yet)
             char tmp[64];
-            ifaceIface->firstLLAddress();
-            inet_ntop6(ifaceIface->getLLAddress(), tmp);
+            if (cfgIface->getBindToAddr()) {
+                inet_ntop6(cfgIface->getBindToAddr()->getPlain(), tmp);
+            } else {
+                ifaceIface->firstLLAddress();
+                inet_ntop6(ifaceIface->getLLAddress(), tmp);
+            }
+
             if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp)
                 == LOWLEVEL_TENTATIVE_YES) {
                 Log(Notice) << "Interface " << ifaceIface->getFullName()

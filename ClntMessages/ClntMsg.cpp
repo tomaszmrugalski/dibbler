@@ -320,8 +320,8 @@ TClntMsg::~TClntMsg() {
 
 void TClntMsg::setDefaults()
 {
-    FirstTimeStamp = (uint32_t)time(NULL);
-    LastTimeStamp  = (uint32_t)time(NULL);
+    FirstTimeStamp = time(NULL);
+    LastTimeStamp  = time(NULL);
 
     RC  = 0;
     RT  = 0;
@@ -340,7 +340,7 @@ void TClntMsg::setDefaults()
 
 unsigned long TClntMsg::getTimeout()
 {
-    long diff = (LastTimeStamp+RT) - (uint32_t)time(NULL);
+    long diff = (LastTimeStamp+RT) - time(NULL);
     return (diff<0) ? 0 : diff;
 }
 
@@ -394,7 +394,7 @@ void TClntMsg::send()
 		   << "/" << Iface << " to multicast." << LogEnd;
 	ClntIfaceMgr().sendMulticast(Iface, pkt, getSize());
     }
-    LastTimeStamp = (uint32_t)time(NULL);
+    LastTimeStamp = time(NULL);
     delete [] pkt;
 }
 
