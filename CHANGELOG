@@ -1,7 +1,7 @@
 
   Dibbler changelog
  -------------------
-1.0.1 [not-released-yet]
+1.0.1RC1 [2015-03-07]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)
   - It is now possible to specify the address client will use to communicate
     (bind-to-address) in the client.conf
@@ -9,6 +9,8 @@
     This will cause all files (.conf, .pid, etc.) to be created or read from
     that directory).
   - Removed server caching
+  - Time calculations workaround (thanks to Baodong Li for the patch!)
+  - Improvements in bind-to-address (thanks to Baodong Li fo the patch!)
 
 1.0.0 [2014-11-07]
   - Added missing includes for NetBSD (and probably other BSDs). Thanks to

@@ -1,38 +1,15 @@
 
-  Dibbler 1.0.0 [2014-11-07]
+  Dibbler 1.0.1 Release Candidate 1 [2015-03-07]
  ------------------------------------------------
 
- This is the 1.0.0 release of the Dibbler software.
+ This is the first Release Candidate of the 1.0.1 release of the Dibbler
+ software.
 
- After over 11 years, Dibbler project finally reaches 1.0.0. This significant
- milestone was planned when all features described in RFC3315, a document
- that specifies DHCPv6, were implemented. It took radically more time
- then I initially thought. But here it is - a portable DHCPv6 implementation
- that features a server, a client, relay agent and a leasequery requestor.
-
- It works on a variety of Windows operating systems, starting from XP to 8,
- Linux, Mac OS, FreeBSD, NetBSD and OpenBSD. It may compile or even partially
- work on other systems.
-
- There is a handful of fixes since 1.0.0RC2 and one small feature: the
- server may be told to reject incoming unicast traffic with status code
- UseMulticast. According to my knowledge, this was the last missing feature.
-
- As you may have noticed, Dibbler development slowed down considerably
- in the last couple years. The reason is that I'm now involved in a new
- DHCP implementation, which takes more than 40 hours a week. It's simply
- a matter of work/life balance. I'm no longer able to dedicate significant
- amount of time for further Dibbler development.
-
- So is the project dead? No, I will still fix bugs occasionally. If
- there are patches that do not require significant rework, I may review and
- accept them. Even new features may appear occasionally, but they will
- be infrequent. My plan is to keep Dibbler alive long enough for Kea, the
- new project I'm involved in , to be a viable alternative. As of today, it
- has many of the server features, but still lacks client, relay and requestor
- components.
-
- See CHANGELOG for a complete list of changes.
+ This update contains improvements specifically for OpenStack project.
+ In particular, it is now possible to specify the client's link-local
+ address and client's working directory. If you're running 1.0.0, there's
+ no need to upgrade, unless you want to take advantage of those new features.
+ See CHANGELOG for details.
 
  If you find bugs, please report them on http://klub.com.pl/bugzilla/.
  Appropriate links are on project website: http://klub.com.pl/dhcpv6/.
