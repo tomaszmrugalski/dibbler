@@ -1,9 +1,14 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__ 1
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE 1
+#endif
+
 #include <asm/types.h>
 //#include <resolv.h>
 #include <linux/types.h>
+#include <sys/types.h>
 
 #include "libnetlink.h"
 #include "ll_map.h"

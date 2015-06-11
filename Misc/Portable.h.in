@@ -29,6 +29,10 @@
 #include <arpa/inet.h>
 #endif
 
+#if defined(LINUX)
+# include <sys/select.h>
+#endif
+
 #include <stdint.h>
 #include <unistd.h>
 
