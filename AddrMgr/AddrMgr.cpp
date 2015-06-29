@@ -487,7 +487,7 @@ bool TAddrMgr::updatePrefix(SPtr<TAddrClient> client, SPtr<TDUID> duid , SPtr<TI
 
     ptrPrefix->setTimestamp();
     ptrPrefix->setPref(pref);
-    ptrPrefix->setValid(pref);
+    ptrPrefix->setValid(valid);
 
     return true;
 }
