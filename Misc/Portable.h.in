@@ -299,8 +299,6 @@ unsigned long pref, unsigned long valid, int prefixLength);
                                        volatile int * notify);
     extern void link_state_change_cleanup();
     extern void microsleep(int microsecs);
-    extern uint64_t dibbler_htonll(uint64_t n);
-    extern uint64_t dibbler_ntohll(uint64_t n);
     extern char * error_message();
 
     /* options */

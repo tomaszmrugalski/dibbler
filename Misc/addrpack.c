@@ -325,23 +325,6 @@ void print_packed(char * addr)
    printf("\n");
 } 
 
-uint64_t dibbler_htonll(uint64_t n) {
-#if __BYTE_ORDER == __BIG_ENDIAN
-    return n;
-#else
-    return (((uint64_t)htonl(n)) << 32) + htonl(n >> 32);
-#endif
-}
-
-uint64_t dibbler_ntohll(uint64_t n) {
-#if __BYTE_ORDER == __BIG_ENDIAN
-    return n;
-#else
-    return (((uint64_t)ntohl(n)) << 32) + ntohl(n >> 32);
-#endif
-}
-
-
 uint8_t readUint8(const BUFFER_TYPE* buf) {
     return buf[0];
 }
