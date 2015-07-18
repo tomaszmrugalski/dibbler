@@ -140,5 +140,5 @@ int main(int argc, char * argv[])
 
     logEnd();
 
-    return result? EXIT_FAILURE: EXIT_SUCCESS;
+    return result? EXIT_FAILURE : EXIT_SUCCESS;
 }

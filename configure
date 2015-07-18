@@ -3376,7 +3376,7 @@ s_version=`uname -r`
 case $system in
     Darwin)
 	    case $s_version in
-            12*|13*)
+            12*|13*|14*)
 
 $as_echo "#define __APPLE_USE_RFC_3542 1" >>confdefs.h
 

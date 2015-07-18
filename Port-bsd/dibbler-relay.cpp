@@ -5,8 +5,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: dibbler-relay.cpp,v 1.2 2008-08-29 00:07:31 thomson Exp $
- *
  */
 
 #include <signal.h>
@@ -19,6 +17,9 @@
 using namespace std;
 
 TDHCPRelay * ptr;
+
+/// the default working directory
+std::string WORKDIR(DEFAULT_WORKDIR);
 
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
@@ -51,7 +52,7 @@ int status() {
 }
 
 int run() {
-    if (!init(RELPID_FILE, WORKDIR)) {
+    if (!init(RELPID_FILE, WORKDIR.c_str())) {
 	return -1;
     }
 
@@ -104,7 +105,7 @@ int main(int argc, char * argv[])
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(RELPID_FILE, WORKDIR);
+	result = start(RELPID_FILE, WORKDIR.c_str());
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();

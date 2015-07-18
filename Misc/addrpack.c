@@ -10,7 +10,6 @@
  *
  * some of those functions are taken form GNU libc6 library
  *
- * $Id: addrpack.c,v 1.12 2008-10-12 11:28:21 thomson Exp $
  */
 
 
@@ -326,7 +325,7 @@ void print_packed(char * addr)
    printf("\n");
 } 
 
-uint64_t htonll(uint64_t n) {
+uint64_t dibbler_htonll(uint64_t n) {
 #if __BYTE_ORDER == __BIG_ENDIAN
     return n;
 #else
@@ -334,7 +333,7 @@ uint64_t htonll(uint64_t n) {
 #endif
 }
 
-uint64_t ntohll(uint64_t n) {
+uint64_t dibbler_ntohll(uint64_t n) {
 #if __BYTE_ORDER == __BIG_ENDIAN
     return n;
 #else

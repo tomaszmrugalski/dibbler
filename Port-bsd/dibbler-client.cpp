@@ -20,6 +20,11 @@ using namespace std;
 
 TDHCPClient * ptr;
 
+std::string WORKDIR(DEFAULT_WORKDIR);
+std::string CLNTCONF_FILE(DEFAULT_CLNTCONF_FILE);
+std::string CLNTLOG_FILE(DEFAULT_CLNTLOG_FILE);
+std::string CLNTPID_FILE(DEFAULT_CLNTPID_FILE);
+
 void signal_handler(int n) {
     Log(Crit) << "Signal received. Shutting down." << LogEnd;
     ptr->stop();
@@ -53,14 +58,14 @@ int status() {
 }
 
 int run() {
-    if (!init(CLNTPID_FILE, WORKDIR)) {
-	die(CLNTPID_FILE);
+    if (!init(CLNTPID_FILE.c_str(), WORKDIR.c_str())) {
+	die(CLNTPID_FILE.c_str());
 	return -1;
     }
 
     if (lowlevelInit()<0) {
 	cout << "Lowlevel init failed:" << error_message() << endl;
-	die(CLNTPID_FILE);
+	die(CLNTPID_FILE.c_str());
 	return -1;
     }
 
@@ -68,7 +73,7 @@ int run() {
     ptr = &client;
 
     if (ptr->isDone()) {
-	die(CLNTPID_FILE);
+	die(CLNTPID_FILE.c_str());
 	return -1;
     }
 
@@ -80,7 +85,7 @@ int run() {
 
     lowlevelExit();
 
-    die(CLNTPID_FILE);
+    die(CLNTPID_FILE.c_str());
 
     return 0;
 }
@@ -104,7 +109,7 @@ int main(int argc, char * argv[])
     char command[256];
     int result=-1;
 
-    logStart("(CLIENT, BSD port)", "Client", CLNTLOG_FILE);
+    logStart("(CLIENT, BSD port)", "Client", CLNTLOG_FILE.c_str());
 
     // parse command line parameters
     if (argc>1) {
@@ -117,13 +122,13 @@ int main(int argc, char * argv[])
     }
 
     if (!strncasecmp(command,"start",5) ) {
-	result = start(CLNTPID_FILE, WORKDIR);
+	result = start(CLNTPID_FILE.c_str(), WORKDIR.c_str());
     } else
     if (!strncasecmp(command,"run",3) ) {
 	result = run();
     } else
     if (!strncasecmp(command,"stop",4)) {
-	result = stop(CLNTPID_FILE);
+	result = stop(CLNTPID_FILE.c_str());
     } else
     if (!strncasecmp(command,"status",6)) {
 	result = status();
