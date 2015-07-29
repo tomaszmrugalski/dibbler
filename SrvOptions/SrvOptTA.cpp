@@ -125,9 +125,9 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt
 	      << " is available, limit for client is " << addrsMax << ", "
 	      << willAssign << " will be assigned." << LogEnd;
     if (!willAssign) {
-	SubOptions.append( (Ptr*) new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
-							"Sorry, buddy. No temporary addresses for you", 
-                                                        Parent) );
+	SubOptions.append(new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
+                                             "Sorry, buddy. No temporary addresses for you",
+                                             Parent) );
 	Log(Warning) << "No temporary addresses were assigned in TA (iaid="<< IAID_ << ")." << LogEnd;
 	return;
     }

@@ -98,6 +98,37 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     EXPECT_EQ(0u, cfgPD->getAssignedCount());
 }
 
+// This test verifies if the server properly responds with NoAddrsAvail status
+// code for temporary addresses request if no temporary addresses are configured.
+TEST_F(ServerTest, SARR_prefix_noiata_reqta) {
+    string cfg = "iface REPLACE_ME {\n"
+        " pd-class {\n"
+        "  pd-pool 2001:db8:123::/80\n"
+        "  pd-length 96\n"
+        " }\n"
+        "}\n";
+
+    ASSERT_TRUE( createMgrs(cfg) );
+
+    SPtr<TSrvMsgSolicit> sol = createSolicit();
+    sol->addOption((Ptr*)clntId_);
+    sol->addOption((Ptr*)pd_);
+    sol->addOption((Ptr*)ta_);
+
+    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    ASSERT_TRUE(adv);
+
+    TOptPtr ta = adv->getOption(OPTION_IA_TA);
+    ASSERT_TRUE(ta);
+
+    TOptPtr status_opt = ta->getOption(OPTION_STATUS_CODE);
+    ASSERT_TRUE(status_opt);
+
+    SPtr<TOptStatusCode> status = (Ptr*) status_opt;
+    ASSERT_TRUE(status);
+    EXPECT_EQ(STATUSCODE_NOADDRSAVAIL, status->getCode());
+}
+
 // This test check that the server sets T1,T2,preferred,valid lifetimes
 // properly and that the client's hints are ignored.
 TEST_F(ServerTest, SARR_prefix_single_class_params) {

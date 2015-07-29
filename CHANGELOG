@@ -1,6 +1,11 @@
 
   Dibbler changelog
  -------------------
+1.0.1 [2015-07-30]
+  - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
+    reporting the issue and providing excellent patch)
+  - Mac OS 10.10 compilation fix
+
 1.0.1RC1 [2015-03-07]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)
   - It is now possible to specify the address client will use to communicate
