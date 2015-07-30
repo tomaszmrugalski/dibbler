@@ -6,9 +6,9 @@
 
 using namespace std;
 
-int static_value = 0;
-
 namespace {
+
+int static_value = 0;
 
 class Base {
 public:

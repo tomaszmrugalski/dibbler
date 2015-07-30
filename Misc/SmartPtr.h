@@ -32,8 +32,8 @@ public:
     }
 
     ~Ptr() {
-        //if(ptr) delete ptr;
     }
+
     int refcount; //refrence counter
     void * ptr;   //pointer to the real object
 };
@@ -46,28 +46,50 @@ public:
     SPtr();
     SPtr(T* something);
 
-    SPtr(Ptr *voidptr) {
+    SPtr(Ptr* voidptr) {
         if(voidptr) {
-            this->ptr = voidptr;
-            this->ptr->refcount++;
+            ptr = voidptr;
+            ptr->refcount++;
         } else {
-            this->ptr = new Ptr();
+            ptr = new Ptr();
         }
     }
-    SPtr(const SPtr & ref);
+
+    SPtr(const SPtr& ref);
+
     SPtr(int onlyNull);
+
     SPtr& operator=(const SPtr& old);
 
+    /// @brief Resets a pointer (essentially assign NULL value)
+    void reset() {
+        decrease_reference();
+        ptr = new Ptr();
+    }
+
+    /// @brief re-sets the pointer to point to the new object
+    ///
+    /// @param obj pointer to the new object (may be NULL)
+    void reset(T* obj) {
+        decrease_reference();
+        ptr = new Ptr(obj);
+    }
+
+    /// @brief Returns pointer to the underlying object
+    ///
+    /// @todo Is this really used?
+    ///
+    /// @return raw pointer to the object
     operator Ptr*() {
-      if (this->ptr->ptr)
-        return this->ptr;
+      if (ptr->ptr)
+        return ptr;
       else
         return (Ptr*)NULL;
     }
 
     operator const Ptr*() const {
-      if (this->ptr->ptr)
-        return this->ptr;
+      if (ptr->ptr)
+        return ptr;
       else
         return (Ptr*)NULL;
     }
@@ -79,17 +101,53 @@ public:
 
     const T* get() const;
 
- private:
+    /// @brief Attempts to dynamic cast to SmartPtr<to>
+    /// @tparam to derived class
+    /// @return SmartPtr to the derived class (or NULL if cast failed)
+    template<class to>
+    SPtr<to> dynamic_pointer_cast() {
+        
+        // Null pointer => return null pointer, too.
+        if (ptr->ptr == NULL) {
+            return SPtr<to>();
+        }
+
+        // Try to dynamic cast the underlying pointer.
+        to* tmp = dynamic_cast<to*>( static_cast<T*>(ptr->ptr) );
+        if (tmp) {
+            // Cast was successful? Then return SmartPtr of the derived type
+            return SPtr<to>(ptr);
+        } else {
+            // Cast failed? Ok, incorrect type. Return null
+            return SPtr<to>();
+        }
+    }
+
+private:
+    void decrease_reference();
+    
     Ptr * ptr;
 };
+    
+
+template <class T>
+void SPtr<T>::decrease_reference() {
+    if (!(--(ptr->refcount))) {
+        if (ptr->ptr) {
+            delete (T*)(ptr->ptr);
+        }
+        delete ptr;
+    }
+}
 
 template <class T> SPtr<T>::SPtr() {
     ptr = new Ptr();
 }
 
 template <class T> int SPtr<T>::refCount() {
-    if (this->ptr)
-        return this->ptr->refcount;
+    if (ptr) {
+        return ptr->refcount;
+    }
     return 0;
 }
 
@@ -104,20 +162,15 @@ SPtr<T>::SPtr(const SPtr& old) {
     // #include <typeinfo>
     // std::cout << "### Copy constr " << typeid(T).name() << std::endl;
     old.ptr->refcount++;
-    this->ptr = old.ptr;
+    ptr = old.ptr;
 
-    // this doesn't make sense. It just copies value to itself
-    this->ptr->refcount = old.ptr->refcount;
+    // This doesn't make sense. It just copies value to itself
+    ptr->refcount = old.ptr->refcount;
 }
 
 template <class T>
 SPtr<T>::~SPtr() {
-    if (!(--(ptr->refcount))) {
-        if (ptr->ptr) {
-            delete (T*)(ptr->ptr);
-        }
-        delete ptr;
-    }
+    decrease_reference();
 }
 
 template <class T>
@@ -142,12 +195,19 @@ const T* SPtr<T>::get() const {
 }
 
 
-//It's is called in eg. instrusction: return NULL;
-//and SPtr is returned in function
+/// @brief Cludge, remove it ! It's is called in eg. instruction: return NULL;
+/// and SPtr is returned in function
+/// @todo: Remove this cludge completely
 template <class T>
-SPtr<T>::SPtr(int )
+SPtr<T>::SPtr(int x)
 {
-    ptr=new Ptr(); //this->ptr->ptr is NULL
+    ptr = new Ptr(); //this->ptr->ptr is NULL
+    if (x == 0) {
+        // nothing to do here.
+    } else {
+        ptr->ptr = (void*)x;
+        ptr->refcount = 1;
+    }
 }
 
 template <class T>
