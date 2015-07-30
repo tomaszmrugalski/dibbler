@@ -1,2 +1,2 @@
-SUBDIRS = . utils Srv Misc
+SUBDIRS = . utils Srv
 
