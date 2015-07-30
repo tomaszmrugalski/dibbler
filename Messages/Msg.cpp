@@ -123,7 +123,9 @@ int TMsg::storeSelf(char * buffer)
 
 void TMsg::calculateDigests(char* buffer, size_t len) {
 
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    // Yay for safe casting!
+    SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
+
     if (!auth)
         return;
 
@@ -296,7 +298,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     case AUTH_PROTO_NONE:
         return true;
     case AUTH_PROTO_DELAYED: {
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             Log(Warning) << "AUTH: Mandatory AUTH option missing in delayed auth."
                          << LogEnd;
@@ -357,7 +359,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     case AUTH_PROTO_RECONFIGURE_KEY: {
         if (MsgType != RECONFIGURE_MSG)
             return true;
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE." << LogEnd;
             return false;

@@ -69,8 +69,9 @@ int TOptIA_NA::getStatusCode() {
     while ( ptrOpt = SubOptions.get() ) {
         if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
             SPtr <TOptStatusCode> ptrStatus;
-            ptrStatus = (Ptr*) ptrOpt;
-            return ptrStatus->getCode();
+            ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
+            if (ptrStatus)
+                return ptrStatus->getCode();
         }
     }
     return -1;
@@ -94,15 +95,16 @@ char * TOptIA_NA::storeSelf( char* buf) {
 }
 
 unsigned long TOptIA_NA::getMaxValid() {
-    unsigned long maxValid=0;
+    unsigned long maxValid = 0;
     SPtr<TOpt> ptrOpt;
     SubOptions.first();
     while (ptrOpt=SubOptions.get())
     {
         if (ptrOpt->getOptType()==OPTION_IAADDR) {
-            SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
-            if (maxValid<ptrIAAddr->getValid())
+            SPtr<TOptIAAddress> ptrIAAddr= SPtr_cast<TOptIAAddress>(ptrOpt);
+            if (ptrIAAddr && (maxValid<ptrIAAddr->getValid())) {
                 maxValid=ptrIAAddr->getValid();
+            }
         }
     }
     return maxValid;

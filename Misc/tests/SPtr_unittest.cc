@@ -76,7 +76,6 @@ TEST_F(SmartPtrTest, null) {
     SPtr<Base> base;
 
     EXPECT_FALSE(base);
-    EXPECT_FALSE((Ptr*)base);
     EXPECT_EQ(1, base.refCount());
     EXPECT_EQ(0, static_value);
 }
@@ -87,22 +86,19 @@ TEST_F(SmartPtrTest, basic_assign) {
     SPtr<Base> base = new Base();
 
     EXPECT_TRUE(base);
-    EXPECT_TRUE((Ptr*)base);
     EXPECT_EQ(1, base->value);
     EXPECT_EQ(1, static_value);
-    EXPECT_EQ(1, ((Ptr*)base)->refcount);
+    EXPECT_EQ(1, base.refCount());
 
     // Explicitly assign empty pointer, the object should be deleted
     // and the pointer should be NULL
     base = SPtr<Base>();
     EXPECT_FALSE(base);
-    EXPECT_FALSE((Ptr*)base);
     EXPECT_EQ(0, static_value);
 
     // Assign a new object again
     base = new Base();
     EXPECT_TRUE(base);
-    EXPECT_TRUE((Ptr*)base);
     EXPECT_EQ(1, base->value);
     EXPECT_EQ(1, static_value);
 
@@ -110,7 +106,6 @@ TEST_F(SmartPtrTest, basic_assign) {
     // and the pointer should be NULL
     base.reset();
     EXPECT_FALSE(base);
-    EXPECT_FALSE((Ptr*)base);
     EXPECT_EQ(0, static_value);
 }
 
@@ -174,7 +169,8 @@ TEST_F(SmartPtrTest, pointer_cast_success) {
     EXPECT_EQ(1, base.refCount());
 
     // Try to cast it to derived pointer
-    SPtr<DerivedA> derived = base.dynamic_pointer_cast<DerivedA>();
+    SPtr<DerivedA> derived = base.SPtr_cast<DerivedA>();
+
     ASSERT_TRUE(derived);
     EXPECT_EQ(2, base.refCount());
     EXPECT_EQ(2, derived.refCount());
@@ -186,9 +182,43 @@ TEST_F(SmartPtrTest, pointer_cast_success) {
 
     // Cast 2 after casting: reset the base pointer.
     // The reference counter should be decreased back to 1 as well.
-    derived = base.dynamic_pointer_cast<DerivedA>();
+    derived = base.SPtr_cast<DerivedA>();
     base.reset();
     ASSERT_EQ(1, derived.refCount());
+}
+
+TEST_F(SmartPtrTest, pointer_cast_success_many) {
+    // Create an instance of a derived class and keep base pointer to it.
+    SPtr<Base> base(new DerivedA());
+    EXPECT_EQ(1, base.refCount());
+
+    // Try to cast it to derived pointer
+    SPtr<DerivedA> derived = base.SPtr_cast<DerivedA>();
+    derived = base.SPtr_cast<DerivedA>();
+    derived = base.SPtr_cast<DerivedA>();
+    derived = base.SPtr_cast<DerivedA>();
+
+    ASSERT_TRUE(derived);
+    EXPECT_EQ(2, base.refCount());
+    EXPECT_EQ(2, derived.refCount());
+}
+
+TEST_F(SmartPtrTest, pointer_cast_success_stand_alone) {
+    // Create an instance of a derived class and keep base pointer to it.
+    SPtr<Base> base(new DerivedA());
+    EXPECT_EQ(1, base.refCount());
+
+    // Try to cast it to derived pointer
+    SPtr<DerivedA> derived = base.SPtr_cast<DerivedA>();
+    derived = SPtr_cast<DerivedA>(base);
+    derived = SPtr_cast<DerivedA>(base);
+    derived = SPtr_cast<DerivedA>(base);
+    derived = SPtr_cast<DerivedA>(base);
+    derived = base.SPtr_cast<DerivedA>();
+
+    ASSERT_TRUE(derived);
+    EXPECT_EQ(2, base.refCount());
+    EXPECT_EQ(2, derived.refCount());
 }
 
 // This test checks if the reference counting is implemented properly.
@@ -200,13 +230,24 @@ TEST_F(SmartPtrTest, pointer_cast_failure) {
 
     // Let's try to cast it to derived pointer. It should fail as the
     // object is of type Base, not DerivedA.
-    SPtr<DerivedA> derived = base.dynamic_pointer_cast<DerivedA>();
+    SPtr<DerivedA> derived = base.SPtr_cast<DerivedA>();
     ASSERT_FALSE(derived);
     ASSERT_EQ(1, base.refCount());
 
     // Attempt to cast to DerivedB should fail, too.
-    ASSERT_FALSE(base.dynamic_pointer_cast<DerivedB>());
+    ASSERT_FALSE(base.SPtr_cast<DerivedB>());
     ASSERT_EQ(1, base.refCount());
 }
+
+// Test checks that the derived pointer can be cast to the base pointer
+TEST_F(SmartPtrTest, pointer_downcast) {
+    // Create an instance of a derived class and keep base pointer to it.
+    SPtr<Base> base;
+    SPtr<DerivedA> derived = new DerivedA();
+
+    base = SPtr_cast<Base>(derived);
+    EXPECT_TRUE(base);
+}
+
 
 } // end of anonymous namespace

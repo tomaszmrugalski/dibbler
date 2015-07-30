@@ -57,8 +57,10 @@ int TOptIA_PD::getStatusCode() {
     while ( ptrOpt = SubOptions.get() ) {
         if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
             SPtr <TOptStatusCode> ptrStatus;
-            ptrStatus = (Ptr*) ptrOpt;
-            return ptrStatus->getCode();
+            ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
+            if (ptrStatus) {
+                return ptrStatus->getCode();
+            }
         }
     }
     return -1;
