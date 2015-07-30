@@ -60,7 +60,7 @@ void TRelMsg::decodeOpts(char * buf, int bufSize) {
 	    continue;
 	}
 
-	ptr = 0;
+	ptr.reset();
 	switch (code) {
 	case OPTION_RELAY_MSG:
 	    ptr = new TRelOptRelayMsg(buf+pos,length,this);

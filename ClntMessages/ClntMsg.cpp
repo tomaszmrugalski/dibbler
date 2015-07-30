@@ -127,7 +127,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    pos+=length;
 	    continue;
 	}
-	ptr = 0;
+	ptr.reset();
 
 	switch (code) {
 	case OPTION_CLIENTID:
@@ -335,7 +335,7 @@ void TClntMsg::setDefaults()
 #endif
 
     /// @todo: This should be moved to TMsg
-    PeerAddr_ = 0;
+    PeerAddr_.reset();
 }
 
 unsigned long TClntMsg::getTimeout()
@@ -847,7 +847,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
 
 	    // configure received IA
-	    clntOpt->setContext(duid, 0/* srvAddr used is unicast */, this->Iface);
+	    clntOpt->setContext(duid, SPtr<TIPv6Addr>()/* srvAddr used is unicast */, this->Iface);
 	    clntOpt->doDuties();
 
 	    // delete that IA from request list
@@ -942,7 +942,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
 
 	    // configure received PD
-	    pd->setContext(duid, 0/* srvAddr used in unicast */, this);
+	    pd->setContext(duid, SPtr<TIPv6Addr>()/* srvAddr used in unicast */, this);
 	    pd->doDuties();
 
 	    // delete that PD from request list

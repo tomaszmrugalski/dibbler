@@ -177,19 +177,19 @@ int TClntAddrMgr::countIA() {
 }
 
 TClntAddrMgr::~TClntAddrMgr() {
-    this->Client = 0;
+    Client.reset();
     Log(Debug) << "ClntAddrMgr cleanup." << LogEnd;
 }
 
 SPtr<TAddrIA> TClntAddrMgr::getIA(unsigned long IAID)
 {
     SPtr<TAddrIA> ptrIA;
-    this->Client->firstIA();
-    while (ptrIA = this->Client->getIA() ) {
+    Client->firstIA();
+    while (ptrIA = Client->getIA() ) {
 	if (ptrIA->getIAID() == IAID)
 	    return ptrIA;
     }
-    return 0;
+    return SPtr<TAddrIA>();
 }
 
 /**
@@ -255,11 +255,8 @@ SPtr<TAddrIA> TClntAddrMgr::getPD(unsigned long IAID)
 	if (ptrPD->getIAID() == IAID)
 	    return ptrPD;
     }
-    return 0;
+    return SPtr<TAddrIA>(); // NULL
 }
-
-
-
 
 void TClntAddrMgr::firstTA()
 {
@@ -279,7 +276,7 @@ SPtr<TAddrIA> TClntAddrMgr::getTA(unsigned long iaid)
 	if (ta->getIAID() == iaid)
 	    return ta;
     }
-    return 0;
+    return SPtr<TAddrIA>(); // NULL
 }
 
 void TClntAddrMgr::addTA(SPtr<TAddrIA> ptr)
@@ -375,5 +372,5 @@ SPtr<TIPv6Addr> TClntAddrMgr::getPreferredAddr() {
 	}
     }
 
-    return 0;
+    return SPtr<TIPv6Addr>(); // NULL
 }

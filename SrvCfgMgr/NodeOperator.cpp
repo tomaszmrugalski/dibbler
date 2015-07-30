@@ -22,7 +22,8 @@ NodeOperator::NodeOperator(OperatorType t, SPtr<Node>& left, SPtr<Node>& right)
     :Node(NODE_OPERATOR), Type_(t), L_(left), R_(right)
 {
     if (left->Type == NODE_CONST && right->Type == NODE_CONST)
-        Log(Warning) << "Both tokens (" << left->exec(0) << " and " << right->exec(0)
+        Log(Warning) << "Both tokens (" << left->exec(SPtr<TSrvMsg>())
+                     << " and " << right->exec(SPtr<TSrvMsg>())
                      << ") used in expression are constant." << LogEnd;
 }
 

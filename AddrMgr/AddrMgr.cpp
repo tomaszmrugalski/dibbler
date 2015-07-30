@@ -118,7 +118,7 @@ SPtr<TAddrClient> TAddrMgr::getClient(SPtr<TDUID> duid)
         if ( *(ptr->getDUID()) == (*duid) )
             return ptr;
     }
-    return 0;
+    return SPtr<TAddrClient>();
 }
 
 /**
@@ -140,7 +140,7 @@ SPtr<TAddrClient> TAddrMgr::getClient(uint32_t SPI)
         if ( ptr->getSPI() == SPI )
             return ptr;
     }
-    return 0;
+    return SPtr<TAddrClient>();
 }
 
 /**
@@ -165,7 +165,7 @@ SPtr<TAddrClient> TAddrMgr::getClient(SPtr<TIPv6Addr> leasedAddr)
                 return cli;
         }
     }
-    return 0;
+    return SPtr<TAddrClient>();
 }
 
 int TAddrMgr::countClient()
@@ -693,19 +693,20 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
     char * x = 0;
     int t1 = 0, t2 = 0, iaid = 0, pdid = 0, ifindex = 0;
 
-    SPtr<TAddrClient> clnt = 0;
-    SPtr<TDUID> duid = 0;
-    SPtr<TAddrIA> ia = 0;
-    SPtr<TAddrIA> ptrpd = 0;
-    SPtr<TAddrIA> ta = 0;
+    SPtr<TAddrClient> clnt;
+    SPtr<TDUID> duid;
+    SPtr<TAddrIA> ia;
+    SPtr<TAddrIA> ptrpd;
+    SPtr<TAddrIA> ta;
     SPtr<TIPv6Addr> unicast;
     string ifacename;
     std::vector<uint8_t> reconfKey;
 
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
-            Log(Error) << "Truncated " << xmlFile << " file: failed to read AddrClient content." << LogEnd;
-            return 0;
+            Log(Error) << "Truncated " << xmlFile << " file: failed to read AddrClient content."
+                       << LogEnd;
+            return SPtr<TAddrClient>();
         }
 
         if (strstr(buf,"<duid")) {
@@ -775,7 +776,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 		}
 		if (unicast) {
                     ia->setUnicast(unicast);
-                    unicast = 0;
+                    unicast.reset();
                 }
                 Log(Cont) << LogEnd;
                 continue;
@@ -822,7 +823,7 @@ SPtr<TAddrClient> TAddrMgr::parseAddrClient(const char * xmlFile, FILE *f)
 
 		if (unicast) {
                     ptrpd->setUnicast(unicast);
-                    unicast = 0;
+                    unicast.reset();
                 }
 
                 if (ptrpd->countPrefix()) {
@@ -858,13 +859,13 @@ SPtr<TAddrIA> TAddrMgr::parseAddrTA(const char * xmlFile, FILE *f) {
     while(!feof(f)) {
         if (!fgets(buf,255,f)) {
             Log(Error) << "Failed to parse AddrTA. File " << xmlFile << " truncated." << LogEnd;
-            return 0;
+            return SPtr<TAddrIA>();
         }
         if (strstr(buf,"</AddrTA>")){
             break;
         }
     }
-    return 0;
+    return SPtr<TAddrIA>();
 }
 
 /**
@@ -887,14 +888,16 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
     // IA paramteres
     char buf[256];
     char * x = 0;
-    SPtr<TAddrIA> ptrpd = 0;
+    SPtr<TAddrIA> ptrpd;
     SPtr<TAddrAddr> addr;
     SPtr<TAddrPrefix> pr;
-    SPtr<TDUID> duid = 0;
+    SPtr<TDUID> duid;
+
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
-            Log(Error) << "Failed to parse AddrPD entry. File " << xmlFile << " truncated." << LogEnd;
-            return 0;
+            Log(Error) << "Failed to parse AddrPD entry. File " << xmlFile
+                       << " truncated." << LogEnd;
+            return SPtr<TAddrIA>();
         }
         if (strstr(buf,"duid")) {
             //char * x;
@@ -909,7 +912,8 @@ SPtr<TAddrIA> TAddrMgr::parseAddrPD(const char * xmlFile, FILE * f, int t1,int t
                        << ", iaid=" << iaid << ", iface=" << ifacename << "/" 
                        << ifindex << LogEnd;
 
-            ptrpd = new TAddrIA(ifacename, ifindex, IATYPE_PD, 0, duid, t1, t2, iaid);
+            ptrpd = new TAddrIA(ifacename, ifindex, IATYPE_PD, SPtr<TIPv6Addr>(), duid, t1, t2,
+                                iaid);
 
             // @todo: Why are we always setting CONFIRMME state? What if the address/prefix
             // hasn't changed?
@@ -959,13 +963,13 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
     // IA paramteres
     char buf[256];
     char * x = 0;
-    SPtr<TAddrIA> ia = 0;
+    SPtr<TAddrIA> ia;
     SPtr<TAddrAddr> addr;
-    SPtr<TDUID> duid = 0;
+    SPtr<TDUID> duid;
     while (!feof(f)) {
         if (!fgets(buf,255,f)) {
             Log(Error) << "Failed to parse AddrIA entry. File " << xmlFile << " truncated." << LogEnd;
-            return 0;
+            return SPtr<TAddrIA>();
         }
         if (strstr(buf,"<duid")) {
 	    //char * x;
@@ -981,7 +985,7 @@ SPtr<TAddrIA> TAddrMgr::parseAddrIA(const char * xmlFile, FILE * f, int t1,int t
 		       << ",iaid=" << iaid << ", iface=" << ifacename << "/"
                        << ifindex << LogEnd;
 	    
-	    ia = new TAddrIA(ifacename, ifindex, IATYPE_IA, 0, duid, t1,t2, iaid);
+	    ia = new TAddrIA(ifacename, ifindex, IATYPE_IA, SPtr<TIPv6Addr>(), duid, t1,t2, iaid);
 	    continue;
 	}
 	if (strstr(buf,"<fqdnDnsServer>")) {
@@ -1064,7 +1068,7 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
 {
     // address parameters
     int prefix = CLIENT_DEFAULT_PREFIX_LENGTH;
-    SPtr<TIPv6Addr> addr = 0;
+    SPtr<TIPv6Addr> addr;
     SPtr<TAddrAddr> addraddr;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
@@ -1114,13 +1118,13 @@ SPtr<TAddrAddr> TAddrMgr::parseAddrAddr(const char * xmlFile, char * buf, bool p
 SPtr<TAddrPrefix> TAddrMgr::parseAddrPrefix(const char * xmlFile, char * buf, bool pd)
 {
     // address parameters
-    SPtr<TIPv6Addr> addr = 0;
+    SPtr<TIPv6Addr> addr;
     SPtr<TAddrPrefix> addraddr;
 
     if (strstr(buf, "<AddrAddr") || strstr(buf, "<AddrPrefix")) {
         char * x = NULL;
         unsigned long timestamp = 0, pref = 0, valid = 0, length = 0;
-        addr = 0;
+        addr.reset();
         if ((x=strstr(buf,"timestamp"))) {
             timestamp = atoi(x+11);
         }

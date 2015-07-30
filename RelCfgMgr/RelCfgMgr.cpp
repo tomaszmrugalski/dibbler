@@ -226,7 +226,7 @@ SPtr<TRelCfgIface> TRelCfgMgr::getIfaceByID(int iface)
 	    return ptrIface;
     }
     Log(Error) << "There is no interface with ifindex=" << iface << " in the CfgMgr." << LogEnd;
-    return 0;
+    return SPtr<TRelCfgIface>(); // NULL
 }
 
 
@@ -240,7 +240,7 @@ SPtr<TRelCfgIface> TRelCfgMgr::getIfaceByInterfaceID(int iface)
     }
     Log(Error) << "There is no interface with interfaceID=" << iface 
 	       << " in the CfgMgr." << LogEnd;
-    return 0;
+    return SPtr<TRelCfgIface>(); // NULL
 }
 
 ERelIfaceIdOrder TRelCfgMgr::getInterfaceIDOrder()

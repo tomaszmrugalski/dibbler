@@ -214,13 +214,13 @@ SPtr<TSrvMsg> ServerTest::sendAndReceive(SPtr<TSrvMsg> clntMsg,
     if (!rsp) {
         ADD_FAILURE() << "Response with transid=" << std::hex << clntMsg->getTransID()
                       << " not found.";
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     if (clntMsg->getTransID() != rsp->getTransID()) {
         ADD_FAILURE() << "Returned message has transid=" << rsp->getTransID()
                       << ", but sent message with transid=" << clntMsg->getTransID();
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     return rsp;

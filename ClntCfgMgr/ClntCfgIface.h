@@ -36,7 +36,7 @@ public:
     class TOptionStatus
     {
     public:
-	TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(0), Always(true) {};
+	TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(), Always(true) {};
 	unsigned short OptionType;
 	EState State;
 	SPtr<TOpt> Option;

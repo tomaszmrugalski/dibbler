@@ -87,7 +87,7 @@ virtual ~SrvParser();
                      ParserOptStack.append(new TSrvParsGlobalOpt());    \
                      this->lex = lex;                                   \
                      CfgMgr = 0;                                        \
-                     nextHop = 0;                                       \
+                     nextHop.reset();                                   \
                      yynerrs = 0;                                       \
                      yychar = 0;                                        \
                      PDPrefix = 0;
@@ -507,7 +507,7 @@ NEXT_HOP_ IPV6ADDR_ '{'
 RouteList '}'
 {
     ParserOptStack.getLast()->addExtraOption(nextHop, false);
-    nextHop = 0;
+    nextHop.reset();
 }
 | NEXT_HOP_ IPV6ADDR_
 {
@@ -821,7 +821,7 @@ PDRangeList
 
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin($1, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax($1, prefix);
-	SPtr<THostRange> range = 0;
+	SPtr<THostRange> range;
 	if (*addr1<=*addr2)
 	    range = new THostRange(addr1,addr2);
 	else

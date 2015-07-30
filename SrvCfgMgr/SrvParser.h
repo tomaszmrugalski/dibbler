@@ -91,7 +91,7 @@ virtual ~SrvParser();
                      ParserOptStack.append(new TSrvParsGlobalOpt());    \
                      this->lex = lex;                                   \
                      CfgMgr = 0;                                        \
-                     nextHop = 0;                                       \
+                     nextHop.reset();                                   \
                      yynerrs = 0;                                       \
                      yychar = 0;                                        \
                      PDPrefix = 0;

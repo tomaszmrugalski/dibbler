@@ -97,7 +97,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 
             SPtr<TOpt> opt;
             ta->firstOption();
-            while (opt = ta->getOption() && (onLink == ADDRSTATUS_YES)) {
+            while ((opt = ta->getOption()) && (onLink == ADDRSTATUS_YES)) {
                 if (opt->getOptType() != OPTION_IAADDR)
                     continue;
 
@@ -112,7 +112,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 
             SPtr<TOpt> opt;
             ta->firstOption();
-            while (opt = ta->getOption() && (onLink == ADDRSTATUS_YES)) {
+            while ((opt = ta->getOption()) && (onLink == ADDRSTATUS_YES)) {
                 if (opt->getOptType() != OPTION_IAPREFIX)
                     continue;
 

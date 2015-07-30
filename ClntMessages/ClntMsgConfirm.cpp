@@ -20,7 +20,7 @@
 //  iaLst - contain all IA's to  be checked (they have to be in the same link)
 TClntMsgConfirm::TClntMsgConfirm(unsigned int iface,
                                  List(TAddrIA) iaLst)
-  :TClntMsg(iface, 0, CONFIRM_MSG) {
+    :TClntMsg(iface, SPtr<TIPv6Addr>(), CONFIRM_MSG) {
 
     IRT = CNF_TIMEOUT;
     MRT = CNF_MAX_RT;

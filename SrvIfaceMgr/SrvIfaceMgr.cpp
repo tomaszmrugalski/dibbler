@@ -202,7 +202,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     // read data
     sockid = receive(timeout, buf, bufsize, peer, myaddr);
     if (sockid < 0) {
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     SPtr<TSrvMsg> ptr;
@@ -210,11 +210,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     if (bufsize<4) {
         if (bufsize == 1 && buf[0] == CONTROL_MSG) {
             Log(Debug) << "Control message received." << LogEnd;
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         }
         Log(Warning) << "Received message is too short (" << bufsize
                      << ") bytes, at least 4 are required." << LogEnd;
-        return 0; //NULL
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     // check message type
@@ -254,15 +254,15 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     case LEASEQUERY_REPLY_MSG:
         Log(Warning) << "Illegal message type " << msgtype << " received."
                      << LogEnd;
-        return 0; //NULL;
+        return SPtr<TSrvMsg>(); // NULL
     default:
         Log(Warning) << "Message type " << msgtype << " not supported. Ignoring."
                      << LogEnd;
-        return 0; //NULL
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     if (!ptr)
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
 
     ptr->setLocalAddr(myaddr);
 
@@ -270,7 +270,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     if (!ptr->validateReplayDetection()) {
         Log(Warning) << "Auth: message replay detection failed, message dropped"
                      << LogEnd;
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     bool authOk = ptr->validateAuthInfo(buf, bufsize,
@@ -280,13 +280,13 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
         Log(Warning) << "Auth: authorization is mandatory, but incoming message"
                      << " does not include AUTH option. Message dropped." << LogEnd;
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
 
     if (SrvCfgMgr().getAuthDropUnauthenticated() && !authOk) {
-      Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
-		   << " Message dropped." << LogEnd;
-      return 0;
+        Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
+                     << " Message dropped." << LogEnd;
+        return SPtr<TSrvMsg>(); // NULL
     }
 #endif
 
@@ -360,9 +360,9 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     int hopTbl[HOP_COUNT_LIMIT];
     TOptList echoListTbl[HOP_COUNT_LIMIT];
     int relays=0; // number of nested RELAY_FORW messages
-    SPtr<TOptVendorData> remoteID = 0;
-    SPtr<TOptOptionRequest> echo = 0;
-    SPtr<TOpt> gen = 0;
+    SPtr<TOptVendorData> remoteID;
+    SPtr<TOptOptionRequest> echo;
+    SPtr<TOpt> gen;
     int ifindex = -1;
 
     char * relay_buf = buf;
@@ -378,16 +378,16 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         /* decode RELAY_FORW message */
         if (bufsize < 34) {
             Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         }
 
-        SPtr<TSrvOptInterfaceID> ptrIfaceID = 0;
+        SPtr<TSrvOptInterfaceID> ptrIfaceID;
 
 	how_found = "";
 
         char type = buf[0];
         if (type!=RELAY_FORW_MSG)
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         int hopCount = buf[1];
         int optRelayCnt = 0;
         int optIfaceIDCnt = 0;
@@ -406,13 +406,13 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
             buf += sizeof(uint16_t);
             bufsize -= sizeof(uint16_t);
 
-            gen = 0;
+            gen.reset();
 
             if (len > bufsize) {
                 Log(Warning) << "Truncated option " << code << ": " << bufsize
                              << " bytes remaining, but length is " << len
                              << "." << LogEnd;
-                return 0;
+                return SPtr<TSrvMsg>(); // NULL
             }
 
             switch (code) {
@@ -420,7 +420,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                 if (bufsize < 1) {
                     Log(Warning) << "Truncated INTERFACE_ID option (length: " << bufsize
                                  << ") in RELAY_FORW message. Message dropped." << LogEnd;
-                    return 0;
+                    return SPtr<TSrvMsg>(); // NULL
                 }
                 ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
                 gen = (Ptr*)ptrIfaceID;
@@ -480,19 +480,19 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         if (relays> HOP_COUNT_LIMIT) {
             Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT
                        << " times. Message dropped." << LogEnd;
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         }
 
         if (optRelayCnt!=1) {
             Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was "
                        << "expected. Message dropped." << LogEnd;
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         }
         if (optIfaceIDCnt>1) {
             Log(Error) << "More than one (" << optIfaceIDCnt
                        << ") interface-ID options received, but exactly 1 was expected. "
                        << "Message dropped." << LogEnd;
-            return 0;
+            return SPtr<TSrvMsg>(); // NULL
         }
 
         Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
@@ -545,7 +545,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
 
     if (ifindex == -1) {
 	Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
-	return 0;
+        return SPtr<TSrvMsg>(); // NULL
     } else {
 	SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
 	Log(Notice) << "Found relay " << cfgIface->getFullName()
@@ -554,7 +554,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
 
     SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
     if (!msg) {
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
     for (int i=0; i<relays; i++) {
         msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
@@ -565,8 +565,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()
                    << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
         msg->setRemoteID(remoteID);
-        remoteID = 0;
+
+        /// @todo: WTF is that? ----v
+        remoteID.reset();
         remoteID = msg->getRemoteID();
+        
         PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
@@ -579,7 +582,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
     if (bufsize < 4) {// 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
         Log(Warning) << "Truncated message received (len " << bufsize
                      << ", at least 4 is required)." << LogEnd;
-        return 0;
+        return SPtr<TSrvMsg>(); // NULL
     }
     switch (buf[0]) {
     case SOLICIT_MSG:
@@ -602,7 +605,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
         return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
     default:
         Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-        return 0; //NULL;;
+        return SPtr<TSrvMsg>(); // NULL
     }
 }
 

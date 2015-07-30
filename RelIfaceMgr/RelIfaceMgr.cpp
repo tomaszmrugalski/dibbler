@@ -98,12 +98,12 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
     sockid = TIfaceMgr::select(timeout, data, dataLen, peer, myaddr);
     if (sockid < 0) {
         Log(Warning) << "Socket read error: " << sockid << LogEnd;
-        return 0;
+        return SPtr<TRelMsg>(); // NULL
     }
 
     if (dataLen<4) {
         Log(Warning) << "Received message is truncated (" << dataLen << " bytes)." << LogEnd;
-        return 0; //NULL
+        return SPtr<TRelMsg>(); // NULL
     }
 
     // check message type
@@ -111,7 +111,7 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
     if (msgtype > LEASEQUERY_REPLY_MSG) {
         Log(Warning) << "Invalid message type " << msgtype << " received." << LogEnd;
-        return 0;
+        return SPtr<TRelMsg>(); // NULL
     }
     SPtr<TMsg> ptr;
     SPtr<TIfaceIface> iface;
@@ -128,7 +128,7 @@ SPtr<TRelMsg> TRelIfaceMgr::select(unsigned long timeout) {
 
     if (sock->getPort()!=DHCPSERVER_PORT) {
         Log(Error) << "Message was received on invalid (" << sock->getPort() << ") port." << LogEnd;
-        return 0;
+        return SPtr<TRelMsg>(); // NULL
     }
 
     return decodeMsg(iface, peer, data, dataLen);
@@ -164,7 +164,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     /* decode RELAY_FORW message */
     if (bufsize < 34) {
 	Log(Warning) << "Truncated RELAY_REPL message received." << LogEnd;
-	return 0;
+        return SPtr<TRelMsg>(); // NULL
     }
 
     // char type = buf[0]; // ignore it
@@ -182,7 +182,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	if (len>bufsize) {
 	    Log(Error) << "Message RELAY-REPL truncated. There are " << (bufsize-len) 
 		       << " bytes left to parse. Message dropped." << LogEnd;
-	    return 0;
+            return SPtr<TRelMsg>(); // NULL
 	}
 	buf     += 4;
 	bufsize -= 4;
@@ -190,12 +190,12 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	case OPTION_INTERFACE_ID:
 	    if (bufsize<4) {
 		Log(Warning) << "Truncated INTERFACE_ID option in RELAY_REPL message. Message dropped." << LogEnd;
-		return 0;
+                return SPtr<TRelMsg>(); // NULL
 	    }
 	    if (len!=4) {
 		Log(Warning) << "Invalid INTERFACE_ID option, expected length " << 4
 			     << ", actual length " << len << "." << LogEnd;
-		return 0;
+                return SPtr<TRelMsg>(); // NULL
 	    }
 
 	    ptrIfaceID = new TRelOptInterfaceID(buf, bufsize, 0);
@@ -230,7 +230,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	if (!RelCfgMgr().guessMode()) {
 	    /* guessMode disabled */
 	    Log(Warning) << "InterfaceID option is missing, guessMode disabled, unable to forward. Packet dropped." << LogEnd;
-	    return 0;
+            return SPtr<TRelMsg>(); // NULL
 	}
 
 	/* guess mode enabled, let's find any interface */
@@ -243,7 +243,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	}
 	if (!tmp) {
 	    Log(Error) << "Guess-mode failed. Unable to find any interface the message can be relayed on. Please send interface-id option in server replies." << LogEnd;
-	    return 0;
+            return SPtr<TRelMsg>(); // NULL
 	}
 	Log(Notice) << "Guess-mode successful. Using " << tmp->getFullName() << " as destination interface." << LogEnd;
 	ptrIfaceID = new TRelOptInterfaceID(tmp->getInterfaceID(), 0);
@@ -263,7 +263,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
 	break;
     case RELAY_FORW_MSG:
 	Log(Error) << "RELAY_REPL contains RELAY_FORW message." << LogEnd;
-	return 0;
+        return SPtr<TRelMsg>(); // NULL
     default:
 	msg = this->decodeGeneric(iface, peer, relayBuf, relayLen);
     };
@@ -276,7 +276,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
 					  SPtr<TIPv6Addr> peer, 
 					  char * data, int dataLen) {
     if (dataLen <= 0) 
-	return 0;
+        return SPtr<TRelMsg>(); // NULL
     
     // create specific message object
     switch (data[0]) {
@@ -300,7 +300,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface,
     case RELAY_REPL_MSG:
 	return decodeRelayRepl(iface, peer, data, dataLen);
     case RECONFIGURE_MSG:
-	return 0;
+        return SPtr<TRelMsg>(); // NULL
     }
 }
 

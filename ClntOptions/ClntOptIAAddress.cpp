@@ -22,7 +22,7 @@
 TClntOptIAAddress::TClntOptIAAddress(char * buf, int bufSize, TMsg* parent)
 	:TOptIAAddress(buf, bufSize, parent)
 {
-    SPtr<TOpt> opt = 0;
+    SPtr<TOpt> opt;
     int MsgType = 0;
     if (parent)
 	parent->getType();
@@ -47,7 +47,7 @@ TClntOptIAAddress::TClntOptIAAddress(char * buf, int bufSize, TMsg* parent)
 
 	if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
 	{
-	    opt = 0;
+	    opt.reset();
 	    switch (code)
 	    {
 	    case OPTION_STATUS_CODE:

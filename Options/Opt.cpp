@@ -63,12 +63,12 @@ TOptPtr TOpt::getOption() {
 
 TOptPtr TOpt::getOption(int optType) {
     firstOption();
-    TOptPtr opt = 0;
+    TOptPtr opt;
     while(opt=getOption()) {
         if (opt->getOptType()==optType)
             return opt;
     }
-    return 0;
+    return TOptPtr();
 }
 
 void TOpt::addOption(TOptPtr opt) {
@@ -98,7 +98,7 @@ bool TOpt::isValid() const {
 /// @return
 bool TOpt::delOption(uint16_t type) {
     firstOption();
-    TOptPtr opt = 0;
+    TOptPtr opt;
     bool del = false;
     while(opt=getOption()) {
         if (opt->getOptType()==type) {

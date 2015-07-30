@@ -12,7 +12,7 @@ namespace {
 /// There are 3 classes here:
 ///          Base
 ///           |
-///    /------+-----\
+///    +------+-----+
 ///    |            |
 /// DerivedA     DerivedB
 ///
@@ -139,7 +139,7 @@ TEST_F(SmartPtrTest, refcounting) {
     EXPECT_TRUE(b);
     EXPECT_TRUE(c);
 
-    a = 0;
+    a.reset();
     EXPECT_EQ(1, a.refCount()); // NULL
     EXPECT_EQ(2, b.refCount());
     EXPECT_EQ(2, c.refCount());
@@ -147,7 +147,7 @@ TEST_F(SmartPtrTest, refcounting) {
     EXPECT_TRUE(b);
     EXPECT_TRUE(c);
 
-    b = 0;
+    b.reset();
     EXPECT_EQ(1, a.refCount()); // NULL
     EXPECT_EQ(1, b.refCount()); // NULL
     EXPECT_EQ(1, c.refCount());
@@ -158,8 +158,8 @@ TEST_F(SmartPtrTest, refcounting) {
     // Check that the object is still not destroyed
     EXPECT_EQ(1, static_value);
 
-    c = 0; // This will destroy the last pointer, thus
-           // triggering object destruction
+    c.reset(); // This will destroy the last pointer, thus
+               // triggering object destruction
     EXPECT_EQ(0, static_value);
     EXPECT_FALSE(a);
     EXPECT_FALSE(b);
@@ -209,4 +209,4 @@ TEST_F(SmartPtrTest, pointer_cast_failure) {
     ASSERT_EQ(1, base.refCount());
 }
 
-};
+} // end of anonymous namespace

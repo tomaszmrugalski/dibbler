@@ -348,14 +348,14 @@ SPtr <TIfaceSocket> TIfaceIface::getSocket() {
 /*
  * returns socket by FileDescriptor (or NULL, if no such socket exists)
  */
-SPtr <TIfaceSocket> TIfaceIface::getSocketByFD(int fd) {
+SPtr<TIfaceSocket> TIfaceIface::getSocketByFD(int fd) {
     SPtr<TIfaceSocket> ptr;
     SocketsLst.first();
     while ( ptr = SocketsLst.get() ) {
               if ( ptr->getFD()==fd )
                   return ptr;
     }
-    return 0; // NULL
+    return SPtr<TIfaceSocket>(); // NULL
 }
 
 /*
@@ -382,7 +382,7 @@ SPtr<TIfaceSocket> TIfaceIface::getSocketByAddr(SPtr<TIPv6Addr> addr) {
               if ( *ptr->getAddr()==*addr )
                   return ptr;
     }
-    return 0; // NULL
+    return SPtr<TIfaceSocket>(); // NULL
 }
 
 void TIfaceIface::setPrefixLength(int len) {

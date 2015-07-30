@@ -70,7 +70,7 @@ SPtr<TSrvCfgOptions> TSrvCfgIface::getClientException(SPtr<TDUID> duid,
             return x;
         }
     }
-    return 0;
+    return SPtr<TSrvCfgOptions>();
 }
 
 /// @brief Checks if address is reserved.
@@ -313,7 +313,7 @@ SPtr<TSrvCfgTA> TSrvCfgIface::getTA(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAd
             return ta;
     }
 
-    return 0;
+    return SPtr<TSrvCfgTA>(); // NULL
 }
 
 SPtr<TSrvCfgAddrClass> TSrvCfgIface::getAddrClass() {
@@ -327,7 +327,7 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getClassByID(unsigned long id) {
         if (ptrClass->getID() == id)
             return ptrClass;
     }
-    return 0;
+    return SPtr<TSrvCfgAddrClass>(); // NULL
 }
 
 void TSrvCfgIface::addClntAddr(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false*/) {
@@ -390,7 +390,7 @@ SPtr<TSrvCfgAddrClass> TSrvCfgIface::getRandomClass(SPtr<TDUID> clntDuid,
     // we are out of addresses, or we really don't like this client
     Log(Warning) << "No class is available for client (duid=" << clntDuid->getPlain() << ", addr="
                  << clntAddr->getPlain() << ")." << LogEnd;
-    return 0;
+    return SPtr<TSrvCfgAddrClass>(); // NULL
 }
 
 long TSrvCfgIface::countAddrClass() const {
@@ -408,7 +408,7 @@ SPtr<TSrvCfgPD> TSrvCfgIface::getPDByID(unsigned long id) {
         if (ptrPD->getID() == id)
             return ptrPD;
     }
-    return 0;
+    return SPtr<TSrvCfgPD>(); // NULL
 }
 
 bool TSrvCfgIface::addClntPrefix(SPtr<TIPv6Addr> ptrAddr, bool quiet /* =false */) {
@@ -524,7 +524,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
         Relay_ = false;
         RelayName_ = "";
         RelayID_ = -1;
-        RelayInterfaceID_ = 0;
+        RelayInterfaceID_.reset();
     }
 
     TSrvCfgOptions::setOptions(opt);
@@ -639,9 +639,10 @@ void TSrvCfgIface::setFQDNLst(List(TFQDN) *fqdn) {
  *
  * @return
  */
-SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, const std::string& hint) {
+SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
+                                      const std::string& hint) {
 
-    SPtr<TFQDN> alternative = 0; // best FQDN found for that client
+    SPtr<TFQDN> alternative; // best FQDN found for that client
     SPtr<TFQDN> foo;
 
     FQDNLst_.first();
@@ -692,7 +693,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     default:
     {
         Log(Error) << "FQDN: Invalid unknown-fqdn mode specified (" << UnknownFQDN_ << ")." << LogEnd;
-        return 0;
+        return SPtr<TFQDN>(); // NULL
     }
     case UNKNOWN_FQDN_REJECT:
     {
@@ -700,7 +701,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
                   << "mentioned in server configuration. Server is configured to "
                   << "drop such hints. To accept them, please "
                   << "add 'accept-unknown-fqdn X' in the server.conf (with X>0)." << LogEnd;
-        return 0;
+        return SPtr<TFQDN>(); // NULL
     }
     case UNKKOWN_FQDN_ACCEPT_POOL:
     {
@@ -756,7 +757,7 @@ SPtr<TFQDN> TSrvCfgIface::getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, co
     }
 
     // not found
-    return 0;
+    return SPtr<TFQDN>(); // NULL
 }
 
 SPtr<TDUID> TSrvCfgIface::getFQDNDuid(const std::string& name) {
@@ -817,11 +818,6 @@ void TSrvCfgIface::delTAAddr() {
         return;
     }
     ta->decrAssigned();
-}
-
-// subnet management
-void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> prefix, uint8_t length) {
-    Subnets_.push_back(THostRange(prefix, length));
 }
 
 void TSrvCfgIface::addSubnet(SPtr<TIPv6Addr> min, SPtr<TIPv6Addr> max) {

@@ -2,7 +2,10 @@
  Dibbler code TODO
 -------------------
 
-Note: This is a scratchpad. It just happens to be available with the rest of the code.
+Note: This is a scratchpad. It just happens to be available with the
+   rest of the code.
+
+- remove TClntOptStatusCode, TClntOptIAAddress
 
 - must include *.l *.y files in dist
 

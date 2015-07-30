@@ -52,7 +52,7 @@ SPtr<TIPv6Addr> TClntMsgReply::getFirstAddr() {
 	}
     }
 
-    return 0;
+    return SPtr<TIPv6Addr>(); // NULL
 }
 
 TClntMsgReply::~TClntMsgReply() {

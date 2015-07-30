@@ -181,7 +181,7 @@ virtual ~SrvParser();
                      ParserOptStack.append(new TSrvParsGlobalOpt());    \
                      this->lex = lex;                                   \
                      CfgMgr = 0;                                        \
-                     nextHop = 0;                                       \
+                     nextHop.reset();                                   \
                      yynerrs = 0;                                       \
                      yychar = 0;                                        \
                      PDPrefix = 0;
@@ -2288,7 +2288,7 @@ case 149:
 #line 508 "SrvParser.y"
 {
     ParserOptStack.getLast()->addExtraOption(nextHop, false);
-    nextHop = 0;
+    nextHop.reset();
 ;
     break;}
 case 150:
@@ -2650,7 +2650,7 @@ case 196:
 
 	SPtr<TIPv6Addr> addr1 = this->getRangeMin(yyvsp[-2].addrval, prefix);
 	SPtr<TIPv6Addr> addr2 = this->getRangeMax(yyvsp[-2].addrval, prefix);
-	SPtr<THostRange> range = 0;
+	SPtr<THostRange> range;
 	if (*addr1<=*addr2)
 	    range = new THostRange(addr1,addr2);
 	else

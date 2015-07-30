@@ -364,15 +364,15 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getExceptionAddr()
 {
     SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
     if (!ptrIface) {
-        return 0;
+        return SPtr<TIPv6Addr>();
     }
 
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, Parent, false/* false = verbose */);
-
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(ClntDuid, Parent, false
+                                                           /* false = verbose */);
     if (ex)
         return ex->getAddr();
 
-    return 0;
+    return SPtr<TIPv6Addr>();
 }
 
 // constructor used only in RENEW, REBIND, DECLINE and RELEASE
@@ -552,7 +552,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
     if (!ptrIface) {
         Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
                    << Iface << LogEnd;
-        return 0; // NULL
+        return SPtr<TIPv6Addr>(); // NULL
     }
 
     // check if this address is ok
@@ -562,31 +562,32 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
     if (*anyaddr==*hint) {
         Log(Debug) << "Client requested unspecified (" << *hint
            << ") address. Hint ignored." << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
     }
 
     // is it multicast address (ff...)?
     if ((*(hint->getAddr()))==0xff) {
         Log(Debug) << "Client requested multicast (" << *hint
                    << ") address. Hint ignored." << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
     }
 
     // is it link-local address (fe80::...)?
     char linklocal[]={0xfe, 0x80};
     if (!memcmp(hint->getAddr(),linklocal,2)) {
-	Log(Debug) << "Client requested link-local (" << *hint << ") address. Hint ignored." << LogEnd;
-        return 0;
+	Log(Debug) << "Client requested link-local (" << *hint << ") address. Hint ignored."
+                   << LogEnd;
+        return SPtr<TIPv6Addr>(); // NULL
     }
 
     SPtr<TSrvCfgAddrClass> ptrClass;
     ptrClass = SrvCfgMgr().getClassByAddr(this->Iface, hint);
 
     if (!ptrClass)
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
 
     if ( !ptrClass->clntSupported(ClntDuid, ClntAddr, clientReq) )
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
 
     // If the Class is valid and support the Client (based on duid, addr, clientclass)
 
@@ -616,7 +617,7 @@ SPtr<TIPv6Addr> TSrvOptIA_NA::getAddressHint(SPtr<TSrvMsg> clientReq, SPtr<TIPv6
         return addr;
     }
 
-    return 0;
+    return SPtr<TIPv6Addr>(); // NULL
 }
 
 bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {

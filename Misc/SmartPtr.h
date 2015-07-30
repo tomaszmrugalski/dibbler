@@ -57,8 +57,6 @@ public:
 
     SPtr(const SPtr& ref);
 
-    SPtr(int onlyNull);
-
     SPtr& operator=(const SPtr& old);
 
     /// @brief Resets a pointer (essentially assign NULL value)
@@ -192,22 +190,6 @@ const T* SPtr<T>::get() const {
         return 0;
     }
     return (T*)(ptr->ptr);
-}
-
-
-/// @brief Cludge, remove it ! It's is called in eg. instruction: return NULL;
-/// and SPtr is returned in function
-/// @todo: Remove this cludge completely
-template <class T>
-SPtr<T>::SPtr(int x)
-{
-    ptr = new Ptr(); //this->ptr->ptr is NULL
-    if (x == 0) {
-        // nothing to do here.
-    } else {
-        ptr->ptr = (void*)x;
-        ptr->refcount = 1;
-    }
 }
 
 template <class T>

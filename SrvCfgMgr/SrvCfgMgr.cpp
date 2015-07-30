@@ -341,7 +341,7 @@ long TSrvCfgMgr::countIface() {
  */
 SPtr<TSrvCfgIface> TSrvCfgMgr::checkInactiveIfaces() {
     if (!InactiveLst.count())
-        return 0;
+        return SPtr<TSrvCfgIface>(); // NULL
 
     SrvIfaceMgr().redetectIfaces();
     SPtr<TSrvCfgIface> x;
@@ -372,7 +372,7 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::checkInactiveIfaces() {
         }
     }
 
-    return 0;
+    return SPtr<TSrvCfgIface>(); // NULL
 }
 
 
@@ -446,7 +446,7 @@ SPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SPtr<TIPv6Addr> add
 
     if (!ptrIface) {
         Log(Error) << "Trying to find class on unknown (" << iface <<") interface." << LogEnd;
-        return 0; // NULL
+        return SPtr<TSrvCfgAddrClass>(); // NULL
     }
 
     SPtr<TSrvCfgAddrClass> ptrClass;
@@ -456,7 +456,7 @@ SPtr<TSrvCfgAddrClass> TSrvCfgMgr::getClassByAddr(int iface, SPtr<TIPv6Addr> add
             return ptrClass;
     }
 
-    return 0; // NULL
+    return SPtr<TSrvCfgAddrClass>(); // NULL
 }
 
 /**
@@ -475,7 +475,7 @@ SPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SPtr<TIPv6Addr> addr)
 
     if (!ptrIface) {
         Log(Error) << "Trying to find class on unknown (" << iface <<") interface." << LogEnd;
-        return 0;
+        return SPtr<TSrvCfgPD>();
     }
 
     SPtr<TSrvCfgPD> ptrClass;
@@ -485,7 +485,7 @@ SPtr<TSrvCfgPD> TSrvCfgMgr::getClassByPrefix(int iface, SPtr<TIPv6Addr> addr)
             return ptrClass;
     }
 
-    return 0;
+    return SPtr<TSrvCfgPD>();
 }
 
 
@@ -499,7 +499,7 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getRandomAddr(SPtr<TDUID> clntDuid,
 
     ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-        return 0;
+        return SPtr<TIPv6Addr>();
     }
 
     any = new TIPv6Addr();
@@ -727,7 +727,7 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByID(int iface) {
     }
     Log(Error) << "Invalid interface (ifindex=" << iface
                << ") specifed: no such interface." << LogEnd;
-    return 0; // NULL
+    return SPtr<TSrvCfgIface>(); // NULL
 }
 
 SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
@@ -740,7 +740,7 @@ SPtr<TSrvCfgIface> TSrvCfgMgr::getIfaceByName(const std::string& name) {
     }
     Log(Error) << "Invalid interface (name=" << name
                << ") specifed: no such interface." << LogEnd;
-    return 0; // NULL
+    return SPtr<TSrvCfgIface>(); // NULL
 }
 
 
@@ -1083,7 +1083,7 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     if (!ptrIface) {
         Log(Warning) << "No global DNS Update address specified and can't find dns-addres on "
                      << "interface " << iface << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
     }
 
     SPtr<TIPv6Addr> DNSAddr;
@@ -1091,7 +1091,7 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
     SPtr<TOptAddrLst> opt = (Ptr*) ptrIface->getExtraOption(OPTION_DNS_SERVERS);
     if (!opt) {
         Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>(); // NULL
     }
     List(TIPv6Addr) DNSSrvLst = opt->getAddrLst();
     DNSSrvLst.first();

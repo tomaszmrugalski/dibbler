@@ -110,11 +110,11 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         if (bufsize<4) {
             if (bufsize == 1 && buf[0] == CONTROL_MSG) {
                 Log(Debug) << "Control message received." << LogEnd;
-                return 0;
+                return SPtr<TClntMsg>(); // NULL
             }
             Log(Warning) << "Received message is too short (" << bufsize
                          << ") bytes, at least 4 bytes are required.." << LogEnd;
-            return 0; // NULL
+            return SPtr<TClntMsg>(); // NULL
         }
         int msgtype = buf[0];
         SPtr<TClntMsg> ptr;
@@ -150,7 +150,7 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         default:
             Log(Warning) << "Message type " << msgtype << " is not supposed to "
                          << "be received by client. Check your relay/server configuration." << LogEnd;
-            return 0;
+            return SPtr<TClntMsg>(); // NULL
         }
 
 #ifndef MOD_DISABLE_AUTH
@@ -163,13 +163,13 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
 
             /// @todo Implement AUTH_DROP_UNAUTH_ on client-side
             Log(Warning) << "Message dropped, authentication validation failed." << LogEnd;
-            return 0;
+            return SPtr<TClntMsg>(); // NULL
 	}
 #endif
 	return ptr;
 
     } else {
-        return 0;
+        return SPtr<TClntMsg>(); // NULL
     }
 }
 

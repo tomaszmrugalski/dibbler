@@ -27,7 +27,7 @@
 using namespace std;
 
 TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
-  :TClntMsg(iface, 0, REBIND_MSG)
+  :TClntMsg(iface, SPtr<TIPv6Addr>(), REBIND_MSG)
 {
     Options=ptrOpts;
     IRT=REB_TIMEOUT;
@@ -257,7 +257,7 @@ void TClntMsgRebind::doDuties()
             case OPTION_IA_PD:
               {
                 SPtr<TClntOptIA_PD> ptrPD = (Ptr*)ptrOpt;
-                ptrPD->setContext(0, 0, this);
+                ptrPD->setContext(SPtr<TDUID>(), SPtr<TIPv6Addr>(), this);
                 ptrPD->delPrefixes();
                 break;
               }

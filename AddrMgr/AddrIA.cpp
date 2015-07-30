@@ -144,7 +144,7 @@ void TAddrIA::setMulticast()
 SPtr<TIPv6Addr> TAddrIA::getSrvAddr()
 {
     if (!this->Unicast) 
-        return 0;
+        return SPtr<TIPv6Addr>();
     else
         return SrvAddr;
 }
@@ -185,15 +185,17 @@ SPtr<TAddrAddr> TAddrIA::getAddr()
  */
 SPtr<TAddrAddr> TAddrIA::getAddr(SPtr<TIPv6Addr> addr)
 {
-    if (!addr)
-	return 0;
+    if (!addr) {
+	return SPtr<TAddrAddr>();
+    }
     AddrLst.first();
     SPtr <TAddrAddr> ptrAddr;
     while (ptrAddr = AddrLst.get() ) {
         if ( (*addr)==(*(ptrAddr->get())) )
             return ptrAddr;
     }
-    return 0;
+
+    return SPtr<TAddrAddr>();
 }
 
 int TAddrIA::countAddr()

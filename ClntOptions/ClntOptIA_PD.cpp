@@ -231,8 +231,7 @@ SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
         if ((*prefix) == (*iaprefix->getPrefix()))
             return iaprefix;
     }
-        //if ((*prefix)==(*optPrefix->getPrefix()))
-    return 0;
+    return SPtr<TClntOptIAPrefix>(); // NULL
 }
 
 bool TClntOptIA_PD::addPrefixes()
@@ -407,6 +406,6 @@ void TClntOptIA_PD::setState(EState state)
 
 void TClntOptIA_PD::clearContext()
 {
-    DUID = 0;
+    DUID.reset();
     OriginalMsg = 0;
 }

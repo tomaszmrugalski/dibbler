@@ -21,8 +21,8 @@ using namespace std;
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
     :Preference_(SERVER_DEFAULT_PREFERENCE), RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
      IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE), ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE),
-     Unicast_(0), LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false),
-     RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(0),
+     Unicast_(), LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false),
+     RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(),
      FQDNSupport_(false), FQDNMode_(0/*DNS_UPDATE_MODE_NONE*/),
      UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN), FQDNDomain_("")
 {
@@ -238,13 +238,13 @@ const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
     return ExtraOpts;
 }
 
-SPtr<TOpt> TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
+TOptPtr TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
     for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
     {
         if ((*opt)->getOptType() == type)
             return *opt;
     }
-    return 0;
+    return TOptPtr(); // NULL
 }
 
 const TOptList& TSrvParsIfaceOpt::getForcedOptions() {

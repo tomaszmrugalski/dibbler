@@ -16,13 +16,13 @@ using namespace std;
 
 TRelCfgIface::TRelCfgIface(int ifindex)
     :Name_("[unknown]"), ID_(ifindex), InterfaceID_(-1),
-     ClientUnicast_(0), ServerUnicast_(0),
+     ClientUnicast_(), ServerUnicast_(),
      ClientMulticast_(false), ServerMulticast_(false) {
 }
 
 TRelCfgIface::TRelCfgIface(const std::string& ifaceName)
     :Name_(ifaceName), ID_(-1), InterfaceID_(-1),
-     ClientUnicast_(0), ServerUnicast_(0),
+     ClientUnicast_(), ServerUnicast_(),
      ClientMulticast_(false), ServerMulticast_(false) {
 }
 

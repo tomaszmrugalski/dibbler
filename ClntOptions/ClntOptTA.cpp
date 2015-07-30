@@ -18,11 +18,11 @@
 #include "ClntIfaceMgr.h"
 #include "Logger.h"
 
-/** 
- * Constructor used during 
- * 
- * @param iaid 
- * @param parent 
+/**
+ * Constructor used during
+ *
+ * @param iaid
+ * @param parent
  */
 TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
     :TOptTA(iaid, parent), Iface(-1)
@@ -30,46 +30,47 @@ TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
     // don't put any suboptions
 }
 
-/** 
+/**
  * Constructor used during option reception
- * 
- * @param buf 
- * @param bufsize 
- * @param parent 
+ *
+ * @param buf
+ * @param bufsize
+ * @param parent
  */
 TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
     :TOptTA(buf,bufsize, parent), Iface(-1)
 {
     int pos=0, length=0;
-    while(pos<bufsize) 
+    while(pos<bufsize)
     {
-	pos+=length;
+        pos+=length;
         int code= buf[pos]*256+buf[pos+1];
         pos+=2;
         int length=buf[pos]*256+buf[pos+1];
         pos+=2;
-	SPtr<TOpt> opt = 0;
+        SPtr<TOpt> opt;
 
-	if(!allowOptInOpt(parent->getType(),OPTION_IA_TA,code)) {
-	    Log(Warning) << "Option " << code << " is not allowed as suboption of " << OPTION_IA_TA << LogEnd;
-	    continue;
-	}
+        if(!allowOptInOpt(parent->getType(),OPTION_IA_TA,code)) {
+            Log(Warning) << "Option " << code << " is not allowed as suboption of "
+                         << OPTION_IA_TA << LogEnd;
+            continue;
+        }
 
-	switch (code) {
-	case OPTION_IAADDR:
-	    opt = new TClntOptIAAddress(buf+pos,length,this->Parent);
-	    break;
-	case OPTION_STATUS_CODE:
-	    opt = new TClntOptStatusCode(buf+pos,length,this->Parent);
-	    break;
-	default:
-	    Log(Warning) <<"Option " << code<< " in message (type=" << parent->getType() 
-			 <<") is currently not supported."<<LogEnd;
-	    break;
-	}
-	if( (opt) && (opt->isValid()) )
-	    SubOptions.append(opt);
-	pos+=length;
+        switch (code) {
+        case OPTION_IAADDR:
+            opt = new TClntOptIAAddress(buf+pos,length,this->Parent);
+            break;
+        case OPTION_STATUS_CODE:
+            opt = new TClntOptStatusCode(buf+pos,length,this->Parent);
+            break;
+        default:
+            Log(Warning) <<"Option " << code<< " in message (type=" << parent->getType()
+                         <<") is currently not supported."<<LogEnd;
+            break;
+        }
+        if( (opt) && (opt->isValid()) )
+            SubOptions.append(opt);
+        pos+=length;
     }
 }
 
@@ -79,7 +80,7 @@ TClntOptTA::TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent)
     ta->firstAddr();
     SPtr<TAddrAddr> addr;
     while (addr=ta->getAddr()) {
-	SubOptions.append(new TClntOptIAAddress(addr->get(), 0, 0, parent));
+        SubOptions.append(new TClntOptIAAddress(addr->get(), 0, 0, parent));
     }
 }
 
@@ -97,7 +98,8 @@ SPtr<TClntOptIAAddress> TClntOptTA::getAddr()
             if (ptr->getOptType()==OPTION_IAADDR)
                 return ptr;
     } while (ptr);
-    return 0;
+
+    return SPtr<TClntOptIAAddress>(); // NULL
 }
 
 int TClntOptTA::countAddr()
@@ -106,7 +108,7 @@ int TClntOptTA::countAddr()
     SubOptions.first();
     int count = 0;
     while ( ptr = SubOptions.get() ) {
-        if (ptr->getOptType() == OPTION_IAADDR) 
+        if (ptr->getOptType() == OPTION_IAADDR)
             count++;
     }
     return count;
@@ -128,10 +130,10 @@ TClntOptTA::~TClntOptTA()
 
 }
 
-/** 
+/**
  * This function sets everything in motion, i.e. sets up temporary addresses
- * 
- * @return 
+ *
+ * @return
  */bool TClntOptTA::doDuties()
 {
     // find this TA in addrMgr...
@@ -146,16 +148,17 @@ TClntOptTA::~TClntOptTA()
 
     SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
     if (!duid) {
-	Log(Error) << "Unable to find proper DUID while setting TA." << LogEnd;
-	return false;
+        Log(Error) << "Unable to find proper DUID while setting TA." << LogEnd;
+        return false;
     }
 
     if (!ta) {
-	Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB."
+        Log(Debug) << "Creating TA (iaid=" << this->getIAID() << ") in the addrDB."
                    << LogEnd;
-        ta = new TAddrIA(cfgIface->getName(), this->Iface, IATYPE_TA, 0 /*if
-                         unicast, then this->Addr*/, duid->getDUID(), DHCPV6_INFINITY,
-		         DHCPV6_INFINITY, this->getIAID());
+        ta = new TAddrIA(cfgIface->getName(), this->Iface, IATYPE_TA,
+                         SPtr<TIPv6Addr>() /*if unicast, then this->Addr*/,
+                         duid->getDUID(), DHCPV6_INFINITY,
+                         DHCPV6_INFINITY, this->getIAID());
         ClntAddrMgr().addTA(ta);
     }
 
@@ -165,31 +168,31 @@ TClntOptTA::~TClntOptTA()
 
     SPtr<TIfaceIface> ptrIface;
     ptrIface = ClntIfaceMgr().getIfaceByID(this->Iface);
-    if (!ptrIface) 
+    if (!ptrIface)
     {
-	Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
-	return true;
+        Log(Error) << "Interface " << this->Iface << " not found." << LogEnd;
+        return true;
     }
 
     // for each address in IA option...
     this->firstAddr();
     while (optAddr = this->getAddr() ) {
         addr = ta->getAddr( optAddr->getAddr() );
-        
+
         if (!addr) { // - no such address in DB -
             if (!optAddr->getValid()) {
                 Log(Warning) << "Server send new addr with valid=0." << LogEnd;
-		continue;
-	    }
-	    // add this address in addrDB...
-	    ta->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
-	    ta->setDUID(duid->getDUID()
+                continue;
+            }
+            // add this address in addrDB...
+            ta->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
+            ta->setDUID(duid->getDUID()
 );
-	    // ... and in IfaceMgr - 
-	    ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(), ptrIface->getPrefixLength());
-	    Log(Notice) << "Temp. address " << *optAddr->getAddr() << " has been added to "
-			<< ptrIface->getName() << "/" << ptrIface->getID() 
-			<< " interface." << LogEnd;
+            // ... and in IfaceMgr -
+            ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(), ptrIface->getPrefixLength());
+            Log(Notice) << "Temp. address " << *optAddr->getAddr() << " has been added to "
+                        << ptrIface->getName() << "/" << ptrIface->getID()
+                        << " interface." << LogEnd;
 
         } else { // - we have this addr in DB -
 
@@ -202,7 +205,7 @@ TClntOptTA::~TClntOptTA()
             }
 
             // set up new options in IfaceMgr
-	    ptrIface->updateAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
+            ptrIface->updateAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
             // set up new options in addrDB
             addr->setPref(optAddr->getPref());
             addr->setValid(optAddr->getValid());
@@ -218,14 +221,14 @@ TClntOptTA::~TClntOptTA()
 
     ta->setState(STATE_CONFIGURED);
     return true;
-} 
+}
 
 SPtr<TClntOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
 {
     SPtr<TClntOptIAAddress> optAddr;
     this->firstAddr();
     while(optAddr=this->getAddr())
-    {   
+    {
         //!memcmp(optAddr->getAddr(),addr,16)
         if ((*addr)==(*optAddr->getAddr()))
             return optAddr;
@@ -239,8 +242,8 @@ void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
     if (ptrIA)
         ptrIA->delAddr(addr);
     else
-	Log(Warning) << "Unable to release addr: IA (" 
-		     << IAID << ") not present in addrDB." << LogEnd;
+        Log(Warning) << "Unable to release addr: IA ("
+                     << IAID << ") not present in addrDB." << LogEnd;
 }
 
 bool TClntOptTA::isValid() const

@@ -83,7 +83,8 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 
     }
     if (!count) {
-	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required LQ_QUERY option missing.", this));
+	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY,
+                                             "Required LQ_QUERY option missing.", this));
 	return true;
     }
 
@@ -101,7 +102,7 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
     SPtr<TOpt> opt;
     q->firstOption();
-    SPtr<TSrvOptIAAddress> addr = 0;
+    SPtr<TSrvOptIAAddress> addr;
     SPtr<TIPv6Addr> link = q->getLinkAddr();
     
     while ( opt = q->getOption() ) {
@@ -109,7 +110,8 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
 	    addr = (Ptr*) opt;
     }
     if (!addr) {
-	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY, "Required IAADDR suboption missing.", this));
+	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY,
+                                             "Required IAADDR suboption missing.", this));
 	return true;
     }
 
@@ -117,8 +119,10 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient( addr->getAddr() );
     
     if (!cli) {
-	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain() << " not found." << LogEnd;
-	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this address found.", this) );
+	Log(Warning) << "LQ: Assignement for client addr=" << addr->getAddr()->getPlain()
+                     << " not found." << LogEnd;
+	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED,
+                                              "No binding for this address found.", this) );
 	return true;
     }
     
@@ -128,8 +132,8 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
 
 bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeaseQuery> queryMsg) {
     SPtr<TOpt> opt;
-    SPtr<TOptDUID> duidOpt = 0;
-    SPtr<TDUID> duid = 0;
+    SPtr<TOptDUID> duidOpt;
+    SPtr<TDUID> duid;
     SPtr<TIPv6Addr> link = q->getLinkAddr();
     
     q->firstOption();
@@ -140,7 +144,8 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
 	}
     }
     if (!duid) {
-	Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL, "You didn't send your ClientID.", this) );
+	Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL,
+                                              "You didn't send your ClientID.", this) );
 	return true;
     }
 
@@ -148,8 +153,10 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     SPtr<TAddrClient> cli = SrvAddrMgr().getClient( duid );
     
     if (!cli) {
-	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain() << " not found." << LogEnd;
-	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED, "No binding for this DUID found.", this) );
+	Log(Warning) << "LQ: Assignement for client duid=" << duid->getPlain()
+                     << " not found." << LogEnd;
+	Options.push_back( new TOptStatusCode(STATUSCODE_NOTCONFIGURED,
+                                              "No binding for this DUID found.", this) );
 	return true;
     }
     
@@ -189,14 +196,15 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
     while ( ia = cli->getPD() ) {
 	ia->firstPrefix();
 	while (prefix = ia->getPrefix()) {
-	    cliData->addOption( new TSrvOptIAPrefix( prefix->getPrefix(), prefix->getLength(), prefix->getPref(),
+	    cliData->addOption( new TSrvOptIAPrefix( prefix->get(), prefix->getLength(),
+                                                     prefix->getPref(),
 						     prefix->getValid(), this));
 	}
     }
 
     cliData->addOption(new TOptDUID(OPTION_CLIENTID, cli->getDUID(), this));
 
-    // TODO: add all temporary addresses
+    /// @todo: add all temporary addresses
 
     // add CLT_TIME
     Log(Debug) << "LQ: Adding CLT_TIME option: " << diff << " second(s)." << LogEnd;

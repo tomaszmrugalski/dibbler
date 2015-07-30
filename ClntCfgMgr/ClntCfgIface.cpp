@@ -188,7 +188,7 @@ SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
         if (ia->getIAID() == iaid)
             return ia;
     }
-    return 0;
+    return SPtr<TClntCfgIA>(); // NULL
 }
 
 void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr)
@@ -219,7 +219,7 @@ SPtr<TClntCfgPD> TClntCfgIface::getPD(int iaid)
         if (ia->getIAID() == iaid)
             return ia;
     }
-    return 0;
+    return SPtr<TClntCfgPD>(); // NULL
 }
 
 void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr)
@@ -533,7 +533,7 @@ SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
         if ((*opt)->OptionType == type)
             return (*opt); // these are the droids you are looking for
 
-    return 0; // not found
+    return SPtr<TClntCfgIface::TOptionStatus>(); // not found
 }
 
 void TClntCfgIface::setMbit(bool m_bit) {

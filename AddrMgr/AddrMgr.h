@@ -110,10 +110,10 @@ class TAddrMgr
     SPtr<TAddrClient> parseAddrClient(const char * xmlFile, FILE *f);
     SPtr<TAddrIA> parseAddrIA(const char * xmlFile, FILE * f, int t1,int t2,
                               int iaid, const std::string& ifname, int ifindex,
-                              SPtr<TIPv6Addr> unicast = 0);
+                              SPtr<TIPv6Addr> unicast = SPtr<TIPv6Addr>());
     SPtr<TAddrIA> parseAddrPD(const char * xmlFile, FILE * f, int t1,int t2,
                               int iaid, const std::string& ifname, int ifindex,
-                              SPtr<TIPv6Addr> unicast = 0);
+                              SPtr<TIPv6Addr> unicast = SPtr<TIPv6Addr>());
     SPtr<TAddrAddr> parseAddrAddr(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrPrefix> parseAddrPrefix(const char * xmlFile, char * buf,bool pd);
     SPtr<TAddrIA> parseAddrTA(const char * xmlFile, FILE *f);

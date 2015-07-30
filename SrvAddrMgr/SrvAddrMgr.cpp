@@ -488,18 +488,18 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getFirstAddr(SPtr<TDUID> clntDuid)
     SPtr<TAddrClient> ptrAddrClient = this->getClient(clntDuid);
     if (!ptrAddrClient) {
         Log(Warning) << "Unable to find client in the addrDB." << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>();
     }
     ptrAddrClient->firstIA();
     SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
     if (!ptrAddrIA) {
         Log(Warning) << "Client does not have any addresses assigned." << LogEnd;
-        return 0;
+        return SPtr<TIPv6Addr>();
     }
     ptrAddrIA->firstAddr();
     SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
     if (!addr) {
-        return 0;
+        return SPtr<TIPv6Addr>();
     }
     return addr->get();
 }
@@ -646,7 +646,7 @@ bool TSrvAddrMgr::verifyPrefix(SPtr<TIPv6Addr> prefix) {
  */
 SPtr<TIPv6Addr> TSrvAddrMgr::getCachedEntry(SPtr<TDUID> clntDuid, TIAType type) {
     if (!this->CacheMaxSize)
-        return 0;
+        return SPtr<TIPv6Addr>();
     SPtr<TSrvCacheEntry> entry;
     this->Cache.first();
 
@@ -663,7 +663,7 @@ SPtr<TIPv6Addr> TSrvAddrMgr::getCachedEntry(SPtr<TDUID> clntDuid, TIAType type) 
 
     Log(Debug) << "Cache: There are no cached " << (type==IATYPE_IA?"address":"prefix")
                << " address entries for client (DUID=" << clntDuid->getPlain() << ")." << LogEnd;
-    return 0;
+    return SPtr<TIPv6Addr>();
 }
 
 /**

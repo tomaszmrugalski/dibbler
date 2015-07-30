@@ -111,7 +111,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceByName(const std::string& name) {
         if ( !strcmp(name.c_str(),ptr->getName()) )
             return ptr;
     }
-    return 0; // NULL
+    return SPtr<TIfaceIface>(); // NULL
 }
 
 /*
@@ -125,7 +125,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceByID(int id) {
         if ( id == ptr->getID() )
             return ptr;
     }
-    return 0; //NULL
+    return SPtr<TIfaceIface>(); // NULL
 }
 
 /*
@@ -138,7 +138,7 @@ SPtr<TIfaceIface> TIfaceMgr::getIfaceBySocket(int fd) {
         if ( ptr->getSocketByFD(fd) )
             return ptr;
     }
-    return 0;
+    return SPtr<TIfaceIface>(); // NULL
 }
 
 /// tries to read data from any socket on all interfaces

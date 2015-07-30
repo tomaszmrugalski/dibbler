@@ -293,11 +293,11 @@ void TRelTransMgr::relayMsgRepl(SPtr<TRelMsg> msg) {
 
 SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
     if (!duid_opt)
-        return 0;
+        return TOptPtr(); // NULL
 
     // We need at least option header and duid type
     if (duid_opt->getSize() < 6)
-        return 0;
+        return TOptPtr(); // NULL
 
     // Create a vector and store whole DUID there.
     std::vector<uint8_t> buffer(duid_opt->getSize(), 0);
@@ -312,7 +312,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
 
     // stored length must be total option size, without the header
     if (len + 4u != duid_opt->getSize())
-        return 0;
+        return TOptPtr(); // NULL
 
     uint16_t duid_type = readUint16(buf); // read duid type
     buf += sizeof(uint16_t);
@@ -324,7 +324,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
     case DUID_TYPE_LLT: {
         // 7: hw type (16 bits), time (32 bits), at least 1 byte of MAC
         if (len < 7) {
-            return 0;
+            return TOptPtr(); // NULL
         }
 
         // Read hardware type
@@ -349,7 +349,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
     case DUID_TYPE_LL: {
         // 3: hw type (16 bits), at least 1 byte of MAC
         if (len < 3) {
-            return 0;
+            return TOptPtr(); // NULL
         }
 
         // Read hardware type
@@ -368,7 +368,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
                                           NULL));
     }
     default:
-        return 0;
+        return TOptPtr(); // NULL
     }
 
 }
@@ -376,7 +376,7 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromDuid(SPtr<TOpt> duid_opt) {
 SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
     SPtr<TIPv6Addr> srcAddr = msg->getRemoteAddr();
     if (!srcAddr || !srcAddr->linkLocal())
-        return 0;
+        return TOptPtr(); // NULL
 
     std::vector<uint8_t> mac(8,0);
 
@@ -384,14 +384,14 @@ SPtr<TOpt> TRelTransMgr::getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg) {
     SPtr<TIfaceIface> iface = RelIfaceMgr().getIfaceByID(msg->getIface());
     if (!iface) {
         // Should never happen
-        return 0;
+        return TOptPtr(); // NULL
     }
     writeUint16((char*)&mac[0], iface->getHardwareType());
 
     // now extract MAC address from the source address
     char* addr = srcAddr->getAddr();
     if ( (addr[11] != 0xff) || (addr[12] != 0xfe) ) {
-        return 0;
+        return TOptPtr(); // NULL
     }
 
     memcpy(&mac[2], addr + 8, 3);
@@ -407,7 +407,7 @@ SPtr<TOpt> TRelTransMgr::getClientLinkLayerAddr(SPtr<TRelMsg> msg) {
     // Ignore messages that are not directly from client
     if ( (msg->getType() == RELAY_FORW_MSG) ||
          (msg->getType() == RELAY_REPL_MSG))
-        return 0;
+        return TOptPtr(); // NULL
 
     // Ok, this seems to be a message from a client. Let's try to
     // extract its DUID

@@ -100,8 +100,8 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
         if (ClntAddrMgr().getIA(ia->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
         SPtr<TAddrIA> addrIA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_IA,
-                                           0, 0, ia->getT1(), ia->getT2(),
-                                           ia->getIAID());
+                                           SPtr<TIPv6Addr>(), SPtr<TDUID>(),
+                                           ia->getT1(), ia->getT2(), ia->getIAID());
         ClntAddrMgr().addIA(addrIA);
     }
 
@@ -111,7 +111,8 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
     {
         // if there is such TA already, then skip adding it
         SPtr<TAddrIA> addrTA = new TAddrIA(iface->getName(), iface->getID(), IATYPE_TA,
-                                           0, 0, DHCPV6_INFINITY, DHCPV6_INFINITY,
+                                           SPtr<TIPv6Addr>(), SPtr<TDUID>(),
+                                           DHCPV6_INFINITY, DHCPV6_INFINITY,
                                            ta->getIAID());
         ClntAddrMgr().addTA(addrTA);
     }
@@ -122,7 +123,8 @@ bool TClntTransMgr::populateAddrMgr(SPtr<TClntCfgIface> iface)
         if (ClntAddrMgr().getPD(pd->getIAID()))
             continue; // there is such IA already - read from disk cache (client-AddrMgr.xml)
         SPtr<TAddrIA> addrPD = new TAddrIA(iface->getName(), iface->getID(), IATYPE_PD,
-                                           0, 0, pd->getT1(), pd->getT2(),
+                                           SPtr<TIPv6Addr>(), SPtr<TDUID>(),
+                                           pd->getT1(), pd->getT2(),
                                            pd->getIAID());
         ClntAddrMgr().addPD(addrPD);
     }
@@ -556,28 +558,28 @@ void TClntTransMgr::shutdown()
             }
         }
 
-        ta = 0;
+        ta.reset();
         if (releasedIAs.count()) { 
-                // check if there are TA to release
-                releasedIAs.first();
-                iface = ClntCfgMgr().getIface(releasedIAs.get()->getIfindex());
-                if (iface && iface->countTA()) {
-                    iface->firstTA();
-                    SPtr<TClntCfgTA> cfgTA = iface->getTA();
-                        ta = ClntAddrMgr().getTA(cfgTA->getIAID());
-                        cfgTA->setState(STATE_DISABLED);
-                }
-
-        }
-            pd = 0;
-            ClntAddrMgr().firstPD();
-            while (pd = ClntAddrMgr().getPD()) {
-                releasedPDs.append(pd);
-                SPtr<TClntCfgPD> cfgPD = ClntCfgMgr().getPD(pd->getIAID());
-                if (cfgPD)
-                    cfgPD->setState(STATE_DISABLED);
+            // check if there are TA to release
+            releasedIAs.first();
+            iface = ClntCfgMgr().getIface(releasedIAs.get()->getIfindex());
+            if (iface && iface->countTA()) {
+                iface->firstTA();
+                SPtr<TClntCfgTA> cfgTA = iface->getTA();
+                ta = ClntAddrMgr().getTA(cfgTA->getIAID());
+                cfgTA->setState(STATE_DISABLED);
             }
-            sendRelease(releasedIAs, ta, releasedPDs);
+        }
+
+        pd.reset();
+        ClntAddrMgr().firstPD();
+        while (pd = ClntAddrMgr().getPD()) {
+            releasedPDs.append(pd);
+            SPtr<TClntCfgPD> cfgPD = ClntCfgMgr().getPD(pd->getIAID());
+            if (cfgPD)
+                cfgPD->setState(STATE_DISABLED);
+        }
+        sendRelease(releasedIAs, ta, releasedPDs);
     }
 
     // now check if there are any TA left
@@ -601,7 +603,7 @@ void TClntTransMgr::shutdown()
     }
 
     // are there any PDs left to release?
-    pd = 0;
+    pd.reset();
     ClntAddrMgr().firstPD();
     releasedIAs.clear();
     releasedPDs.clear();
@@ -612,7 +614,7 @@ void TClntTransMgr::shutdown()
             cfgPD->setState(STATE_DISABLED);
     }
     if (releasedPDs.count())
-        this->sendRelease(releasedIAs, 0, releasedPDs);
+        this->sendRelease(releasedIAs, SPtr<TAddrIA>(), releasedPDs);
     
     //CHANGED:the following two lines are uncommented.
     doDuties(); // just to send RELEASE msg
@@ -941,7 +943,7 @@ void TClntTransMgr::checkSolicit() {
             iface->firstTA();
             ta = iface->getTA();
             if (ta->getState()!=STATE_NOTCONFIGURED)
-            ta = 0;
+                ta.reset();
         }
 
         // step 3: check if there are any PD to be configured
@@ -964,7 +966,8 @@ void TClntTransMgr::checkSolicit() {
                 Log(Cont) << " (with rapid-commit)";
             } 
             Log(Cont) << " on " << iface->getFullName() <<" interface." << LogEnd;
-            Transactions.append(new TClntMsgSolicit(iface->getID(), 0, iaLst, ta, pdLst, 
+            Transactions.append(new TClntMsgSolicit(iface->getID(),
+                                                    SPtr<TIPv6Addr>(), iaLst, ta, pdLst, 
                                                     iface->getRapidCommit()));
 	    
 	    // state of certain IAs has changed. Let's log it.
@@ -1181,7 +1184,7 @@ void TClntTransMgr::checkDecline()
             }
             //Here should be send decline for all tentative addresses in IAs
             SPtr<TClntMsgDecline> decline = 
-                new TClntMsgDecline(firstIA->getIfindex(), 0, declineIALst);
+                new TClntMsgDecline(firstIA->getIfindex(), SPtr<TIPv6Addr>(), declineIALst);
             Transactions.append( (Ptr*) decline);
 
             // decline sent, now remove those addrs from IfaceMgr
@@ -1231,7 +1234,7 @@ void TClntTransMgr::checkRequest()
 
     SPtr<TAddrIA> ia;
     SPtr<TClntCfgIA> cfgIA;
-    SPtr<TDUID> duid = 0;
+    SPtr<TDUID> duid;
     List(TAddrIA) requestIALst;
     int ifaceID = 0;
 
@@ -1318,7 +1321,7 @@ SPtr<TMsg> TClntTransMgr::getAdvertise()
 SPtr<TOpt> TClntTransMgr::getAdvertiseDUID()
 {
     if (!AdvertiseLst.count())
-        return 0;
+        return TOptPtr(); // NULL
     AdvertiseLst.first();
     SPtr<TMsg> msg = AdvertiseLst.get();
     return msg->getOption(OPTION_SERVERID);

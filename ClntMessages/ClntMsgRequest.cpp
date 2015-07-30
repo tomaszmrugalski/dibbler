@@ -33,7 +33,7 @@
  * opts - options list WITHOUT serverDUID
  */
 TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
-    :TClntMsg(iface, 0, REQUEST_MSG) {
+    :TClntMsg(iface, SPtr<TIPv6Addr>(), REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;
@@ -132,7 +132,7 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
 
 TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
 				 SPtr<TDUID> srvDUID, int iface)
-    :TClntMsg(iface, 0, REQUEST_MSG) {
+    :TClntMsg(iface, SPtr<TIPv6Addr>(), REQUEST_MSG) {
     IRT = REQ_TIMEOUT;
     MRT = REQ_MAX_RT;
     MRC = REQ_MAX_RC;

@@ -344,9 +344,10 @@ void TCfgMgr::addKey(SPtr<TSIGKey> key) {
 }
 
 SPtr<TSIGKey> TCfgMgr::getKey() {
-    if (Keys_.empty())
-	return 0;
     /// @todo: add some parameter that will pick the right key
+
+    if (Keys_.empty())
+	return SPtr<TSIGKey>();
 
     return Keys_.front(); // just return first key for now
 }

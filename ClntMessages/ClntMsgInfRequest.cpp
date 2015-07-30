@@ -27,7 +27,7 @@
 #include <cmath>
 
 TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
-    :TClntMsg(iface->getID(), 0, INFORMATION_REQUEST_MSG) {
+    :TClntMsg(iface->getID(), SPtr<TIPv6Addr>(), INFORMATION_REQUEST_MSG) {
 
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
@@ -62,7 +62,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
 //opts - all options list WITHOUT serverDUID including server id
 TClntMsgInfRequest::TClntMsgInfRequest(TOptList ReqOpts,
 				       int iface)
-    :TClntMsg(iface, 0, INFORMATION_REQUEST_MSG) {
+    :TClntMsg(iface, SPtr<TIPv6Addr>(), INFORMATION_REQUEST_MSG) {
     IRT = INF_TIMEOUT;
     MRT = INF_MAX_RT;
     MRC = 0;

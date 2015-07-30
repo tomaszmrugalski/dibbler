@@ -20,7 +20,7 @@
 TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int bufSize, TMsg* parent)
 	:TOptIAPrefix(buf, bufSize, parent)
 {
-    SPtr<TOpt> opt = 0;
+    SPtr<TOpt> opt;
     int pos=0;
     int MsgType = 0;
     if (parent)

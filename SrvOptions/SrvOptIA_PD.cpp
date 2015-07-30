@@ -285,7 +285,7 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> qu
                                   SPtr<TSrvCfgIface> ptrIface, bool fake) {
 
     // --- Is this PD without IAPREFIX options? ---
-    SPtr<TIPv6Addr> hint = 0;
+    SPtr<TIPv6Addr> hint;
     if (!queryOpt->countPrefixes()) {
         Log(Info) << "PD option (with IAPREFIX suboptions missing) received. " << LogEnd;
         hint = new TIPv6Addr(); /* :: - any address */

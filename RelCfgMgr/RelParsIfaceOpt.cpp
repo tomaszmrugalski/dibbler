@@ -12,7 +12,7 @@
 #include "RelParsIfaceOpt.h"
 
 TRelParsIfaceOpt::TRelParsIfaceOpt(void)
-    :ClientUnicast_(0), ServerUnicast_(0),
+    :ClientUnicast_(), ServerUnicast_(),
      ClientMulticast_(false), ServerMulticast_(false),
      InterfaceID_(-1) {
 }

@@ -89,7 +89,7 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
     SPtr<THostRange> PD_Range;
 
     opt->firstPool();
-    SPtr<THostRange> pool = 0;
+    SPtr<THostRange> pool;
     if (!(pool=opt->getPool())) {
         Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
         return false;
@@ -147,7 +147,7 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
 
 bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix)
 {
-    SPtr<THostRange> pool = 0;
+    SPtr<THostRange> pool;
     PoolLst_.first();
     while ( pool = PoolLst_.get() ) {
         if (pool->in(prefix))
@@ -168,7 +168,7 @@ SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
     pool = PoolLst_.get();
     if (pool)
         return pool->getRandomPrefix();
-    return 0;
+    return SPtr<TIPv6Addr>(); // NULL
 }
 
 /**

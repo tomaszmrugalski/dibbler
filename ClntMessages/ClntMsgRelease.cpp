@@ -53,7 +53,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     RT=0;
 
     // obtain IA, TA or PD, so server DUID can be obtained
-    SPtr<TAddrIA> x = 0;
+    SPtr<TAddrIA> x;
     if (iaLst.count()) {
         iaLst.first();
         x = iaLst.get();
@@ -124,7 +124,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 
     // --- RELEASE PD ---
 
-    SPtr<TAddrIA> pd = 0;
+    SPtr<TAddrIA> pd;
 
     pdLst.first();
     while(pd=pdLst.get()) {

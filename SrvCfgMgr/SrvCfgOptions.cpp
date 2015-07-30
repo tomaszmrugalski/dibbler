@@ -48,9 +48,9 @@ SPtr<TIPv6Addr> TSrvCfgOptions::getClntAddr() const {
 void TSrvCfgOptions::SetDefaults() {
     this->VendorSpecSupport       = false;
 
-    Duid = 0;
-    RemoteID = 0;
-		ClntAddr = 0;
+    Duid.reset();
+    RemoteID.reset();
+    ClntAddr.reset();
 
     ExtraOpts_.clear();
     ForcedOpts_.clear();
@@ -79,7 +79,7 @@ bool TSrvCfgOptions::supportVendorSpec() {
 List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
 
     SPtr<TOpt> opt;
-    SPtr<TOptVendorSpecInfo> x = 0;
+    SPtr<TOptVendorSpecInfo> x;
     List(TOptVendorSpecInfo) returnList;
     returnList.clear();
 
@@ -88,7 +88,7 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
         if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS)
             continue;
         x = (Ptr*) *opt;
-        if(!vendor || x->getVendor() == vendor)
+        if (!vendor || x->getVendor() == vendor)
         {
             // enterprise number not specified => return all
             returnList.append(x);
@@ -121,13 +121,13 @@ const TOptList& TSrvCfgOptions::getExtraOptions() {
     return ExtraOpts_;
 }
 
-SPtr<TOpt> TSrvCfgOptions::getExtraOption(uint16_t type) {
+TOptPtr TSrvCfgOptions::getExtraOption(uint16_t type) {
     for (TOptList::iterator opt=ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
     {
         if ((*opt)->getOptType() == type)
             return *opt;
     }
-    return 0;
+    return TOptPtr(); // NULL
 }
 
 const TOptList& TSrvCfgOptions::getForcedOptions() {

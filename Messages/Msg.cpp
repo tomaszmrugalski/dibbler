@@ -210,7 +210,7 @@ SPtr<TOpt> TMsg::getOption(int type) {
     for (opt = Options.begin(); opt!=Options.end(); ++opt)
         if ( (*opt)->getOptType()==type) 
 	    return *opt;
-    return 0;
+    return SPtr<TOpt>();
 }
 
 void TMsg::firstOption() {
@@ -227,7 +227,7 @@ SPtr<TOpt> TMsg::getOption() {
 	++NextOpt;
 	return (*it);
     }
-    return 0;
+    return SPtr<TOpt>();
 }
 
 TMsg::~TMsg() {

@@ -27,7 +27,7 @@ TClntIfaceIface::TClntIfaceIface(char * name, int id, unsigned int flags, char* 
                                  int maclen, char* llAddr, int llAddrCnt, char * globalAddr,
                                  int globalAddrCnt, int hwType)
   :TIfaceIface(name, id, flags, mac, maclen, llAddr, llAddrCnt, globalAddr, globalAddrCnt, hwType),
-   TunnelEndpoint(0), LifetimeTimeout(DHCPV6_INFINITY) {
+   TunnelEndpoint(), LifetimeTimeout(DHCPV6_INFINITY) {
 
     LifetimeTimestamp = (uint32_t)time(NULL);
 

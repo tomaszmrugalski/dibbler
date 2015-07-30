@@ -466,7 +466,7 @@ SPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
             if (ia->getIAID()==IAID)
                 return ia;
     }
-    return 0;
+    return SPtr<TClntCfgIA>(); // NULL
 }
 
 SPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
@@ -481,7 +481,7 @@ SPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
             if (pd->getIAID()==IAID)
                 return pd;
     }
-    return 0;
+    return SPtr<TClntCfgPD>(); // NULL
 }
 
 bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
@@ -821,7 +821,7 @@ int TClntCfgMgr::inactiveIfacesCnt()
 SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
 {
     if (!InactiveLst.count())
-            return 0;
+        return SPtr<TClntCfgIface>(); // NULL
 
     ClntIfaceMgr().redetectIfaces();
     SPtr<TClntCfgIface> x;
@@ -861,7 +861,7 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
         }
     }
 
-    return 0;
+    return SPtr<TClntCfgIface>(); // NULL
 }
 
 #ifndef MOD_DISABLE_AUTH

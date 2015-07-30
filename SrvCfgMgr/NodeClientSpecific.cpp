@@ -27,7 +27,7 @@ string NodeClientSpecific::vendor_class_data ;
 NodeClientSpecific::NodeClientSpecific()
     :Node(NODE_CLIENT_SPECIFIC)
 {
-    CurrentMsg = 0;
+    CurrentMsg.reset();
     Type = CLIENT_UNKNOWN;
 }
 
@@ -66,7 +66,7 @@ string NodeClientSpecific::exec(SPtr<TSrvMsg> msg)
 NodeClientSpecific::NodeClientSpecific(ClientSpecificType t)
     :Node(NODE_CLIENT_SPECIFIC)
 {
-    CurrentMsg = 0;
+    CurrentMsg.reset();
     Type = t;
 }
 

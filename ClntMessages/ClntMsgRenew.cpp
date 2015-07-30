@@ -26,7 +26,7 @@
 
 TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
                              List(TAddrIA) PDLst)
-    :TClntMsg(0, 0, RENEW_MSG)
+    :TClntMsg(0, SPtr<TIPv6Addr>(), RENEW_MSG)
 {
    // set transmission parameters
     IRT=REN_TIMEOUT;
@@ -129,7 +129,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 	  	    break;
 		}
 	    }
-	    ptrOptIA->setContext(srvDUID->getDUID(), 0, Reply->getIface());
+	    ptrOptIA->setContext(srvDUID->getDUID(), SPtr<TIPv6Addr>(), Reply->getIface());
 
 	    ptrOptIA->doDuties();
 	    break;
@@ -151,7 +151,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
 		    break;
 		}
 	    }
-	    pd->setContext(srvDUID->getDUID(), 0, (TMsg*)this);
+	    pd->setContext(srvDUID->getDUID(), SPtr<TIPv6Addr>(), (TMsg*)this);
 	    pd->doDuties();
 	    break;
 	}

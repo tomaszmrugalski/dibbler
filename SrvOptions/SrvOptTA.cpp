@@ -188,7 +188,7 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr(SPtr<TSrvMsg> clientMsg) {
     if (!ptrIface) {
 	Log(Error) << "Trying to find free address on non-existent interface (id=%d)\n"
 		   << this->Iface << LogEnd;
-	return 0; // NULL
+	return SPtr<TSrvOptIAAddress>(); // NULL
     }
 
     SPtr<TSrvCfgTA> ta;
@@ -203,8 +203,9 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr(SPtr<TSrvMsg> clientMsg) {
 
     if (!ta)
     {
-    	Log(Warning) << "Unable to find any suitable (allowed,non-full) TA for this client." << LogEnd;
-    	return 0;
+        Log(Warning) << "Unable to find any suitable (allowed,non-full) TA for this client."
+                     << LogEnd;
+        return SPtr<TSrvOptIAAddress>(); // NULL
     }
     SPtr<TIPv6Addr> addr;
     int safety=0;
@@ -218,15 +219,17 @@ SPtr<TSrvOptIAAddress> TSrvOptTA::assignAddr(SPtr<TSrvMsg> clientMsg) {
 				   IAID_, addr, ta->getPref(), ta->getValid());
 		SrvCfgMgr().addTAAddr(this->Iface);
 	    } else {
-		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)." << LogEnd;
+		Log(Debug) << "Temporary address " << addr->getPlain() << " generated (not granted)."
+                           << LogEnd;
 	    }
 	    return new TSrvOptIAAddress(addr, ta->getPref(), ta->getValid(), this->Parent);
 
 	}
 	safety++;
     }
-    Log(Error) << "Unable to randomly choose address after " << SERVER_MAX_TA_RANDOM_TRIES << " tries." << LogEnd;
-    return 0;
+    Log(Error) << "Unable to randomly choose address after " << SERVER_MAX_TA_RANDOM_TRIES
+               << " tries." << LogEnd;
+    return SPtr<TSrvOptIAAddress>(); // NULL
 }
 
 bool TSrvOptTA::doDuties()

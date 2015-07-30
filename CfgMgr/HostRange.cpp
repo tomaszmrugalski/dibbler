@@ -77,7 +77,7 @@ SPtr<TIPv6Addr> THostRange::getRandomAddr() const  {
         return diff;
     }
     else
-        return 0;
+        return SPtr<TIPv6Addr>();
 }
 
 SPtr<TIPv6Addr> THostRange::getRandomPrefix() const {
@@ -90,7 +90,7 @@ SPtr<TIPv6Addr> THostRange::getRandomPrefix() const {
         return diff;
     }
     else
-        return 0;
+        return SPtr<TIPv6Addr>();
 }
 
 

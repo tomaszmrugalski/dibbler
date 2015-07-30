@@ -120,7 +120,7 @@ SPtr<TAddrIA> TAddrClient::getPD(unsigned long IAID) {
             return ptr;
         }
     }
-    return 0;
+    return SPtr<TAddrIA>();
 }
 
 void TAddrClient::firstPD() {
@@ -163,7 +163,7 @@ SPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
             return ptr;
         }
     }
-    return 0;
+    return SPtr<TAddrIA>();
 }
 
 void TAddrClient::firstTA() {

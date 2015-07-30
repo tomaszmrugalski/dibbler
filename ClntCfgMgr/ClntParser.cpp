@@ -173,7 +173,7 @@ SPtr<TDUID> DUIDEnterpriseID;
     ParserOptStack.getFirst()->setIAIDCnt(1);                               \
     ParserOptStack.getLast();                                               \
     DUIDType = DUID_TYPE_NOT_DEFINED;                                       \
-    DUIDEnterpriseID = 0;                                                   \
+    DUIDEnterpriseID.reset();                                               \
     AddrCount_ = 0;                                                         \
     CfgMgr = 0;                                                             \
     iaidSet = false;                                                        \

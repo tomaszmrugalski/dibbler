@@ -101,7 +101,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             pos+=length;
             continue;
         }
-        ptr= 0;
+        ptr.reset();
         switch (code) {
         case OPTION_CLIENTID:
             ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
@@ -473,7 +473,7 @@ SPtr<TDUID> TSrvMsg::getClientDUID() {
     SPtr<TOpt> opt;
     opt = getOption(OPTION_CLIENTID);
     if (!opt)
-        return 0;
+        return SPtr<TDUID>(); // NULL
 
     SPtr<TOptDUID> clientid = (Ptr*) opt;
     return clientid->getDUID();
@@ -587,13 +587,13 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
         Log(Crit) << "Msg received through not configured interface. "
             "Somebody call an exorcist!" << LogEnd;
         this->IsDone = true;
-        return 0;
+        return SPtr<TSrvOptFQDN>(); // NULL
     }
     // FQDN is chosen, "" if no name for this host is found.
     if (!cfgIface->supportFQDN()) {
         Log(Error) << "FQDN is not defined on " << cfgIface->getFullName() << " interface."
                    << LogEnd;
-        return 0;
+        return SPtr<TSrvOptFQDN>(); // NULL
     }
 
     Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr="
@@ -602,7 +602,7 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
     SPtr<TFQDN> fqdn = cfgIface->getFQDNName(clntDuid,clntAddr, hint);
     if (!fqdn) {
         Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
-        return 0;
+        return SPtr<TSrvOptFQDN>(); // NULL
     }
 
     optFQDN = new TSrvOptFQDN(fqdn->getName(), NULL);
@@ -612,8 +612,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
     string fqdnName = fqdn->getName();
 
     if (requestFQDN->getNFlag()) {
-              Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
-              return optFQDN;
+        Log(Notice) << "FQDN: No DNS Update required." << LogEnd;
+        return optFQDN;
     }
 
     fqdn->setUsed(true);
@@ -636,26 +636,26 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
         SPtr<TIPv6Addr> DNSAddr = SrvCfgMgr().getDDNSAddress(iface);
         if (!DNSAddr) {
             Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
-            return 0;
+            return SPtr<TSrvOptFQDN>(); // NULL
         }
 
         SPtr<TAddrClient> ptrAddrClient = SrvAddrMgr().getClient(clntDuid);
         if (!ptrAddrClient) {
             Log(Warning) << "Unable to find client." << LogEnd;
-            return 0;
+            return SPtr<TSrvOptFQDN>(); // NULL
         }
 
         ptrAddrClient->firstIA();
         SPtr<TAddrIA> ptrAddrIA = ptrAddrClient->getIA();
         if (!ptrAddrIA) {
             Log(Warning) << "Client does not have any IA(s) assigned." << LogEnd;
-            return 0;
+            return SPtr<TSrvOptFQDN>(); // NULL
         }
         ptrAddrIA->firstAddr();
         SPtr<TAddrAddr> addr = ptrAddrIA->getAddr();
         if (!addr) {
             Log(Warning) << "Client does not have any address(es) assigned." << LogEnd;
-            return 0;
+            return SPtr<TSrvOptFQDN>(); // NULL
         }
 
         // regardless of the result, store the info
