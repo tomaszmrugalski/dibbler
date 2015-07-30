@@ -17474,7 +17474,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile nettle/Makefile $PORT_SUBDIR/Makefile Port-linux/Makefile Port-bsd/Makefile Port-sun/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg doc/version.tex AddrMgr/tests/Makefile IfaceMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile CfgMgr/tests/Makefile poslib/tests/Makefile Misc/tests/Makefile RelTransMgr/tests/Makefile tests/Makefile tests/Srv/Makefile tests/Misc/Makefile tests/utils/Makefile"
+ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile nettle/Makefile $PORT_SUBDIR/Makefile Port-linux/Makefile Port-bsd/Makefile Port-sun/Makefile Port-win32/Makefile Port-winnt2k/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg doc/version.tex AddrMgr/tests/Makefile IfaceMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile CfgMgr/tests/Makefile poslib/tests/Makefile Misc/tests/Makefile RelTransMgr/tests/Makefile tests/Makefile tests/Srv/Makefile tests/utils/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18646,7 +18646,6 @@ do
     "RelTransMgr/tests/Makefile") CONFIG_FILES="$CONFIG_FILES RelTransMgr/tests/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "tests/Srv/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Srv/Makefile" ;;
-    "tests/Misc/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Misc/Makefile" ;;
     "tests/utils/Makefile") CONFIG_FILES="$CONFIG_FILES tests/utils/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
