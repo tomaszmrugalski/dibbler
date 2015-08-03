@@ -1046,12 +1046,12 @@ EAddrStatus TSrvCfgIface::confirmAddress(TIAType type, SPtr<TIPv6Addr> addr) {
     if (type == IATYPE_PD)
         what = "prefix";
 
-    Log(Debug) << "Confirm that " << what << addr->getPlain()
+    Log(Debug) << "Confirm that " << what << " " << addr->getPlain()
                << " is on-link:";
 
     if (subnetDefined()) {
         // this is easy to check - client defined subnet
-        // we just check if the addres is in subnet and we're done
+        // we just check if the address is in subnet and we're done
 
         if (addrInSubnet(addr)) {
             Log(Cont) << "yes (belongs to defined subnet)." << LogEnd;

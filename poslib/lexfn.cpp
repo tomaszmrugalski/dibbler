@@ -387,7 +387,7 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
   return false;
 }
 
-/* converts an email adress to a domain name
+/* converts an email address to a domain name
    (may be a <domain-name> or a true email address) */
 
 void txt_to_email(_domain target, const char *src, _cdomain origin) {
@@ -396,7 +396,7 @@ void txt_to_email(_domain target, const char *src, _cdomain origin) {
     
     if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
         /* contains a '@', so assume it's an email address */
-        if (src[0] == '@') throw PException("Incorrect email adress/domain name: begins with @");
+        if (src[0] == '@') throw PException("Incorrect email address/domain name: begins with @");
         domfromlabel(target, src, cptr - src);
         txt_to_dname(dom, cptr + 1);
         domcat(target, dom);

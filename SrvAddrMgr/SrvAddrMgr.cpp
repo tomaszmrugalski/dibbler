@@ -528,7 +528,7 @@ void TSrvAddrMgr::doDuties(std::vector<TExpiredInfo>& addrLst,
     this->firstClient();
     while (ptrClient = this->getClient() )
     {
-        // ... which has outdated adresses
+        // ... which has outdated addresses
         if (ptrClient->getValidTimeout())
             continue;
 

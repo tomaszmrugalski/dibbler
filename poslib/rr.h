@@ -363,7 +363,7 @@ u_int48 rr_getuint48(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 unsigned char *rr_getip4(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
 
 /*!
- * \brief read an IPv6 addres from RR data
+ * \brief read an IPv6 address from RR data
  *
  * For details, see rr_getdomain(). Data is dynamically allocated.
  */

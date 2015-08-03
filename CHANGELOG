@@ -1,10 +1,12 @@
 
   Dibbler changelog
  -------------------
-1.0.1 [2015-07-30]
+1.0.1 [2015-08-03]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
     reporting the issue and providing excellent patch)
   - Mac OS 10.10 compilation fix
+  - Several typos fixed in logs (bug #319, thanks to Jirka Klimes for
+    his patch)
 
 1.0.1RC1 [2015-03-07]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)
@@ -314,7 +316,7 @@
   - Client: Partial support for DS-Lite tunnel option added
   - Experimental support for Remote Autoconf added
   - Fixed problem with not populating AddrMgr correctly
-  - Fix: after restart, server no longer refuses to handle adresses after first RELEASE.
+  - Fix: after restart, server no longer refuses to handle addresses after first RELEASE.
   - Fix: Notify scripts are now executed, even when no IA received (bug #193)
   - Code cleanup: Singleton managers implemented
   - Code cleanup: Server REPLY generation refactored

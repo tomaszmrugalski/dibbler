@@ -156,7 +156,7 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
     default:
     case ADDRSTATUS_UNKNOWN: {
         Log(Info) << "Address/prefix being confirmed is outside of defined class,"
-                  << " but there is no subnet defined, so can't answer authoratively."
+                  << " but there is no subnet defined, so can't answer authoritatively."
                   << " Will not send answer." << LogEnd;
         return false;
     }

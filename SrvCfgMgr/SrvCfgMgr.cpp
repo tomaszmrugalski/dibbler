@@ -1081,7 +1081,7 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
 
     SPtr<TSrvCfgIface> ptrIface = this->getIfaceByID(iface);
     if (!ptrIface) {
-        Log(Warning) << "No global DNS Update address specified and can't find dns-addres on "
+        Log(Warning) << "No global DNS Update address specified and can't find dns-address on "
                      << "interface " << iface << LogEnd;
         return SPtr<TIPv6Addr>(); // NULL
     }
