@@ -32,19 +32,18 @@ TSrvOptIAAddress::TSrvOptIAAddress( char * buf, int bufsize, TMsg* parent)
             if(allowOptInOpt(parent->getType(),OPTION_IAADDR,code))
             {
                 SPtr<TOpt> opt;
-                opt = SPtr<TOpt>();
+                opt.reset();
                 switch (code)
                 {
                 case OPTION_STATUS_CODE:
-                    opt =(Ptr*)SPtr<TOptStatusCode> (
-                        new TOptStatusCode(buf+pos, length, Parent));
+                    opt.reset(new TOptStatusCode(buf+pos, length, Parent));
                     break;
                 default:
-                    Log(Warning) << "Option " << code<< " not supported "
+                    Log(Warning) << "Option " << code << " not supported "
                         <<" in message (type="<< parent->getType() <<")." << LogEnd;
                     break;
                 }
-                if((opt)&&(opt->isValid()))
+                if (opt && opt->isValid())
                     SubOptions.append(opt);
             } else {
                 Log(Warning) << "Illegal option received, opttype=" << code

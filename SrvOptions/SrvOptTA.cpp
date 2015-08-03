@@ -33,11 +33,11 @@ TSrvOptTA::TSrvOptTA( char * buf, int bufsize, TMsg* parent)
 	SPtr<TOpt> opt;
 	switch (code) {
 	case OPTION_IAADDR:
-	    opt = (Ptr*) SPtr<TSrvOptIAAddress>(new TSrvOptIAAddress(buf+pos,length,this->Parent));
+	    opt.reset(new TSrvOptIAAddress(buf+pos, length, this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	case OPTION_STATUS_CODE:
-	    opt = (Ptr*) SPtr<TOptStatusCode>(new TOptStatusCode(buf+pos,length,this->Parent));
+	    opt.reset(new TOptStatusCode(buf+pos, length, this->Parent));
 	    SubOptions.append(opt);
 	    break;
 	default:
@@ -141,10 +141,10 @@ void TSrvOptTA::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt
 	SPtr<TOptStatusCode> ptrStatus;
 	ptrStatus = new TOptStatusCode(STATUSCODE_NOADDRSAVAIL,
                                        "Server support for temporary addresses is not enabled. Sorry buddy.",this->Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
+        SubOptions.append(SPtr_cast<TOpt>(ptrStatus));
 	return;
     }
-    SubOptions.append((Ptr*) optAddr);
+    SubOptions.append(SPtr_cast<TOpt>(optAddr));
 
     // those addresses will be released in the TSrvMsgAdvertise::answer() method
 }
@@ -169,7 +169,10 @@ void TSrvOptTA::releaseAllAddrs(bool quiet) {
     while ( opt = this->getOption() ) {
 	if (opt->getOptType() != OPTION_IAADDR)
 	    continue;
-	optAddr = (Ptr*) opt;
+	optAddr = SPtr_cast<TOptIAAddress>(opt);
+        if (!optAddr) {
+            continue;
+        }
 	addr = optAddr->getAddr();
 	SrvAddrMgr().delClntAddr(ClntDuid, IAID_, addr, quiet);
 	SrvCfgMgr().delClntAddr(Iface, addr);
