@@ -7,6 +7,8 @@
   - Mac OS 10.10 compilation fix
   - Several typos fixed in logs (bug #319, thanks to Jirka Klimes for
     his patch)
+  - Address in GPL v2 license corrected (no worries, it's still open
+    software) Thanks to Ihar Hrachyshka for spotting this one.
 
 1.0.1RC1 [2015-03-07]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)
