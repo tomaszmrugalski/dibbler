@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <linux/types.h>
 #include <sys/socket.h>
@@ -452,7 +453,7 @@ int nisplusdomain_del(const char* ifname, int ifindex, const char* domain){
 }
 
 void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLength,
-                    unsigned long preferred) {
+                    uint32_t preferred, uint32_t valid) {
     char * errorMsg = error_message();
 
     FILE * f;
@@ -478,6 +479,7 @@ void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLengt
     fprintf(f, "     { \n");
     fprintf(f, "         AdvOnLink on;\n");
     fprintf(f, "         AdvPreferredLifetime %lu;\n", preferred);
+    fprintf(f, "         AdvValidLifetime %lu;\n", valid);
     fprintf(f, "         AdvAutonomous on;\n");
     fprintf(f, "     };\n");
     fprintf(f, "};\n");
@@ -546,7 +548,7 @@ int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int pre
     int numargs = 0;
     /* char buf2[128]; */
 
-    add_radvd_conf(ifname, prefixPlain, prefixLength, preferred);
+    add_radvd_conf(ifname, prefixPlain, prefixLength, preferred, valid);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
@@ -576,7 +578,7 @@ int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int 
     char buf[128];
 
     delete_radvd_conf(ifname, prefixPlain, prefixLength);
-    add_radvd_conf(ifname, prefixPlain, prefixLength, prefered);
+    add_radvd_conf(ifname, prefixPlain, prefixLength, prefered, valid);
 
     snprintf(buf, 127, "%s/%d", prefixPlain, prefixLength);
     argv[0] = buf;
