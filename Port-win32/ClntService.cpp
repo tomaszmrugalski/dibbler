@@ -23,6 +23,9 @@ TClntService StaticService;
 
 using namespace std;
 
+extern std::string CLNTCONF_FILE;
+extern std::string CLNTLOG_FILE;
+
 TClntService::TClntService()
     :TWinService("DHCPv6Client","Dibbler - a DHCPv6 client",SERVICE_AUTO_START,
                  "tcpip6\0winmgmt\0",
