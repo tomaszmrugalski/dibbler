@@ -165,7 +165,8 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
                                          "No more addresses for you. Sorry.", Parent));
 }
 
-bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA> queryOpt, bool quiet) {
+bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA> queryOpt,
+                                       bool quiet) {
     SPtr<TOpt> opt;
     SPtr<TIPv6Addr> hint, candidate;
     SPtr<TOptIAAddress> optAddr;
@@ -179,7 +180,8 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
 	    hint    = optAddr->getAddr();
 
             if (SrvCfgMgr().addrReserved(hint)) {
-                Log(Debug) << "Requested address " << hint->getPlain() << " is reserved for someone else, sorry." << LogEnd;
+                Log(Debug) << "Requested address " << hint->getPlain()
+                           << " is reserved for someone else, sorry." << LogEnd;
                 return false;
             }
 
@@ -321,20 +323,37 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
 }
 
 bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t valid, bool quiet) {
-    // Assign one address
-    SPtr<TSrvOptIAAddress> optAddr;
-    SPtr<TSrvCfgAddrClass> ptrClass;
 
-    ptrClass = SrvCfgMgr().getClassByAddr(Iface, addr);
-    if (!ptrClass)
-        return false;
+    // Try to find a class this address belongs to.
+    SPtr<TSrvCfgAddrClass> ptrClass = SrvCfgMgr().getClassByAddr(Iface, addr);
+    if (ptrClass) {
+        // Found! This is in-pool assignment.
+        pref = ptrClass->getPref(pref);
+        valid = ptrClass->getValid(valid);
 
-    pref = ptrClass->getPref(pref);
-    valid = ptrClass->getValid(valid);
-    optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
+        // configure this IA
+        T1_ = ptrClass->getT1(T1_);
+        T2_ = ptrClass->getT2(T2_);
+
+    } else {
+        // Class not found. This is out-of-pool assignment. The address does not belong
+        // to any specified pool, so we need to pick the values from the interface, rather
+        // than the pool.
+        SPtr<TSrvCfgIface> iface = SrvCfgMgr().getIfaceByID(Iface);
+        if (!iface) {
+            return false;
+        }
+
+        pref = iface->getPref(pref);
+        valid = iface->getValid(valid);
+        T1_ = iface->getT1(T1_);
+        T2_ = iface->getT2(T2_);
+    }
+
+    SPtr<TSrvOptIAAddress> optAddr = new TSrvOptIAAddress(addr, pref, valid, this->Parent);
 
     /// @todo: remove get addr-params
-    if (ptrClass->getAddrParams()) {
+    if (ptrClass && ptrClass->getAddrParams()) {
         Log(Debug) << "Experimental: addr-params subotion added." << LogEnd;
         optAddr->addOption((Ptr*)ptrClass->getAddrParams());
     }
@@ -345,10 +364,6 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
 
     Log(Info) << "Client " << ClntDuid->getPlain() << " got " << *addr
 	      << " (IAID=" << IAID_ << ", pref=" << pref << ",valid=" << valid << ")." << LogEnd;
-
-    // configure this IA
-    T1_ = ptrClass->getT1(T1_);
-    T2_ = ptrClass->getT2(T2_);
 
     // register this address as used by this client
     SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, addr, pref, valid, quiet);
@@ -661,7 +676,7 @@ bool TSrvOptIA_NA::assignRandomAddr(SPtr<TSrvMsg> queryMsg, bool quiet) {
 
 
 bool TSrvOptIA_NA::assignSequentialAddr(SPtr<TSrvMsg> clientMsg, bool quiet) {
-    // random pool failed. That really should not happen. We are most probably not supporting
+    // Random pool failed. That really should not happen. We are most probably not supporting
     // this client or are completely out of leases. Last chance: iterate over all pools and
     // find suitable lease:
     SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(Iface);
@@ -687,7 +702,7 @@ bool TSrvOptIA_NA::assignSequentialAddr(SPtr<TSrvMsg> clientMsg, bool quiet) {
         }
     }
 
-    // that is definite failure. I have iterated over every address in every pool
+    // That is definite failure. I have iterated over every address in every pool
     // and all of them are not usable for one reason or ther other. I finally
     // give up.
     return false;

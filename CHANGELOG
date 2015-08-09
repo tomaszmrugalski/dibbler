@@ -10,6 +10,8 @@
   - GPL v2 license corrected (no worries, it's still open software, just
     corrected FSF address) Thanks to Ihar Hrachyshka for spotting this one.
   - Generated radvd.conf is now specifying AdvValidLifetime (bug #314)
+  - Server now properly assigns valid-lifetime for reserved out-of-pool
+    reservations (bug #300).
 
 1.0.1RC1 [2015-03-07]
   - prefix update is now implemented for Linux (both kernel and radvd.conf)

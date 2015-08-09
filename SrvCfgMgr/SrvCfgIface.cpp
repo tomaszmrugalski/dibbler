@@ -489,7 +489,7 @@ void TSrvCfgIface::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
     T2Max_    = opt->getT2End();
     PrefMin_  = opt->getPrefBeg();
     PrefMax_  = opt->getPrefEnd();
-    ValidMax_ = opt->getValidBeg();
+    ValidMin_ = opt->getValidBeg();
     ValidMax_ = opt->getValidEnd();
 
     if (opt->supportFQDN()){
@@ -873,6 +873,11 @@ ostream& operator<<(ostream& out,TSrvCfgIface& iface) {
     out << "    <ifaceMaxLease>" << iface.IfaceMaxLease_ << "</ifaceMaxLease>" << std::endl;
     out << "    <clntMaxLease>" << iface.ClntMaxLease_ << "</clntMaxLease>" << std::endl;
     out << "    <LeaseQuery>" << (iface.LeaseQuery_?"1":"0") << "</LeaseQuery>" << std::endl;
+
+    out << "    <T1 min=\"" << iface.T1Min_ << "\" max=\"" << iface.T1Max_  << "\" />" << endl;
+    out << "    <T2 min=\"" << iface.T2Min_ << "\" max=\"" << iface.T2Max_  << "\" />" << endl;
+    out << "    <pref min=\"" << iface.PrefMin_ << "\" max=\""<< iface.PrefMax_  << "\" />" <<endl;
+    out << "    <valid min=\"" << iface.ValidMin_ << "\" max=\""<< iface.ValidMax_ << "\" />" << endl;
 
     if (iface.Unicast_) {
         out << "    <unicast>" << *(iface.Unicast_) << "</unicast>" << endl;

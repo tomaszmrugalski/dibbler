@@ -473,6 +473,7 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     T2_ = iface->getT2(req->getT2());
     pref = iface->getPref(pref);
     valid = iface->getValid(valid);
+
     Log(Info) << "Reserved out-of-pool address " << reservedPrefix->getPlain()
               << static_cast<unsigned int>(ex->getPrefixLen())
               << " for this client found, assigning." << LogEnd;
