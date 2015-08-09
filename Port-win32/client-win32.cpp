@@ -24,6 +24,10 @@
 
 extern "C" int lowlevelInit();
 
+std::string WORKDIR(DEFAULT_WORKDIR);
+std::string CLNTCONF_FILE(DEFAULT_CLNTCONF_FILE);
+std::string CLNTLOG_FILE(DEFAULT_CLNTLOG_FILE);
+
 using namespace std;
 
 void usage() {
