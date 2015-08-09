@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 1.0.0 (WinXP/2003/Vista/7/8 port)
-OutputBaseFilename=dibbler-1.0.0-win64
+AppVerName=Dibbler 1.0.1 (WinXP/2003/Vista/7/8 port)
+OutputBaseFilename=dibbler-1.0.1-win64
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
