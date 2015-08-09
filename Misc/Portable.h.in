@@ -128,17 +128,17 @@ struct link_state_notify_t
 #define REQLOG_FILE        "dibbler-requestor.log"
 
 #ifdef WIN32
-#define WORKDIR            ".\\"
-#define DEFAULT_SCRIPT     ""
-#define CLNTCONF_FILE 	   "client.conf"
-#define SRVCONF_FILE       "server.conf"
-#define RELCONF_FILE       "relay.conf"
-#define CLNTLOG_FILE       "dibbler-client.log"
-#define SRVLOG_FILE        "dibbler-server.log"
-#define RELLOG_FILE        "dibbler-relay.log"
-#define CLNT_AAASPI_FILE   "AAA-SPI"
-#define SRV_KEYMAP_FILE    "keys-mapping"
-#define NULLFILE           "nul"
+#define DEFAULT_WORKDIR       ".\\"
+#define DEFAULT_SCRIPT        ""
+#define DEFAULT_CLNTCONF_FILE "client.conf"
+#define SRVCONF_FILE          "server.conf"
+#define RELCONF_FILE          "relay.conf"
+#define DEFAULT_CLNTLOG_FILE  "dibbler-client.log"
+#define SRVLOG_FILE           "dibbler-server.log"
+#define RELLOG_FILE           "dibbler-relay.log"
+#define CLNT_AAASPI_FILE      "AAA-SPI"
+#define SRV_KEYMAP_FILE       "keys-mapping"
+#define NULLFILE              "nul"
 /* specifies if client should remove any configured DNS servers when configuring
    DNS servers for the first time. This makes sense on WIN32 only. */
 #define FLUSH_OTHER_CONFIGURED_DNS_SERVERS true
