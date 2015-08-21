@@ -433,6 +433,21 @@ bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
     return modifyPrefix(iface, prefix, prefixLen, 0, 0, PREFIX_MODIFY_DEL, params);
 }
 
+/// Returns number of bits required to store specific number of interfaces
+///
+/// @param i
+/// @return ceil(log2(i)) or 0 for 0
+int TClntIfaceMgr::numBits(int i) {
+    int j = 0;
+    if (i == 0) {
+        return (0);
+    } else {
+        i--;
+    }
+    while (i >>= 1) { ++j; }
+    return (j + 1);
+}
+
 bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
                                  unsigned int pref, unsigned int valid,
                                  PrefixModifyMode mode,
@@ -566,12 +581,16 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         int subprefixLen;
         memmove(buf, prefix->getAddr(), 16);
 
+        // Calculate how many bits are needed for handling this amount of downlink
+        // interfaces.
+        int bit_shift = numBits(ifaceLst.size());
+
         if (ifaceLst.size() == 1) {
             // just one interface - use delegated prefix as is
             subprefixLen = prefixLen;
         } else if (ifaceLst.size()<256) {
-            subprefixLen = prefixLen + 8;
-            int offset = prefixLen/8;
+            subprefixLen = prefixLen + bit_shift;
+            int offset = prefixLen/bit_shift;
             if (prefixLen%8 == 0) {
                 // that's easy, just put ID in the next octet
                 buf[offset] = (*i)->getID();
@@ -594,6 +613,15 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             // users with too much time that play with virtual interfaces are out of luck
             Log(Error) << "Something is wrong. Detected more than 256 interface." << LogEnd;
             return false;
+        }
+
+        // Ok, some users are unhappy if the get prefixes larger than /64,
+        // so trim down downlink prefixes to /64 if we get something larger.
+        // One day this parameter will have to be configurable.
+        if (subprefixLen < 64) {
+            Log(Info) << "PD: Prefix per downlink interface could be /" << subprefixLen
+                      << ", trimming down to /64" << LogEnd;
+            subprefixLen = 64;
         }
 
         SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);

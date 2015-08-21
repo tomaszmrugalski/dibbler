@@ -80,6 +80,8 @@ public:
     void redetectIfaces();
 
   private:
+    int numBits(int i);
+
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
                       unsigned int pref, unsigned int valid, PrefixModifyMode mode,
                       TNotifyScriptParams* params /*= NULL*/);
