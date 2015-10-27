@@ -1,15 +1,11 @@
 
-  Dibbler 1.0.1 Release Candidate 1 [2015-03-07]
- ------------------------------------------------
+  Dibbler 1.0.1 [2015-08-09]
+ ----------------------------
 
- This is the first Release Candidate of the 1.0.1 release of the Dibbler
- software.
+ This is the final version of the 1.0.1 release of the Dibbler software.
 
- This update contains improvements specifically for OpenStack project.
- In particular, it is now possible to specify the client's link-local
- address and client's working directory. If you're running 1.0.0, there's
- no need to upgrade, unless you want to take advantage of those new features.
- See CHANGELOG for details.
+ This update contains a number of small fixes, with one of them possibly
+ having security implications. Upgrade is strongly recommended.
 
  If you find bugs, please report them on http://klub.com.pl/bugzilla/.
  Appropriate links are on project website: http://klub.com.pl/dhcpv6/.
