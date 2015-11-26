@@ -491,8 +491,10 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         SPtr<TIfaceIface> x = getIfaceByName(*name);
         if (x)
             ifaceLst.push_back(x);
-        else
-            Log(Warning) << "Interface " << *name << " specified in downlink-prefix-ifaces is missing." << LogEnd;
+        else {
+            Log(Warning) << "Interface " << *name
+                         << " specified in downlink-prefix-ifaces is missing." << LogEnd;
+        }
     }
 
     if (!skip && (ifaceLst.empty()) ) {
@@ -529,7 +531,8 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             x->firstLLAddress();
             if (!x->getLLAddress()) {
                 Log(Debug) << "PD: Interface " << x->getFullName()
-                           << " has no link-local address, ignoring. (Disconnected? Not associated? No-link?)" << LogEnd;
+                           << " has no link-local address, ignoring. (Disconnected? "
+                           << "Not associated? No-link?)" << LogEnd;
                 continue;
             }
 
@@ -592,7 +595,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
 
         } else {
             // users with too much time that play with virtual interfaces are out of luck
-            Log(Error) << "Something is wrong. Detected more than 256 interface." << LogEnd;
+            Log(Error) << "Something is wrong. Detected 256 or more interfaces." << LogEnd;
             return false;
         }
 
