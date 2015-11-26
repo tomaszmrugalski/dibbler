@@ -1,6 +1,9 @@
 
   Dibbler changelog
- -------------------
+-------------------
+1.0.2 [not-released-yet]
+  - Fix for calling a script when rapid-commit is used
+
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
     reporting the issue and providing excellent patch)

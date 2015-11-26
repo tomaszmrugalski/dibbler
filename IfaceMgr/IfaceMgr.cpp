@@ -426,6 +426,13 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
     case INFORMATION_REQUEST_MSG:
         action = "update";
         break;
+    case SOLICIT_MSG:
+        if (reply->getType() == REPLY_MSG) {
+            action = "add";
+            break;
+        } else {
+            // This is advertise. Fall through to the default behavior: no exec.
+        }
     default:
         Log(Debug) << "Script execution skipped for " << reply->getName() << " response to "
                    << question->getName() << ". No action needed for this message type." << LogEnd;
