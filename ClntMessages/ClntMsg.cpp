@@ -946,7 +946,8 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    pd->doDuties();
 
 	    // delete that PD from request list
-	    for (TOptList::iterator requestOpt = Options.begin(); requestOpt!=Options.end(); ++requestOpt)
+	    for (TOptList::iterator requestOpt = Options.begin(); requestOpt!=Options.end();
+                 ++requestOpt)
 	    {
 		if ( (*requestOpt)->getOptType()!=OPTION_IA_PD)
 		    continue;
@@ -979,70 +980,110 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
         case OPTION_NIS_SERVERS:
             {
                 SPtr<TOptAddrLst> nisservers = (Ptr*) option;
-                cfgIface->setNISServerState(STATE_CONFIGURED);
-                iface->setNISServerLst(duid, reply->getRemoteAddr(), nisservers->getAddrLst());
+                if (cfgIface->getNISServerState() != STATE_DISABLED) {
+                    cfgIface->setNISServerState(STATE_CONFIGURED);
+                    iface->setNISServerLst(duid, reply->getRemoteAddr(), nisservers->getAddrLst());
+                } else {
+                    Log(Warning) << "Received nis-servers option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_NISP_SERVERS:
             {
                 SPtr<TOptAddrLst> nispservers = (Ptr*) option;
-                cfgIface->setNISPServerState(STATE_CONFIGURED);
-                iface->setNISPServerLst(duid, reply->getRemoteAddr(), nispservers->getAddrLst());
+                if (cfgIface->getNISPServerState() != STATE_DISABLED) {
+                    cfgIface->setNISPServerState(STATE_CONFIGURED);
+                    iface->setNISPServerLst(duid, reply->getRemoteAddr(), nispservers->getAddrLst());
+                } else {
+                    Log(Warning) << "Received nis+-servers option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_SNTP_SERVERS:
             {
                 SPtr<TOptAddrLst> ntpservers = (Ptr*) option;
-                cfgIface->setNTPServerState(STATE_CONFIGURED);
-                iface->setNTPServerLst(duid, reply->getRemoteAddr(), ntpservers->getAddrLst());
+                if (cfgIface->getNTPServerState() != STATE_DISABLED) {
+                    cfgIface->setNTPServerState(STATE_CONFIGURED);
+                    iface->setNTPServerLst(duid, reply->getRemoteAddr(), ntpservers->getAddrLst());
+                } else {
+                    Log(Warning) << "Received ntp-servers option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_SIP_SERVER_A:
             {
                 SPtr<TOptAddrLst> sipservers = (Ptr*) option;
-                cfgIface->setSIPServerState(STATE_CONFIGURED);
-                iface->setSIPServerLst(duid, reply->getRemoteAddr(), sipservers->getAddrLst());
+                if (cfgIface->getSIPServerState() != STATE_DISABLED) {
+                    cfgIface->setSIPServerState(STATE_CONFIGURED);
+                    iface->setSIPServerLst(duid, reply->getRemoteAddr(), sipservers->getAddrLst());
+                } else {
+                    Log(Warning) << "Received sip-servers option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_DOMAIN_LIST:
             {
                 SPtr<TOptDomainLst> domains = (Ptr*) option;
-                cfgIface->setDomainState(STATE_CONFIGURED);
-                iface->setDomainLst(duid, reply->getRemoteAddr(), domains->getDomainLst() );
+                if (cfgIface->getDomainState() != STATE_DISABLED) {
+                    cfgIface->setDomainState(STATE_CONFIGURED);
+                    iface->setDomainLst(duid, reply->getRemoteAddr(), domains->getDomainLst() );
+                } else {
+                    Log(Warning) << "Received domain option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_SIP_SERVER_D:
             {
                 SPtr<TOptDomainLst> sipdomains = (Ptr*) option;
-                cfgIface->setSIPDomainState(STATE_CONFIGURED);
-                iface->setSIPDomainLst(duid, reply->getRemoteAddr(), sipdomains->getDomainLst() );
+                if (cfgIface->getSIPDomainState() != STATE_DISABLED) {
+                    cfgIface->setSIPDomainState(STATE_CONFIGURED);
+                    iface->setSIPDomainLst(duid, reply->getRemoteAddr(), sipdomains->getDomainLst() );
+                } else {
+                    Log(Warning) << "Received sip-domain option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_NIS_DOMAIN_NAME:
             {
                 SPtr<TOptDomainLst> nisdomain = (Ptr*) option;
-                List(string) domains = nisdomain->getDomainLst();
-                if (domains.count() == 1) {
-                    cfgIface->setNISDomainState(STATE_CONFIGURED);
-                    iface->setNISDomain(duid, reply->getRemoteAddr(), nisdomain->getDomain());
+                if (cfgIface->getNISDomainState() != STATE_DISABLED) {
+                    List(string) domains = nisdomain->getDomainLst();
+                    if (domains.count() == 1) {
+                        cfgIface->setNISDomainState(STATE_CONFIGURED);
+                        iface->setNISDomain(duid, reply->getRemoteAddr(), nisdomain->getDomain());
+                    } else {
+                        Log(Warning) << "Malformed NIS Domain option received. " << domains.count()
+                                     << " domain(s) received, expected exactly 1." << LogEnd;
+                        cfgIface->setNISDomainState(STATE_FAILED);
+                    }
                 } else {
-                    Log(Warning) << "Malformed NIS Domain option received. " << domains.count()
-                                 << " domain(s) received, expected exactly 1." << LogEnd;
-                    cfgIface->setNISDomainState(STATE_FAILED);
+                    Log(Warning) << "Received nis-domain option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
                 }
                 break;
             }
         case OPTION_NISP_DOMAIN_NAME:
             {
                 SPtr<TOptDomainLst> nispdomain = (Ptr*) option;
-                List(string) domains = nispdomain->getDomainLst();
-                if (domains.count() == 1) {
-                    cfgIface->setNISPDomainState(STATE_CONFIGURED);
-                    iface->setNISPDomain(duid, reply->getRemoteAddr(), nispdomain->getDomain());
+                if (cfgIface->getNISPDomainState() != STATE_DISABLED) {
+                    List(string) domains = nispdomain->getDomainLst();
+                    if (domains.count() == 1) {
+                        cfgIface->setNISPDomainState(STATE_CONFIGURED);
+                        iface->setNISPDomain(duid, reply->getRemoteAddr(), nispdomain->getDomain());
+                    } else {
+                        Log(Warning) << "Malformed NIS+ Domain option received. " << domains.count()
+                                     << " domain(s) received, expected exactly 1." << LogEnd;
+                        cfgIface->setNISDomainState(STATE_FAILED);
+                    }
                 } else {
-                    Log(Warning) << "Malformed NIS+ Domain option received. " << domains.count()
-                                 << " domain(s) received, expected exactly 1." << LogEnd;
-                    cfgIface->setNISDomainState(STATE_FAILED);
+                    Log(Warning) << "Received nis+-domain option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
                 }
 		break;
             }
@@ -1067,12 +1108,11 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    if ( optORO && (optORO->isOption(option->getOptType())) )
 		optORO->delOption(option->getOptType());
 
-	    //Log(Debug) << "Setting up option " << option->getOptType() << "." << LogEnd;
 	    if (!option->doDuties()) {
-		Log(Warning) << "Setting option " << option->getOptType() << " failed." << LogEnd;
-		// do nothing about it
+		Log(Warning) << "Setting option " << option->getOptType()
+                             << " failed." << LogEnd;
+		// Do nothing about it.
 	    }
-
 
 	    // find options specified in this message
 	    firstOption();
