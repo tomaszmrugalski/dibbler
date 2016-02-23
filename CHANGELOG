@@ -12,6 +12,8 @@
     are possible.
   - Cli: received options are now rejected if the client didn't request them,
     but the server sent them anyway (bug #325).
+  - Cli: valid lifetime is now set properly for updated prefix (github #28).
+    Thanks to scholz for submitting this patch!
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
