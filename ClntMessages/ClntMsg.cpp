@@ -967,8 +967,13 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
         case OPTION_DNS_SERVERS:
             {
                 SPtr<TOptAddrLst> dnsservers = (Ptr*) option;
-                cfgIface->setDNSServerState(STATE_CONFIGURED);
-                iface->setDNSServerLst(duid, reply->getRemoteAddr(), dnsservers->getAddrLst());
+                if (cfgIface->getDNSServerState() != STATE_DISABLED) {
+                    cfgIface->setDNSServerState(STATE_CONFIGURED);
+                    iface->setDNSServerLst(duid, reply->getRemoteAddr(), dnsservers->getAddrLst());
+                } else {
+                    Log(Warning) << "Received dns-servers option, even though we "
+                                 << "didn't request it. Ignoring." << LogEnd;
+                }
                 break;
             }
         case OPTION_NIS_SERVERS:
