@@ -176,8 +176,14 @@ bool TWinService::Install()
                                      NULL, // ServicesActive database
                                      SC_MANAGER_ALL_ACCESS); // full access
     if (!hSCM) return false;
-    // Get the executable file path
+
     char filePath[_MAX_PATH];
+
+    // -d requires the full path so expand a possible relative path here
+    GetFullPathName(ServiceDir.c_str(), sizeof(filePath), filePath, NULL);
+    ServiceDir = filePath;
+
+    // Get the executable file path
     GetModuleFileName(NULL, filePath, sizeof(filePath));
         int i = strlen(filePath);
         sprintf(filePath+i, " service -d \"%s\"",ServiceDir.c_str());
@@ -265,32 +271,31 @@ bool TWinService::StartService() {
         return false;
     }
 
-
     // open a handle to the SCM
-        SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
-        if(!handle)	{
-                Log(Crit) << "Could not connect to SCM dataase" << LogEnd;
-                return false;
-        }
-
-        // open a handle to the service
-        SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
-        if(!service) {
-                ::CloseServiceHandle( handle );
-                Log(Crit) << "Could not get handle to " << ServiceName << " service" << LogEnd;
-                return false;
-        }
-
-        // and start the service!
-        if( !::StartService( service, 0, NULL ) ) {
-                Log(Crit) << "Service " << ServiceName << " startup failed." << LogEnd;
-        ::CloseServiceHandle( service );
-            ::CloseServiceHandle( handle );
+    SC_HANDLE handle = ::OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+    if(!handle)	{
+        Log(Crit) << "Could not connect to SCM dataase" << LogEnd;
         return false;
-        }
+    }
+
+    // open a handle to the service
+    SC_HANDLE service = ::OpenService( handle, ServiceName, GENERIC_EXECUTE );
+    if(!service) {
+        ::CloseServiceHandle( handle );
+        Log(Crit) << "Could not get handle to " << ServiceName << " service" << LogEnd;
+        return false;
+    }
+
+    // and start the service!
+    if( !::StartService( service, 0, NULL ) ) {
+        Log(Crit) << "Service " << ServiceName << " startup failed. " << LogEnd;
+        ::CloseServiceHandle( service );
+        ::CloseServiceHandle( handle );
+        return false;
+    }
 
     Log(Notice) << "Service " << ServiceName << " started." << LogEnd;
-        ::CloseServiceHandle( service );
+    ::CloseServiceHandle( service );
     ::CloseServiceHandle( handle );
     return true;
 }
