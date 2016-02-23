@@ -131,9 +131,10 @@ TEST(RelTransMgrTest, getLinkAddrFromDUID) {
     EXPECT_EQ(12, opt->getSize());
 
     char output[100];
-    char* ptr;
+    char* ptr = 0;
     memset(output, 0, 100);
     ASSERT_NO_THROW(ptr = opt->storeSelf(output));
+    ASSERT_TRUE(ptr);
     EXPECT_EQ(12, ptr - output);
 
     std::cout << "Received: " << hexToText((uint8_t*)output, 12, true, false) << std::endl;
@@ -207,9 +208,10 @@ TEST(RelTransMgrTest, getLinkAddrFromSrcAddr) {
     ASSERT_EQ(12, opt->getSize());
 
     char output[100];
-    char* ptr;
+    char* ptr = 0;
     memset(output, 0, 100);
     ASSERT_NO_THROW(ptr = opt->storeSelf(output));
+    ASSERT_TRUE(ptr);
     EXPECT_EQ(12, ptr - output);
 
     std::cout << "Received: " << hexToText((uint8_t*)output, 12, true, false) << std::endl;
