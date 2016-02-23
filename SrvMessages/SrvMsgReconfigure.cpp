@@ -51,7 +51,7 @@ TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
         tmp[0] = 2; // see RFC3315, section 21.5.1
         optAuth->setPayload(tmp);
 
-        Options.push_back((Ptr*)optAuth);
+        Options.push_back(SPtr_cast<TOpt>(optAuth));
 
     } else {
         Log(Warning) << "Auth: No reconfigure-key specified for client. Sending"

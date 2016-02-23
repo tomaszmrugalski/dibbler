@@ -56,7 +56,11 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
 	case OPTION_LQ_QUERY:
 	{
 	    count++;
-	    SPtr<TSrvOptLQ> q = (Ptr*) opt;
+	    SPtr<TSrvOptLQ> q = SPtr_cast<TSrvOptLQ>(opt);
+            if (!q) {
+                Log(Error) << "LQ-Query option is of invalid object type." << LogEnd;
+                continue;
+            }
 	    switch (q->getQueryType()) {
 	    case QUERY_BY_ADDRESS:
 		ok = queryByAddress(q, queryMsg);
@@ -89,9 +93,8 @@ bool TSrvMsgLeaseQueryReply::answer(SPtr<TSrvMsgLeaseQuery> queryMsg) {
     }
 
     // append SERVERID
-    SPtr<TOptDUID> serverID;
-    serverID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
-    Options.push_back((Ptr*)serverID);
+    SPtr<TOpt> serverID(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
+    Options.push_back(serverID);
 
     // allocate buffer
     this->send();
@@ -106,8 +109,10 @@ bool TSrvMsgLeaseQueryReply::queryByAddress(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLease
     SPtr<TIPv6Addr> link = q->getLinkAddr();
     
     while ( opt = q->getOption() ) {
-	if (opt->getOptType() == OPTION_IAADDR)
-	    addr = (Ptr*) opt;
+	if (opt->getOptType() == OPTION_IAADDR) {
+	    addr = SPtr_cast<TSrvOptIAAddress>(opt);
+            break;
+        }
     }
     if (!addr) {
 	Options.push_back(new TOptStatusCode(STATUSCODE_MALFORMEDQUERY,
@@ -139,13 +144,16 @@ bool TSrvMsgLeaseQueryReply::queryByClientID(SPtr<TSrvOptLQ> q, SPtr<TSrvMsgLeas
     q->firstOption();
     while ( opt = q->getOption() ) {
 	if (opt->getOptType() == OPTION_CLIENTID) {
-	    duidOpt = (Ptr*) opt;
-	    duid = duidOpt->getDUID();
+	    duidOpt = SPtr_cast<TOptDUID>(opt);
+            if (duidOpt) {
+                duid = duidOpt->getDUID();
+                break;
+            }
 	}
     }
     if (!duid) {
-	Options.push_back( new TOptStatusCode(STATUSCODE_UNSPECFAIL,
-                                              "You didn't send your ClientID.", this) );
+	Options.push_back(new TOptStatusCode(STATUSCODE_UNSPECFAIL,
+                                             "You didn't send your ClientID.", this) );
 	return true;
     }
 
@@ -211,7 +219,7 @@ void TSrvMsgLeaseQueryReply::appendClientData(SPtr<TAddrClient> cli) {
 
     cliData->addOption( new TSrvOptLQClientTime(diff, this));
 
-    Options.push_back((Ptr*)cliData);
+    Options.push_back(SPtr_cast<TOpt>(cliData));
 }
 
 bool TSrvMsgLeaseQueryReply::check() {

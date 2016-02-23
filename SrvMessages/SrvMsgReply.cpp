@@ -38,11 +38,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     :TSrvMsg(confirm->getIface(),confirm->getRemoteAddr(), REPLY_MSG,
              confirm->getTransID())
 {
-    getORO( (Ptr*)confirm );
-    copyClientID((Ptr*)confirm );
-    copyRelayInfo((Ptr*)confirm);
-    copyAAASPI((Ptr*)confirm);
-    copyRemoteID((Ptr*)confirm);
+    getORO(SPtr_cast<TMsg>(confirm));
+    copyClientID(SPtr_cast<TMsg>(confirm));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(confirm));
+    copyAAASPI(SPtr_cast<TSrvMsg>(confirm));
+    copyRemoteID(SPtr_cast<TSrvMsg>(confirm));
 
     if (!handleConfirmOptions( confirm->getOptLst() )) {
         IsDone = true;
