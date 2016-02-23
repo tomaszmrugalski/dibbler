@@ -47,8 +47,9 @@ TWinService::TWinService(const char* serviceName, const char* dispName,
 
 TWinService::~TWinService(void)
 {
-    if (EventSource)
+    if (EventSource) {
         DeregisterEventSource(EventSource);
+    }
 }
 
 void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
@@ -59,13 +60,11 @@ void TWinService::ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     // Register the control request handler
     pService->Status.dwCurrentState = SERVICE_START_PENDING;
     pService->hServiceStatus = RegisterServiceCtrlHandler(pService->ServiceName,Handler);
-    if (pService->hServiceStatus==NULL)
-        {
+    if (pService->hServiceStatus==NULL) {
         return;
     }
     // Start the initialisation
-    if (pService->Initialize())
-        {
+    if (pService->Initialize()) {
         // Do the real work.
         // When the Run function returns, the service has stopped.
         pService->IsRunning = TRUE;
@@ -109,8 +108,8 @@ void TWinService::Handler(DWORD dwOpcode) {
     default:
         if (dwOpcode >= SERVICE_CONTROL_USER) {
             if (!pService->OnUserControl(dwOpcode)) {
+                // WTF is that?
             }
-        } else {
         }
         break;
     }
@@ -119,24 +118,27 @@ void TWinService::Handler(DWORD dwOpcode) {
     SetServiceStatus(pService->hServiceStatus, &pService->Status);
 }
 
-void TWinService::LogEvent(WORD wType, DWORD dwID,
-                          const char* pszS1,
-                  const char* pszS2,
-                  const char* pszS3)
+void TWinService::LogEvent(WORD wType, DWORD dwID, const char* pszS1,
+                           const char* pszS2, const char* pszS3)
 {
     const char* ps[3];
     ps[0] = pszS1;
     ps[1] = pszS2;
     ps[2] = pszS3;
     int iStr = 0;
-    for (int i = 0; i < 3; i++)
-        if (ps[i] != NULL) iStr++;
+    for (int i = 0; i < 3; i++) {
+        if (ps[i] != NULL) {
+            iStr++;
+        }
+    }
     // Check the event source has been registered and if
     // not then register it now
-    if (!EventSource)
+    if (!EventSource) {
         EventSource = ::RegisterEventSource(NULL,ServiceName);
-    if (EventSource)
+    }
+    if (EventSource) {
         ReportEvent(EventSource,wType,0,dwID,NULL,iStr,0,ps,NULL);
+    }
 }
 
 bool TWinService::IsInstalled()
@@ -175,7 +177,9 @@ bool TWinService::Install()
     SC_HANDLE hSCM = ::OpenSCManager(NULL, // local machine
                                      NULL, // ServicesActive database
                                      SC_MANAGER_ALL_ACCESS); // full access
-    if (!hSCM) return false;
+    if (!hSCM) {
+        return false;
+    }
 
     char filePath[_MAX_PATH];
 
@@ -185,28 +189,23 @@ bool TWinService::Install()
 
     // Get the executable file path
     GetModuleFileName(NULL, filePath, sizeof(filePath));
-        int i = strlen(filePath);
-        sprintf(filePath+i, " service -d \"%s\"",ServiceDir.c_str());
+    int i = strlen(filePath);
+    sprintf(filePath+i, " service -d \"%s\"", ServiceDir.c_str());
 
     // Create the service
-        //printf("Install(): filepath=[%s]\nServiceName=[%s]\n",filePath,ServiceName);
-        //printf("ServiceDir=[%s]\n",ServiceDir.c_str());
-    SC_HANDLE hService = CreateService(	hSCM,ServiceName, DisplayName,
-                                        SERVICE_ALL_ACCESS,
-                                        SERVICE_WIN32_OWN_PROCESS,
-                                        ServiceType,
-                                        SERVICE_ERROR_NORMAL,
-                                        filePath,NULL,NULL,Dependencies,NULL,NULL);
-    if (!hService)
-    {
+    SC_HANDLE hService = CreateService(hSCM, ServiceName, DisplayName, SERVICE_ALL_ACCESS,
+                                       SERVICE_WIN32_OWN_PROCESS, ServiceType,
+                                       SERVICE_ERROR_NORMAL, filePath, NULL, NULL,
+                                       Dependencies, NULL, NULL);
+    if (!hService) {
         CloseServiceHandle(hSCM);
         Log(Crit) << "Unable to create " << ServiceName << " service." << LogEnd;
         return FALSE;
     }
 
-        SERVICE_DESCRIPTION sdBuf;
-        sdBuf.lpDescription = this->descr;
-        ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION, &sdBuf );
+    SERVICE_DESCRIPTION sdBuf;
+    sdBuf.lpDescription = this->descr;
+    ChangeServiceConfig2(hService, SERVICE_CONFIG_DESCRIPTION, &sdBuf);
 
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
@@ -228,10 +227,10 @@ bool TWinService::Uninstall()
 
     // Open the Service Control Manager
     SC_HANDLE hSCM = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
-        if (!hSCM) {
-                Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
-                return false;
-        }
+    if (!hSCM) {
+        Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
+        return false;
+    }
     bool result = false;
     SC_HANDLE hService = ::OpenService(hSCM,ServiceName,DELETE);
     if (!hService) {
@@ -245,7 +244,7 @@ bool TWinService::Uninstall()
         CloseServiceHandle(hService);
         CloseServiceHandle(hSCM);
         return false;
-        }
+    }
 
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
@@ -414,7 +413,7 @@ bool TWinService::isRunning(const char * name) {
     // Open the Service Control Manager
     SC_HANDLE hSCM = ::OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
     if (!hSCM) {
-    //Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
+        //Log(Crit) << "Unable to open Service Control Manager." << LogEnd;
         return false;
     }
 
@@ -471,37 +470,59 @@ bool TWinService::verifyPort() {
     verinfo.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
     GetVersionEx(&verinfo);
     bool ok=false;
+
     if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==1)) {
         Log(Notice) << "Windows XP detected (majorVersion=" << verinfo.dwMajorVersion
-                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
         ok = true;
     }
     if ((verinfo.dwMajorVersion==5) && (verinfo.dwMinorVersion==2)) {
         Log(Notice) << "Windows 2003 detected (majorVersion=" << verinfo.dwMajorVersion
-                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
         ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==0)) {
         Log(Notice) << "Windows Vista detected (majorVersion=" << verinfo.dwMajorVersion
-                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
         ok = true;
     }
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==1)) {
         Log(Notice) << "Windows7 detected (majorVersion=" << verinfo.dwMajorVersion
-                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
         ok = true;
     }
 
     if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==2)) {
         Log(Notice) << "Windows 8 detected (majorVersion=" << verinfo.dwMajorVersion
-                    << ", minorVersion=" << verinfo.dwMinorVersion << "), so this is proper port." << LogEnd;
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
         ok = true;
     }
 
+    if ((verinfo.dwMajorVersion==6) && (verinfo.dwMinorVersion==3)) {
+        Log(Notice) << "Windows 8.1 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
+        ok = true;
+    }
+
+    if (verinfo.dwMajorVersion==10) {
+        Log(Notice) << "Windows 10 detected (majorVersion=" << verinfo.dwMajorVersion
+                    << ", minorVersion=" << verinfo.dwMinorVersion
+                    << "), so this is proper port." << LogEnd;
+        ok = true;
+    }
+    
     if (!ok) {
-         Log(Warning) << "Unsupported operating system detected (majorVersion=" << verinfo.dwMajorVersion
+         Log(Warning) << "Unsupported operating system detected (majorVersion="
+                      << verinfo.dwMajorVersion
           << ", minorVersion=" << verinfo.dwMinorVersion << ")." << LogEnd;
-         Log(Notice) << "Unsupported systems (there's separate Dibbler version for those systems):" << LogEnd;
+         Log(Notice) << "Unsupported systems (there's separate Dibbler version for those systems):"
+                     << LogEnd;
          Log(Notice) << "Windows NT4:   major<5 minor=0" << LogEnd;
          Log(Notice) << "Windows 2000:  major=5 minor=0" << LogEnd;
          Log(Notice) << "Supported systems:" << LogEnd;
@@ -510,6 +531,8 @@ bool TWinService::verifyPort() {
          Log(Notice) << "Windows Vista: major=6 minor=0" << LogEnd;
          Log(Notice) << "Windows 7:     major=6 minor=1" << LogEnd;
          Log(Notice) << "Windows 8:     major=6 minor=2" << LogEnd;
+         Log(Notice) << "Windows 8.1:   major=6 minor=3" << LogEnd;
+         Log(Notice) << "Windows 10:    major=10 minor=any" << LogEnd;
     }
     return ok;
 }
@@ -522,7 +545,7 @@ bool TWinService::isRunAsAdmin()
     BOOL fIsRunAsAdmin = FALSE;
     PSID pAdministratorsGroup = NULL;
 
-    // Allocate and initialize a SID of the administrators group. 
+    // Allocate and initialize a SID of the administrators group.
     SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
     if ( AllocateAndInitializeSid(
              &NtAuthority,
@@ -532,11 +555,11 @@ bool TWinService::isRunAsAdmin()
              0, 0, 0, 0, 0, 0,
              &pAdministratorsGroup) )
     {
-        // Determine whether the SID of administrators group is enabled in  
-        // the primary access token of the process. 
+        // Determine whether the SID of administrators group is enabled in
+        // the primary access token of the process.
         CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin);
 
-        // Cleanup for all allocated resources. 
+        // Cleanup for all allocated resources.
         FreeSid(pAdministratorsGroup);
     }
     return fIsRunAsAdmin == TRUE;
