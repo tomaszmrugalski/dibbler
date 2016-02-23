@@ -6,6 +6,8 @@
   - Fix for calling a script when rapid-commit is used
   - Win: Added expansion of relative paths passed to -d to absolute path.
     Thanks to Hernan Martinez for the patch. (github #30)
+  - Win: Dibbler now detects Windows 8.1 and 10. It was not tested, though.
+    Use with care and please report on dibbler mailing lists.
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
