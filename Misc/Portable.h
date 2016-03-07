@@ -104,13 +104,13 @@ struct link_state_notify_t
 
 #define CLNTCFGMGR_FILE   "client-CfgMgr.xml"
 #define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
-#define CLNTDUID_FILE	  "client-duid"
+#define CLNTDUID_FILE     "client-duid"
 #define CLNTADDRMGR_FILE  "client-AddrMgr.xml"
 #define CLNTTRANSMGR_FILE "client-TransMgr.xml"
 
 #define SRVCFGMGR_FILE    "server-CfgMgr.xml"
 #define SRVIFACEMGR_FILE  "server-IfaceMgr.xml"
-#define SRVDUID_FILE	  "server-duid"
+#define SRVDUID_FILE      "server-duid"
 #define SRVADDRMGR_FILE   "server-AddrMgr.xml"
 #define SRVTRANSMGR_FILE  "server-TransMgr.xml"
 #define SRVCACHE_FILE     "server-cache.xml"
@@ -144,13 +144,14 @@ struct link_state_notify_t
 #define FLUSH_OTHER_CONFIGURED_DNS_SERVERS true
 #endif
 
-#if defined(LINUX) || defined(BSD) || defined(SUNOS)
 
 #if defined(BSD)
 #define DEFAULT_WORKDIR       "/var/db/dibbler"
 #else
 #define DEFAULT_WORKDIR       "/var/lib/dibbler"
 #endif
+
+#if defined(LINUX) || defined(BSD) || defined(SUNOS)
 #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
 #define DEFAULT_CLNTPID_FILE  "/var/lib/dibbler/client.pid"
 #define DEFAULT_CLNTLOG_FILE  "/var/log/dibbler/dibbler-client.log"
@@ -161,6 +162,7 @@ struct link_state_notify_t
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
+
 #if defined(BSD)
 #define SRVPID_FILE        "/var/run/dibbler-server.pid"
 #define RELPID_FILE        "/var/run/dibbler-relay.pid"
@@ -172,6 +174,7 @@ struct link_state_notify_t
 #define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
 #define SRV_KEYMAP_FILE    "/var/lib/dibbler/AAA/keys-mapping"
 #endif
+
 #define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
 #define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define NULLFILE           "/dev/null"
@@ -270,7 +273,7 @@ extern "C" {
     extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
 unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
-			     unsigned long pref, unsigned long valid, int prefixLength);
+                             unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
 
     /* add socket to interface */
@@ -336,9 +339,9 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
 
     extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
-			  unsigned long prefered, unsigned long valid);
+                          unsigned long prefered, unsigned long valid);
     extern int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
-			     unsigned long prefered, unsigned long valid);
+                             unsigned long prefered, unsigned long valid);
     extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
 
     char * getAAAKey(uint32_t SPI, uint32_t *len); /* reads AAA key from a file */
