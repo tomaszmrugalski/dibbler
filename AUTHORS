@@ -136,5 +136,8 @@
   - Etienne Buira <etienne(dot)buira(at)gmail(dot)com>
     2015-07: Fix in IA_TA status code
 
+  - nerzhul <loic(dot)blot(at)unix-experience(dot)fr>
+    2016-03: Paths on BSD system improved
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
