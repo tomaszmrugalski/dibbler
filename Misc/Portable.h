@@ -32,7 +32,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-/* this should look like this: 
+/* this should look like this:
 uint16_t readUint16(uint8_t* buf);
 uint8_t * writeUint16(uint8_t* buf, uint16_t word);
 uint32_t readUint32(uint8_t* buf);
@@ -44,7 +44,7 @@ uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
    char* for now. Changing to uint8_t would require rewriting large parts of the code */
 #define BUFFER_TYPE char
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
     uint8_t readUint8(const BUFFER_TYPE* buf);
@@ -56,7 +56,7 @@ extern "C" {
     uint64_t readUint64(const BUFFER_TYPE * buf);
     BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
     BUFFER_TYPE* writeData(BUFFER_TYPE* buf,  BUFFER_TYPE* data, size_t len);
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 
@@ -66,7 +66,7 @@ extern "C" {
 /*** data structures **************************************************/
 /**********************************************************************/
 
-#ifndef MAX_IFNAME_LENGTH 
+#ifndef MAX_IFNAME_LENGTH
 #define MAX_IFNAME_LENGTH 255
 #endif
 
@@ -92,7 +92,7 @@ struct iface {
 
 struct link_state_notify_t
 {
-    int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
+    int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed.
                                                     Only non-zero values will be used */
     int stat[MAX_LINK_STATE_CHANGES_AT_ONCE];
     int cnt;  /* number of iterface indexes filled */
@@ -146,7 +146,11 @@ struct link_state_notify_t
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)
 
+#if defined(BSD)
+#define DEFAULT_WORKDIR       "/var/db/dibbler"
+#else
 #define DEFAULT_WORKDIR       "/var/lib/dibbler"
+#endif
 #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
 #define DEFAULT_CLNTPID_FILE  "/var/lib/dibbler/client.pid"
 #define DEFAULT_CLNTLOG_FILE  "/var/log/dibbler/dibbler-client.log"
@@ -157,15 +161,22 @@ struct link_state_notify_t
 #define RESOLVCONF_FILE    "/etc/resolv.conf"
 #define NTPCONF_FILE       "/etc/ntp.conf"
 #define RADVD_FILE         "/etc/dibbler/radvd.conf"
+#if defined(BSD)
+#define SRVPID_FILE        "/var/run/dibbler-server.pid"
+#define RELPID_FILE        "/var/run/dibbler-relay.pid"
+#define CLNT_AAASPI_FILE   "/var/db/dibbler/AAA/AAA-SPI"
+#define SRV_KEYMAP_FILE    "/var/db/dibbler/AAA/keys-mapping"
+#else
 #define SRVPID_FILE        "/var/lib/dibbler/server.pid"
 #define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
 #define SRV_KEYMAP_FILE    "/var/lib/dibbler/AAA/keys-mapping"
+#endif
+#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
 #define NULLFILE           "/dev/null"
 
-/* those defines were initially used on Linux only, but hopefully 
+/* those defines were initially used on Linux only, but hopefully
    they will work on other Posix systems as well */
 #define RESOLVCONF         "/sbin/resolvconf"
 #define TIMEZONE_FILE      "/etc/localtime"
@@ -244,7 +255,7 @@ struct link_state_notify_t
 /* *** interface/socket low level functions ***************************** */
 /* ********************************************************************** */
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -256,12 +267,12 @@ extern "C" {
     extern void if_list_release(struct iface * list);
 
     /* add address to interface */
-    extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr, 
+    extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
 unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
 			     unsigned long pref, unsigned long valid, int prefixLength);
     extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
-    
+
     /* add socket to interface */
     extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);
     extern int sock_del(int fd);
@@ -284,7 +295,7 @@ unsigned long pref, unsigned long valid, int prefixLength);
      */
     extern int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                                  char* mac, int* mac_len);
-    
+
     /* pack/unpack address */
     extern void print_packed(char addr[]);
     extern int inet_pton6(const char* src, char* dst);
@@ -318,7 +329,7 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern int nisserver_del(const char* ifname, int ifindex, const char* addrPlain);
     extern int nisdomain_set(const char* ifname, int ifindex, const char* domain);
     extern int nisdomain_del(const char* ifname, int ifindex, const char* domain);
-    
+
     extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain);
     extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
     extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
@@ -349,7 +360,7 @@ unsigned long pref, unsigned long valid, int prefixLength);
      * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
      */
     int get_hostname(char* hostname, int hostname_len);
-    
+
 #ifdef __cplusplus
 }
 #endif
