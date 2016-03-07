@@ -322,7 +322,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     SPtr<TMsg> q, a; // question and answer
-    q = (Ptr*) msg;
+    q = SPtr_cast<TMsg>(msg);
 
     switch(msg->getType()) {
     case SOLICIT_MSG: {
@@ -330,49 +330,41 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
             if (!cfgIface->getRapidCommit()) {
                 Log(Info) << "SOLICIT with RAPID-COMMIT received, but RAPID-COMMIT is disabled on "
                           << cfgIface->getName() << " interface." << LogEnd;
-                a = new TSrvMsgAdvertise((Ptr*)msg);
+                a = new TSrvMsgAdvertise(msg);
             } else {
-                SPtr<TSrvMsgSolicit> nmsg = (Ptr*)msg;
-                a = new TSrvMsgReply(nmsg);
+                a = new TSrvMsgReply(SPtr_cast<TSrvMsgSolicit>(msg));
             }
         } else {
-            a = new TSrvMsgAdvertise( (Ptr*) msg);
+            a = new TSrvMsgAdvertise(msg);
         }
         break;
     }
     case REQUEST_MSG: {
-        SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgRequest>(msg));
         break;
     }
     case CONFIRM_MSG: {
-        SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgConfirm>(msg));
         break;
     }
     case RENEW_MSG: {
-        SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgRenew>(msg));
         break;
     }
     case REBIND_MSG: {
-        SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgRebind>(msg));
         break;
     }
     case DECLINE_MSG: {
-        SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgDecline>(msg));
         break;
     }
     case RELEASE_MSG: {
-        SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgRelease>(msg));
         break;
     }
     case INFORMATION_REQUEST_MSG : {
-        SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-        a = new TSrvMsgReply(nmsg);
+        a = new TSrvMsgReply(SPtr_cast<TSrvMsgInfRequest>(msg));
         break;
     }
     case LEASEQUERY_MSG: {
@@ -384,8 +376,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
             return;
         }
         Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        a = new TSrvMsgLeaseQueryReply(lq);
+        a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
         break;
     }
     case RECONFIGURE_MSG:
@@ -407,7 +398,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     }
 
     if (a && !a->isDone()) {
-        SPtr<TSrvMsg> answ = (Ptr*)a;
+        SPtr<TSrvMsg> answ = SPtr_cast<TSrvMsg>(a);
 
         // Send the packet
         sendPacket(answ);
