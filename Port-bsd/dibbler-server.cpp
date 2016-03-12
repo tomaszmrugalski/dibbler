@@ -12,6 +12,7 @@
 
 #include <signal.h>
 #include <string.h>
+#include <stdlib.h>
 #include "DHCPServer.h"
 #include "Portable.h"
 #include "Logger.h"
