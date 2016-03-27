@@ -593,7 +593,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
             subprefixLen = prefixLen;
         } else if (ifaceLst.size()<256) {
             subprefixLen = prefixLen + bit_shift;
-            int offset = prefixLen/bit_shift;
+            int offset = (prefixLen+bit_shift) / 8;
             if (prefixLen%8 == 0) {
                 // that's easy, just put ID in the next octet
                 buf[offset] = (*i)->getID();
