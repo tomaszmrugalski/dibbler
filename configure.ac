@@ -230,7 +230,7 @@ dnl ---------------------------------------------
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=""
-      if test "$NEED_RFC_3542" == "yes"; then
+      if test "$NEED_RFC_3542" = "yes"; then
         PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
       fi
       PORT_LDFLAGS=
