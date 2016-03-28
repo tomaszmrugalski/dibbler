@@ -18,7 +18,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <bits/sigthread.h>
+#if defined(__GLIBC__)
+# include <bits/sigthread.h>
+#endif
 #include "Portable.h"
 #include "interface.h"
 
