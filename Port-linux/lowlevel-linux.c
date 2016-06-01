@@ -422,14 +422,15 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     
     rtnl_open(&rth, 0);
     ll_init_map(&rth);
-    
+
     /* is there an interface with this ifindex? */
     if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
 	sprintf(Message, "Cannot find device: %s", ifacename);
+       rtnl_close(&rth);
 	return LOWLEVEL_ERROR_UNSPEC;
     }
     rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
-
+    rtnl_close(&rth);
     return LOWLEVEL_NO_ERROR;
 }
 

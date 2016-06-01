@@ -16,6 +16,8 @@
     Thanks to scholz for submitting this patch!
   - BSD: Update paths to better reflect BSD standards (/var/run -> /var/db)
     Thanks to nerzhul (github pull request #29)
+  - Linux: file descriptor leak in dibbler-client fixed. Thanks to
+    Mircea Ciosan for providing a patch (bug #327)
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
