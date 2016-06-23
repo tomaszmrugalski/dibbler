@@ -21,8 +21,12 @@ class TMsg;
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "Opt.h"
+#include "OptDUID.h"
+#include "OptOptionRequest.h"
 #include "Key.h"
 #include "ScriptParams.h"
+
+class TOptStatusCode;
 
 // Hey! It's grampa of all messages
 class TMsg
@@ -46,7 +50,7 @@ class TMsg
     virtual std::string getName() const = 0;
 
     // returns requested option (or NULL, there is no such option)
-    SPtr<TOpt> getOption(int type);
+    SPtr<TOpt> getOption(int type) const;
     void firstOption();
     int countOption();
     void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
@@ -83,6 +87,15 @@ class TMsg
 
     void setLocalAddr(SPtr<TIPv6Addr> myaddr);
     SPtr<TIPv6Addr> getLocalAddr();
+
+    /// @brief returns server-id option (if present)
+    SPtr<TOptDUID> getServerID() const;
+
+    /// @brief returns client-id option (if present)
+    SPtr<TOptDUID> getClientID() const;
+
+    /// @brief returns ORO (if present)
+    SPtr<TOptOptionRequest> getORO() const;
 
   protected:
     int MsgType;

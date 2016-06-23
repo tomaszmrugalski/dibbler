@@ -15,17 +15,18 @@
 #include "Logger.h"
 
 TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg* parent)
-    :TOpt(code, parent), Valid_(true)
+    :TOpt(code, parent)
 {
+    Valid = true;
     Options = NULL;
     OptCnt = 0;
 }
 
 int  TOptOptionRequest::getReqOpt(int optNr) {
-    if ( (!OptCnt) || (optNr>OptCnt) )
-      return 0;
-    return
-      this->Options[optNr];
+    if ( (!OptCnt) || (optNr>OptCnt) ) {
+        return 0;
+    }
+    return Options[optNr];
 }
 
 size_t TOptOptionRequest::getSize()
@@ -52,10 +53,12 @@ char * TOptOptionRequest::storeSelf( char* buf)
 }
 
 TOptOptionRequest::TOptOptionRequest(uint16_t code, const char * buf, size_t bufSize, TMsg* parent)
-    :TOpt(code, parent), Valid_(false)
+    :TOpt(code, parent)
 {
+    Valid = false;
     if (bufSize%2) {
-        Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")." << LogEnd;
+        Log(Error) << "OPTION REQUEST option malformed: odd number of bytes ("
+                   << bufSize << ")." << LogEnd;
         Options = NULL;
         OptCnt  = 0;
         return;
@@ -67,7 +70,7 @@ TOptOptionRequest::TOptOptionRequest(uint16_t code, const char * buf, size_t buf
         Options[i] = readUint16(buf + i*2);
     }
     OptCnt = totalOpts;
-    Valid_ = true;
+    Valid = true;
 }
 
 void TOptOptionRequest::addOption(unsigned short optNr)
@@ -112,22 +115,25 @@ bool TOptOptionRequest::isOption(unsigned short optNr)
     return false;
 }
 
-int  TOptOptionRequest::count() {
+int TOptOptionRequest::count() {
     return this->OptCnt;
 }
 
 void TOptOptionRequest::clearOptions() {
-    if (this->OptCnt)
+    if (this->OptCnt) {
         delete [] this->Options;
-    OptCnt=0;
-}
-
-bool TOptOptionRequest::isValid() const {
-    return Valid_;
+    }
+    OptCnt = 0;
 }
 
 TOptOptionRequest::~TOptOptionRequest()
 {
-  if (Options)
-    delete [] Options;
+    if (Options) {
+        delete [] Options;
+    }
 }
+
+std::string TOptOptionRequest::getPlain() {
+    return "ORO";
+}
+

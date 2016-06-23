@@ -11,7 +11,7 @@
 #include "ClntCfgMgr.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptIAPrefix.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntIfaceMgr.h"
 #include "Logger.h"
 #include "Portable.h"
@@ -96,7 +96,7 @@ TClntOptIA_PD::TClntOptIA_PD(char * buf,int bufsize, TMsg* parent)
                                 SubOptions.append( new TClntOptIAPrefix(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    SubOptions.append( new TClntOptStatusCode(buf+pos,length,this->Parent));
+                    SubOptions.append( new TOptStatusCode(buf+pos, length, this->Parent));
                     break;
                 default:
                         Log(Warning) << "Option opttype=" << code<< "not supported "
@@ -127,12 +127,12 @@ void TClntOptIA_PD::firstPrefix()
 
 SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix()
 {
-    SPtr<TClntOptIAPrefix> ptr;
+    SPtr<TOpt> ptr;
     do {
-        ptr = (Ptr*) SubOptions.get();
-        if (ptr)
-            if (ptr->getOptType()==OPTION_IAPREFIX)
-                return ptr;
+        ptr = SubOptions.get();
+        if (ptr && ptr->getOptType()==OPTION_IAPREFIX) {
+            return SPtr_cast<TClntOptIAPrefix>(ptr);
+        }
     } while (ptr);
     return SPtr<TClntOptIAPrefix>();
 }
@@ -153,11 +153,12 @@ int TClntOptIA_PD::countPrefix() const
 
 int TClntOptIA_PD::getStatusCode()
 {
-    SPtr<TOpt> option;
-    if (option=getOption(OPTION_STATUS_CODE))
-    {
-        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
-        return statOpt->getCode();
+    SPtr<TOpt> status = getOption(OPTION_STATUS_CODE);
+    if (status) {
+        SPtr<TOptStatusCode> statOpt= SPtr_cast<TOptStatusCode>(status);
+        if (statOpt) {
+            return statOpt->getCode();
+        }
     }
     return STATUSCODE_SUCCESS;
 }
@@ -210,7 +211,7 @@ void TClntOptIA_PD::deletePrefix(SPtr<TClntOptIAPrefix> prefix)
 
     for (TOptList::iterator opt = opts.begin(); opt != opts.end(); ++opt) {
         if ((*opt)->getOptType() == OPTION_IAPREFIX) {
-            SPtr<TClntOptIAPrefix> iaprefix = (Ptr*) *opt;
+            SPtr<TClntOptIAPrefix> iaprefix = SPtr_cast<TClntOptIAPrefix>(*opt);
             if ((*prefix->getPrefix()) == (*iaprefix->getPrefix())) {
                 opts.erase(opt);
                 break;
@@ -226,7 +227,7 @@ SPtr<TClntOptIAPrefix> TClntOptIA_PD::getPrefix(SPtr<TIPv6Addr> prefix)
     for (TOptList::iterator opt = opts.begin(); opt != opts.end(); ++opt) {
         if ((*opt)->getOptType() != OPTION_IAPREFIX)
             continue;
-        SPtr<TClntOptIAPrefix> iaprefix = (Ptr*) *opt;
+        SPtr<TClntOptIAPrefix> iaprefix = SPtr_cast<TClntOptIAPrefix>(*opt);
 
         if ((*prefix) == (*iaprefix->getPrefix()))
             return iaprefix;
@@ -276,7 +277,7 @@ bool TClntOptIA_PD::modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode)
             for (TOptList::iterator it = opts.begin(); it != opts.end(); ++it) {
                 if ((*it)->getOptType() != OPTION_IAPREFIX)
                     continue;
-                prefix = (Ptr*)(*it);
+                prefix = SPtr_cast<TClntOptIAPrefix>(*it);
                 T1_ = prefix->getPref()/2;
                 T2_ = (int)((prefix->getPref())*0.7);
                 Log(Notice) << "Server set T1 and T2 to 0. Choosing default (50%, "

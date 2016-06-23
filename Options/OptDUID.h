@@ -12,7 +12,7 @@
 
 #include "DHCPConst.h"
 #include "Opt.h"
-#include "DUID.h" 
+#include "DUID.h"
 #include "SmartPtr.h"
 
 class TOptDUID : public TOpt
@@ -26,7 +26,7 @@ class TOptDUID : public TOpt
     bool doDuties() { return true; }
     SPtr<TDUID> getDUID() const;
     virtual bool isValid() const;
-    std::string getPlain() { if (DUID) return DUID->getPlain(); else return std::string(""); }
+    virtual std::string getPlain();
   protected:
     SPtr<TDUID> DUID;
 };

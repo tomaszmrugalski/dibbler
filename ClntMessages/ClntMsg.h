@@ -18,7 +18,7 @@
 #include "ClntAddrMgr.h"
 #include "SmartPtr.h"
 #include "Opt.h"
-
+#include "OptStatusCode.h"
 
 class TClntMsg : public TMsg
 {
@@ -37,8 +37,9 @@ public:
     void setIface(int iface); // used to override when we have received msg via loopback interface.
 
     void copyAAASPI(SPtr<TClntMsg> q);
-    void appendTAOptions(bool switchToInProcess); // append all TAs, which are currently in the NOTCONFIGURED state
-//    void appendPDOptions(bool switchToInProcess); // append all PDs, which are currently in the NOTCONFIGURED state
+
+    /// @brief appends all TAs, which are currently in the NOTCONFIGURED state
+    void appendTAOptions(bool switchToInProcess);
 
     void appendAuthenticationOption();
     void appendElapsedOption();
@@ -52,6 +53,9 @@ public:
 
     void getReconfKeyFromAddrMgr();
     void deletePD(SPtr<TOpt> pd_);
+
+    /// @brief return status-code option (if present)
+    SPtr<TOptStatusCode> getStatusCode() const;
 
  protected:
     bool check(bool clntIDmandatory, bool srvIDmandatory);

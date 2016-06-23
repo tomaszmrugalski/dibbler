@@ -12,38 +12,18 @@
 #include "OptIA_NA.h"
 #include "OptIAAddress.h"
 #include "OptStatusCode.h"
-//#include "OptRapidCommit.h"
+#include "DHCPConst.h"
 
-TOptIA_NA::TOptIA_NA(long IAID, long t1,  long t2, TMsg* parent)
-    :TOpt(OPTION_IA_NA, parent), IAID_(IAID), T1_(t1), T2_(t2), Valid_(true) {
+
+TOptIA_NA::TOptIA_NA(long iaid, long t1,  long t2, TMsg* parent)
+    : TOptIA(OPTION_IA_NA, iaid, t1, t2, parent) {
+    Valid_ = true;
 }
 
-void TOptIA_NA::setIAID(uint32_t iaid) {
-    IAID_ = iaid;
-}
+TOptIA_NA::TOptIA_NA(const char * buf, int &bufsize, TMsg* parent)
+    : TOptIA(OPTION_IA_NA, parent) {
+    Valid_ = false;
 
-unsigned long TOptIA_NA::getIAID() const {
-    return IAID_;
-}
-
-unsigned long TOptIA_NA::getT1() const {
-    return T1_;
-}
-
-void TOptIA_NA::setT1(unsigned long t1) {
-    T1_ = t1;
-}
-
-unsigned long TOptIA_NA::getT2() const {
-    return T2_;
-}
-
-void TOptIA_NA::setT2(unsigned long t2) {
-    T2_ = t2;
-}
-
-TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA_NA, parent), Valid_(false) {
     if (bufsize < 12) {
         buf += bufsize;
         bufsize = 0;
@@ -60,21 +40,6 @@ TOptIA_NA::TOptIA_NA( char * &buf, int &bufsize, TMsg* parent)
         buf += sizeof(uint32_t); bufsize -= sizeof(uint32_t);
         Valid_ = true;
     }
-}
-
-
-int TOptIA_NA::getStatusCode() {
-    SPtr<TOpt> ptrOpt;
-    SubOptions.first();
-    while ( ptrOpt = SubOptions.get() ) {
-        if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-            SPtr <TOptStatusCode> ptrStatus;
-            ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
-            if (ptrStatus)
-                return ptrStatus->getCode();
-        }
-    }
-    return -1;
 }
 
 size_t TOptIA_NA::getSize() {

@@ -53,7 +53,7 @@ string TOptStatusCode::getText() {
 }
 
 
-char * TOptStatusCode::storeSelf( char* buf)
+char * TOptStatusCode::storeSelf(char* buf)
 {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize()-4);

@@ -13,7 +13,7 @@
 #include "Opt.h"
 #include "OptIAAddress.h"
 #include "ClntOptIAAddress.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntOptAddrParams.h"
 #include "Logger.h"
 #include "IPv6Addr.h"
@@ -51,7 +51,7 @@ TClntOptIAAddress::TClntOptIAAddress(char * buf, int bufSize, TMsg* parent)
 	    switch (code)
 	    {
 	    case OPTION_STATUS_CODE:
-		opt = new TClntOptStatusCode(buf+pos,length, this->Parent);
+		opt = new TOptStatusCode(buf+pos, length, this->Parent);
 		break;
 	    case OPTION_ADDRPARAMS:
 		opt = new TClntOptAddrParams(buf+pos, length, this->Parent);

@@ -16,12 +16,14 @@
 using namespace std;
 
 TClntOptLifetime::TClntOptLifetime(char * buf,  int n, TMsg* parent)
-	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf,n, parent){
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN,
+                     buf,n, parent){
 
 }
 
 TClntOptLifetime::TClntOptLifetime( char pref, TMsg* parent)
-	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, pref, parent) {
+	:TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN,
+                     pref, parent) {
 }
 
 bool TClntOptLifetime::doDuties()
@@ -35,14 +37,14 @@ bool TClntOptLifetime::doDuties()
 
     int ifindex = Parent->getIface();
 
-    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> duid = SPtr_cast<TOptDUID>(Parent->getOption(OPTION_SERVERID));
 
     if (!duid) {
 	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
 
-    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(ifindex));
     if (!iface) {
         Log(Error) << "Unable to find interface ifindex=" << ifindex
             << reason << LogEnd;

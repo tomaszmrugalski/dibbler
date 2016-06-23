@@ -12,7 +12,7 @@
 #include "Opt.h"
 #include "OptIAPrefix.h"
 #include "ClntOptIAPrefix.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "IPv6Addr.h"
 #include "Msg.h"
@@ -48,7 +48,7 @@ TClntOptIAPrefix::TClntOptIAPrefix( char * buf, int bufSize, TMsg* parent)
 	    switch (code)
 	    {
 	    case OPTION_STATUS_CODE:
-		opt = new TClntOptStatusCode(buf+pos,length, this->Parent);
+		opt = new TOptStatusCode(buf+pos, length, this->Parent);
 		break;
 	    default:
 		Log(Warning) <<"Option opttype=" << code<< "not supported "

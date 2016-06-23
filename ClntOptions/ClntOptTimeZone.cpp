@@ -32,13 +32,13 @@ bool TClntOptTimeZone::doDuties() {
     std::string reason = "trying to set time zone.";
     int ifindex = Parent->getIface();
 
-    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> duid = SPtr_cast<TOptDUID>(Parent->getOption(OPTION_SERVERID));
     if (!duid) {
 	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
 	return false;
     }
 
-    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(ifindex));
     if (!iface) {
         Log(Error) << "Unable to find interface ifindex=" << ifindex
             << reason << LogEnd;

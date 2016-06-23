@@ -28,14 +28,13 @@ class TOptOptionRequest : public TOpt
     int  count();
     void clearOptions();
 
-    size_t getSize();
-    char * storeSelf( char* buf);
+    virtual size_t getSize();
+    virtual char * storeSelf( char* buf);
     int getReqOpt(int optNr);
-    virtual bool isValid() const;
-    bool doDuties() { return true; }
-    ~TOptOptionRequest();
+    virtual std::string getPlain();
+    virtual bool doDuties() { return true; }
+    virtual ~TOptOptionRequest();
   protected:
-    bool Valid_;
     unsigned short *Options; /// @todo: you're kidding me, right? Rewrite this ASAP
     int	OptCnt;
 };

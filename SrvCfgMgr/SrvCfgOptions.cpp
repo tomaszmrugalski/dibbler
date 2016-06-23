@@ -85,9 +85,13 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
 
     for (TOptList::iterator opt = ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
     {
-        if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS)
+        if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS) {
             continue;
-        x = (Ptr*) *opt;
+        }
+        x = SPtr_cast<TOptVendorSpecInfo>(*opt);
+        if (!x) {
+            continue;
+        }
         if (!vendor || x->getVendor() == vendor)
         {
             // enterprise number not specified => return all

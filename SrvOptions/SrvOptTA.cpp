@@ -82,6 +82,10 @@ TSrvOptTA::TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg,
     }
 }
 
+TSrvOptTA::TSrvOptTA(int iaid, TMsg* parent)
+    :TOptTA(iaid, parent) {
+}
+
 TSrvOptTA::TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent)
     :TOptTA(iaid, parent), OrgMessage(parent->getType()) {
     Iface  = parent->getIface();

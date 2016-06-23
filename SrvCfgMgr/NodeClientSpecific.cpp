@@ -89,7 +89,7 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 	switch (ptrOpt->getOptType()) {
 	case OPTION_VENDOR_OPTS:
 	{
-	    SPtr<TOptVendorSpecInfo> vendorspec = (Ptr*) ptrOpt;
+	    SPtr<TOptVendorSpecInfo> vendorspec = SPtr_cast<TOptVendorSpecInfo>(ptrOpt);
 	    stringstream convert;
 
 	    // convert enterprise-id to string
@@ -126,7 +126,7 @@ void  NodeClientSpecific::analyseMessage(SPtr<TSrvMsg> msg)
 	}
 
 	case OPTION_VENDOR_CLASS:
-	    SPtr<TOptVendorClass> vendorclass = (Ptr*) ptrOpt;
+	    SPtr<TOptVendorClass> vendorclass = SPtr_cast<TOptVendorClass>(ptrOpt);
 
 	    // Convert enterprise-id
 	    stringstream convert;

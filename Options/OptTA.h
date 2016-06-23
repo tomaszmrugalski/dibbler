@@ -38,13 +38,3 @@ class TOptTA : public TOpt
 
 
 #endif /* OPTIA_TA_H */
-
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2006-03-05 21:37:46  thomson
- * TA support merged.
- *
- * Revision 1.1.2.1  2006/02/05 23:39:52  thomson
- * Initial revision.
- *
- */

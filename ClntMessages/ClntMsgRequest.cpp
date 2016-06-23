@@ -23,8 +23,7 @@
 #include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptElapsed.h"
-#include "ClntOptOptionRequest.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntTransMgr.h"
 #include <cmath>
 #include "Logger.h"
@@ -60,8 +59,8 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     SPtr<TOpt> srvDUID = ClntTransMgr().getAdvertiseDUID();
 
     ClntTransMgr().firstAdvertise();
-    SPtr<TClntMsgAdvertise> advertise = (Ptr*) ClntTransMgr().getAdvertise();
-    this->copyAAASPI((SPtr<TClntMsg>)advertise);
+    SPtr<TClntMsg> advertise = SPtr_cast<TClntMsg>(ClntTransMgr().getAdvertise());
+    copyAAASPI(SPtr_cast<TClntMsg>(advertise));
 
     // remove just used server
     ClntTransMgr().delFirstAdvertise();
@@ -82,9 +81,9 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
     }
 
     // copy addresses offered in ADVERTISE
-    copyAddrsFromAdvertise((Ptr*) advertise);
+    copyAddrsFromAdvertise(advertise);
 
-    copyPrefixesFromAdvertise((Ptr*) advertise);
+    copyPrefixesFromAdvertise(advertise);
 
     // does this server support unicast?
     SPtr<TClntCfgIface> cfgIface = ClntCfgMgr().getIface(iface);
@@ -93,7 +92,7 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
 	IsDone = true;
 	return;
     }
-    SPtr<TOptAddr> unicast = (Ptr*) advertise->getOption(OPTION_UNICAST);
+    SPtr<TOptAddr> unicast = SPtr_cast<TOptAddr>(advertise->getOption(OPTION_UNICAST));
     if (unicast && !cfgIface->getUnicast()) {
 	Log(Info) << "Server offers unicast (" << *unicast->getAddr() 
 		  << ") communication, but this client is not configured to so." << LogEnd;
@@ -109,7 +108,7 @@ TClntMsgRequest::TClntMsgRequest(TOptList opts, int iface)
 	  /// @todo: add support for unicast in IA_TA and IA_PD
 	    if (opt->getOptType()!=OPTION_IA_NA)
 		continue;
-	    SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) opt;
+	    SPtr<TClntOptIA_NA> ptrOptIA = SPtr_cast<TClntOptIA_NA>(opt);
 	    SPtr<TAddrIA> ptrAddrIA = ClntAddrMgr().getIA(ptrOptIA->getIAID());
 	  
 	    if (!ptrAddrIA) {
@@ -160,8 +159,8 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
     while (ClntAddrIA = IAs.get()) 
     {
         SPtr<TClntCfgIA> ClntCfgIA = ClntCfgMgr().getIA(ClntAddrIA->getIAID());
-        SPtr<TClntOptIA_NA> IA_NA = new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
-        Options.push_back((Ptr*)IA_NA);
+        SPtr<TOpt> ia = new TClntOptIA_NA(ClntCfgIA, ClntAddrIA, this);
+        Options.push_back(ia);
     }
 
     appendElapsedOption();
@@ -184,16 +183,15 @@ void TClntMsgRequest::answer(SPtr<TClntMsg> msg)
      * without specifying any addresses or restart the DHCP server discovery
      * process.
      */  
-    SPtr<TOptStatusCode> optStateCode = (Ptr*)msg->getOption(OPTION_STATUS_CODE);
-    if( optStateCode && STATUSCODE_NOTONLINK == optStateCode->getCode()){
+    SPtr<TOptStatusCode> optStateCode = msg->getStatusCode();
+    if( optStateCode && (STATUSCODE_NOTONLINK == optStateCode->getCode())){
 	SPtr<TOpt> opt;
 	firstOption();
 	while(opt = getOption()){
 	    if(opt->getOptType() != OPTION_IA_NA){
 		continue;
 	    }
-	    SPtr<TClntOptIA_NA> IA_NA = (Ptr*)opt;
-            IA_NA->delOption(OPTION_IAADDR);
+            opt->delOption(OPTION_IAADDR);
 	} 
 	return;   
     }
@@ -235,14 +233,7 @@ std::string TClntMsgRequest::getName() const {
  */
 void TClntMsgRequest::setState(TOptList options, EState state)
 {
-    SPtr<TOpt>          opt;
-    SPtr<TClntOptIA_NA> ia;
-    SPtr<TClntOptTA>    ta;
-    SPtr<TClntOptIA_PD> pd;
-
-    SPtr<TClntCfgIA> cfgIa;
-    SPtr<TClntCfgTA> cfgTa;
-    SPtr<TClntCfgPD> cfgPd;
+    SPtr<TOpt> opt;
 
     SPtr<TClntCfgIface> iface = ClntCfgMgr().getIface(Iface);
     if (!iface) {
@@ -255,25 +246,27 @@ void TClntMsgRequest::setState(TOptList options, EState state)
 	switch ( (*opt)->getOptType()) {
 	case OPTION_IA_NA:
 	{
-	    ia = (Ptr*) (*opt);
-	    cfgIa = iface->getIA(ia->getIAID());
+            SPtr<TClntOptIA_NA> ia = SPtr_cast<TClntOptIA_NA>(*opt);
+            if (!ia) {
+                continue;
+            }
+            SPtr<TClntCfgIA> cfgIa = iface->getIA(ia->getIAID());
 	    if (cfgIa)
 		cfgIa->setState(state);
 	    break;
 	}
 	case OPTION_IA_TA:
 	{
-	    ia = (Ptr*) (*opt);
 	    iface->firstTA();
-	    cfgTa = iface->getTA();
+            SPtr<TClntCfgTA> cfgTa = iface->getTA();
 	    if (cfgTa)
 		cfgTa->setState(state);
 	    break;
 	}
 	case OPTION_IA_PD:
 	{
-	    pd = (Ptr*) (*opt);
-	    cfgPd = iface->getPD(pd->getIAID());
+            SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(*opt);
+            SPtr<TClntCfgPD> cfgPd = iface->getPD(pd->getIAID());
 	    if (cfgPd)
 		cfgPd->setState(state);
 	    break;
@@ -302,9 +295,9 @@ void TClntMsgRequest::copyAddrsFromAdvertise(SPtr<TClntMsg> adv)
 	while (opt2 = adv->getOption()) {
 	    if (opt2->getOptType() != OPTION_IA_NA)
 		continue;
-	    ia1 = (Ptr*) opt1;
-	    ia2 = (Ptr*) opt2;
-	    if (ia1->getIAID() != ia2->getIAID())
+	    ia1 = SPtr_cast<TClntOptIA_NA>(opt1);
+	    ia2 = SPtr_cast<TClntOptIA_NA>(opt2);
+            if (!ia1 || !ia2 || (ia1->getIAID() != ia2->getIAID()) )
 		continue;
 
 	    // found IA in ADVERTISE, now copy all addrs
@@ -337,9 +330,9 @@ void TClntMsgRequest::copyPrefixesFromAdvertise(SPtr<TClntMsg> adv)
 	while (opt2 = adv->getOption()) {
 	    if (opt2->getOptType() != OPTION_IA_PD)
 		continue;
-	    ia1 = (Ptr*) opt1;
-	    ia2 = (Ptr*) opt2;
-	    if (ia1->getIAID() != ia2->getIAID())
+	    ia1 = SPtr_cast<TClntOptIA_PD>(opt1);
+	    ia2 = SPtr_cast<TClntOptIA_PD>(opt2);
+	    if (!ia1 || !ia2 || (ia1->getIAID() != ia2->getIAID()) )
 		continue;
 
 	    // found IA_PD in ADVERTISE, now copy all addrs

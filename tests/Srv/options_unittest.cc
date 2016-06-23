@@ -19,7 +19,7 @@ TEST_F(ServerTest, CfgMgr_options1) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // check that NIS-SERVERS option is handled properly
-    SPtr<TOptAddrLst> opt = (Ptr*)cfgIface_->getExtraOption(OPTION_NIS_SERVERS);
+    SPtr<TOptAddrLst> opt = SPtr_cast<TOptAddrLst>(cfgIface_->getExtraOption(OPTION_NIS_SERVERS));
     ASSERT_TRUE(opt); // check that NIS-servers are supported
     List(TIPv6Addr) addrLst = opt->getAddrLst();
 

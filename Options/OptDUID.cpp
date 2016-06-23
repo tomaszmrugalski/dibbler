@@ -49,3 +49,11 @@ bool TOptDUID::isValid() const
         return true;
     return false;
 }
+
+std::string TOptDUID::getPlain() {
+    if (DUID) {
+        return DUID->getPlain();
+    } else {
+        return std::string("");
+    }
+}

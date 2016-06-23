@@ -161,7 +161,7 @@ SPtr<to> SPtr_cast(SPtr<from> from_ptr) {
         return SPtr<to>();
     }
 
-    return from_ptr.SPtr_cast<to>();
+    return from_ptr.template SPtr_cast<to>();
 }
 
 template <class T>

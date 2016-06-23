@@ -26,14 +26,16 @@ TClntMsgAdvertise::TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr,
 }
 
 bool TClntMsgAdvertise::check() {
-    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */ );
+    return TClntMsg::check(true /* clientID mandatory */,
+                           true /* serverID mandatory */ );
 }
 
 int TClntMsgAdvertise::getPreference() {
     SPtr<TOptInteger> ptr;
-    ptr = (Ptr*) this->getOption(OPTION_PREFERENCE);
-    if (!ptr)
+    ptr = SPtr_cast<TOptInteger>(getOption(OPTION_PREFERENCE));
+    if (!ptr) {
         return 0;
+    }
     return ptr->getValue();
 }
 
@@ -52,11 +54,9 @@ string TClntMsgAdvertise::getName() const {
 string TClntMsgAdvertise::getInfo()
 {
     ostringstream tmp;
-    SPtr<TClntOptPreference> pref;
-    SPtr<TOptDUID> srvID;
+    SPtr<TOptDUID> srvID = getServerID();
 
-    pref   = (Ptr*) getOption(OPTION_PREFERENCE);
-    srvID  = (Ptr*) getOption(OPTION_SERVERID);
+    int pref = getPreference();
 
     if (srvID) {
 	tmp << "Server ID=" << srvID->getDUID()->getPlain();
@@ -64,11 +64,7 @@ string TClntMsgAdvertise::getInfo()
         tmp << "malformed (Server ID option missing)";
     }
 
-    if (pref) {
-        tmp << ", preference=" << pref->getValue();
-    } else {
-        tmp << ", no preference option, assumed 0";
-    }
+    tmp << ", preference=" << pref;
     
     return tmp.str();
 }
