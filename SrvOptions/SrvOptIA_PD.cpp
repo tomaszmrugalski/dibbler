@@ -60,16 +60,14 @@ TSrvOptIA_PD::TSrvOptIA_PD(char * buf, int bufsize, TMsg* parent)
             if(allowOptInOpt(parent->getType(),OPTION_IA_PD,code)) {
 
                 SPtr<TOpt> opt;
-                opt = SPtr<TOpt>(); /* NULL */
+                opt.reset(); /* NULL */
                 switch (code)
                 {
                 case OPTION_IAPREFIX:
-                    opt = (Ptr*)SPtr<TSrvOptIAPrefix>
-                        (new TSrvOptIAPrefix(buf+pos,length,this->Parent));
+                    opt.reset(new TSrvOptIAPrefix(buf+pos,length,this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TOptStatusCode>
-                        (new TOptStatusCode(buf+pos,length,this->Parent));
+                    opt.reset(new TOptStatusCode(buf+pos,length,this->Parent));
                     break;
                 default:
                     Log(Warning) <<"Option " << code<< "not supported "
@@ -101,7 +99,7 @@ void TSrvOptIA_PD::releaseAllPrefixes(bool quiet) {
     while ( opt = this->getOption() ) {
         if (opt->getOptType() != OPTION_IAPREFIX)
             continue;
-        optPrefix = (Ptr*) opt;
+        optPrefix = SPtr_cast<TOptIAPrefix>(opt);
         prefix = optPrefix->getPrefix();
         SrvAddrMgr().delPrefix(ClntDuid, IAID_, prefix, quiet);
         SrvCfgMgr().decrPrefixCount(this->Iface, prefix);
@@ -130,7 +128,7 @@ bool TSrvOptIA_PD::existingLease() {
         SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(),
                                                    prefix->getPref(), prefix->getValid(),
                                                    this->Parent);
-        SubOptions.append((Ptr*)optPrefix);
+        SubOptions.append( SPtr_cast<TOpt>(optPrefix));
     }
 
     T1_ = pd->getT1();
@@ -171,7 +169,7 @@ bool TSrvOptIA_PD::assignPrefix(SPtr<TSrvMsg> clientMsg, SPtr<TIPv6Addr> hint, b
         buf << prefix->getPlain() << "/" << this->PDLength << " ";
         optPrefix = new TSrvOptIAPrefix(prefix, (char)this->PDLength, this->Prefered, this->Valid,
                                         this->Parent);
-        SubOptions.append((Ptr*)optPrefix);
+        SubOptions.append(SPtr_cast<TOpt>(optPrefix));
 
         // We do actual reservation here, even if it is SOLICIT. For SOLICIT, we will release
         // the prefix before sending ADVERTISE. We need to do this. Otherwise we could start
@@ -231,7 +229,7 @@ TSrvOptIA_PD::TSrvOptIA_PD(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> queryOpt,
         ptrStatus = new TOptStatusCode(STATUSCODE_NOPREFIXAVAIL,
                     "Server support for prefix delegation is not enabled. Sorry buddy.",
                                        Parent);
-        this->SubOptions.append((Ptr*)ptrStatus);
+        this->SubOptions.append( SPtr_cast<TOpt>(ptrStatus));
         return;
     }
 
@@ -292,7 +290,8 @@ void TSrvOptIA_PD::solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_PD> qu
         this->Prefered = DHCPV6_INFINITY;
         this->Valid    = DHCPV6_INFINITY;
     } else {
-        SPtr<TSrvOptIAPrefix> hintPrefix = (Ptr*) queryOpt->getOption(OPTION_IAPREFIX);
+        SPtr<TSrvOptIAPrefix> hintPrefix =
+            SPtr_cast<TSrvOptIAPrefix>(queryOpt->getOption(OPTION_IAPREFIX));
         hint  = hintPrefix->getPrefix();
         Log(Info) << "PD: PD option with " << hint->getPlain() << " as a hint received." << LogEnd;
         this->Prefered  = hintPrefix->getPref();
@@ -365,13 +364,13 @@ void TSrvOptIA_PD::renew(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) 
         prefix->setTimestamp();
         optPrefix = new TSrvOptIAPrefix(prefix->get(), prefix->getLength(), prefix->getPref(),
                                         prefix->getValid(), this->Parent);
-        SubOptions.append( (Ptr*)optPrefix );
+        SubOptions.append( SPtr_cast<TOpt>(optPrefix) );
     }
 
     // finally send greetings and happy OK status code
     SPtr<TOptStatusCode> ptrStatus;
     ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Prefix(es) renewed.", this->Parent);
-    SubOptions.append( (Ptr*)ptrStatus );
+    SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
 }
 
 void TSrvOptIA_PD::rebind(SPtr<TSrvOptIA_PD> queryOpt, SPtr<TSrvCfgIface> iface) {
@@ -429,7 +428,7 @@ bool TSrvOptIA_PD::assignFixedLease(SPtr<TSrvOptIA_PD> req) {
     // if the lease is not within normal range, treat it as fixed, infinite one
     uint32_t pref = DHCPV6_INFINITY;
     uint32_t valid = DHCPV6_INFINITY;
-    SPtr<TSrvOptIAPrefix> hint = (Ptr*) req->getOption(OPTION_IAPREFIX);
+    SPtr<TSrvOptIAPrefix> hint = SPtr_cast<TSrvOptIAPrefix>(req->getOption(OPTION_IAPREFIX));
     if (hint) {
         pref = hint->getPref();
         valid = hint->getValid();

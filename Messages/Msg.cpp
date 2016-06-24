@@ -18,6 +18,9 @@
 #include "Msg.h"
 #include "Opt.h"
 #include "OptAuthentication.h"
+#include "OptOptionRequest.h"
+#include "OptDUID.h"
+#include "OptStatusCode.h"
 #include "Logger.h"
 #include "hmac-sha-md5.h"
 
@@ -123,7 +126,9 @@ int TMsg::storeSelf(char * buffer)
 
 void TMsg::calculateDigests(char* buffer, size_t len) {
 
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    // Yay for safe casting!
+    SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
+
     if (!auth)
         return;
 
@@ -205,8 +210,8 @@ void TMsg::calculateDigests(char* buffer, size_t len) {
 
 }
 
-SPtr<TOpt> TMsg::getOption(int type) {
-    TOptList::iterator opt;
+SPtr<TOpt> TMsg::getOption(int type) const {
+    TOptList::const_iterator opt;
     for (opt = Options.begin(); opt!=Options.end(); ++opt)
         if ( (*opt)->getOptType()==type) 
 	    return *opt;
@@ -296,7 +301,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     case AUTH_PROTO_NONE:
         return true;
     case AUTH_PROTO_DELAYED: {
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             Log(Warning) << "AUTH: Mandatory AUTH option missing in delayed auth."
                          << LogEnd;
@@ -357,7 +362,7 @@ bool TMsg::validateAuthInfo(char *buf, int bufSize,
     case AUTH_PROTO_RECONFIGURE_KEY: {
         if (MsgType != RECONFIGURE_MSG)
             return true;
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             Log(Warning) << "AUTH: Mandatory AUTH option missing in RECONFIGURE." << LogEnd;
             return false;
@@ -598,3 +603,31 @@ void TMsg::setLocalAddr(SPtr<TIPv6Addr> myaddr) {
 SPtr<TIPv6Addr> TMsg::getLocalAddr() {
     return LocalAddr_;
 }
+
+
+SPtr<TOptDUID> TMsg::getServerID() const {
+    SPtr<TOpt> srv_id = getOption(OPTION_SERVERID);
+    if (!srv_id) {
+        return SPtr<TOptDUID>();
+    }
+    return SPtr_cast<TOptDUID>(srv_id);
+}
+
+/// @brief returns client-id option (if present)
+SPtr<TOptDUID> TMsg::getClientID() const {
+    SPtr<TOpt> clnt_id = getOption(OPTION_CLIENTID);
+    if (!clnt_id) {
+        return SPtr<TOptDUID>();
+    }
+    return SPtr_cast<TOptDUID>(clnt_id);
+}
+
+/// @brief returns option request option (if present)
+SPtr<TOptOptionRequest> TMsg::getORO() const {
+    SPtr<TOpt> oro = getOption(OPTION_ORO);
+    if (!oro) {
+        return SPtr<TOptOptionRequest>();
+    }
+    return SPtr_cast<TOptOptionRequest>(oro);
+}
+

@@ -65,7 +65,8 @@ TEST_F(SrvCfgMgrTest, constructor) {
     cfgfile << cfg;
     cfgfile.close();
 
-    SPtr<NakedSrvCfgMgr> cfgmgr = new NakedSrvCfgMgr("testdata/server-1.conf", "testdata/server-CfgMgr1.xml");
+    SPtr<NakedSrvCfgMgr> cfgmgr =
+        new NakedSrvCfgMgr("testdata/server-1.conf", "testdata/server-CfgMgr1.xml");
 
     SPtr<TSrvCfgIface> cfgIface;
     cfgmgr->firstIface();
@@ -76,7 +77,7 @@ TEST_F(SrvCfgMgrTest, constructor) {
     if (!cfgIface) {
         ADD_FAILURE() << "Failed to find expected " << iface_->getName() << " interface." << endl;
     } else {
-        SPtr<TOptAddrLst> opt = (Ptr*)cfgIface->getExtraOption(OPTION_NIS_SERVERS);
+        SPtr<TOptAddrLst> opt = SPtr_cast<TOptAddrLst>(cfgIface->getExtraOption(OPTION_NIS_SERVERS));
         EXPECT_TRUE(opt);
         List(TIPv6Addr) addrLst = opt->getAddrLst();
 

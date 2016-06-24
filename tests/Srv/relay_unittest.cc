@@ -38,9 +38,9 @@ TEST_F(ServerTest, decodeRelayForwGuessMode) {
     // now generate SOLICIT
     setIface("relay1");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
-    SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    SPtr<TSrvMsg> sol = SPtr_cast<TSrvMsg>(createSolicit());
+    sol->addOption(SPtr_cast<TOpt>(clntId_)); // include client-id
+    sol->addOption(SPtr_cast<TOpt>(ia_)); // include IA_NA
 
     sol->setMsgType(RELAY_FORW_MSG);
 
@@ -109,9 +109,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdInteger) {
     // now generate SOLICIT
     setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
-    SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, true);
 
     sol->setMsgType(RELAY_FORW_MSG);
 
@@ -197,9 +195,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdString) {
     // now generate SOLICIT
     setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
-    SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, true);
 
     sol->setMsgType(RELAY_FORW_MSG);
 
@@ -285,9 +281,7 @@ TEST_F(ServerTest, relaySelectInterfaceIdHex) {
     // now generate SOLICIT
     setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
-    SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, true);
 
     sol->setMsgType(RELAY_FORW_MSG);
 
@@ -377,9 +371,7 @@ TEST_F(ServerTest, relaySelectSubnet) {
     // now generate SOLICIT
     setIface("relay2");
     clntAddr_ = SPtr<TIPv6Addr>(new TIPv6Addr("ff05::1:3", true));
-    SPtr<TSrvMsg> sol = (Ptr*)createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)ia_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, true);
 
     sol->setMsgType(RELAY_FORW_MSG);
 

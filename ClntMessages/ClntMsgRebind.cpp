@@ -21,8 +21,6 @@
 #include "OptAddr.h"
 #include "AddrIA.h"
 #include "Logger.h"
-#include "ClntOptOptionRequest.h"
-#include "ClntOptStatusCode.h"
 
 using namespace std;
 
@@ -43,28 +41,27 @@ TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
     // calculate timeout (how long should be the REBIND message transmitted)
     unsigned long maxMRD=0;    
     firstOption();
-    while(opt=getOption())
-    {
-      switch (opt->getOptType()) {
-        case OPTION_IA_NA:
-          {
-            SPtr<TClntOptIA_NA> ptrIA=(Ptr*) opt;
-            SPtr<TAddrIA> ptrAddrIA= ClntAddrMgr().getIA(ptrIA->getIAID());
-            if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout())
-              maxMRD=ptrAddrIA->getMaxValidTimeout();
+    while(opt=getOption()) {
+        switch (opt->getOptType()) {
+        case OPTION_IA_NA: {
+            SPtr<TClntOptIA_NA> ptrIA = SPtr_cast<TClntOptIA_NA>(opt);
+            SPtr<TAddrIA> ptrAddrIA = ClntAddrMgr().getIA(ptrIA->getIAID());
+            if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout()) {
+                maxMRD = ptrAddrIA->getMaxValidTimeout();
+            }
             break;
-          }
-        case OPTION_IA_PD:
-          {
-            SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
+        }
+        case OPTION_IA_PD: {
+            SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(opt);
             SPtr<TAddrIA> addrPd = ClntAddrMgr().getPD(pd->getIAID());
-            if (addrPd && maxMRD<addrPd->getMaxValidTimeout())
-              maxMRD=addrPd->getMaxValidTimeout();
+            if (addrPd && maxMRD<addrPd->getMaxValidTimeout()) {
+                maxMRD = addrPd->getMaxValidTimeout();
+            }
             break;
-          }
-      }
+        }
+        }
     }
-    MRD= maxMRD;
+    MRD = maxMRD;
 
     appendElapsedOption();
     appendAuthenticationOption();
@@ -87,8 +84,6 @@ SPtr<TOpt> opt;
     SPtr<TClntOptServerIdentifier> ptrDUID;
     ptrDUID = (Ptr*) Reply->getOption(OPTION_SERVERID);
     
-    SPtr<TClntOptOptionRequest> ptrOptionReqOpt=(Ptr*)getOption(OPTION_ORO);
-
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send
     // separate RENEW for each IA, but we check all options anyway)
@@ -103,7 +98,7 @@ SPtr<TOpt> opt;
                     IsDone = true;
                     return;
                 }else{
-		    SPtr<TClntOptStatusCode> status = (Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+		    SPtr<TOptStatusCode> status = S(Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
                     Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " <<
                         StatusCodeToString(status->getCode()) << ": "
                                  << status->getText() << LogEnd;
@@ -246,21 +241,19 @@ void TClntMsgRebind::doDuties()
         firstOption();
         while(ptrOpt=getOption())
         {
-	        switch( ptrOpt->getOptType()) {
-            case OPTION_IA_NA:
-              {
-                SPtr<TClntOptIA_NA> ptrIA=(Ptr*)ptrOpt;
+            switch( ptrOpt->getOptType()) {
+            case OPTION_IA_NA: {
+                SPtr<TClntOptIA_NA> ptrIA = SPtr_cast<TClntOptIA_NA>(ptrOpt);
                 iaLst << ptrIA->getIAID() << " ";
                 releaseIA(ptrIA->getIAID());
                 break;
-              }
-            case OPTION_IA_PD:
-              {
-                SPtr<TClntOptIA_PD> ptrPD = (Ptr*)ptrOpt;
+            }
+            case OPTION_IA_PD: {
+                SPtr<TClntOptIA_PD> ptrPD = SPtr_cast<TClntOptIA_PD>(ptrOpt);
                 ptrPD->setContext(SPtr<TDUID>(), SPtr<TIPv6Addr>(), this);
                 ptrPD->delPrefixes();
                 break;
-              }
+            }
             };
         }
 	Log(Warning) << "REBIND for the IA(s):" << iaLst.str()

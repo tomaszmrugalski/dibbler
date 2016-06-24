@@ -48,9 +48,9 @@ class TClntTransMgr
     int    getCtrlIface();
 
     // Backup server list management
-    void addAdvertise(SPtr<TMsg> advertise); // adds ADVERTISE to the list
+    void addAdvertise(SPtr<TClntMsg> advertise); // adds ADVERTISE to the list
     void firstAdvertise();
-    SPtr<TMsg> getAdvertise();
+    SPtr<TClntMsg> getAdvertise();
     SPtr<TOpt> getAdvertiseDUID(); // returns server DUID of the best advertise on the list
     void sortAdvertise(); // sorts advertise messages
     void delFirstAdvertise(); // deletes first advertise
@@ -108,7 +108,7 @@ class TClntTransMgr
     bool populateAddrMgr(SPtr<TClntCfgIface> iface);
 
     void sortAdvertiseLst();
-    void printLst(List(TMsg) lst);
+    void printLst(List(TClntMsg) lst);
 
     List(TClntMsg) Transactions;
     bool IsDone;         // isDone = true - client operation is finished
@@ -119,7 +119,7 @@ class TClntTransMgr
     int CtrlIface_;
     char CtrlAddr_[48];
 
-    List(TMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
+    List(TClntMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
 
     static TClntTransMgr * Instance;
 };

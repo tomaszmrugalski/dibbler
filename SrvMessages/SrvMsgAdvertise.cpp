@@ -27,8 +27,8 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
     :TSrvMsg(solicit->getIface(),solicit->getRemoteAddr(), ADVERTISE_MSG,
              solicit->getTransID())
 {
-    getORO((Ptr*)solicit);
-    copyClientID((Ptr*)solicit);
+    getORO(SPtr_cast<TMsg>(solicit));
+    copyClientID(SPtr_cast<TMsg>(solicit));
     copyRelayInfo(solicit);
     copyAAASPI(solicit);
     copyRemoteID(solicit);
@@ -42,7 +42,7 @@ TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
 
 bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
 
-    processOptions((Ptr*)solicit, true); // quietly
+    processOptions(solicit, true); // quietly
 
     // append serverID, preference and possibly unicast
     appendMandatoryOptions(ORO);

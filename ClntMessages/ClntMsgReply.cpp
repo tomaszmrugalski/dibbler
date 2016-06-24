@@ -47,8 +47,10 @@ SPtr<TIPv6Addr> TClntMsgReply::getFirstAddr() {
 	while (subopt=opt->getOption()) {
 	    if (subopt->getOptType() != OPTION_IAADDR)
 		continue;
-	    SPtr<TOptIAAddress> optAddr = (Ptr*) subopt;
-	    return optAddr->getAddr();
+	    SPtr<TOptIAAddress> optAddr = SPtr_cast<TOptIAAddress>(subopt);
+            if (optAddr) {
+                return optAddr->getAddr();
+            }
 	}
     }
 

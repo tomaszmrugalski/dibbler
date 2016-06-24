@@ -36,15 +36,16 @@ TSrvOptIAPrefix::TSrvOptIAPrefix( char * buf, int bufsize, TMsg* parent)
                 switch (code)
                     {
                     case OPTION_STATUS_CODE:
-                        opt =(Ptr*)SPtr<TOptStatusCode> (new TOptStatusCode(buf+pos,length,this->Parent));
+                        opt.reset(new TOptStatusCode(buf+pos,length,this->Parent));
                         break;
                     default:
                         Log(Warning) << "Option " << code<< " not supported "
                                      << " in message (type="<< parent->getType() <<")." << LogEnd;
                         break;
                     }
-                if((opt)&&(opt->isValid()))
+                if (opt && opt->isValid()) {
                     SubOptions.append(opt);
+                }
             } else {
                 Log(Warning) << "Illegal option received, opttype=" << code
                              << " in field options of IA_PD option" << LogEnd;

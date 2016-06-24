@@ -17,6 +17,7 @@ libOptions_a_SOURCES += OptEmpty.cpp OptEmpty.h
 libOptions_a_SOURCES += OptFQDN.cpp OptFQDN.h
 libOptions_a_SOURCES += OptGeneric.cpp OptGeneric.h
 libOptions_a_SOURCES += OptIAAddress.cpp OptIAAddress.h
+libOptions_a_SOURCES += OptIA.cpp OptIA.h
 libOptions_a_SOURCES += OptIA_NA.cpp OptIA_NA.h
 libOptions_a_SOURCES += OptIA_PD.cpp OptIA_PD.h
 libOptions_a_SOURCES += OptIAPrefix.cpp OptIAPrefix.h

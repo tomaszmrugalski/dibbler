@@ -23,11 +23,9 @@
 #include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
 #include "OptDUID.h"
-#include "ClntOptOptionRequest.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptPreference.h"
 #include "OptEmpty.h"
-#include "ClntOptStatusCode.h"
 #include <cmath>
 #include "Logger.h"
 
@@ -53,22 +51,23 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     SPtr<TClntCfgIA> ia;
     iaLst.first();
     while (ia = iaLst.get()) {
-        SPtr<TClntOptIA_NA> iaOpt;
-        iaOpt = new TClntOptIA_NA(ia, this);
-        Options.push_back( (Ptr*)iaOpt );
-        if (!remoteAutoconf)
+        SPtr<TOpt> iaOpt(new TClntOptIA_NA(ia, this));
+        Options.push_back(iaOpt);
+        if (!remoteAutoconf) {
             ia->setState(STATE_INPROCESS);
+        }
         addrIA = ClntAddrMgr().getIA(ia->getIAID());
-        if (addrIA)
+        if (addrIA) {
             addrIA->setState(STATE_INPROCESS);
-        else
+        } else {
             Log(Error) << "AddrMgr does not have IA with IAID=" << ia->getIAID() << LogEnd;
+        }
     }
 
     // TA is provided by ::checkSolicit()
     if (ta) {
 	SPtr<TClntOptTA> taOpt = new TClntOptTA(ta->getIAID(), this);
-	Options.push_back( (Ptr*) taOpt);
+	Options.push_back(SPtr_cast<TOpt>(taOpt));
 	if (!remoteAutoconf)
 	    ta->setState(STATE_INPROCESS);
         addrIA = ClntAddrMgr().getTA(ta->getIAID());
@@ -83,7 +82,7 @@ TClntMsgSolicit::TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
     pdLst.first();
     while ( pd = pdLst.get() ) {
         SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
-        Options.push_back( (Ptr*)pdOpt );
+        Options.push_back(SPtr_cast<TOpt>(pdOpt));
         if (!remoteAutoconf)
             pd->setState(STATE_INPROCESS);
         addrIA = ClntAddrMgr().getPD(pd->getIAID());
@@ -126,8 +125,8 @@ void TClntMsgSolicit::answer(SPtr<TClntMsg> msg)
 	    Log(Info) << "Server responded with ADVERTISE instead of REPLY, probably does not support"
 		" RAPID-COMMIT." << LogEnd;
 	}
-	ClntTransMgr().addAdvertise((Ptr*)msg);
-	SPtr<TOptInteger> prefOpt = (Ptr*) msg->getOption(OPTION_PREFERENCE);
+	ClntTransMgr().addAdvertise(msg);
+	SPtr<TOptInteger> prefOpt = SPtr_cast<TOptInteger>(msg->getOption(OPTION_PREFERENCE));
 
 	if (prefOpt && (prefOpt->getValue() == 255) )
 	{
@@ -189,7 +188,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
 
     // this == solicit or request
     // msg  == reply
-    SPtr<TOptDUID> srvDUID = (Ptr*) msg->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> srvDUID = msg->getServerID();
     if (!srvDUID) {
         Log(Notice) << "No server identifier provided. Message ignored." << LogEnd;
         return true;
@@ -213,16 +212,18 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         /// @todo Check if proper IAIDs are returned, also if all IA were answered (if requested
         ///       several IAs were requested)
         /// @todo Check all IA_NAs, not just first one
-        SPtr<TClntOptIA_NA> ia = (Ptr*)msg->getOption(OPTION_IA_NA);
+        SPtr<TOpt> ia = msg->getOption(OPTION_IA_NA);
         if (!ia)  {
-            Log(Notice) << "IA_NA option requested, but not present in this message. Ignored." << LogEnd;
+            Log(Notice) << "IA_NA option requested, but not present in this message. Ignored."
+                        << LogEnd;
             iaOk = false;
         } else {
             if (!ia->getOption(OPTION_IAADDR)) {
-                Log(Notice) << "IA_NA option returned, but without any addresses. Ignored." << LogEnd;
+                Log(Notice) << "IA_NA option returned, but without any addresses. Ignored."
+                            << LogEnd;
                 iaOk = false;
             }
-            SPtr<TClntOptStatusCode> st = (Ptr*)ia->getOption(OPTION_STATUS_CODE);
+            SPtr<TOptStatusCode> st = SPtr_cast<TOptStatusCode>(ia->getOption(OPTION_STATUS_CODE));
             if (st && st->getCode()!= STATUSCODE_SUCCESS) {
                 Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
                             << "(" << st->getText() << "). Ignored." << LogEnd;
@@ -236,9 +237,10 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
     // have we asked for TA?
     bool taOk = true;
     if (this->getOption(OPTION_IA_TA)) {
-        SPtr<TClntOptTA> ta = (Ptr*)msg->getOption(OPTION_IA_TA);
+        SPtr<TOpt> ta = msg->getOption(OPTION_IA_TA);
         if (!ta) {
-            Log(Notice) << "TA option requested, but not present in this message. Ignored." << LogEnd;
+            Log(Notice) << "TA option requested, but not present in this message. Ignored."
+                        << LogEnd;
             taOk = false;
         } else {
             if (!ta->getOption(OPTION_IAADDR)) {
@@ -246,7 +248,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
                 taOk = false;
             }
 
-            SPtr<TClntOptStatusCode> st = (Ptr*)ta->getOption(OPTION_STATUS_CODE);
+            SPtr<TOptStatusCode> st = SPtr_cast<TOptStatusCode>(ta->getOption(OPTION_STATUS_CODE));
             if (st && st->getCode()!= STATUSCODE_SUCCESS) {
                 Log(Notice) << "IA_TA has status code!=SUCCESS: " << st->getCode()
                             << "(" << st->getText() << "). Ignored." << LogEnd;
@@ -280,7 +282,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
         if (opt_sent->getOptType() != OPTION_IA_PD)
            continue; // ignore all options except IA_PD
 
-        SPtr<TClntOptIA_PD> pdSol = (Ptr*) opt_sent;
+        SPtr<TClntOptIA_PD> pdSol = SPtr_cast<TClntOptIA_PD>(opt_sent);
 
         // Now for each sent IA_PD, try to find matching response
         msg->firstOption();
@@ -291,7 +293,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
                 continue;
 
             // Let's ignore IA_PDs with different IAID
-            SPtr<TClntOptIA_PD> pdResp = (Ptr*) opt_rcvd;
+            SPtr<TClntOptIA_PD> pdResp = SPtr_cast<TClntOptIA_PD>(opt_rcvd);
             if (pdSol->getIAID() != pdResp->getIAID())
                 continue;
 
@@ -354,7 +356,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
                     }
                 }
             }
-            SPtr<TClntOptStatusCode> st = (Ptr*)pdResp->getOption(OPTION_STATUS_CODE);
+            SPtr<TOptStatusCode> st = SPtr_cast<TOptStatusCode>(pdResp->getOption(OPTION_STATUS_CODE));
             if (st && st->getCode()!= STATUSCODE_SUCCESS) {
                 Log(Notice) << "IA_NA has status code!=SUCCESS: " << st->getCode()
                 << "(" << st->getText() << "). Ignored." << LogEnd;

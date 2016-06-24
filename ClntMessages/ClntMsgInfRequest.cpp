@@ -18,10 +18,10 @@
 #include "ClntIfaceMgr.h"
 #include "ClntMsgAdvertise.h"
 #include "OptDUID.h"
+#include "OptOptionRequest.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptElapsed.h"
 #include "Logger.h"
-#include "ClntOptOptionRequest.h"
 #include "ClntCfgIface.h"
 #include "ClntOptTimeZone.h"
 #include <cmath>
@@ -48,7 +48,7 @@ TClntMsgInfRequest::TClntMsgInfRequest(SPtr<TClntCfgIface> iface)
     appendRequestedOptions();
 
     // If there is no ORO (or it is empty), skip the message.
-    SPtr<TClntOptOptionRequest> oro = (Ptr*) getOption(OPTION_ORO);
+    SPtr<TOptOptionRequest> oro = getORO();
     if (!oro || !oro->count()) {
         IsDone = true;
         return;

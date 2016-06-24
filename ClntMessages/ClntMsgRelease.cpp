@@ -85,7 +85,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
         Options.push_back(new TClntOptIA_NA(x,this));
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
-        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(x->getIfindex());
+        ptrIface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(x->getIfindex()));
         if (!ptrIface) {
             Log(Warning) << "Unable to find interface with ifindex "
                          << x->getIfindex() << " while creating RELEASE." << LogEnd;
@@ -109,7 +109,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     if (ta) {
         Options.push_back(new TClntOptTA(ta, this));
         SPtr<TClntIfaceIface> ptrIface;
-        ptrIface = (Ptr*)ClntIfaceMgr().getIfaceByID(ta->getIfindex());
+        ptrIface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(ta->getIfindex()));
         if (ptrIface) {
             SPtr<TAddrAddr> addr;
             ta->firstAddr();
@@ -129,9 +129,9 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     pdLst.first();
     while(pd=pdLst.get()) {
         SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
-        Options.push_back( (Ptr*)pdOpt );
         pdOpt->setContext(srvDUID, addr, this);
         pdOpt->delPrefixes();
+        Options.push_back(SPtr_cast<TOpt>(pdOpt));
 
         ClntAddrMgr().delPD(pd->getIAID() );
     }
@@ -145,8 +145,8 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
 
 void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
 {
-    SPtr<TOptDUID> rspSrvID = (Ptr*) rep->getOption(OPTION_SERVERID);
-    SPtr<TOptDUID> msgSrvID = (Ptr*) getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> rspSrvID = rep->getServerID();
+    SPtr<TOptDUID> msgSrvID = getServerID();
     if (!rspSrvID) {
         Log(Warning) << "Received reply to RELEASE without SERVER-ID option." << LogEnd;
     }

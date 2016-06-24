@@ -525,7 +525,7 @@ bool TSrvCfgMgr::isClntSupported(SPtr<TSrvMsg> msg) {
         // malformed message or anonymous inf-request
         duid = new TDUID("", 0); // zero-length DUID
     } else {
-        SPtr<TOptDUID> clientId = (Ptr*) opt;
+        SPtr<TOptDUID> clientId = SPtr_cast<TOptDUID>(opt);
         duid = clientId->getDUID();
     }
 
@@ -1088,9 +1088,10 @@ SPtr<TIPv6Addr> TSrvCfgMgr::getDDNSAddress(int iface)
 
     SPtr<TIPv6Addr> DNSAddr;
 
-    SPtr<TOptAddrLst> opt = (Ptr*) ptrIface->getExtraOption(OPTION_DNS_SERVERS);
+    SPtr<TOptAddrLst> opt = SPtr_cast<TOptAddrLst>(ptrIface->getExtraOption(OPTION_DNS_SERVERS));
     if (!opt) {
-        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified." << LogEnd;
+        Log(Error) << "DDNS: DNS Update aborted. DNS server address is not specified or malformed."
+                   << LogEnd;
         return SPtr<TIPv6Addr>(); // NULL
     }
     List(TIPv6Addr) DNSSrvLst = opt->getAddrLst();

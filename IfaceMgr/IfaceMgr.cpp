@@ -300,7 +300,7 @@ string TIfaceMgr::printMac(char * mac, int macLen) {
     return tmp.str();
 }
 
-void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix )
+void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix)
 {
     switch (opt->getOptType()) {
     case OPTION_IA_NA:
@@ -309,7 +309,10 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
         opt->firstOption();
         while (SPtr<TOpt> subopt = opt->getOption()) {
             if (subopt->getOptType() == OPTION_IAADDR) {
-                SPtr<TOptIAAddress> addr = (Ptr*) subopt;
+                SPtr<TOptIAAddress> addr = SPtr_cast<TOptIAAddress>(subopt);
+                if (!addr) {
+                    continue;
+                }
                 params.addAddr(addr->getAddr(), addr->getPref(), addr->getValid(), txtPrefix);
             }
         }
@@ -320,7 +323,10 @@ void TIfaceMgr::optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::st
         opt->firstOption();
         while (SPtr<TOpt> subopt = opt->getOption()) {
             if (subopt->getOptType() == OPTION_IAPREFIX) {
-                SPtr<TOptIAPrefix> prefix = (Ptr*) subopt;
+                SPtr<TOptIAPrefix> prefix = SPtr_cast<TOptIAPrefix>(subopt);
+                if (!prefix) {
+                    continue;
+                }
                 params.addPrefix(prefix->getPrefix(),
                                  prefix->getPrefixLength(),
                                  prefix->getPref(),
@@ -440,7 +446,7 @@ void TIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question
     }
 
     int ifindex = reply->getIface();
-    SPtr<TIfaceIface> iface = (Ptr*)getIfaceByID(ifindex);
+    SPtr<TIfaceIface> iface = SPtr_cast<TIfaceIface>(getIfaceByID(ifindex));
     if (!iface) {
         Log(Error) << "Unable to find interface with ifindex=" << ifindex
                    << ". Script NOT called." << LogEnd;

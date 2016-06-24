@@ -25,8 +25,9 @@ class TSrvOptTA : public TOptTA
 /* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and REQUEST */
     TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg, int msgType, TMsg* parent);
     TSrvOptTA(char * buf, int bufsize, TMsg* parent);
+    TSrvOptTA(int iaid, TMsg* parent);
     TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent);
-    /// @todo: Why 3 construstors?
+    /// @todo: Why 4 construstors?
     void releaseAllAddrs(bool quiet);
 
     bool doDuties();

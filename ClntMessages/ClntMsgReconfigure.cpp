@@ -26,7 +26,7 @@ TClntMsgReconfigure::TClntMsgReconfigure(int iface, SPtr<TIPv6Addr> addr,
 
 bool TClntMsgReconfigure::check() {
     /// @todo: check if reconfigure-message option is received, if not, drop the message
-    SPtr<TOptReconfigureMsg> reconfMsg = (Ptr*) getOption(OPTION_RECONF_MSG);
+    SPtr<TOpt> reconfMsg = getOption(OPTION_RECONF_MSG);
     if (!reconfMsg) {
         Log(Warning) << "Received Reconfigure message without mandatory reconfigure-message option. Dropped." << LogEnd;
         return false;

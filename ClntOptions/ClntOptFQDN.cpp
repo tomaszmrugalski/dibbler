@@ -44,7 +44,7 @@ bool TClntOptFQDN::doDuties() {
     int ifindex = this->Parent->getIface();
     SPtr<TIPv6Addr> addr = this->Parent->getRemoteAddr();
     
-    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(ifindex);
+    SPtr<TClntIfaceIface> iface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(ifindex));
     
     if (!iface) {
 	Log(Error) << "Unable to find interface with ifindex=" << ifindex 
@@ -52,7 +52,7 @@ bool TClntOptFQDN::doDuties() {
 	return false;
     }
 
-    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> duid = SPtr_cast<TOptDUID>(Parent->getOption(OPTION_SERVERID));
 
     if (!duid) {
 	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;

@@ -30,18 +30,19 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include IA_PD
+    SPtr<TSrvMsg> sol = createSolicit();
+    sol->addOption(clntId_); // include client-id
+    sol->addOption(SPtr_cast<TOpt>(pd_)); // include IA_PD
 
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+    EXPECT_EQ(ADVERTISE_MSG, adv->getType());
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
@@ -60,10 +61,7 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     EXPECT_EQ(0u, cfgPD->getAssignedCount());
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)pd_);
-
+    SPtr<TSrvMsg> req = createRequest(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -73,10 +71,11 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
 
     // ... and get REPLY from the server
     cout << "Pretending to send REQUEST" << endl;
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
+    EXPECT_EQ(REPLY_MSG, reply->getType());
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     // server should return T1 = 101, becasue SERVER_DEFAULT_MIN_T1(5) < 101 < SERVER_DEFAULT_MAX_T1 (3600)
@@ -86,14 +85,15 @@ TEST_F(ServerTest, SARR_prefix_single_class) {
     EXPECT_EQ(1u, cfgPD->getAssignedCount());
 
     // let's release it
-    SPtr<TSrvMsgRelease> rel = createRelease();
-    rel->addOption((Ptr*)clntId_);
+    SPtr<TSrvMsg> rel = createRelease(true, false, false);
     rel->addOption(req->getOption(OPTION_SERVERID));
     rcvPD->delOption(OPTION_STATUS_CODE);
-    rel->addOption((Ptr*)rcvPD);
+    rel->addOption(SPtr_cast<TOpt>(rcvPD));
 
     cout << "Pretending to send RELEASE" << endl;
-    SPtr<TSrvMsgReply> releaseReply = (Ptr*)sendAndReceive((Ptr*)rel, 3);
+    SPtr<TSrvMsg> releaseReply = sendAndReceive(rel, 3);
+    ASSERT_TRUE(releaseReply);
+    EXPECT_EQ(REPLY_MSG, releaseReply->getType());
 
     EXPECT_EQ(0u, cfgPD->getAssignedCount());
 }
@@ -110,12 +110,10 @@ TEST_F(ServerTest, SARR_prefix_noiata_reqta) {
 
     ASSERT_TRUE( createMgrs(cfg) );
 
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_);
-    sol->addOption((Ptr*)pd_);
-    sol->addOption((Ptr*)ta_);
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
+    sol->addOption(SPtr_cast<TOpt>(ta_));
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv);
 
     TOptPtr ta = adv->getOption(OPTION_IA_TA);
@@ -124,7 +122,7 @@ TEST_F(ServerTest, SARR_prefix_noiata_reqta) {
     TOptPtr status_opt = ta->getOption(OPTION_STATUS_CODE);
     ASSERT_TRUE(status_opt);
 
-    SPtr<TOptStatusCode> status = (Ptr*) status_opt;
+    SPtr<TOptStatusCode> status = SPtr_cast<TOptStatusCode>(status_opt);
     ASSERT_TRUE(status);
     EXPECT_EQ(STATUSCODE_NOADDRSAVAIL, status->getCode());
 }
@@ -148,17 +146,16 @@ TEST_F(ServerTest, SARR_prefix_single_class_params) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
+    EXPECT_EQ(ADVERTISE_MSG, adv->getType());
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123::", true);
@@ -169,9 +166,7 @@ TEST_F(ServerTest, SARR_prefix_single_class_params) {
     cout << "REQUEST" << endl;
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)pd_);
+    SPtr<TSrvMsg> req = createRequest(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -180,10 +175,10 @@ TEST_F(ServerTest, SARR_prefix_single_class_params) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 65));
@@ -211,17 +206,15 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include IA_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2001:db8:123:babe::", true);
@@ -232,9 +225,7 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation) {
     cout << "REQUEST" << endl;
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)pd_);
+    SPtr<TSrvMsg> req = createRequest(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -243,13 +234,13 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
-    EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 67));
+    EXPECT_TRUE(checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 67));
 }
 
 TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
@@ -272,24 +263,23 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include PD_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
     const uint8_t prefixLen = 68;
     SPtr<TIPv6Addr> prefix = new TIPv6Addr("2002:babe::", true);
-    SPtr<TSrvOptIAPrefix> optPrefix = new TSrvOptIAPrefix(prefix, prefixLen, 1000, 2000, &(*sol));
-    pd_->addOption((Ptr*)optPrefix);
+    SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix, prefixLen, 1000, 2000, &(*sol));
+    pd_->addOption(optPrefix);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
-    SPtr<TSrvOptIAPrefix> rcvOptPrefix = (Ptr*)rcvPD->getOption(OPTION_IAPREFIX);
+    SPtr<TSrvOptIAPrefix> rcvOptPrefix =
+        SPtr_cast<TSrvOptIAPrefix>(rcvPD->getOption(OPTION_IAPREFIX));
     ASSERT_TRUE(rcvOptPrefix);
     cout << "Requested " << prefix->getPlain() << "/" << prefixLen
          << ", received " << rcvOptPrefix->getPrefix()->getPlain() << "/"
@@ -307,9 +297,7 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
     cout << "REQUEST" << endl;
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)pd_);
+    SPtr<TSrvMsg> req = createRequest(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -318,10 +306,10 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 56));
@@ -348,30 +336,30 @@ TEST_F(ServerTest, SARR_prefix_inpool_reservation_negative2) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include PD_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
     const uint8_t prefixLen = 68;
     SPtr<TIPv6Addr> prefix = new TIPv6Addr("2002:babe::", true);
-    SPtr<TSrvOptIAPrefix> optPrefix = new TSrvOptIAPrefix(prefix, prefixLen, 1000, 2000, &(*sol));
-    pd_->addOption((Ptr*)optPrefix);
+    SPtr<TOpt> optPrefix = new TSrvOptIAPrefix(prefix, prefixLen, 1000, 2000, &(*sol));
+    pd_->addOption(optPrefix);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
-    SPtr<TSrvOptIAPrefix> rcvOptPrefix = (Ptr*)rcvPD->getOption(OPTION_IAPREFIX);
+    SPtr<TSrvOptIAPrefix> rcvOptPrefix =
+        SPtr_cast<TSrvOptIAPrefix>(rcvPD->getOption(OPTION_IAPREFIX));
     if (rcvOptPrefix) {
         FAIL() << "Client received " << rcvOptPrefix->getPrefix()->getPlain()
                << " prefix, but expected NoPrefixAvail status." << endl;
     }
 
-    SPtr<TOptStatusCode> rcvStatusCode = (Ptr*)rcvPD->getOption(OPTION_STATUS_CODE);
+    SPtr<TOptStatusCode> rcvStatusCode =
+        SPtr_cast<TOptStatusCode>(rcvPD->getOption(OPTION_STATUS_CODE));
     ASSERT_TRUE(rcvStatusCode);
 
     EXPECT_EQ(STATUSCODE_NOPREFIXAVAIL, rcvStatusCode->getCode());
@@ -398,17 +386,15 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     ASSERT_TRUE( createMgrs(cfg) );
 
     // now generate SOLICIT
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
-    sol->addOption((Ptr*)pd_); // include PD_NA
+    SPtr<TSrvMsg> sol = createSolicit(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // check that there is an ADVERTISE response
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     SPtr<TIPv6Addr> minRange = new TIPv6Addr("2002:babe::", true);
@@ -419,9 +405,7 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     cout << "REQUEST" << endl;
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
-    req->addOption((Ptr*)pd_);
+    SPtr<TSrvMsg> req = createRequest(true, false, true);
     pd_->setIAID(100);
     pd_->setT1(101);
     pd_->setT2(102);
@@ -430,10 +414,10 @@ TEST_F(ServerTest, SARR_prefix_outpool_reservation) {
     req->addOption(adv->getOption(OPTION_SERVERID));
 
     // ... and get REPLY from the server
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, 100, 1000, 2000, 3000, 4000, 32));
@@ -455,7 +439,7 @@ TEST_F(ServerTest, SARR_prefix_hint) {
     SPtr<TOptIA_PD> pd(new TSrvOptIA_PD(123, 100, 200, NULL));
     pd->addOption(createPrefix("2001:db8:123::", 64, 1000, 2000));
 
-    prefixText(cfg, (Ptr*)pd, "2001:db8:123::", "2001:db8:123::", 64,
+    prefixText(cfg, SPtr_cast<TOpt>(pd), "2001:db8:123::", "2001:db8:123::", 64,
                pd->getIAID(), pd->getT1(), pd->getT2(),
                SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
 }
@@ -476,7 +460,7 @@ TEST_F(ServerTest, SARR_prefix_out_of_pool_hint) {
     SPtr<TOptIA_PD> pd(new TSrvOptIA_PD(123, 100, 200, NULL));
     pd->addOption(createPrefix("3000::", 64, 1000, 2000));
 
-    prefixText(cfg, (Ptr*)pd, "2001:db8::", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff",
+    prefixText(cfg, SPtr_cast<TOpt>(pd), "2001:db8::", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff",
                64, pd->getIAID(), pd->getT1(), pd->getT2(),
                SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
 }
@@ -498,8 +482,8 @@ TEST_F(ServerTest, SARR_prefix_hint_nonzero_host_part) {
     pd->addOption(createPrefix("2001:db8::1:2:3:4:5", 64, 1000, 2000));
     // The 2:3:4:5 should be zeroed, because they are chopped by /64
 
-    prefixText(cfg, (Ptr*)pd, "2001:db8::", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff", 64,
-               pd->getIAID(), pd->getT1(), pd->getT2(),
+    prefixText(cfg, SPtr_cast<TOpt>(pd), "2001:db8::", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff",
+               64, pd->getIAID(), pd->getT1(), pd->getT2(),
                SERVER_DEFAULT_MIN_PREF, SERVER_DEFAULT_MIN_VALID);
 }
 

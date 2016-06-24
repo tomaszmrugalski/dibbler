@@ -11,7 +11,7 @@
 #include "AddrIA.h"
 #include "ClntOptTA.h"
 #include "ClntOptIAAddress.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntOptIAAddress.h"
 #include "OptDUID.h"
 #include "ClntAddrMgr.h"
@@ -61,7 +61,7 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
             opt = new TClntOptIAAddress(buf+pos,length,this->Parent);
             break;
         case OPTION_STATUS_CODE:
-            opt = new TClntOptStatusCode(buf+pos,length,this->Parent);
+            opt = new TOptStatusCode(buf+pos, length, this->Parent);
             break;
         default:
             Log(Warning) <<"Option " << code<< " in message (type=" << parent->getType()
@@ -91,12 +91,13 @@ void TClntOptTA::firstAddr()
 
 SPtr<TClntOptIAAddress> TClntOptTA::getAddr()
 {
-    SPtr<TClntOptIAAddress> ptr;
+    SPtr<TOpt> ptr;
     do {
-        ptr = (Ptr*) SubOptions.get();
-        if (ptr)
-            if (ptr->getOptType()==OPTION_IAADDR)
-                return ptr;
+        ptr = SubOptions.get();
+
+        if (ptr && ptr->getOptType()==OPTION_IAADDR) {
+            return (SPtr_cast<TClntOptIAAddress>(ptr));
+        }
     } while (ptr);
 
     return SPtr<TClntOptIAAddress>(); // NULL
@@ -116,11 +117,12 @@ int TClntOptTA::countAddr()
 
 int TClntOptTA::getStatusCode()
 {
-    SPtr<TOpt> option;
-    if (option=getOption(OPTION_STATUS_CODE))
-    {
-        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
-        return statOpt->getCode();
+    SPtr<TOpt> status = getOption(OPTION_STATUS_CODE);
+    if (status) {
+        SPtr<TOptStatusCode> statOpt= SPtr_cast<TOptStatusCode>(status);
+        if (statOpt) {
+            return statOpt->getCode();
+        }
     }
     return STATUSCODE_SUCCESS;
 }
@@ -146,7 +148,7 @@ TClntOptTA::~TClntOptTA()
         return true;
     }
 
-    SPtr<TOptDUID> duid = (Ptr*)Parent->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> duid = SPtr_cast<TOptDUID>(Parent->getOption(OPTION_SERVERID));
     if (!duid) {
         Log(Error) << "Unable to find proper DUID while setting TA." << LogEnd;
         return false;

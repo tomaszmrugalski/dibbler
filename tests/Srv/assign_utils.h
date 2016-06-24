@@ -92,33 +92,45 @@ namespace test {
 
         bool createMgrs(std::string config);
 
-        void createIAs(TMsg * msg);
+        void createIAs(const SPtr<TSrvMsg> msg);
 
         void setIface(const std::string& name);
 
+        /// @brief Creates IA_NA, IA_TA, IA_PD, client-id and appends them if necessary
+        SPtr<TSrvMsg> appendOptions(const SPtr<TSrvMsg>& msg, bool include_ia,
+                                    bool include_client_id, bool include_pd);
+
         /// @brief creates SOLICIT message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgSolicit> createSolicit();
+        SPtr<TSrvMsg> createSolicit(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates REQUEST message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgRequest> createRequest();
+        SPtr<TSrvMsg> createRequest(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates RENEW message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgRenew> createRenew();
+        SPtr<TSrvMsg> createRenew(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates REBIND message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgRebind> createRebind();
+        SPtr<TSrvMsg> createRebind(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates RELEASE message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgRelease> createRelease();
+        SPtr<TSrvMsg> createRelease(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates DECLINE message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgDecline> createDecline();
+        SPtr<TSrvMsg> createDecline(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates CONFIRM message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgConfirm> createConfirm();
+        SPtr<TSrvMsg> createConfirm(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates INF-REQUEST message and IA_NA, IA_TA, IA_PD options
-        SPtr<TSrvMsgInfRequest> createInfRequest();
+        SPtr<TSrvMsg> createInfRequest(bool include_clntid = false, bool include_ia = false,
+                                    bool include_pd = false);
 
         /// @brief creates an IAPREFIX option with specified parameters
         ///
@@ -186,11 +198,11 @@ namespace test {
 
         SPtr<TIPv6Addr> clntAddr_;
         SPtr<TDUID> clntDuid_;
-        SPtr<TOptDUID> clntId_;
+        SPtr<TOpt> clntId_;
 
         SPtr<TSrvOptIA_NA> ia_;
         SPtr<TSrvOptIA_PD> pd_;
-        SPtr<TOptTA>    ta_;
+        SPtr<TOptTA> ta_;
         uint32_t ia_iaid_;
         uint32_t ta_iaid_;
         uint32_t pd_iaid_;

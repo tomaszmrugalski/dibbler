@@ -171,7 +171,7 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 #ifndef MOD_DISABLE_AUTH
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
 
-                SPtr<TOptDUID> optDUID = (SPtr<TOptDUID>)this->getOption(OPTION_CLIENTID);
+                SPtr<TOptDUID> optDUID = SPtr_cast<TOptDUID>(this->getOption(OPTION_CLIENTID));
                 if (optDUID) {
                     SPtr<TAddrClient> client = SrvAddrMgr().getClient(optDUID->getDUID());
                     if (client)
@@ -234,15 +234,15 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
     while ( opt = clientMsg->getOption()) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA : {
-            processIA_NA((Ptr*)clientMsg, (Ptr*) opt);
+            processIA_NA(clientMsg, SPtr_cast<TSrvOptIA_NA>(opt));
             break;
         }
         case OPTION_IA_TA: {
-            processIA_TA((Ptr*)clientMsg, (Ptr*) opt);
+            processIA_TA(clientMsg, SPtr_cast<TSrvOptTA>(opt));
             break;
         }
         case OPTION_IA_PD: {
-            processIA_PD((Ptr*)clientMsg, (Ptr*) opt);
+            processIA_PD(clientMsg, SPtr_cast<TSrvOptIA_PD>(opt));
             break;
         }
         case OPTION_AUTH : {
@@ -255,7 +255,7 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         }
         case OPTION_VENDOR_OPTS:
         {
-            SPtr<TOptVendorData> v = (Ptr*) opt;
+            SPtr<TOptVendorData> v = SPtr_cast<TOptVendorData>(opt);
             appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
             break;
         }
@@ -286,7 +286,7 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
     // process FQDN afer all addresses are processed
     opt = clientMsg->getOption(OPTION_FQDN);
     if (opt) {
-        processFQDN((Ptr*)clientMsg, (Ptr*) opt);
+        processFQDN(clientMsg, SPtr_cast<TSrvOptFQDN>(opt));
     }
 }
 
@@ -304,21 +304,21 @@ bool TSrvMsg::releaseAll(bool quiet) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             SPtr<TSrvOptIA_NA> ptrOptIA_NA;
-            ptrOptIA_NA = (Ptr*) opt;
+            ptrOptIA_NA = SPtr_cast<TSrvOptIA_NA>(opt);
             ptrOptIA_NA->releaseAllAddrs(quiet);
             released = true;
             break;
         }
         case OPTION_IA_TA: {
             SPtr<TSrvOptTA> ta;
-            ta = (Ptr*) opt;
+            ta = SPtr_cast<TSrvOptTA>(opt);
             ta->releaseAllAddrs(quiet);
             released = true;
             break;
         }
         case OPTION_IA_PD: {
             SPtr<TSrvOptIA_PD> pd;
-            pd = (Ptr*) opt;
+            pd = SPtr_cast<TSrvOptIA_PD>(opt);
             pd->releaseAllPrefixes(quiet);
             released = true;
             break;
@@ -367,7 +367,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     SPtr<TOptGeneric> gen;
     SPtr<TIfaceIface> ptrIface;
     SPtr<TIfaceIface> under;
-    ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(this->Iface);
+    ptrIface = SrvIfaceMgr().getIfaceByID(this->Iface);
     if (!ptrIface) {
         SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(this->Iface);
         if (!cfgIface) {
@@ -382,7 +382,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
             delete [] buf;
             return;
         }
-        ptrIface = (Ptr*) SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
+        ptrIface = SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
         if (!ptrIface) {
             Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
                        << " has invalid physical interface defined (ifindex="
@@ -475,7 +475,7 @@ SPtr<TDUID> TSrvMsg::getClientDUID() {
     if (!opt)
         return SPtr<TDUID>(); // NULL
 
-    SPtr<TOptDUID> clientid = (Ptr*) opt;
+    SPtr<TOptDUID> clientid = SPtr_cast<TOptDUID>(opt);
     return clientid->getDUID();
 }
 
@@ -539,13 +539,13 @@ void TSrvMsg::appendReconfigureKey() {
 
     }
 
-    Options.push_back((Ptr*)auth);
+    Options.push_back(SPtr_cast<TOpt>(auth));
 }
 #endif
 
 void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN) {
     string hint = requestFQDN->getFQDN();
-    SPtr<TSrvOptFQDN> optFQDN;
+    SPtr<TOpt> optFQDN;
 
     bool doRealUpdate = false;
     if (clientMsg->getType() == REQUEST_MSG ||
@@ -559,10 +559,11 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
         // doRealUpdate = false; // but do not do the actual update
     }
 
-    optFQDN = addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, doRealUpdate);
+    optFQDN = SPtr_cast<TOpt>(addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint,
+                                      doRealUpdate));
 
     if (optFQDN)
-        Options.push_back((Ptr*) optFQDN);
+        Options.push_back(optFQDN);
 }
 
 /**
@@ -714,9 +715,11 @@ void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
 bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
     SPtr<TOpt> x = donor->getOption(OPTION_CLIENTID);
     if (x) {
-        SPtr<TOptDUID> optDuid = (Ptr*) x;
-        ClientDUID = optDuid->getDUID();
-        return true;
+        SPtr<TOptDUID> optDuid = SPtr_cast<TOptDUID>(x);
+        if (optDuid) {
+            ClientDUID = optDuid->getDUID();
+            return true;
+        }
     }
     return false;
 }
@@ -789,7 +792,7 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
     }
 
     if (echo) {
-        SPtr<TOptOptionRequest> ero = (Ptr*) echo;
+        SPtr<TOptOptionRequest> ero = SPtr_cast<TOptOptionRequest>(echo);
 
         for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
              it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
@@ -898,7 +901,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 
         auth->setRealm(SrvCfgMgr().getAuthRealm()); // defined for delayed-auth only
 
-        Options.push_back((Ptr*)auth);
+        Options.push_back(SPtr_cast<TOpt>(auth));
     }
 #endif
 }
@@ -906,30 +909,28 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID /* =true */)
 {
     // include our DUID (Server ID)
-    SPtr<TOptDUID> ptrSrvID;
-    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
-    Options.push_back((Ptr*)ptrSrvID);
+    SPtr<TOpt> ptrSrvID(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
+    Options.push_back(ptrSrvID);
     oro->delOption(OPTION_SERVERID);
 
     // include his DUID (Client ID)
     if (clientID && ClientDUID) {
-        SPtr<TOptDUID> clientDuid = new TOptDUID(OPTION_CLIENTID, ClientDUID, this);
-        Options.push_back( (Ptr*)clientDuid);
+        SPtr<TOpt> clientDuid(new TOptDUID(OPTION_CLIENTID, ClientDUID, this));
+        Options.push_back(clientDuid);
     }
 
     // ... and our preference
-    SPtr<TOptInteger> ptrPreference;
     unsigned char preference = SrvCfgMgr().getIfaceByID(Iface)->getPreference();
     Log(Debug) << "Preference set to " << (int)preference << "." << LogEnd;
-    ptrPreference = new TOptInteger(OPTION_PREFERENCE, 1, preference, this);
-    Options.push_back((Ptr*)ptrPreference);
+    SPtr<TOpt> ptrPreference(new TOptInteger(OPTION_PREFERENCE, 1, preference, this));
+    Options.push_back(ptrPreference);
     oro->delOption(OPTION_PREFERENCE);
 
     // does this server support unicast?
     SPtr<TIPv6Addr> unicastAddr = SrvCfgMgr().getIfaceByID(Iface)->getUnicast();
     if (unicastAddr) {
-        SPtr<TOptAddr> optUnicast = new TOptAddr(OPTION_UNICAST, unicastAddr, this);
-        Options.push_back((Ptr*)optUnicast);
+        SPtr<TOpt> optUnicast(new TOptAddr(OPTION_UNICAST, unicastAddr, this));
+        Options.push_back(optUnicast);
         oro->delOption(OPTION_UNICAST);
     }
 
@@ -1006,7 +1007,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     {
         Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType()
                    << " (" << (*gen)->getSize() << ")" << LogEnd;
-        Options.push_back( (Ptr*) *gen);
+        Options.push_back(*gen);
         reqOpts->delOption( (*gen)->getOptType() );
         newOptionAssigned = true;
     }
@@ -1017,7 +1018,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
         {
             Log(Debug) << "Appending requested extra option " << (*gen)->getOptType()
                        << " (" << (*gen)->getSize() << ")" << LogEnd;
-            Options.push_back( (Ptr*) *gen);
+            Options.push_back(*gen);
             newOptionAssigned = true;
         }
     }
@@ -1054,7 +1055,7 @@ string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
 bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
-    SPtr<TOptDUID> optSrvID = (Ptr*) this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> optSrvID = SPtr_cast<TOptDUID>(this->getOption(OPTION_SERVERID));
     if (optSrvID) {
         if ( !( *(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()) ) ) {
             Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
@@ -1095,7 +1096,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOp
         vsLst.first();
         while (vs=vsLst.get())
         {
-            Options.push_back( (Ptr*)vs);
+            Options.push_back(SPtr_cast<TOpt>(vs));
         }
         return true;
     }
@@ -1117,7 +1118,7 @@ bool TSrvMsg::validateReplayDetection() {
 
     // get the client's information
     SPtr<TAddrClient> client;
-    SPtr<TOptDUID> optDUID = (Ptr*)getOption(OPTION_CLIENTID);
+    SPtr<TOptDUID> optDUID = SPtr_cast<TOptDUID>(getOption(OPTION_CLIENTID));
     if (optDUID) {
         client = SrvAddrMgr().getClient(optDUID->getDUID());
     }
@@ -1128,7 +1129,7 @@ bool TSrvMsg::validateReplayDetection() {
         return true;
     }
 
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
     if (!auth) {
         // there's no auth option. We can't protect against replays
         return true;
@@ -1178,12 +1179,13 @@ void TSrvMsg::appendStatusCode()
         switch ( opt->getOptType() ) {
         case OPTION_IA_NA:
             {
-                if (optLevel= (Ptr*)opt->getOption(OPTION_STATUS_CODE)) {
+                if (optLevel= SPtr_cast<TOptStatusCode>(opt->getOption(OPTION_STATUS_CODE))) {
                     if (optLevel->getCode() != STATUSCODE_SUCCESS) {
                         // copy status code to root-level
                         delOption(OPTION_STATUS_CODE);
-                        rootLevel = new TOptStatusCode(optLevel->getCode(), optLevel->getText(), this);
-                        Options.push_back( (Ptr*) rootLevel);
+                        SPtr<TOpt> rootLevel(new TOptStatusCode(optLevel->getCode(),
+                                                                optLevel->getText(), this));
+                        Options.push_back( rootLevel);
                         return;
                     }
                 }
@@ -1212,9 +1214,10 @@ void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
  */
 void TSrvMsg::getORO(SPtr<TMsg> msg)
 {
-    ORO = (Ptr*)msg->getOption(OPTION_ORO);
-    if (!ORO)
-        ORO = new TOptOptionRequest(OPTION_ORO, this);
+    ORO = SPtr_cast<TOptOptionRequest>(msg->getOption(OPTION_ORO));
+    if (!ORO) {
+        ORO.reset(new TOptOptionRequest(OPTION_ORO, this));
+    }
 }
 
 /// @brief sets physical interface index

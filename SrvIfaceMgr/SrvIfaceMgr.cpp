@@ -86,7 +86,7 @@ TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
                                                 ptr->globaladdr,
                                                 ptr->globaladdrcount,
                                                 ptr->hardwareType));
-        this->IfaceLst.append((Ptr*) iface);
+        this->IfaceLst.append(iface);
         ptr = ptr->next;
     }
     if_list_release(ifaceList); // allocated in pure C, and so release it there
@@ -223,7 +223,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     SPtr<TIfaceIface> ptrIface;
 
     // get interface
-    ptrIface = (Ptr*)getIfaceBySocket(sockid);
+    ptrIface = getIfaceBySocket(sockid);
+    if (!ptrIface) {
+        Log(Error) << "Unable to find interface for socket id=" << sockid << LogEnd;
+        return SPtr<TSrvMsg>(); // NULL
+    }
 
     Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
                << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
@@ -423,7 +427,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                     return SPtr<TSrvMsg>(); // NULL
                 }
                 ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
-                gen = (Ptr*)ptrIfaceID;
+                gen = SPtr_cast<TOpt>(ptrIfaceID);
                 optIfaceIDCnt++;
                 break;
             case OPTION_RELAY_MSG:
@@ -433,14 +437,14 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
                 break;
             case OPTION_REMOTE_ID:
                 remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
-                gen = (Ptr*) remoteID;
+                gen = SPtr_cast<TOpt>(remoteID);
                 break;
             case OPTION_ERO:
                 Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
-                gen = new TOptOptionRequest(OPTION_ERO, buf, len, 0);
+                gen.reset(new TOptOptionRequest(OPTION_ERO, buf, len, 0));
                 break;
             default:
-                gen = new TOptGeneric(code, buf, len, 0);
+                gen.reset(new TOptGeneric(code, buf, len, 0));
 
             }
             if (gen) {
@@ -573,7 +577,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
-    return (Ptr*)msg;
+    return msg;
  }
 
 SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
@@ -811,7 +815,11 @@ void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> quest
     TNotifyScriptParams* params = (TNotifyScriptParams*)answer->getNotifyScriptParams();
 
     // add info about relays
-    SPtr<TSrvMsg> reply = (Ptr*)answer;
+    SPtr<TSrvMsg> reply = SPtr_cast<TSrvMsg>(answer);
+    if (!reply) {
+        Log(Error) << "Incorrect answer object specified, not derived from TSrvMsg" << LogEnd;
+        return;
+    }
 
     const vector<TSrvMsg::RelayInfo> relayInfo = reply->RelayInfo_;
 
@@ -840,7 +848,7 @@ ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;
     SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
-    while ( ptr= (Ptr*) x.IfaceLst.get() ) {
+    while (ptr = x.IfaceLst.get()) {
         strum << *ptr;
     }
     strum << "</SrvIfaceMgr>" << std::endl;

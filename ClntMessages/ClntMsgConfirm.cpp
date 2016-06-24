@@ -12,7 +12,7 @@
 #include "SmartPtr.h"
 #include "ClntMsgConfirm.h"
 #include "OptDUID.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntOptIA_NA.h"
 #include "DHCPConst.h"
 #include "Logger.h"
@@ -56,12 +56,11 @@ TClntMsgConfirm::TClntMsgConfirm(unsigned int iface,
 
 void TClntMsgConfirm::answer(SPtr<TClntMsg> reply)
 {
-    SPtr <TClntOptStatusCode> status;
-    status = (Ptr*) reply->getOption(OPTION_STATUS_CODE);
+    SPtr <TOptStatusCode> status = reply->getStatusCode();
     if (!status) {
         Log(Warning) << "Received malformed REPLY for CONFIRM: no status option." << LogEnd;
         addrsRejected();
-	return;
+        return;
     }
     switch (status->getCode() ) {
     case STATUSCODE_SUCCESS:
@@ -94,27 +93,32 @@ void TClntMsgConfirm::addrsAccepted() {
         if (ptrOpt->getOptType()!=OPTION_IA_NA)
             continue;
 
-        SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
-        ptrIA = ClntAddrMgr().getIA( ptrOptIA->getIAID() );
-        if (!ptrIA)
+        SPtr<TClntOptIA_NA> ptrOptIA = SPtr_cast<TClntOptIA_NA>(ptrOpt);
+        if (!ptrOptIA) {
             continue;
+        }
+
+        ptrIA = ClntAddrMgr().getIA( ptrOptIA->getIAID() );
+        if (!ptrIA) {
+            continue;
+        }
 
         // Uncomment this line if you don't want RENEW to be sent after
         // CONFIRM exchange is complete
         ptrIA->setState(STATE_CONFIGURED);
 
-	// Once confirmed, this triggers the
+        // Once confirmed, this triggers the
         ptrIA->setTimestamp( (uint32_t)time(NULL) - ptrIA->getT1() );
-	
-	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
-	if (!ptrIface)
-	  continue;
-	
-	ptrIA->firstAddr();
-	while (ptrAddrAddr = ptrIA->getAddr()) {
+
+        SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrIA->getIfindex());
+        if (!ptrIface)
+          continue;
+
+        ptrIA->firstAddr();
+        while (ptrAddrAddr = ptrIA->getAddr()) {
             ptrIface->addAddr(ptrAddrAddr->get(),ptrAddrAddr->getPref(),
-			      ptrAddrAddr->getValid(), ptrIface->getPrefixLength());
-	}
+                              ptrAddrAddr->getValid(), ptrIface->getPrefixLength());
+        }
     }
 }
 
@@ -126,7 +130,10 @@ void TClntMsgConfirm::addrsRejected() {
         if (ptrOpt->getOptType()!=OPTION_IA_NA)
             continue;
 
-        SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*) ptrOpt;
+        SPtr<TClntOptIA_NA> ptrOptIA = SPtr_cast<TClntOptIA_NA>(ptrOpt);
+        if (!ptrOptIA) {
+            continue;
+        }
         ptrIA = ClntAddrMgr().getIA(ptrOptIA->getIAID());
         if (!ptrIA)
             continue;
@@ -166,7 +173,7 @@ void TClntMsgConfirm::doDuties()
         // MRD reached. Nobody said that out addrs are faulty, so we suppose
         // they are ok. Use them
         Log(Info) << "MRD reached and there is no valid response for CONFIRM. "
-		  << "Assuming addresses are valid." << LogEnd;
+                  << "Assuming addresses are valid." << LogEnd;
         addrsAccepted();
         IsDone = true;
         return;

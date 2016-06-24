@@ -269,7 +269,7 @@ SPtr<TRelMsg> TRelIfaceMgr::decodeRelayRepl(SPtr<TIfaceIface> iface,
     };
     // inform that this message should be sent to the peerAddr address on the ptrIface interface.
     msg->setDestination(ptrIfaceID->getValue(), peerAddr);
-    return (Ptr*)msg;
+    return msg;
 }
 
 SPtr<TRelMsg> TRelIfaceMgr::decodeMsg(SPtr<TIfaceIface> iface, 
@@ -324,7 +324,7 @@ ostream & operator <<(ostream & strum, TRelIfaceMgr &x) {
     strum << "<RelIfaceMgr>" << std::endl;
     SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
-    while ( ptr= (Ptr*) x.IfaceLst.get() ) {
+    while ( ptr = x.IfaceLst.get() ) {
 	strum << *ptr;
     }
     strum << "</RelIfaceMgr>" << std::endl;

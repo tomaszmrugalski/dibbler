@@ -45,8 +45,10 @@ int TOptTA::getStatusCode() {
     while ( ptrOpt = SubOptions.get() ) {
         if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
             SPtr <TOptStatusCode> ptrStatus;
-            ptrStatus = (Ptr*) ptrOpt;
-            return ptrStatus->getCode();
+            ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
+            if (ptrStatus) {
+                return ptrStatus->getCode();
+            }
         }
     }
     return -1;
@@ -70,10 +72,12 @@ unsigned long TOptTA::getMaxValid() {
     SubOptions.first();
     while (ptrOpt=SubOptions.get())
     {
-        if (ptrOpt->getOptType()==OPTION_IAADDR) {
-            SPtr<TOptIAAddress> ptrIAAddr=(Ptr*)ptrOpt;
-            if (maxValid<ptrIAAddr->getValid())
-                maxValid=ptrIAAddr->getValid();
+        if (ptrOpt->getOptType()!=OPTION_IAADDR) {
+            continue;
+        }
+        SPtr<TOptIAAddress> ptrIAAddr= SPtr_cast<TOptIAAddress>(ptrOpt);
+        if (ptrIAAddr && (maxValid<ptrIAAddr->getValid()) ) {
+            maxValid=ptrIAAddr->getValid();
         }
     }
     return maxValid;

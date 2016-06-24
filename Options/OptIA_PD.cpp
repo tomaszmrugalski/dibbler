@@ -12,7 +12,7 @@
 #include "OptIA_PD.h"
 #include "OptIAPrefix.h"
 #include "OptStatusCode.h"
-
+#include "DHCPConst.h"
 
 TOptIA_PD::TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
     :TOpt(OPTION_IA_PD, parent), IAID_(iaid), T1_(t1), T2_(t2), Valid_(true)  {
@@ -57,8 +57,10 @@ int TOptIA_PD::getStatusCode() {
     while ( ptrOpt = SubOptions.get() ) {
         if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
             SPtr <TOptStatusCode> ptrStatus;
-            ptrStatus = (Ptr*) ptrOpt;
-            return ptrStatus->getCode();
+            ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
+            if (ptrStatus) {
+                return ptrStatus->getCode();
+            }
         }
     }
     return -1;

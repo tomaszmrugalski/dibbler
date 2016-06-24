@@ -38,11 +38,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgConfirm> confirm)
     :TSrvMsg(confirm->getIface(),confirm->getRemoteAddr(), REPLY_MSG,
              confirm->getTransID())
 {
-    getORO( (Ptr*)confirm );
-    copyClientID((Ptr*)confirm );
-    copyRelayInfo((Ptr*)confirm);
-    copyAAASPI((Ptr*)confirm);
-    copyRemoteID((Ptr*)confirm);
+    getORO(SPtr_cast<TMsg>(confirm));
+    copyClientID(SPtr_cast<TMsg>(confirm));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(confirm));
+    copyAAASPI(SPtr_cast<TSrvMsg>(confirm));
+    copyRemoteID(SPtr_cast<TSrvMsg>(confirm));
 
     if (!handleConfirmOptions( confirm->getOptLst() )) {
         IsDone = true;
@@ -76,7 +76,10 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
         switch ( (*opt)->getOptType()) {
         case OPTION_IA_NA: {
 
-            SPtr<TSrvOptIA_NA> ia = (Ptr*) (*opt);
+            SPtr<TSrvOptIA_NA> ia = SPtr_cast<TSrvOptIA_NA>(*opt);
+            if (!ia) {
+                break;
+            }
 
             // now we check whether this IA exists in Server Address database or not.
             SPtr<TOpt> opt;
@@ -86,14 +89,17 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
                     continue;
                 }
 
-                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+                SPtr<TSrvOptIAAddress> optAddr = SPtr_cast<TSrvOptIAAddress>(opt);
+                if (!optAddr) {
+                    continue;
+                }
                 onLink = cfgIface->confirmAddress(IATYPE_IA, optAddr->getAddr());
                 checkCnt++;
             }
             break;
         }
         case OPTION_IA_TA: {
-            SPtr<TSrvOptTA> ta = (Ptr*) (*opt);
+            SPtr<TSrvOptTA> ta = SPtr_cast<TSrvOptTA>(*opt);
 
             SPtr<TOpt> opt;
             ta->firstOption();
@@ -101,14 +107,17 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
                 if (opt->getOptType() != OPTION_IAADDR)
                     continue;
 
-                SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+                SPtr<TSrvOptIAAddress> optAddr = SPtr_cast<TSrvOptIAAddress>(opt);
                 onLink = cfgIface->confirmAddress(IATYPE_TA, optAddr->getAddr());
                 checkCnt++;
             }
             break;
         }
         case OPTION_IA_PD: {
-            SPtr<TSrvOptIA_PD> ta = (Ptr*) (*opt);
+            SPtr<TSrvOptIA_PD> ta = SPtr_cast<TSrvOptIA_PD>(*opt);
+            if (!ta) {
+                break;
+            }
 
             SPtr<TOpt> opt;
             ta->firstOption();
@@ -116,7 +125,10 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
                 if (opt->getOptType() != OPTION_IAPREFIX)
                     continue;
 
-                SPtr<TSrvOptIAPrefix> optPrefix = (Ptr*) opt;
+                SPtr<TSrvOptIAPrefix> optPrefix = SPtr_cast<TSrvOptIAPrefix>(opt);
+                if (!optPrefix) {
+                    continue;
+                }
                 onLink = cfgIface->confirmAddress(IATYPE_PD, optPrefix->getPrefix());
                 checkCnt++;
             }
@@ -136,20 +148,16 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
 
     switch (onLink) {
     case ADDRSTATUS_YES: {
-        SPtr <TOptStatusCode> ptrCode =
-            new TOptStatusCode(STATUSCODE_SUCCESS,
-                               "Your addresses are correct for this link! Yay!",
-                               this);
-        Options.push_back( (Ptr*) ptrCode);
+        SPtr <TOpt> ptrCode(new TOptStatusCode(STATUSCODE_SUCCESS,
+                            "Your addresses are correct for this link! Yay!", this));
+        Options.push_back(ptrCode);
         return true;
     }
 
     case ADDRSTATUS_NO: {
-        SPtr <TOptStatusCode> ptrCode =
-            new TOptStatusCode(STATUSCODE_NOTONLINK,
-                               "Sorry, those addresses are not valid for this link.",
-                               this);
-        Options.push_back( (Ptr*) ptrCode );
+        SPtr <TOpt> ptrCode(new TOptStatusCode(STATUSCODE_NOTONLINK,
+                            "Sorry, those addresses are not valid for this link.", this));
+        Options.push_back(ptrCode);
         return true;
     }
 
@@ -176,11 +184,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
     :TSrvMsg(decline->getIface(), decline->getRemoteAddr(), REPLY_MSG,
              decline->getTransID())
 {
-    getORO( (Ptr*)decline );
-    copyClientID( (Ptr*)decline );
-    copyRelayInfo( (Ptr*)decline );
-    copyAAASPI( (Ptr*)decline );
-    copyRemoteID( (Ptr*)decline );
+    getORO(SPtr_cast<TMsg>(decline));
+    copyClientID(SPtr_cast<TMsg>(decline));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(decline));
+    copyAAASPI(SPtr_cast<TSrvMsg>(decline));
+    copyRemoteID(SPtr_cast<TSrvMsg>(decline));
 
     SPtr<TOpt> ptrOpt;
 
@@ -206,7 +214,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
         {
         case OPTION_IA_NA:
         {
-            SPtr<TSrvOptIA_NA> ptrIA_NA = (Ptr*) ptrOpt;
+            SPtr<TSrvOptIA_NA> ptrIA_NA = SPtr_cast<TSrvOptIA_NA>(ptrOpt);
+            if (!ptrIA_NA) {
+                continue;
+            }
             SPtr<TAddrIA> ptrIA = ptrClient->getIA(ptrIA_NA->getIAID());
             if (!ptrIA)
             {
@@ -216,7 +227,7 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
             }
 
             // create empty IA
-            SPtr<TSrvOptIA_NA> replyIA_NA = new TSrvOptIA_NA(ptrIA_NA->getIAID(), 0, 0, this);
+            SPtr<TOpt> replyIA_NA = new TSrvOptIA_NA(ptrIA_NA->getIAID(), 0, 0, this);
             int AddrsDeclinedCnt = 0;
 
             // IA found in DB, now move each addr in DB to "declined-client" and
@@ -227,7 +238,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
             while( subOpt = ptrOpt->getOption() ) {
                 if (subOpt->getOptType()==OPTION_IAADDR)
                 {
-                    addr = (Ptr*) subOpt;
+                    addr = SPtr_cast<TSrvOptIAAddress>(subOpt);
+                    if (!addr) {
+                        continue;
+                    }
 
                     // remove declined address from client
                     if (SrvAddrMgr().delClntAddr(ptrClient->getDUID(), ptrIA_NA->getIAID(),
@@ -252,13 +266,13 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
                     }
                 };
             }
-            Options.push_back((Ptr*)replyIA_NA);
+            Options.push_back(replyIA_NA);
             char buf[10];
             sprintf(buf,"%d",AddrsDeclinedCnt);
             string tmp = buf;
-            SPtr<TOptStatusCode> optStatusCode =
-                new TOptStatusCode(STATUSCODE_SUCCESS, tmp + " addrs declined.", this);
-            replyIA_NA->addOption( (Ptr*) optStatusCode );
+            SPtr<TOpt> optStatusCode(new TOptStatusCode(STATUSCODE_SUCCESS,
+                                     tmp + " addrs declined.", this));
+            replyIA_NA->addOption(optStatusCode);
             break;
         };
         case OPTION_IA_TA:
@@ -287,11 +301,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     :TSrvMsg(rebind->getIface(),rebind->getRemoteAddr(), REPLY_MSG, rebind->getTransID())
 {
-    getORO( (Ptr*)rebind );
-    copyClientID( (Ptr*)rebind );
-    copyRelayInfo( (Ptr*)rebind );
-    copyAAASPI( (Ptr*)rebind );
-    copyRemoteID( (Ptr*)rebind );
+    getORO(SPtr_cast<TMsg>(rebind));
+    copyClientID(SPtr_cast<TMsg>(rebind));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(rebind));
+    copyAAASPI(SPtr_cast<TSrvMsg>(rebind));
+    copyRemoteID(SPtr_cast<TSrvMsg>(rebind));
 
     unsigned long addrCount=0;
     SPtr<TOpt> ptrOpt;
@@ -301,27 +315,33 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRebind> rebind)
     {
         switch (ptrOpt->getOptType())
         {
-        case OPTION_IA_NA:
-          {
+        case OPTION_IA_NA: {
+            SPtr<TSrvOptIA_NA> rebind_ia = SPtr_cast<TSrvOptIA_NA>(ptrOpt);
+            if (!rebind_ia) {
+                break;
+            }
             SPtr<TSrvOptIA_NA> optIA_NA;
-            optIA_NA = new TSrvOptIA_NA((Ptr*)ptrOpt,
+            optIA_NA = new TSrvOptIA_NA(rebind_ia,
                                         rebind->getRemoteAddr(), ClientDUID,
                                         rebind->getIface(), addrCount, REBIND_MSG,
                                         this);
-            if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING )
-              Options.push_back((Ptr*)optIA_NA);
-            else {
+            if (optIA_NA->getStatusCode() != STATUSCODE_NOBINDING) {
+                Options.push_back(SPtr_cast<TOpt>(optIA_NA));
+            } else {
                 this->IsDone = true;
                 Log(Notice) << "REBIND received with unknown addresses and "
-                            << "was silently discarded." << LogEnd;
-              return;
+                              << "was silently discarded." << LogEnd;
+                return;
             }
             break;
-          }
+        }
         case OPTION_IA_PD: {
-            SPtr<TSrvOptIA_PD> pd;
-            pd = new TSrvOptIA_PD( (Ptr*)rebind, (Ptr*) ptrOpt, this);
-            Options.push_back((Ptr*)pd);
+            SPtr<TSrvOptIA_PD> rebind_pd = SPtr_cast<TSrvOptIA_PD>(ptrOpt);
+            if (!rebind_pd) {
+                break;
+            }
+            SPtr<TOpt> pd(new TSrvOptIA_PD(SPtr_cast<TSrvMsg>(rebind), rebind_pd, this));
+            Options.push_back(pd);
             break;
         }
 
@@ -355,11 +375,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
     :TSrvMsg(release->getIface(),release->getRemoteAddr(), REPLY_MSG,
              release->getTransID())
 {
-    getORO( (Ptr*) release );
-    copyClientID( (Ptr*) release );
-    copyRelayInfo((Ptr*)release);
-    copyAAASPI((Ptr*)release);
-    copyRemoteID((Ptr*)release);
+    getORO(SPtr_cast<TMsg>(release));
+    copyClientID(SPtr_cast<TMsg>(release));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(release));
+    copyAAASPI(SPtr_cast<TSrvMsg>(release));
+    copyRemoteID(SPtr_cast<TSrvMsg>(release));
 
     /// @todo When the server receives a Release message via unicast from a client
     /// to which the server has not sent a unicast option, the server
@@ -395,15 +415,20 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
     while(opt=release->getOption()) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
-            SPtr<TSrvOptIA_NA> clntIA = (Ptr*) opt;
+            SPtr<TSrvOptIA_NA> clntIA = SPtr_cast<TSrvOptIA_NA>(opt);
+            if (!clntIA) {
+                break;
+            }
             SPtr<TSrvOptIAAddress> addr;
             bool anyDeleted=false;
 
             // does this client has IA? (iaid check)
             SPtr<TAddrIA> ptrIA = client->getIA(clntIA->getIAID() );
             if (!ptrIA) {
-                Log(Warning) << "No such IA (iaid=" << clntIA->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
-                Options.push_back( new TSrvOptIA_NA(clntIA->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such IA is bound.",this) );
+                Log(Warning) << "No such IA (iaid=" << clntIA->getIAID()
+                             << ") found for client:" << ClientDUID->getPlain() << LogEnd;
+                Options.push_back(new TSrvOptIA_NA(clntIA->getIAID(), 0, 0,
+                                  STATUSCODE_NOBINDING,"No such IA is bound.",this) );
                 continue;
             }
 
@@ -416,33 +441,43 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
             // let's verify each address
             clntIA->firstOption();
             while(subOpt=clntIA->getOption()) {
-                if (subOpt->getOptType()!=OPTION_IAADDR)
+                if (subOpt->getOptType()!=OPTION_IAADDR) {
                     continue;
-                addr = (Ptr*) subOpt;
-                if (SrvAddrMgr().delClntAddr(ClientDUID, clntIA->getIAID(), addr->getAddr(), false) ) {
+                }
+                addr = SPtr_cast<TSrvOptIAAddress>(subOpt);
+                if (!addr) {
+                    continue;
+                }
+                if (SrvAddrMgr().delClntAddr(ClientDUID, clntIA->getIAID(), addr->getAddr(), false)) {
                     notifyParams->addAddr(addr->getAddr(), 0, 0, "SRV");
 
                     SrvCfgMgr().delClntAddr(this->Iface,addr->getAddr());
                     anyDeleted=true;
                 } else {
-                    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain() << ", IA (iaid="
-                                 << clntIA->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
+                    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain()
+                                 << ", IA (iaid=" << clntIA->getIAID() << "), addr="
+                                 << addr->getAddr()->getPlain() << LogEnd;
                 };
             };
 
             // send result to the client
             if (!anyDeleted)
             {
-                SPtr<TSrvOptIA_NA> ansIA(new TSrvOptIA_NA(clntIA->getIAID(), clntIA->getT1(),clntIA->getT2(),this));
-                Options.push_back((Ptr*)ansIA);
-                ansIA->addOption(new TOptStatusCode(STATUSCODE_NOBINDING, "Not every address had binding.",this));
+                SPtr<TOpt> ansIA(new TSrvOptIA_NA(clntIA->getIAID(), clntIA->getT1(),
+                                                  clntIA->getT2(), this));
+                Options.push_back(ansIA);
+                ansIA->addOption(new TOptStatusCode(STATUSCODE_NOBINDING,
+                                                    "Not every address had binding.",this));
             };
             break;
         }
         case OPTION_IA_TA: {
-            SPtr<TSrvOptTA> ta = (Ptr*) opt;
+            SPtr<TSrvOptTA> ta = SPtr_cast<TSrvOptTA>(opt);
+            if (!ta) {
+                break;
+            }
             bool anyDeleted = false;
-            SPtr<TAddrIA> ptrIA = client->getTA(ta->getIAID() );
+            SPtr<TAddrIA> ptrIA = client->getTA(ta->getIAID());
             if (!ptrIA) {
                 Log(Warning) << "No such TA (iaid=" << ta->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
                 Options.push_back( new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "No such IA is bound.", this) );
@@ -451,49 +486,61 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 
             // let's verify each address
             ta->firstOption();
-            while ( subOpt = (Ptr*) ta->getOption() ) {
-                if (subOpt->getOptType()!=OPTION_IAADDR)
+            while ( subOpt = ta->getOption() ) {
+                if (subOpt->getOptType()!=OPTION_IAADDR) {
                     continue;
-                SPtr<TSrvOptIAAddress> addr = (Ptr*) subOpt;
+                }
+                SPtr<TSrvOptIAAddress> addr = SPtr_cast<TSrvOptIAAddress>(subOpt);
+                if (!addr) {
+                    continue;
+                }
                 if (SrvAddrMgr().delTAAddr(ClientDUID, ta->getIAID(), addr->getAddr(), false) ) {
                     notifyParams->addAddr(addr->getAddr(), 0, 0 , "");
 
                     SrvCfgMgr().delTAAddr(this->Iface);
                     anyDeleted=true;
                 } else {
-                    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain() << ", TA (iaid="
-                             << ta->getIAID() << "), addr="<< addr->getAddr()->getPlain() << LogEnd;
+                    Log(Warning) << "No such binding found: client=" << ClientDUID->getPlain()
+                                 << ", TA (iaid=" << ta->getIAID() << "), addr="
+                                 << addr->getAddr()->getPlain() << LogEnd;
                 };
             }
 
             // send results to the client
             if (!anyDeleted)
             {
-                SPtr<TSrvOptTA> answerTA = new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING, "Not every address had binding.", this);
-                Options.push_back((Ptr*)answerTA);
+                SPtr<TOpt> answerTA(new TSrvOptTA(ta->getIAID(), STATUSCODE_NOBINDING,
+                                                  "Not every address had binding.", this));
+                Options.push_back(answerTA);
             };
             break;
         }
 
         case OPTION_IA_PD: {
-            SPtr<TSrvOptIA_PD> pd = (Ptr*) opt;
+            SPtr<TSrvOptIA_PD> pd = SPtr_cast<TSrvOptIA_PD>(opt);
             SPtr<TSrvOptIAPrefix> prefix;
             bool anyDeleted=false;
 
             // does this client has PD? (iaid check)
             SPtr<TAddrIA> ptrPD = client->getPD( pd->getIAID() );
             if (!ptrPD) {
-                Log(Warning) << "No such PD (iaid=" << pd->getIAID() << ") found for client:" << ClientDUID->getPlain() << LogEnd;
-                Options.push_back( new TSrvOptIA_PD(pd->getIAID(), 0, 0, STATUSCODE_NOBINDING,"No such PD is bound.",this) );
+                Log(Warning) << "No such PD (iaid=" << pd->getIAID() << ") found for client:"
+                             << ClientDUID->getPlain() << LogEnd;
+                Options.push_back( new TSrvOptIA_PD(pd->getIAID(), 0, 0, STATUSCODE_NOBINDING,
+                                                    "No such PD is bound.",this) );
                 continue;
             }
 
             // let's verify each address
             pd->firstOption();
             while(subOpt=pd->getOption()) {
-                if (subOpt->getOptType()!=OPTION_IAPREFIX)
+                if (subOpt->getOptType()!=OPTION_IAPREFIX) {
                     continue;
-                prefix = (Ptr*) subOpt;
+                }
+                prefix = SPtr_cast<TSrvOptIAPrefix>(subOpt);
+                if (!prefix) {
+                    continue;
+                }
                 if (SrvAddrMgr().delPrefix(ClientDUID, pd->getIAID(), prefix->getPrefix(), false) ) {
                     notifyParams->addPrefix(prefix->getPrefix(), prefix->getPrefixLength(), 0, 0);
                     SrvCfgMgr().decrPrefixCount(Iface, prefix->getPrefix());
@@ -531,11 +578,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRelease> release)
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
     :TSrvMsg(renew->getIface(),renew->getRemoteAddr(), REPLY_MSG, renew->getTransID())
 {
-    getORO( (Ptr*)renew );
-    copyClientID( (Ptr*)renew );
-    copyRelayInfo((Ptr*)renew);
-    copyAAASPI((Ptr*)renew);
-    copyRemoteID((Ptr*)renew);
+    getORO(SPtr_cast<TMsg>(renew));
+    copyClientID(SPtr_cast<TMsg>(renew));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(renew));
+    copyAAASPI(SPtr_cast<TSrvMsg>(renew));
+    copyRemoteID(SPtr_cast<TSrvMsg>(renew));
 
     unsigned long addrCount=0;
     SPtr<TOpt> ptrOpt;
@@ -546,17 +593,16 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
         switch (ptrOpt->getOptType())
         {
         case OPTION_IA_NA: {
-            SPtr<TSrvOptIA_NA> optIA_NA;
-            optIA_NA = new TSrvOptIA_NA((Ptr*)ptrOpt,
-                                        renew->getRemoteAddr(), ClientDUID,
-                                        renew->getIface(), addrCount, RENEW_MSG, this);
-            Options.push_back((Ptr*)optIA_NA);
+            SPtr<TOpt> optIA_NA(new TSrvOptIA_NA(SPtr_cast<TSrvOptIA_NA>(ptrOpt),
+                                renew->getRemoteAddr(), ClientDUID,
+                                renew->getIface(), addrCount, RENEW_MSG, this));
+            Options.push_back(optIA_NA);
             break;
         }
         case OPTION_IA_PD: {
-            SPtr<TSrvOptIA_PD> optPD;
-            optPD = new TSrvOptIA_PD((Ptr*) renew, (Ptr*)ptrOpt, this);
-            Options.push_back( (Ptr*) optPD);
+            SPtr<TOpt> optPD(new TSrvOptIA_PD(SPtr_cast<TSrvMsg>(renew),
+                                              SPtr_cast<TSrvOptIA_PD>(ptrOpt), this));
+            Options.push_back(optPD);
             break;
         }
         case OPTION_IA_TA:
@@ -596,13 +642,13 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRenew> renew)
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
     :TSrvMsg(request->getIface(), request->getRemoteAddr(), REPLY_MSG, request->getTransID())
 {
-    getORO( (Ptr*)request );
-    copyClientID( (Ptr*)request );
-    copyRelayInfo( (Ptr*)request );
-    copyAAASPI( (Ptr*)request );
-    copyRemoteID( (Ptr*)request );
+    getORO(SPtr_cast<TMsg>(request));
+    copyClientID(SPtr_cast<TMsg>(request));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(request));
+    copyAAASPI(SPtr_cast<TSrvMsg>(request));
+    copyRemoteID(SPtr_cast<TSrvMsg>(request));
 
-    processOptions((Ptr*)request, false); // be verbose
+    processOptions(SPtr_cast<TSrvMsg>(request), false); // be verbose
 
     appendMandatoryOptions(ORO);
     appendRequestedOptions(ClientDUID, PeerAddr_, Iface, ORO);
@@ -625,13 +671,13 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgRequest> request)
 TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgSolicit> solicit)
     :TSrvMsg(solicit->getIface(), solicit->getRemoteAddr(), REPLY_MSG, solicit->getTransID())
 {
-    getORO( (Ptr*)solicit );
-    copyClientID( (Ptr*)solicit );
-    copyRelayInfo( (Ptr*)solicit );
-    copyAAASPI( (Ptr*)solicit );
-    copyRemoteID( (Ptr*)solicit );
+    getORO(SPtr_cast<TMsg>(solicit));
+    copyClientID(SPtr_cast<TMsg>(solicit));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(solicit));
+    copyAAASPI(SPtr_cast<TSrvMsg>(solicit));
+    copyRemoteID(SPtr_cast<TSrvMsg>(solicit));
 
-    processOptions((Ptr*) solicit, false);
+    processOptions(SPtr_cast<TSrvMsg>(solicit), false);
 
     // append RAPID-COMMIT option
     Options.push_back(new TOptEmpty(OPTION_RAPID_COMMIT, this));
@@ -649,11 +695,11 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgInfRequest> infRequest)
     :TSrvMsg(infRequest->getIface(),
              infRequest->getRemoteAddr(),REPLY_MSG,infRequest->getTransID())
 {
-    getORO( (Ptr*)infRequest );
-    copyClientID( (Ptr*)infRequest );
-    copyRelayInfo((Ptr*)infRequest);
-    copyAAASPI((Ptr*)infRequest);
-    copyRemoteID((Ptr*)infRequest);
+    getORO(SPtr_cast<TMsg>(infRequest));
+    copyClientID(SPtr_cast<TMsg>(infRequest));
+    copyRelayInfo(SPtr_cast<TSrvMsg>(infRequest));
+    copyAAASPI(SPtr_cast<TSrvMsg>(infRequest));
+    copyRemoteID(SPtr_cast<TSrvMsg>(infRequest));
 
     Log(Debug) << "Received INF-REQUEST requesting " << showRequestedOptions(ORO) << "." << LogEnd;
 
@@ -710,9 +756,8 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList& options)
     }
 
     // Append server-id
-    SPtr<TOptDUID> ptrSrvID;
-    ptrSrvID = new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this);
-    Options.push_back((Ptr*)ptrSrvID);
+    SPtr<TOpt> server_id(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
+    Options.push_back(server_id);
 
     MRT_ = 330;
     IsDone = false;

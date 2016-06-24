@@ -44,77 +44,79 @@ ServerTest::ServerTest() {
     }
 }
 
-void ServerTest::createIAs(TMsg* msg) {
+void ServerTest::createIAs(const SPtr<TSrvMsg> msg) {
     ia_iaid_ = 123;
-    ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, msg);
+    ia_ = new TSrvOptIA_NA(ia_iaid_, 100, 200, &(*msg));
     ta_iaid_ = 456;
-    ta_ = new TOptTA(ta_iaid_, msg);
+    ta_ = new TSrvOptTA(ta_iaid_, &(*msg));
     pd_iaid_ = 789;
-    pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, msg);
+    pd_ = new TSrvOptIA_PD(pd_iaid_, 100, 200, &(*msg));
 }
 
-SPtr<TSrvMsgSolicit> ServerTest::createSolicit() {
+SPtr<TSrvMsg> ServerTest::appendOptions(const SPtr<TSrvMsg>& msg, bool include_ia,
+                                        bool include_client_id, bool include_pd) {
+    createIAs(msg);
+    if (include_ia) {
+        msg->addOption(SPtr_cast<TOpt>(ia_));
+    }
+    if (include_client_id) {
+        msg->addOption(SPtr_cast<TOpt>(clntId_));
+    }
+
+    if (include_pd) {
+        msg->addOption(SPtr_cast<TOpt>(pd_));
+    }
+    return (msg);
+}
+
+SPtr<TSrvMsg> ServerTest::createSolicit(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { SOLICIT_MSG, 0x1, 0x2, 0x3};
-    SPtr<TSrvMsgSolicit> sol =
-        new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*sol));
-    return sol;
+    SPtr<TSrvMsg> sol(new TSrvMsgSolicit(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(sol, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgRequest> ServerTest::createRequest() {
+SPtr<TSrvMsg> ServerTest::createRequest(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { REQUEST_MSG, 0x1, 0x2, 0x4};
-    SPtr<TSrvMsgRequest> request =
-        new TSrvMsgRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*request));
-    return request;
+    SPtr<TSrvMsg> request(new TSrvMsgRequest(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(request, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgRenew> ServerTest::createRenew() {
+SPtr<TSrvMsg> ServerTest::createRenew(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { RENEW_MSG, 0x1, 0x2, 0x5};
-    SPtr<TSrvMsgRenew> renew =
-        new TSrvMsgRenew(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*renew));
-    return renew;
+    SPtr<TSrvMsg> renew(new TSrvMsgRenew(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(renew, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgRebind> ServerTest::createRebind() {
+SPtr<TSrvMsg> ServerTest::createRebind(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { REBIND_MSG, 0x1, 0x2, 0x6};
-    SPtr<TSrvMsgRebind> rebind =
-        new TSrvMsgRebind(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*rebind));
-    return rebind;
+    SPtr<TSrvMsg> rebind(new TSrvMsgRebind(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(rebind, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgRelease> ServerTest::createRelease() {
+SPtr<TSrvMsg> ServerTest::createRelease(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { RELEASE_MSG, 0x1, 0x2, 0x7};
-    SPtr<TSrvMsgRelease> release =
-        new TSrvMsgRelease(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*release));
-    return release;
+    SPtr<TSrvMsg> release(new TSrvMsgRelease(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(release, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgDecline> ServerTest::createDecline() {
+SPtr<TSrvMsg> ServerTest::createDecline(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { DECLINE_MSG, 0x1, 0x2, 0x8};
-    SPtr<TSrvMsgDecline> decline =
-        new TSrvMsgDecline(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*decline));
-    return decline;
+    SPtr<TSrvMsg> decline(new TSrvMsgDecline(iface_->getID(), clntAddr_, empty, sizeof(empty)));
+    return appendOptions(decline, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgConfirm> ServerTest::createConfirm() {
+SPtr<TSrvMsg> ServerTest::createConfirm(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { CONFIRM_MSG, 0x1, 0x2, 0x9};
-    SPtr<TSrvMsgConfirm> confirm =
+    SPtr<TSrvMsg> confirm =
         new TSrvMsgConfirm(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*confirm));
-    return confirm;
+    return appendOptions(confirm, include_ia, include_client_id, include_pd);
 }
 
-SPtr<TSrvMsgInfRequest> ServerTest::createInfRequest() {
+SPtr<TSrvMsg> ServerTest::createInfRequest(bool include_client_id, bool include_ia, bool include_pd) {
     char empty[] = { INFORMATION_REQUEST_MSG, 0x1, 0x2, 0xa};
-    SPtr<TSrvMsgInfRequest> infrequest =
+    SPtr<TSrvMsg> infrequest =
         new TSrvMsgInfRequest(iface_->getID(), clntAddr_, empty, sizeof(empty));
-    createIAs(&(*infrequest));
-    return infrequest;
+    return appendOptions(infrequest, include_ia, include_client_id, include_pd);
 }
 
 bool ServerTest::checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
@@ -131,12 +133,12 @@ bool ServerTest::checkIA_NA(SPtr<TSrvOptIA_NA> ia, SPtr<TIPv6Addr> minRange,
     while (SPtr<TOpt> option = ia->getOption()) {
         switch (option->getOptType()) {
         case OPTION_STATUS_CODE: {
-            SPtr<TOptStatusCode> optCode = (Ptr*)option;
+            SPtr<TOptStatusCode> optCode = SPtr_cast<TOptStatusCode>(option);
             EXPECT_EQ(STATUSCODE_SUCCESS, optCode->getCode());
             break;
         }
         case OPTION_IAADDR: {
-            SPtr<TSrvOptIAAddress> optAddr = (Ptr*)option;
+            SPtr<TSrvOptIAAddress> optAddr = SPtr_cast<TSrvOptIAAddress>(option);
             cout << "Checking received address " << optAddr->getAddr()->getPlain() << endl;
             EXPECT_TRUE( range.in(optAddr->getAddr()) );
             EXPECT_EQ(pref, optAddr->getPref() );
@@ -168,12 +170,12 @@ bool ServerTest::checkIA_PD(SPtr<TSrvOptIA_PD> pd, SPtr<TIPv6Addr> minRange,
     while (SPtr<TOpt> option = pd->getOption()) {
         switch (option->getOptType()) {
         case OPTION_STATUS_CODE: {
-            SPtr<TOptStatusCode> optCode = (Ptr*)option;
+            SPtr<TOptStatusCode> optCode = SPtr_cast<TOptStatusCode>(option);
             EXPECT_EQ(STATUSCODE_SUCCESS, optCode->getCode());
             break;
         }
         case OPTION_IAPREFIX: {
-            SPtr<TSrvOptIAPrefix> optPrefix = (Ptr*)option;
+            SPtr<TSrvOptIAPrefix> optPrefix = SPtr_cast<TSrvOptIAPrefix>(option);
             cout << "Checking received prefix " << optPrefix->getPrefix()->getPlain()
                  << "/" << (int)optPrefix->getPrefixLength() << endl;
             EXPECT_TRUE( range.in(optPrefix->getPrefix()) );
@@ -264,7 +266,7 @@ bool ServerTest::createMgrs(std::string config) {
     }
 
     cfgmgr_->firstIface();
-    while (cfgIface_ = cfgmgr_->getIface()) {
+    while (( cfgIface_ = cfgmgr_->getIface() )) {
         if (cfgIface_->getName() == iface_->getName())
             break;
     }
@@ -304,7 +306,7 @@ void ServerTest::setRelayInfo(SPtr<TSrvMsg> msg) {
 void ServerTest::setIface(const std::string& name) {
     ASSERT_TRUE(SrvCfgMgr().getIfaceByName(name));
     ASSERT_NE(-1, SrvCfgMgr().getIfaceByName("relay1")->getRelayID());
-    iface_ = (Ptr*) SrvIfaceMgr().getIfaceByID(SrvCfgMgr().getIfaceByName(name)->getRelayID());
+    iface_ = SrvIfaceMgr().getIfaceByID(SrvCfgMgr().getIfaceByName(name)->getRelayID());
 }
 
 void ServerTest::sendHex(const std::string& src_addr, uint16_t src_port,
@@ -364,14 +366,14 @@ void ServerTest::prefixText(const std::string& config,
 
     // Now generate SOLICIT with a single IA_PD and one IAPREFIX hint in it
     // That's a perfect hint (valid, within scope, exact length, not used)
-    SPtr<TSrvMsgSolicit> sol = createSolicit();
-    sol->addOption((Ptr*)clntId_); // include client-id
+    SPtr<TSrvMsg> sol = createSolicit();
+    sol->addOption(clntId_); // include client-id
     sol->addOption(pd_to_be_sent); // include IA_PD
 
-    SPtr<TSrvMsgAdvertise> adv = (Ptr*)sendAndReceive((Ptr*)sol, 1);
+    SPtr<TSrvMsg> adv = sendAndReceive(sol, 1);
     ASSERT_TRUE(adv); // Check that there is a response
 
-    SPtr<TSrvOptIA_PD> rcvPD = (Ptr*) adv->getOption(OPTION_IA_PD);
+    SPtr<TSrvOptIA_PD> rcvPD = SPtr_cast<TSrvOptIA_PD>(adv->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
 
     // The server should return exactly the hint, because it is available
@@ -387,8 +389,8 @@ void ServerTest::prefixText(const std::string& config,
     EXPECT_EQ(0u, cfgPD->getAssignedCount());
 
     // now generate REQUEST
-    SPtr<TSrvMsgRequest> req = createRequest();
-    req->addOption((Ptr*)clntId_);
+    SPtr<TSrvMsg> req = createRequest();
+    req->addOption(clntId_);
     req->addOption(pd_to_be_sent);
 
     ASSERT_TRUE(adv->getOption(OPTION_SERVERID));
@@ -396,12 +398,12 @@ void ServerTest::prefixText(const std::string& config,
 
     // ... and get REPLY from the server
     cout << "Pretending to send REQUEST" << endl;
-    SPtr<TSrvMsgReply> reply = (Ptr*)sendAndReceive((Ptr*)req, 2);
+    SPtr<TSrvMsg> reply = sendAndReceive(req, 2);
     ASSERT_TRUE(reply);
+    EXPECT_EQ(REPLY_MSG, reply->getType());
 
-    rcvPD = (Ptr*) reply->getOption(OPTION_IA_PD);
+    rcvPD = SPtr_cast<TSrvOptIA_PD>(reply->getOption(OPTION_IA_PD));
     ASSERT_TRUE(rcvPD);
-
 
     EXPECT_TRUE( checkIA_PD(rcvPD, minRange, maxRange, expected_iaid, expected_t1,
                             expected_t2, expected_pref, expected_valid,
@@ -411,14 +413,16 @@ void ServerTest::prefixText(const std::string& config,
     EXPECT_EQ(1u, cfgPD->getAssignedCount());
 
     // let's release it
-    SPtr<TSrvMsgRelease> rel = createRelease();
-    rel->addOption((Ptr*)clntId_);
+    SPtr<TSrvMsg> rel = createRelease();
+    rel->addOption(clntId_);
     rel->addOption(req->getOption(OPTION_SERVERID));
     rcvPD->delOption(OPTION_STATUS_CODE);
-    rel->addOption((Ptr*)rcvPD);
+    rel->addOption(SPtr_cast<TOpt>(rcvPD));
 
     cout << "Pretending to send RELEASE" << endl;
-    SPtr<TSrvMsgReply> releaseReply = (Ptr*)sendAndReceive((Ptr*)rel, 3);
+    SPtr<TSrvMsg> releaseReply = sendAndReceive(rel, 3);
+    ASSERT_TRUE(releaseReply);
+    EXPECT_EQ(REPLY_MSG, releaseReply->getType());
 
     // Check that the lease is now released.
     EXPECT_EQ(0u, cfgPD->getAssignedCount());

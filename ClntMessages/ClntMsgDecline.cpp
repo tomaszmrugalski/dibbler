@@ -52,11 +52,12 @@ void TClntMsgDecline::answer(SPtr<TClntMsg> rep)
 {
     /// @todo: Is UseMulticast option included?
 
-    SPtr<TOptDUID> repSrvID= (Ptr*)  rep->getOption(OPTION_SERVERID);
-    SPtr<TOptDUID> msgSrvID= (Ptr*)  this->getOption(OPTION_SERVERID);
-    if ((!repSrvID)||
-        (!(*msgSrvID->getDUID()==*repSrvID->getDUID())))
+    SPtr<TOptDUID> repSrvID= rep->getServerID();
+    SPtr<TOptDUID> msgSrvID= getServerID();
+    if ((!repSrvID) || !msgSrvID ||
+        (!(*msgSrvID->getDUID() == *repSrvID->getDUID()))) {
        return;
+    }
     IsDone = true;
 }
 
@@ -71,7 +72,7 @@ void TClntMsgDecline::doDuties()
 
 bool TClntMsgDecline::check()
 {
-	return false;
+    return false;
 }
 
 std::string TClntMsgDecline::getName() const {

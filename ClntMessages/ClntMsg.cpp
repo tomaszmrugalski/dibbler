@@ -25,14 +25,14 @@
 #include "OptDUID.h"
 #include "OptDomainLst.h"
 #include "OptRtPrefix.h"
+#include "OptOptionRequest.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
 #include "ClntOptTA.h"
-#include "ClntOptOptionRequest.h"
 #include "ClntOptPreference.h"
 #include "OptReconfigureMsg.h"
 #include "ClntOptElapsed.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntOptTimeZone.h"
 #include "ClntOptFQDN.h"
 #include "OptAddrLst.h"
@@ -141,7 +141,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TClntOptIA_PD(buf+pos, length, this);
 	    break;
 	case OPTION_ORO:
-	    ptr = new TClntOptOptionRequest(buf+pos, length, this);
+	    ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
 	    break;
 	case OPTION_PREFERENCE:
 	    ptr = new TClntOptPreference(buf+pos, length, this);
@@ -153,7 +153,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	    ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
 	    break;
 	case OPTION_STATUS_CODE:
-	    ptr = new TClntOptStatusCode(buf+pos, length, this);
+	    ptr = new TOptStatusCode(buf+pos, length, this);
 	    break;
 	case OPTION_RAPID_COMMIT:
 	    ptr = new TOptEmpty(code, buf+pos, length, this);
@@ -242,7 +242,7 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 	pos+=length;
     }
 
-    SPtr<TOptDUID> optSrvID = (Ptr*)this->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> optSrvID = getServerID();
     if (!optSrvID) {
 	Log(Warning) << "Message " << this->MsgType
 		     << " does not contain SERVERID option. Ignoring." << LogEnd;
@@ -377,7 +377,7 @@ void TClntMsg::send()
 	Log(Debug) << "Sending " << this->getName() << "(opts:";
 	SPtr<TOpt> opt;
 	firstOption();
-	while (opt=getOption()) {
+	while (( opt = getOption() )) {
 	    Log(Cont) << opt->getOptType() << " ";
 	}
 	Log(Cont) << ") on " << ptrIface->getName()
@@ -387,7 +387,7 @@ void TClntMsg::send()
 	Log(Debug) << "Sending " << this->getName() << "(opts:";
 	SPtr<TOpt> opt;
 	firstOption();
-	while (opt=getOption()) {
+	while (( opt = getOption() )) {
 	    Log(Cont) << opt->getOptType() << " ";
 	}
 	Log(Cont) << ") on " << ptrIface->getName()
@@ -407,16 +407,20 @@ void TClntMsg::setIface(int iface) {
     this->Iface = iface;
     SPtr<TOpt> opt;
     firstOption();
-    while ( opt = getOption() ) {
+    while (( opt = getOption() )) {
 	switch ( opt->getOptType() ) {
 	case OPTION_IA_NA: {
-	    SPtr<TClntOptIA_NA> ia = (Ptr*) opt;
-	    ia->setIface(iface);
-		break;
+	    SPtr<TClntOptIA_NA> ia = SPtr_cast<TClntOptIA_NA>(opt);
+            if (ia) {
+                ia->setIface(iface);
+            }
+            break;
 	}
 	case OPTION_IA_TA: {
-	    SPtr<TClntOptTA> ta = (Ptr*) opt;
-	    ta->setIface(iface);
+	    SPtr<TClntOptTA> ta = SPtr_cast<TClntOptTA>(opt);
+            if (ta) {
+                ta->setIface(iface);
+            }
 	    break;
 	}
 	default:
@@ -461,11 +465,11 @@ void TClntMsg::appendAuthenticationOption()
         algorithm = static_cast<uint8_t>(DigestType_);
         setSPI(ClntCfgMgr().getSPI());
 
-        SPtr<TClntOptOptionRequest> optORO = (Ptr*) getOption(OPTION_ORO);
+        SPtr<TOptOptionRequest> optORO = getORO();
 
         if (optORO) {
-          // request Authentication
-          optORO->addOption(OPTION_AUTH);
+            // request Authentication
+            optORO->addOption(OPTION_AUTH);
         }
 
         break;
@@ -492,7 +496,7 @@ void TClntMsg::appendAuthenticationOption()
         auth->setReplayDetection(ClntAddrMgr().getNextReplayDetectionValue());
     }
 
-    addOption((Ptr*)auth);
+    addOption(SPtr_cast<TOpt>(auth));
 
     // otherwise replay value is zero
 #endif
@@ -519,11 +523,11 @@ void TClntMsg::appendRequestedOptions() {
     if ( (MsgType==SOLICIT_MSG || MsgType==REQUEST_MSG) &&
 	 ClntCfgMgr().getReconfigure())
     {
-	SPtr<TOptEmpty> optReconfigure = new TOptEmpty(OPTION_RECONF_ACCEPT, this);
-	Options.push_back( (Ptr*) optReconfigure);
+	SPtr<TOpt> optReconfigure = new TOptEmpty(OPTION_RECONF_ACCEPT, this);
+	Options.push_back(optReconfigure);
     }
 
-    SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
+    SPtr<TOptOptionRequest> optORO = new TOptOptionRequest(iface, this);
 
     if (iface->getUnicast()) {
 	optORO->addOption(OPTION_UNICAST);
@@ -578,8 +582,8 @@ void TClntMsg::appendRequestedOptions() {
 	string timezone = iface->getProposedTimezone();
 	if (timezone.length()) {
 	    // if there are any hints specified in config file, include them
-	    SPtr<TClntOptTimeZone> opt = new TClntOptTimeZone(timezone,this);
-	    Options.push_back( (Ptr*)opt );
+	    SPtr<TOpt> opt = new TClntOptTimeZone(timezone,this);
+	    Options.push_back(opt);
 	}
 	iface->setTimezoneState(STATE_INPROCESS);
     }
@@ -614,9 +618,9 @@ void TClntMsg::appendRequestedOptions() {
 
 	string fqdn = iface->getProposedFQDN();
 	{
-	    SPtr<TClntOptFQDN> opt = new TClntOptFQDN( fqdn,this );
+	    SPtr<TClntOptFQDN> opt = new TClntOptFQDN(fqdn, this);
 	    opt->setSFlag(ClntCfgMgr().getFQDNFlagS());
-	    Options.push_back( (Ptr*)opt );
+	    Options.push_back(SPtr_cast<TOpt>(opt));
 	}
 	iface->setFQDNState(STATE_INPROCESS);
     }
@@ -628,7 +632,7 @@ void TClntMsg::appendRequestedOptions() {
 	List(TIPv6Addr) * lst = iface->getProposedNISServerLst();
 	if ( lst->count() ) {
 	    // if there are any hints specified in config file, include them
-	    Options.push_back( new TOptAddrLst(OPTION_NIS_SERVERS, *lst, this ));
+	    Options.push_back(new TOptAddrLst(OPTION_NIS_SERVERS, *lst, this));
 	}
 	iface->setNISServerState(STATE_INPROCESS);
     }
@@ -638,7 +642,7 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_NIS_DOMAIN_NAME);
 	string domain = iface->getProposedNISDomain();
 	if (domain.length()) {
-	    Options.push_back( new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, domain, this) );
+	    Options.push_back(new TOptDomainLst(OPTION_NIS_DOMAIN_NAME, domain, this));
 	}
 	iface->setNISDomainState(STATE_INPROCESS);
     }
@@ -678,11 +682,11 @@ void TClntMsg::appendRequestedOptions() {
 	optORO->addOption(OPTION_VENDOR_OPTS);
 	iface->setVendorSpecState(STATE_INPROCESS);
 
-	SPtr<TOptVendorSpecInfo> optVendor;
+	SPtr<TOpt> optVendor;
 	iface->firstVendorSpec();
 
-	while (optVendor = iface->getVendorSpec()) {
-	    Options.push_back( (Ptr*) optVendor);
+	while (( optVendor = SPtr_cast<TOpt>(iface->getVendorSpec()) )) {
+	    Options.push_back(optVendor);
 	}
     }
 
@@ -703,12 +707,14 @@ void TClntMsg::appendRequestedOptions() {
     SPtr<TClntCfgIA> ia;
     iface->firstIA();
     bool addrParams = false;
-    while (ia = iface->getIA()) {
-	if (ia->getAddrParams())
+    while ( (ia = iface->getIA()) ) {
+	if (ia->getAddrParams()) {
 	    addrParams = true;
+        }
     }
-    if (addrParams)
+    if (addrParams) {
 	optORO->addOption(OPTION_ADDRPARAMS);
+    }
 
     appendElapsedOption();
 
@@ -732,8 +738,9 @@ void TClntMsg::appendRequestedOptions() {
 #endif
 
     // final setup: Did we add any options at all?
-    if ( optORO->count() )
-	Options.push_back( (Ptr*) optORO );
+    if ( optORO->count() ) {
+	Options.push_back(SPtr_cast<TOpt>(optORO));
+    }
 }
 
 /**
@@ -747,16 +754,16 @@ void TClntMsg::appendTAOptions(bool switchToInProcess)
     SPtr<TClntCfgTA> ptrTA;
     ClntCfgMgr().firstIface();
     // for each interface...
-    while ( ptrIface = ClntCfgMgr().getIface() ) {
+    while ( (ptrIface = ClntCfgMgr().getIface()) ) {
 	ptrIface->firstTA();
 	// ... find TA...
-	while ( ptrTA = ptrIface->getTA() ) {
+	while (( ptrTA = ptrIface->getTA() )) {
 	    if (ptrTA->getState()!=STATE_NOTCONFIGURED)
 		continue;
 	    // ... which are not yet configured
 	    SPtr<TOpt> ptrOpt = new TClntOptTA(ptrTA->getIAID(), this);
 
-	    Options.push_back ( (Ptr*) ptrOpt);
+	    Options.push_back(ptrOpt);
 	    Log(Debug) << "TA option (IAID=" << ptrTA->getIAID() << ") was added." << LogEnd;
 	    if (switchToInProcess)
 		ptrTA->setState(STATE_INPROCESS);
@@ -776,10 +783,9 @@ bool TClntMsg::appendClientID()
 bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     bool status = TMsg::check(clntIDmandatory, srvIDmandatory);
 
-    SPtr<TOptDUID> clnID;
+    SPtr<TOptDUID> clientid = SPtr_cast<TOptDUID>(getOption(OPTION_CLIENTID));
 
-    if ( (clnID=(Ptr*)getOption(OPTION_CLIENTID)) &&
-	 !( *(clnID->getDUID())==(*(ClntCfgMgr().getDUID())) ) ) {
+    if ( clientid && !( *(clientid->getDUID())==(*(ClntCfgMgr().getDUID())) ) ) {
 	Log(Warning) << "Message " << this->getName()
 	    << " received with mismatched ClientID option. Message dropped." << LogEnd;
 	return false;
@@ -796,15 +802,14 @@ bool TClntMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
  */
 void TClntMsg::answer(SPtr<TClntMsg> reply)
 {
-    SPtr<TOptDUID> ptrDUID;
-    ptrDUID = (Ptr*) reply->getOption(OPTION_SERVERID);
+    SPtr<TOptDUID> ptrDUID = getServerID();
     if (!ptrDUID) {
       Log(Warning) << "Received REPLY message without SERVER ID option. Message ignored." << LogEnd;
       return;
     }
     SPtr<TDUID> duid = ptrDUID->getDUID();
 
-    SPtr<TClntIfaceIface> iface = (Ptr*)ClntIfaceMgr().getIfaceByID(getIface());
+    SPtr<TClntIfaceIface> iface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(getIface()));
     if (!iface) {
         Log(Error) << "Unable to find physical interface with ifindex=" << getIface() << LogEnd;
         return;
@@ -826,10 +831,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     }
 
     // find ORO in received options
-    SPtr<TClntOptOptionRequest> optORO = (Ptr*) this->getOption(OPTION_ORO);
+    SPtr<TOptOptionRequest> optORO = getORO();
     
     reply->firstOption();
-    while (option = reply->getOption() ) {
+    while (( option = reply->getOption() )) {
 
 	if (optORO)
 	  optORO->delOption(option->getOptType()); // delete received option from ORO
@@ -839,9 +844,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	case OPTION_IA_NA:
 	{
-	    SPtr<TClntOptIA_NA> clntOpt = (Ptr*)option;
+	    SPtr<TClntOptIA_NA> clntOpt = SPtr_cast<TClntOptIA_NA>(option);
 	    if (clntOpt->getStatusCode()!=STATUSCODE_SUCCESS) {
-		Log(Warning) << "Received IA (IAID=" << clntOpt->getIAID() << ") with non-success status:"
+		Log(Warning) << "Received IA (IAID=" << clntOpt->getIAID()
+                             << ") with non-success status:"
 			     << clntOpt->getStatusCode() << ", IA ignored." << LogEnd;
 		break;
 	    }
@@ -851,11 +857,12 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    clntOpt->doDuties();
 
 	    // delete that IA from request list
-	    for (TOptList::iterator requestOpt = Options.begin(); requestOpt!=Options.end(); ++requestOpt)
+	    for (TOptList::iterator requestOpt = Options.begin(); requestOpt!=Options.end();
+                 ++requestOpt)
 	    {
 		if ( (*requestOpt)->getOptType()!=OPTION_IA_NA)
 		    continue;
-		SPtr<TClntOptIA_NA> ptrIA = (Ptr*) (*requestOpt);
+		SPtr<TClntOptIA_NA> ptrIA = SPtr_cast<TClntOptIA_NA>((*requestOpt));
 		if ( ptrIA->getIAID() == clntOpt->getIAID() )
 		{
 		    requestOpt = Options.erase(requestOpt);
@@ -871,7 +878,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	}
 	case OPTION_IA_TA:
 	{
-	    SPtr<TClntOptTA> ta = (Ptr*) option;
+	    SPtr<TClntOptTA> ta = SPtr_cast<TClntOptTA>(option);
 	    if (ta->getStatusCode()!=STATUSCODE_SUCCESS) {
 		Log(Warning) << "Received TA (IAID=" << ta->getIAID() << ") with non-success status:"
 			     << ta->getStatusCode() << ", TA ignored." << LogEnd;
@@ -885,7 +892,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    {
 		if ( (*requestOpt)->getOptType()!=OPTION_IA_TA)
 		    continue;
-		SPtr<TClntOptTA> ptrTA = (Ptr*) (*requestOpt);
+		SPtr<TClntOptTA> ptrTA = SPtr_cast<TClntOptTA>((*requestOpt));
 		if ( ta->getIAID() == ptrTA->getIAID() )
 		{
 		    requestOpt = Options.erase(requestOpt);
@@ -900,7 +907,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	case OPTION_IA_PD:
 	{
-	    SPtr<TClntOptIA_PD> pd = (Ptr*) option;
+	    SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(option);
 
 	    if (pd->getStatusCode()!=STATUSCODE_SUCCESS) {
 		Log(Warning) << "Received PD (PDAID=" << pd->getIAID() << ") with non-success status:"
@@ -917,7 +924,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             int prefixCount = pd->countPrefixes();
             pd->firstPrefix();
             SPtr<TClntOptIAPrefix> ppref;
-            while (ppref = pd->getPrefix()) {
+            while (( ppref = pd->getPrefix() )) {
                 if (!ppref->isValid()) {
                     Log(Warning) << "Option IA_PREFIX from IA_PD " <<
                                  pd->getIAID() << " is not valid." << LogEnd;
@@ -951,7 +958,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    {
 		if ( (*requestOpt)->getOptType()!=OPTION_IA_PD)
 		    continue;
-		SPtr<TClntOptIA_PD> reqPD = (Ptr*) (*requestOpt);
+		SPtr<TClntOptIA_PD> reqPD = SPtr_cast<TClntOptIA_PD>((*requestOpt));
 		if ( pd->getIAID() == reqPD->getIAID() )
 		{
 		    requestOpt = Options.erase(requestOpt);
@@ -967,7 +974,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 	    }
         case OPTION_DNS_SERVERS:
             {
-                SPtr<TOptAddrLst> dnsservers = (Ptr*) option;
+                SPtr<TOptAddrLst> dnsservers = SPtr_cast<TOptAddrLst>(option);
+                if (!dnsservers) {
+                    break;
+                }
                 if (cfgIface->getDNSServerState() != STATE_DISABLED) {
                     cfgIface->setDNSServerState(STATE_CONFIGURED);
                     iface->setDNSServerLst(duid, reply->getRemoteAddr(), dnsservers->getAddrLst());
@@ -979,7 +989,10 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_NIS_SERVERS:
             {
-                SPtr<TOptAddrLst> nisservers = (Ptr*) option;
+                SPtr<TOptAddrLst> nisservers = SPtr_cast<TOptAddrLst>(option);
+                if (!nisservers) {
+                    break;
+                }
                 if (cfgIface->getNISServerState() != STATE_DISABLED) {
                     cfgIface->setNISServerState(STATE_CONFIGURED);
                     iface->setNISServerLst(duid, reply->getRemoteAddr(), nisservers->getAddrLst());
@@ -991,7 +1004,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_NISP_SERVERS:
             {
-                SPtr<TOptAddrLst> nispservers = (Ptr*) option;
+                SPtr<TOptAddrLst> nispservers = SPtr_cast<TOptAddrLst>(option);
                 if (cfgIface->getNISPServerState() != STATE_DISABLED) {
                     cfgIface->setNISPServerState(STATE_CONFIGURED);
                     iface->setNISPServerLst(duid, reply->getRemoteAddr(), nispservers->getAddrLst());
@@ -1003,7 +1016,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_SNTP_SERVERS:
             {
-                SPtr<TOptAddrLst> ntpservers = (Ptr*) option;
+                SPtr<TOptAddrLst> ntpservers = SPtr_cast<TOptAddrLst>(option);
                 if (cfgIface->getNTPServerState() != STATE_DISABLED) {
                     cfgIface->setNTPServerState(STATE_CONFIGURED);
                     iface->setNTPServerLst(duid, reply->getRemoteAddr(), ntpservers->getAddrLst());
@@ -1015,7 +1028,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_SIP_SERVER_A:
             {
-                SPtr<TOptAddrLst> sipservers = (Ptr*) option;
+                SPtr<TOptAddrLst> sipservers = SPtr_cast<TOptAddrLst>(option);
                 if (cfgIface->getSIPServerState() != STATE_DISABLED) {
                     cfgIface->setSIPServerState(STATE_CONFIGURED);
                     iface->setSIPServerLst(duid, reply->getRemoteAddr(), sipservers->getAddrLst());
@@ -1027,7 +1040,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_DOMAIN_LIST:
             {
-                SPtr<TOptDomainLst> domains = (Ptr*) option;
+                SPtr<TOptDomainLst> domains = SPtr_cast<TOptDomainLst>(option);
                 if (cfgIface->getDomainState() != STATE_DISABLED) {
                     cfgIface->setDomainState(STATE_CONFIGURED);
                     iface->setDomainLst(duid, reply->getRemoteAddr(), domains->getDomainLst() );
@@ -1039,7 +1052,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_SIP_SERVER_D:
             {
-                SPtr<TOptDomainLst> sipdomains = (Ptr*) option;
+                SPtr<TOptDomainLst> sipdomains = SPtr_cast<TOptDomainLst>(option);
                 if (cfgIface->getSIPDomainState() != STATE_DISABLED) {
                     cfgIface->setSIPDomainState(STATE_CONFIGURED);
                     iface->setSIPDomainLst(duid, reply->getRemoteAddr(), sipdomains->getDomainLst() );
@@ -1051,7 +1064,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_NIS_DOMAIN_NAME:
             {
-                SPtr<TOptDomainLst> nisdomain = (Ptr*) option;
+                SPtr<TOptDomainLst> nisdomain = SPtr_cast<TOptDomainLst>(option);
                 if (cfgIface->getNISDomainState() != STATE_DISABLED) {
                     List(string) domains = nisdomain->getDomainLst();
                     if (domains.count() == 1) {
@@ -1070,7 +1083,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             }
         case OPTION_NISP_DOMAIN_NAME:
             {
-                SPtr<TOptDomainLst> nispdomain = (Ptr*) option;
+                SPtr<TOptDomainLst> nispdomain = SPtr_cast<TOptDomainLst>(option);
                 if (cfgIface->getNISPDomainState() != STATE_DISABLED) {
                     List(string) domains = nispdomain->getDomainLst();
                     if (domains.count() == 1) {
@@ -1091,7 +1104,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 #ifdef MOD_REMOTE_AUTOCONF
 	case OPTION_NEIGHBORS:
 	  {
-	    SPtr<TOptAddrLst> neighbors = (Ptr*) option;
+	    SPtr<TOptAddrLst> neighbors = SPtr_cast<TOptAddrLst>(option);
 	    ClntTransMgr().updateNeighbors(reply->getIface(), neighbors);
 	    break;
 	  }
@@ -1116,7 +1129,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
 
 	    // find options specified in this message
 	    firstOption();
-	    while ( requestOpt = getOption() ) {
+	    while (( requestOpt = getOption() )) {
 		if ( requestOpt->getOptType() == option->getOptType() )
 		{
 		    delOption(requestOpt->getOptType());
@@ -1132,13 +1145,17 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
     bool iaLeft = false;
     bool taLeft = false;
     bool pdLeft = false;
-    while ( requestOpt = getOption() ) {
-	if (requestOpt->getOptType() == OPTION_IA_NA) iaLeft = true;
-	if (requestOpt->getOptType() == OPTION_IA_TA) taLeft = true;
-	if (requestOpt->getOptType() == OPTION_IA_PD) pdLeft = true;
+    while (( requestOpt = getOption() )) {
+	if (requestOpt->getOptType() == OPTION_IA_NA) {
+            iaLeft = true;
+        }
+	if (requestOpt->getOptType() == OPTION_IA_TA) {
+            taLeft = true;
+        }
+	if (requestOpt->getOptType() == OPTION_IA_PD) {
+            pdLeft = true;
+        }
     }
-
-//    taLeft = false;
 
     if (iaLeft || taLeft || pdLeft) {
 	// send new Request to another server
@@ -1190,7 +1207,7 @@ bool TClntMsg::checkReceivedAuthOption() {
         return true;
     }
     case AUTH_PROTO_DELAYED: {
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             return false;
         }
@@ -1216,7 +1233,7 @@ bool TClntMsg::checkReceivedAuthOption() {
 
         bool optional = (MsgType != RECONFIGURE_MSG);
 
-        SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+        SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
         if (!auth) {
             // there's no auth option. We can't store anything
             return optional;
@@ -1319,7 +1336,7 @@ bool TClntMsg::validateReplayDetection() {
 	return false;
     }
 
-    SPtr<TOptAuthentication> auth = (Ptr*)getOption(OPTION_AUTH);
+    SPtr<TOptAuthentication> auth = SPtr_cast<TOptAuthentication>(getOption(OPTION_AUTH));
     if (!auth) {
         // there's no auth option. We can't protect against replays
         return true;
@@ -1345,16 +1362,28 @@ bool TClntMsg::validateReplayDetection() {
 }
 
 void TClntMsg::deletePD(SPtr<TOpt> pd_) {
-    SPtr<TClntOptIA_PD> pd = (Ptr*) pd_;
+    SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(pd_);
+    if (!pd) {
+        return;
+    }
     for (TOptList::iterator opt = Options.begin(); opt != Options.end(); ++opt)
     {
         if ( (*opt)->getOptType() != OPTION_IA_PD)
             continue;
-        SPtr<TClntOptIA_PD> delPD = (Ptr*) (*opt);
+        SPtr<TClntOptIA_PD> delPD = SPtr_cast<TClntOptIA_PD>((*opt));
         if ( pd->getIAID() == delPD->getIAID() )
         {
             opt = Options.erase(opt);
             break;
         }
     }
+}
+
+/// @brief return status-code option (if present)
+SPtr<TOptStatusCode> TClntMsg::getStatusCode() const {
+    SPtr<TOpt> status = getOption(OPTION_STATUS_CODE);
+    if (!status) {
+        return SPtr<TOptStatusCode>();
+    }
+    return SPtr_cast<TOptStatusCode>(status);
 }

@@ -12,7 +12,7 @@
 #include "ClntCfgIA.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIAAddress.h"
-#include "ClntOptStatusCode.h"
+#include "OptStatusCode.h"
 #include "ClntOptAddrParams.h"
 #include "Logger.h"
 #include "Msg.h"
@@ -150,10 +150,10 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
                 switch (code)
                 {
                 case OPTION_IAADDR:
-                    SubOptions.append( new TClntOptIAAddress(buf+pos,length,this->Parent));
+                    SubOptions.append( new TClntOptIAAddress(buf+pos,length, this->Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    SubOptions.append( new TClntOptStatusCode(buf+pos,length,this->Parent));
+                    SubOptions.append(new TOptStatusCode(buf+pos, length, this->Parent));
                     break;
                 default:
                     Log(Warning) <<"Option opttype=" << code<< "not supported "
@@ -182,12 +182,12 @@ void TClntOptIA_NA::firstAddr()
 
 SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr()
 {
-    SPtr<TClntOptIAAddress> ptr;
+    SPtr<TOpt> ptr;
     do {
-        ptr = (Ptr*) SubOptions.get();
-        if (ptr)
-            if (ptr->getOptType()==OPTION_IAADDR)
-                return ptr;
+        ptr = SubOptions.get();
+        if (ptr && ptr->getOptType()==OPTION_IAADDR) {
+            return SPtr_cast<TClntOptIAAddress>(ptr);
+        }
     } while (ptr);
     return SPtr<TClntOptIAAddress>();
 }
@@ -206,11 +206,12 @@ int TClntOptIA_NA::countAddr()
 
 int TClntOptIA_NA::getStatusCode()
 {
-    SPtr<TOpt> option;
-    if (option=getOption(OPTION_STATUS_CODE))
-    {
-        SPtr<TClntOptStatusCode> statOpt=(Ptr*) option;
-        return statOpt->getCode();
+    SPtr<TOpt> status = getOption(OPTION_STATUS_CODE);
+    if (status) {
+        SPtr<TOptStatusCode> statOpt= SPtr_cast<TOptStatusCode>(status);
+        if (statOpt) {
+            return statOpt->getCode();
+        }
     }
     return STATUSCODE_SUCCESS;
 }
@@ -261,7 +262,8 @@ bool TClntOptIA_NA::doDuties() {
                 int prefixLen = ptrIface->getPrefixLength();
                 if (ptrOptAddr->getOption(OPTION_ADDRPARAMS)) {
                     Log(Debug) << "Experimental addr-params found." << LogEnd;
-                    SPtr<TClntOptAddrParams> optAddrParams = (Ptr*) ptrOptAddr->getOption(OPTION_ADDRPARAMS);
+                    SPtr<TClntOptAddrParams> optAddrParams =
+                        SPtr_cast<TClntOptAddrParams>(ptrOptAddr->getOption(OPTION_ADDRPARAMS));
                     prefixLen = optAddrParams->getPrefix();
                 }
 

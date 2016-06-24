@@ -649,7 +649,7 @@ void TClntTransMgr::relayMsg(SPtr<TClntMsg> msgAnswer)
     bool found = false;
     SPtr<TClntMsg> msgQuestion;
     Transactions.first();
-    while(msgQuestion=(Ptr*)Transactions.get()) {
+    while( msgQuestion = SPtr_cast<TClntMsg>(Transactions.get())) {
         if (msgQuestion->getTransID()==msgAnswer->getTransID()) {
             found =true;
             if (msgQuestion->getIface()!=msgAnswer->getIface()) {
@@ -720,8 +720,8 @@ bool TClntTransMgr::handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answe
     question->answer(answer);
 
     // post-handling hooks can be added here
-    SPtr<TMsg> q = (Ptr*) question;
-    SPtr<TMsg> a = (Ptr*) answer;
+    SPtr<TMsg> q = SPtr_cast<TMsg>(question);
+    SPtr<TMsg> a = SPtr_cast<TMsg>(answer);
     ClntIfaceMgr().notifyScripts(ClntCfgMgr().getScript(), q, a);
 
     if ( (question->getType()==REQUEST_MSG || question->getType()==SOLICIT_MSG) &&
@@ -798,7 +798,7 @@ void TClntTransMgr::sendRequest(TOptList requestOptions, int iface)
             opt = requestOptions.erase(opt);
     }
     SPtr<TClntMsg> ptr = new TClntMsgRequest(requestOptions, iface);
-    Transactions.append( (Ptr*)ptr );
+    Transactions.append(ptr);
 }
 
 void TClntTransMgr::sendRenew()
@@ -1026,7 +1026,8 @@ void TClntTransMgr::checkInfRequest()
         if (iface->noConfig())
             continue;
 
-        SPtr<TClntIfaceIface> ifaceIface = (Ptr*)ClntIfaceMgr().getIfaceByID(iface->getID());
+        SPtr<TClntIfaceIface> ifaceIface =
+            SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(iface->getID()));
         if (!ifaceIface) {
             Log(Error) << "Interface with ifindex=" << iface->getID() << " not found." << LogEnd;
             continue;
@@ -1183,9 +1184,9 @@ void TClntTransMgr::checkDecline()
 
             }
             //Here should be send decline for all tentative addresses in IAs
-            SPtr<TClntMsgDecline> decline = 
+            SPtr<TClntMsg> decline = 
                 new TClntMsgDecline(firstIA->getIfindex(), SPtr<TIPv6Addr>(), declineIALst);
-            Transactions.append( (Ptr*) decline);
+            Transactions.append(decline);
 
             // decline sent, now remove those addrs from IfaceMgr
             SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(firstIA->getIfindex());
@@ -1216,9 +1217,8 @@ void TClntTransMgr::checkDecline()
             }
 
             // create REQUEST message
-            SPtr<TClntMsgRequest> request;
-            request = new TClntMsgRequest(declineIALst, duid, firstIA->getIfindex() );
-            Transactions.append( (Ptr*) request);
+            SPtr<TClntMsg> request(new TClntMsgRequest(declineIALst, duid, firstIA->getIfindex()));
+            Transactions.append(request);
 
 	    // state of certain IAs has changed. Let's log it.
 	    ClntAddrMgr().dump();
@@ -1280,9 +1280,8 @@ void TClntTransMgr::checkRequest()
 
     if (requestIALst.count()) {
         // create REQUEST message
-        SPtr<TClntMsgRequest> request;
-        request = new TClntMsgRequest( requestIALst, duid, ifaceID );
-        Transactions.append( (Ptr*) request);
+        SPtr<TClntMsg> request(new TClntMsgRequest(requestIALst, duid, ifaceID));
+        Transactions.append(request);
     } 
 }
 
@@ -1303,9 +1302,9 @@ TClntTransMgr::~TClntTransMgr() {
     Log(Debug) << "ClntTransMgr cleanup." << LogEnd;
 }
 
-void TClntTransMgr::addAdvertise(SPtr<TMsg> advertise)
+void TClntTransMgr::addAdvertise(SPtr<TClntMsg> advertise)
 {
-    AdvertiseLst.append( advertise );
+    AdvertiseLst.append(advertise);
 }
 
 void TClntTransMgr::firstAdvertise()
@@ -1313,7 +1312,7 @@ void TClntTransMgr::firstAdvertise()
     AdvertiseLst.first();
 }
 
-SPtr<TMsg> TClntTransMgr::getAdvertise()
+SPtr<TClntMsg> TClntTransMgr::getAdvertise()
 {
     return AdvertiseLst.get();
 }
@@ -1323,7 +1322,7 @@ SPtr<TOpt> TClntTransMgr::getAdvertiseDUID()
     if (!AdvertiseLst.count())
         return TOptPtr(); // NULL
     AdvertiseLst.first();
-    SPtr<TMsg> msg = AdvertiseLst.get();
+    SPtr<TClntMsg> msg = AdvertiseLst.get();
     return msg->getOption(OPTION_SERVERID);
 }
 
@@ -1346,21 +1345,21 @@ int TClntTransMgr::getMaxPreference()
     
     SPtr<TClntMsgAdvertise> ptr;
     AdvertiseLst.first();
-    while ( ptr = (Ptr*) AdvertiseLst.get() ) {
+    while ( ptr = SPtr_cast<TClntMsgAdvertise>(AdvertiseLst.get())) {
         if ( max < ptr->getPreference() )
             max = ptr->getPreference();
     }
     return max;
 }
 
-void TClntTransMgr::printLst(List(TMsg) lst)
+void TClntTransMgr::printLst(List(TClntMsg) lst)
 {
-    SPtr<TMsg> x;
+    SPtr<TClntMsg> x;
     SPtr<TClntMsgAdvertise> adv;
     lst.first();
     bool first = true;
     while (x = lst.get()) {
-        adv = (Ptr*) x;
+        adv = SPtr_cast<TClntMsgAdvertise>(x);
         Log(Debug) << "Advertise from " << adv->getInfo() << ".";
         if (first) {
             Log(Cont) << "[using this]";
@@ -1373,21 +1372,21 @@ void TClntTransMgr::printLst(List(TMsg) lst)
 void TClntTransMgr::sortAdvertiseLst()
 {
     // we'll store all ADVERTISE here 
-    List(TMsg) sorted;
+    List(TClntMsg) sorted;
 
     // sort ADVERTISE by the PREFERENCE value
     SPtr<TClntMsgAdvertise> ptr;
     while (AdvertiseLst.count()) {
         int max = getMaxPreference();
         AdvertiseLst.first();
-        while ( ptr = (Ptr*) AdvertiseLst.get() ) {
+        while ( ptr = SPtr_cast<TClntMsgAdvertise>(AdvertiseLst.get()) ) {
             if (ptr->getPreference() == max) 
                 break;
         }
         
         // did we find it? Then append it on the end of sorted list, and delete from this new.
         if (ptr) {
-            sorted.append( (Ptr*) ptr );
+            sorted.append(SPtr_cast<TClntMsg>(ptr));
             AdvertiseLst.del();
         }
     }

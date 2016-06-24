@@ -51,7 +51,7 @@ TEST(OptAddrTest, rtPrefixStoreSelf) {
     // next-hop on its own takes 20 bytes
     EXPECT_EQ(20u, nextHop->getSize());
 
-    nextHop->addOption((Ptr*)rtPrefix);
+    nextHop->addOption(SPtr_cast<TOpt>(rtPrefix));
 
     // together, they should take 46 bytes
     EXPECT_EQ(46u, nextHop->getSize() );
@@ -71,10 +71,10 @@ TEST(OptAddrTest, rtPrefixParse) {
 
     SPtr<TOptAddr> nextHop = new TOptAddr(OPTION_NEXT_HOP, expected+4, 42, NULL);
 
-    EXPECT_EQ(46, nextHop->getSize());
+    EXPECT_EQ(46u, nextHop->getSize());
     EXPECT_EQ(OPTION_NEXT_HOP, nextHop->getOptType());
     EXPECT_TRUE(nextHop->isValid());
-    SPtr<TOptRtPrefix> rtPrefix = (Ptr*)nextHop->getOption(OPTION_RTPREFIX);
+    SPtr<TOptRtPrefix> rtPrefix = SPtr_cast<TOptRtPrefix>(nextHop->getOption(OPTION_RTPREFIX));
 
     // there should be option OPTION_RTPREFIX
     ASSERT_TRUE(rtPrefix);

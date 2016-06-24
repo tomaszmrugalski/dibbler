@@ -93,8 +93,9 @@ TEST_F(ServerTest, parseDoubleRelay) {
     // PHASE 1: Parse outer relay
 
     // Check that interface-id was stored
-    SPtr<TSrvOptInterfaceID> interfaceid = (Ptr*) TOpt::getOption(rcvRelay[0].EchoList_,
-                                                                  OPTION_INTERFACE_ID);
+    SPtr<TSrvOptInterfaceID> interfaceid =
+        SPtr_cast<TSrvOptInterfaceID>(TOpt::getOption(rcvRelay[0].EchoList_,
+                                                      OPTION_INTERFACE_ID));
     ASSERT_TRUE(interfaceid);
     const char* ifaceid = "ISAM144|299|ipv6|nt:vp:1:110";
     TSrvOptInterfaceID expected_ifaceId(ifaceid, strlen(ifaceid), 0);
@@ -103,8 +104,8 @@ TEST_F(ServerTest, parseDoubleRelay) {
     // Check that remote-id was stored
     EXPECT_TRUE(received->getRemoteID());
 
-    interfaceid = (Ptr*) TOpt::getOption(rcvRelay[1].EchoList_,
-                                         OPTION_INTERFACE_ID);
+    interfaceid = SPtr_cast<TSrvOptInterfaceID>(TOpt::getOption(rcvRelay[1].EchoList_,
+                                                                OPTION_INTERFACE_ID));
     ASSERT_TRUE(interfaceid);
     ifaceid = "ISAM144 eth 1/1/05/01";
     TSrvOptInterfaceID expected_ifaceId2(ifaceid, strlen(ifaceid), 0);

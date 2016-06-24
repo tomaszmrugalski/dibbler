@@ -1,8 +1,10 @@
 noinst_LIBRARIES = libClntOptions.a
 
-libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options -I$(top_srcdir)/ClntMessages
-libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/Messages -I$(top_srcdir)/ClntIfaceMgr -I$(top_srcdir)/IfaceMgr
-libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntCfgMgr -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/ClntAddrMgr
+libClntOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Options
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntMessages -I$(top_srcdir)/Messages
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntIfaceMgr -I$(top_srcdir)/IfaceMgr
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntCfgMgr -I$(top_srcdir)/CfgMgr
+libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntAddrMgr
 libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
 
 #libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp ClntOptAAAAuthentication.h 
@@ -21,11 +23,11 @@ libClntOptions_a_SOURCES += ClntOptLifetime.cpp ClntOptLifetime.h
 #libClntOptions_a_SOURCES += ClntOptNISDomain.cpp ClntOptNISDomain.h
 #libClntOptions_a_SOURCES += ClntOptNISPDomain.cpp ClntOptNISPDomain.h 
 #libClntOptions_a_SOURCES += ClntOptNTPServers.cpp ClntOptNTPServers.h
-libClntOptions_a_SOURCES += ClntOptOptionRequest.cpp ClntOptOptionRequest.h
+#libClntOptions_a_SOURCES += ClntOptOptionRequest.cpp ClntOptOptionRequest.h
 libClntOptions_a_SOURCES += ClntOptPreference.cpp ClntOptPreference.h
 #libClntOptions_a_SOURCES += ClntOptSIPDomain.cpp ClntOptSIPDomain.h
 #libClntOptions_a_SOURCES += ClntOptSIPServer.cpp ClntOptSIPServer.h
-libClntOptions_a_SOURCES += ClntOptStatusCode.cpp ClntOptStatusCode.h
+#libClntOptions_a_SOURCES += ClntOptStatusCode.cpp ClntOptStatusCode.h
 libClntOptions_a_SOURCES += ClntOptTA.cpp ClntOptTA.h
 libClntOptions_a_SOURCES += ClntOptTimeZone.cpp ClntOptTimeZone.h
 #libClntOptions_a_SOURCES += ClntOptUserClass.cpp ClntOptUserClass.h

@@ -72,7 +72,7 @@ void TOptVendorSpecInfo::createSuboption(uint16_t sub_option_code, const char* d
                                     size_t data_len) {
     if (sub_option_code) {
         SPtr<TOptGeneric> opt = new TOptGeneric(sub_option_code, data, data_len, Parent);
-        addOption( (Ptr*) opt);
+        addOption(SPtr_cast<TOpt>(opt));
     }
 }
 

@@ -17,7 +17,6 @@
 //one smartpointer to another smartpointer
 //e.g.
 //SPtr<a> a(new a()); SPtr<b> b(new(b)); a=b;
-
 class Ptr {
 public:
     //constructor used in case of NULL SPtr
@@ -43,7 +42,18 @@ class SPtr
 {
 
 public:
+    /// @brief Default constructor
+    ///
+    /// Creates a null smart pointer
     SPtr();
+
+    /// @brief constructor
+    ///
+    /// Example usage:
+    /// SPtr<foo> = new foo();
+    ///
+    /// @tparam T class name
+    /// @param something pointer to the new object
     SPtr(T* something);
 
     SPtr(Ptr* voidptr) {
@@ -53,6 +63,10 @@ public:
         } else {
             ptr = new Ptr();
         }
+    }
+
+    Ptr* getPtr() {
+        return (ptr);
     }
 
     SPtr(const SPtr& ref);
@@ -73,6 +87,7 @@ public:
         ptr = new Ptr(obj);
     }
 
+#if 0
     /// @brief Returns pointer to the underlying object
     ///
     /// @todo Is this really used?
@@ -91,6 +106,15 @@ public:
       else
         return (Ptr*)NULL;
     }
+#endif
+
+    operator bool() const {
+        if (ptr && ptr->ptr) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     int refCount();
     ~SPtr();
@@ -103,8 +127,8 @@ public:
     /// @tparam to derived class
     /// @return SmartPtr to the derived class (or NULL if cast failed)
     template<class to>
-    SPtr<to> dynamic_pointer_cast() {
-        
+    SPtr<to> SPtr_cast() {
+
         // Null pointer => return null pointer, too.
         if (ptr->ptr == NULL) {
             return SPtr<to>();
@@ -123,10 +147,22 @@ public:
 
 private:
     void decrease_reference();
-    
+
     Ptr * ptr;
 };
-    
+
+    /// @brief Attempts to dynamic cast to SmartPtr<to>
+    /// @tparam to derived class
+    /// @return SmartPtr to the derived class (or NULL if cast failed)
+template<class to, class from>
+SPtr<to> SPtr_cast(SPtr<from> from_ptr) {
+
+    if (!from_ptr) {
+        return SPtr<to>();
+    }
+
+    return from_ptr.template SPtr_cast<to>();
+}
 
 template <class T>
 void SPtr<T>::decrease_reference() {

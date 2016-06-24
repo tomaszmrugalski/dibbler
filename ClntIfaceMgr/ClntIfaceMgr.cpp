@@ -229,8 +229,10 @@ void TClntIfaceMgr::removeAllOpts() {
 
     this->firstIface();
     while (iface = this->getIface()) {
-        clntIface = (Ptr*) iface;
-        clntIface->removeAllOpts();
+        clntIface = SPtr_cast<TClntIfaceIface>(iface);
+        if (clntIface) {
+            clntIface->removeAllOpts();
+        }
     }
 }
 
@@ -241,7 +243,10 @@ unsigned int TClntIfaceMgr::getTimeout() {
 
     this->firstIface();
     while (iface = this->getIface()) {
-        clntIface = (Ptr*) iface;
+        clntIface = SPtr_cast<TClntIfaceIface>(iface);
+        if (!clntIface) {
+            continue;
+        }
         tmp = clntIface->getTimeout();
         if (min > tmp)
             min = tmp;
@@ -254,7 +259,7 @@ bool TClntIfaceMgr::doDuties() {
     SPtr<TClntCfgIface> cfgIface;
 
     this->firstIface();
-    while (iface = (Ptr*)this->getIface()) {
+    while (iface = SPtr_cast<TClntIfaceIface>(getIface())) {
               cfgIface = ClntCfgMgr().getIface(iface->getID());
               if (cfgIface) {
             // Log(Debug) << "FQDN State: " << cfgIface->getFQDNState() << " on " << iface->getFullName() << LogEnd;
@@ -453,7 +458,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
                                  PrefixModifyMode mode,
                                  TNotifyScriptParams* params /*= NULL*/)
 {
-    SPtr<TClntIfaceIface> ptrIface = (Ptr*)getIfaceByID(iface);
+    SPtr<TClntIfaceIface> ptrIface = SPtr_cast<TClntIfaceIface>(getIfaceByID(iface));
     if (!ptrIface) {
         Log(Error) << "Unable to find interface with ifindex=" << iface
                    << ", prefix add/modify operation failed." << LogEnd;
@@ -515,7 +520,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     if (!skip && (ifaceLst.empty()) ) {
         SPtr<TIfaceIface> x;
         firstIface();
-        while ( x = (Ptr*)getIface() ) {
+        while ( x = getIface() ) {
             if (x->getID() == ptrIface->getID()) {
                 Log(Debug) << "PD: Interface " << x->getFullName()
                            << " is the interface, where prefix has been obtained, skipping." << LogEnd;
@@ -730,8 +735,10 @@ ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "<ClntIfaceMgr>" << std::endl;
     SPtr<TClntIfaceIface> ptr;
     x.IfaceLst.first();
-    while ( ptr= (Ptr*) x.IfaceLst.get() ) {
-        strum << *ptr;
+    while ( ptr = SPtr_cast<TClntIfaceIface>(x.IfaceLst.get())) {
+        if (ptr) {
+            strum << *ptr;
+        }
     }
     strum << "</ClntIfaceMgr>" << std::endl;
     return strum;

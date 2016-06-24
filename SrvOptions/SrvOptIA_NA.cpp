@@ -73,16 +73,14 @@ TSrvOptIA_NA::TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent)
         {
             if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code)) {
                 SPtr<TOpt> opt;
-                opt = SPtr<TOpt>(); /* NULL */
+                opt.reset();
                 switch (code)
                 {
                 case OPTION_IAADDR:
-                    opt = (Ptr*)SPtr<TSrvOptIAAddress>
-                        (new TSrvOptIAAddress(buf+pos,length,this->Parent));
+                    opt.reset(new TSrvOptIAAddress(buf+pos, length, Parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    opt = (Ptr*)SPtr<TOptStatusCode>
-                        (new TOptStatusCode(buf+pos,length,this->Parent));
+                    opt.reset(new TOptStatusCode(buf+pos, length, Parent));
                     break;
                 default:
                     Log(Warning) <<"Option " << code<< "not supported "
@@ -176,8 +174,11 @@ bool TSrvOptIA_NA::assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA
     while ( opt = queryOpt->getOption() ) {
 	switch ( opt->getOptType() ) {
 	case OPTION_IAADDR: {
-	    optAddr = (Ptr*) opt;
-	    hint    = optAddr->getAddr();
+	    optAddr = SPtr_cast<TOptIAAddress>(opt);
+            if (!optAddr) {
+                continue;
+            }
+	    hint = optAddr->getAddr();
 
             if (SrvCfgMgr().addrReserved(hint)) {
                 Log(Debug) << "Requested address " << hint->getPlain()
@@ -260,7 +261,7 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet) {
     uint32_t pref = DHCPV6_INFINITY;
     uint32_t valid = DHCPV6_INFINITY;
 
-    SPtr<TSrvOptIAAddress> hint = (Ptr*) req->getOption(OPTION_IAADDR);
+    SPtr<TSrvOptIAAddress> hint = SPtr_cast<TSrvOptIAAddress>(req->getOption(OPTION_IAADDR));
     if (hint) {
         pref = hint->getPref();
         valid = hint->getValid();
@@ -279,13 +280,15 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet) {
         pref = pool->getPref(pref);
         valid = pool->getValid(valid);
 
-        Log(Info) << "Reserved in-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
+        Log(Info) << "Reserved in-pool address " << reservedAddr->getPlain()
+                  << " for this client found, assigning." << LogEnd;
         SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
         SubOptions.append(optAddr);
         
         SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
         
-        SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+        SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr,
+                                 pref, valid, quiet);
         SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
 
         return true;
@@ -296,12 +299,14 @@ bool TSrvOptIA_NA::assignFixedLease(SPtr<TSrvOptIA_NA> req, bool quiet) {
     T2_ = iface->getT2(req->getT2());
     pref = iface->getPref(pref);
     valid = iface->getValid(valid);
-    Log(Info) << "Reserved out-of-pool address " << reservedAddr->getPlain() << " for this client found, assigning." << LogEnd;
+    Log(Info) << "Reserved out-of-pool address " << reservedAddr->getPlain()
+              << " for this client found, assigning." << LogEnd;
     SPtr<TOpt> optAddr = new TSrvOptIAAddress(reservedAddr, pref, valid, Parent);
     SubOptions.append(optAddr);
     
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS,"Assigned fixed address.", Parent));
-    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr, pref, valid, quiet);
+    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, reservedAddr,
+                             pref, valid, quiet);
     SrvCfgMgr().addClntAddr(this->Iface, reservedAddr);
     
     return true;
@@ -315,7 +320,7 @@ void TSrvOptIA_NA::releaseAllAddrs(bool quiet) {
     while ( opt = this->getOption() ) {
         if (opt->getOptType() != OPTION_IAADDR)
             continue;
-        optAddr = (Ptr*) opt;
+        optAddr = SPtr_cast<TOptIAAddress>(opt);
         addr = optAddr->getAddr();
         SrvAddrMgr().delClntAddr(this->ClntDuid, IAID_, addr, quiet);
         SrvCfgMgr().delClntAddr(this->Iface, addr);
@@ -355,10 +360,10 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
     /// @todo: remove get addr-params
     if (ptrClass && ptrClass->getAddrParams()) {
         Log(Debug) << "Experimental: addr-params subotion added." << LogEnd;
-        optAddr->addOption((Ptr*)ptrClass->getAddrParams());
+        optAddr->addOption(SPtr_cast<TOpt>(ptrClass->getAddrParams()));
     }
 
-    SubOptions.append((Ptr*)optAddr);
+    SubOptions.append(SPtr_cast<TOpt>(optAddr));
 
     SubOptions.append(new TOptStatusCode(STATUSCODE_SUCCESS, "Assigned an address.", Parent));
 
@@ -480,13 +485,13 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
         ptrAddr->setTimestamp();
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),ptrAddr->getValid(),
                                        this->Parent);
-        SubOptions.append( (Ptr*)optAddr );
+        SubOptions.append( SPtr_cast<TOpt>(optAddr) );
     }
 
     // finally send greetings and happy OK status code
     SPtr<TOptStatusCode> ptrStatus;
     ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
-    SubOptions.append( (Ptr*)ptrStatus );
+    SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
 
     return true;
 }
@@ -526,14 +531,14 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
         SPtr<TOptIAAddress> optAddr;
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),
                                        ptrAddr->getValid(),this->Parent);
-        SubOptions.append( (Ptr*)optAddr );
+        SubOptions.append( SPtr_cast<TOpt>(optAddr) );
     }
 
     // finally send greetings and happy OK status code
     SPtr<TOptStatusCode> ptrStatus;
     ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
                                       this->Parent);
-    SubOptions.append( (Ptr*)ptrStatus );
+    SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
 }
 
 void TSrvOptIA_NA::release(SPtr<TSrvOptIA_NA> queryOpt,

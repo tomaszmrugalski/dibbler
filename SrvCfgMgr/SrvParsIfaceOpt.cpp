@@ -205,12 +205,18 @@ void TSrvParsIfaceOpt::addOption(TOptList& list, TOptPtr custom) {
 
     if (custom->getOptType() == OPTION_VENDOR_OPTS) {
 
-        SPtr<TOptVendorSpecInfo> newone = (Ptr*) (custom);
+        SPtr<TOptVendorSpecInfo> newone = SPtr_cast<TOptVendorSpecInfo>(custom);
+        if (!newone) {
+            Log(Error) << "Specified vendor-option object is of incorrect type,"
+                       << " can't add option." << LogEnd;
+            return;
+        }
+        
         for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
         {
             if ((*opt)->getOptType() != OPTION_VENDOR_OPTS)
                 continue;
-            SPtr<TOptVendorSpecInfo> existing = (Ptr*) (*opt);
+            SPtr<TOptVendorSpecInfo> existing = SPtr_cast<TOptVendorSpecInfo>(*opt);
 
             if (existing->getVendor() == newone->getVendor()) {
                 newone->firstOption();
