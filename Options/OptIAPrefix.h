@@ -19,8 +19,9 @@
 class TOptIAPrefix : public TOpt
 {
   public:
-    TOptIAPrefix( char * &addr, int &n, TMsg* parent);
-    TOptIAPrefix( SPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref, unsigned long valid, TMsg* parent);
+    TOptIAPrefix(const char * addr, size_t len, TMsg* parent);
+    TOptIAPrefix(SPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref,
+                 unsigned long valid, TMsg* parent);
     size_t getSize();
 
     char * storeSelf( char* buf);
@@ -32,6 +33,7 @@ class TOptIAPrefix : public TOpt
     void setValid(unsigned long valid);
     void setPrefixLenght(char prefix_length);
     virtual bool isValid() const;
+    virtual bool doDuties() { return true; }
 
  private:
     SPtr<TIPv6Addr> Prefix_; //

@@ -23,6 +23,7 @@
 #include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
 #include "OptDUID.h"
+#include "OptIAPrefix.h"
 #include "ClntOptElapsed.h"
 #include "ClntOptPreference.h"
 #include "OptEmpty.h"
@@ -328,7 +329,7 @@ bool TClntMsgSolicit::shallRejectAnswer(SPtr<TClntMsg> msg)
             // ia_pd has some ia_prefix options, let's take a look at them
             int prefixCount = pdResp->countPrefixes();
             pdResp->firstPrefix();
-            SPtr<TClntOptIAPrefix> ppref;
+            SPtr<TOptIAPrefix> ppref;
             while (ppref = pdResp->getPrefix()) {
                 if (!ppref->isValid()) {
                     Log(Warning) << "Option IA_PREFIX from IA_PD " <<

@@ -22,14 +22,17 @@ TOptIAAddress::TOptIAAddress(const char * buf, size_t len, TMsg* parent)
         Addr_ = new TIPv6Addr(buf);
         buf += 16;
         len -= 16;
+
         PrefLifetime_ = readUint32(buf);
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
+
         ValidLifetime_ = readUint32(buf);
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
 
-        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAADDR, "IAAddress option");
+        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAADDR,
+                              "IAAddress option");
     }
 }
 

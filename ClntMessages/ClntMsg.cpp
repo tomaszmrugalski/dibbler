@@ -25,6 +25,7 @@
 #include "OptDUID.h"
 #include "OptDomainLst.h"
 #include "OptRtPrefix.h"
+#include "OptIAPrefix.h"
 #include "OptOptionRequest.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
@@ -923,7 +924,7 @@ void TClntMsg::answer(SPtr<TClntMsg> reply)
             bool pdOk = true;
             int prefixCount = pd->countPrefixes();
             pd->firstPrefix();
-            SPtr<TClntOptIAPrefix> ppref;
+            SPtr<TOptIAPrefix> ppref;
             while (( ppref = pd->getPrefix() )) {
                 if (!ppref->isValid()) {
                     Log(Warning) << "Option IA_PREFIX from IA_PD " <<

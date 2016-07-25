@@ -13,22 +13,29 @@
 #include "DHCPConst.h"
 #include "OptIAPrefix.h"
 
-TOptIAPrefix::TOptIAPrefix( char * &buf, int &n, TMsg* parent)
+TOptIAPrefix::TOptIAPrefix(const char * buf, size_t len, TMsg* parent)
     :TOpt(OPTION_IAPREFIX, parent), Valid_(false)
 {
-    if (n >= 25) // was 24 for IA address
+    if (len >= 25)
     {
         PrefLifetime_ = readUint32(buf);
-        buf += sizeof(uint32_t);  n -= sizeof(uint32_t);
+        buf += sizeof(uint32_t);
+        len -= sizeof(uint32_t);
+
         ValidLifetime_ = readUint32(buf);
-        buf += sizeof(uint32_t);  n -= sizeof(uint32_t);
-        PrefixLength_  = *buf;// was ntohl(*((char*)buf));
-        buf+= 1;
-        n-=1;
-        Prefix_ = new TIPv6Addr(buf); // was buf
-        buf+= 16;
-        n-=16;
-        Valid_ = true;
+        buf += sizeof(uint32_t);
+        len -= sizeof(uint32_t);
+
+        PrefixLength_  = *buf;
+        buf += 1;
+        len -= 1;
+
+        Prefix_ = new TIPv6Addr(buf);
+        buf += 16;
+        len -= 16;
+
+        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAPREFIX,
+                              "IAPrefix option");
     }
 }
 
@@ -88,5 +95,9 @@ uint8_t TOptIAPrefix::getPrefixLength() const {
 }
 
 bool TOptIAPrefix::isValid() const {
-    return Valid_;
+    if (!Valid_ || (getValid() == 0)) {
+        return false;
+    }
+
+    return this->getValid() >= this->getPref();
 }

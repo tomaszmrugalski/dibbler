@@ -11,7 +11,7 @@
 #define CLNTOPTIA_PD_H
 
 #include "OptIA_PD.h"
-#include "ClntOptIAPrefix.h"
+#include "OptIAPrefix.h"
 #include "ClntIfaceMgr.h"
 #include "IPv6Addr.h"
 
@@ -30,9 +30,9 @@ class TClntOptIA_PD : public TOptIA_PD
     void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
     void setIface(int iface);
 
-    SPtr<TClntOptIAPrefix> getPrefix();
-    void deletePrefix(SPtr<TClntOptIAPrefix> prefix);
-    SPtr<TClntOptIAPrefix> getPrefix(SPtr<TIPv6Addr> prefix);
+    SPtr<TOptIAPrefix> getPrefix();
+    void deletePrefix(SPtr<TOptIAPrefix> prefix);
+    SPtr<TOptIAPrefix> getPrefix(SPtr<TIPv6Addr> prefix);
     void firstPrefix();
     int countPrefix() const;
     bool isValid() const;
