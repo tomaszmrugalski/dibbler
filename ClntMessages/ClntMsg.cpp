@@ -95,10 +95,10 @@ TClntMsg::TClntMsg(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
 {
     setDefaults();
 
-    //After reading message code and transactionID
-    //read options contained in message
-    int pos=0;
+    int pos = 0;
     SPtr<TOpt> ptr;
+    // TMsg constructor parsed first 4 bytes: message-type and trans-id.
+    // pos = 0 means the first byte after trans-id.
 
     while (pos<bufSize) {
 	if (pos+4>bufSize) {

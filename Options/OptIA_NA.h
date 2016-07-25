@@ -18,7 +18,7 @@ class TOptIA_NA : public TOptIA
 {
   public:
     TOptIA_NA(long IAID, long t1, long t2, TMsg* parent);
-    TOptIA_NA(const char* buf, int&bufsize, TMsg* parent);
+    TOptIA_NA(char* &buf, int &bufsize, TMsg* parent);
     size_t getSize();
 
     unsigned long getMaxValid();

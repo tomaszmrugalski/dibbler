@@ -20,7 +20,7 @@ TOptIA_NA::TOptIA_NA(long iaid, long t1,  long t2, TMsg* parent)
     Valid_ = true;
 }
 
-TOptIA_NA::TOptIA_NA(const char * buf, int &bufsize, TMsg* parent)
+TOptIA_NA::TOptIA_NA(char * &buf, int &bufsize, TMsg* parent)
     : TOptIA(OPTION_IA_NA, parent) {
     Valid_ = false;
 
