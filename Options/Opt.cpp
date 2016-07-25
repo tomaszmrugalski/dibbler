@@ -10,6 +10,7 @@
 
 #include "Portable.h"
 #include "Opt.h"
+#include "OptStatusCode.h"
 #include "OptGeneric.h"
 #include "OptRtPrefix.h"
 #include "Logger.h"
@@ -160,17 +161,24 @@ bool TOpt::parseOptions(TOptContainer& options, const char* buf, size_t len,
             return false;
         }
 
+        TOptPtr opt;
+        opt.reset();
         switch (optType) {
-        case OPTION_RTPREFIX: {
-            TOptPtr opt = new TOptRtPrefix(buf, len, parent);
+        case OPTION_STATUS_CODE:
+            opt.reset(new TOptStatusCode(buf, len, parent));
             options.append(opt);
+            break;
+        case OPTION_RTPREFIX: {
+            opt.reset(new TOptRtPrefix(buf, len, parent));
             break;
         }
         default: {
-            TOptPtr opt = new TOptGeneric(optType, buf, len, parent);
-            options.append(opt);
+            opt.reset(new TOptGeneric(optType, buf, len, parent));
             break;
         }
+        }
+        if (opt) {
+            options.append(opt);
         }
         buf += optLen;
         len -= optLen;

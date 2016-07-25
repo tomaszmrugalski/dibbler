@@ -10,9 +10,8 @@
 
 #include "AddrIA.h"
 #include "ClntOptTA.h"
-#include "ClntOptIAAddress.h"
+#include "OptIAAddress.h"
 #include "OptStatusCode.h"
-#include "ClntOptIAAddress.h"
 #include "OptDUID.h"
 #include "ClntAddrMgr.h"
 #include "ClntIfaceMgr.h"
@@ -58,10 +57,10 @@ TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
 
         switch (code) {
         case OPTION_IAADDR:
-            opt = new TClntOptIAAddress(buf+pos,length,this->Parent);
+            opt = new TOptIAAddress(buf+pos, length, parent);
             break;
         case OPTION_STATUS_CODE:
-            opt = new TOptStatusCode(buf+pos, length, this->Parent);
+            opt = new TOptStatusCode(buf+pos, length, parent);
             break;
         default:
             Log(Warning) <<"Option " << code<< " in message (type=" << parent->getType()
@@ -80,7 +79,7 @@ TClntOptTA::TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent)
     ta->firstAddr();
     SPtr<TAddrAddr> addr;
     while (addr=ta->getAddr()) {
-        SubOptions.append(new TClntOptIAAddress(addr->get(), 0, 0, parent));
+        SubOptions.append(new TOptIAAddress(addr->get(), 0, 0, parent));
     }
 }
 
@@ -89,18 +88,18 @@ void TClntOptTA::firstAddr()
     SubOptions.first();
 }
 
-SPtr<TClntOptIAAddress> TClntOptTA::getAddr()
+SPtr<TOptIAAddress> TClntOptTA::getAddr()
 {
     SPtr<TOpt> ptr;
     do {
         ptr = SubOptions.get();
 
         if (ptr && ptr->getOptType()==OPTION_IAADDR) {
-            return (SPtr_cast<TClntOptIAAddress>(ptr));
+            return (SPtr_cast<TOptIAAddress>(ptr));
         }
     } while (ptr);
 
-    return SPtr<TClntOptIAAddress>(); // NULL
+    return SPtr<TOptIAAddress>(); // NULL
 }
 
 int TClntOptTA::countAddr()
@@ -166,7 +165,7 @@ TClntOptTA::~TClntOptTA()
 
     // IAID found, set up new received options.
     SPtr<TAddrAddr> addr;
-    SPtr<TClntOptIAAddress> optAddr;
+    SPtr<TOptIAAddress> optAddr;
 
     SPtr<TIfaceIface> ptrIface;
     ptrIface = ClntIfaceMgr().getIfaceByID(this->Iface);
@@ -225,9 +224,9 @@ TClntOptTA::~TClntOptTA()
     return true;
 }
 
-SPtr<TClntOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
+SPtr<TOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
 {
-    SPtr<TClntOptIAAddress> optAddr;
+    SPtr<TOptIAAddress> optAddr;
     this->firstAddr();
     while(optAddr=this->getAddr())
     {
@@ -235,7 +234,7 @@ SPtr<TClntOptIAAddress> TClntOptTA::getAddr(SPtr<TIPv6Addr> addr)
         if ((*addr)==(*optAddr->getAddr()))
             return optAddr;
     };
-    return SPtr<TClntOptIAAddress>();
+    return SPtr<TOptIAAddress>();
 }
 
 void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )

@@ -11,9 +11,8 @@
 #include "AddrIA.h"
 #include "ClntCfgIA.h"
 #include "ClntOptIA_NA.h"
-#include "ClntOptIAAddress.h"
+#include "OptAddrParams.h"
 #include "OptStatusCode.h"
-#include "ClntOptAddrParams.h"
 #include "Logger.h"
 #include "Msg.h"
 #include "ClntAddrMgr.h"
@@ -33,7 +32,7 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> clntAddrIA, bool zeroTimes, TMsg* par
     SPtr <TAddrAddr> addr;
     clntAddrIA->firstAddr();
     while ( addr = clntAddrIA->getAddr() ) {
-        SubOptions.append( new TClntOptIAAddress(addr->get(),
+        SubOptions.append( new TOptIAAddress(addr->get(),
                                                  zeroTimes?0:addr->getPref(),
                                                  zeroTimes?0:addr->getValid(),
                                                  parent) );
@@ -68,8 +67,8 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TAddrIA> addrIA, TMsg* parent)
     while ( ptrAddr = addrIA->getAddr() )
     {
         if ( !decline || (ptrAddr->getTentative()==ADDRSTATUS_YES) )
-            SubOptions.append(new TClntOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(),
-                                                    zeroTimes?0:ptrAddr->getValid(),this->Parent) );
+            SubOptions.append(new TOptIAAddress(ptrAddr->get(), zeroTimes?0:ptrAddr->getPref(),
+                                                zeroTimes?0:ptrAddr->getValid(),this->Parent) );
     }
     DUID = SPtr<TDUID>(); // NULL
 }
@@ -94,11 +93,8 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrI
     {
         SPtr<TAddrAddr> ptrAddr=ClntaddrIA->getAddr(ClntCfgAddr->get());
         if(!ptrAddr)
-            SubOptions.append(new TClntOptIAAddress(
-            ClntCfgAddr->get(),
-            ClntCfgAddr->getPref(),
-            ClntCfgAddr->getValid(),
-            this->Parent));
+            SubOptions.append(new TOptIAAddress(ClntCfgAddr->get(), ClntCfgAddr->getPref(),
+                                                ClntCfgAddr->getValid(), parent));
     }
     DUID = SPtr<TDUID>(); // NULL
 }
@@ -116,10 +112,8 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
     SPtr<TClntCfgAddr> ClntCfgAddr;
     // just copy all addresses defined in the CfgMgr
     while (ClntCfgAddr = ClntCfgIA->getAddr())
-        SubOptions.append(new TClntOptIAAddress(ClntCfgAddr->get(),
-        ClntCfgAddr->getPref(),
-        ClntCfgAddr->getValid(),this->Parent) );
-    DUID = SPtr<TDUID>(); // NULL
+        SubOptions.append(new TOptIAAddress(ClntCfgAddr->get(),  ClntCfgAddr->getPref(),
+                                            ClntCfgAddr->getValid(), parent) );
 }
 
 /**
@@ -150,10 +144,10 @@ TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
                 switch (code)
                 {
                 case OPTION_IAADDR:
-                    SubOptions.append( new TClntOptIAAddress(buf+pos,length, this->Parent));
+                    SubOptions.append(new TOptIAAddress(buf+pos, length, parent));
                     break;
                 case OPTION_STATUS_CODE:
-                    SubOptions.append(new TOptStatusCode(buf+pos, length, this->Parent));
+                    SubOptions.append(new TOptStatusCode(buf+pos, length, parent));
                     break;
                 default:
                     Log(Warning) <<"Option opttype=" << code<< "not supported "
@@ -180,16 +174,16 @@ void TClntOptIA_NA::firstAddr()
     SubOptions.first();
 }
 
-SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr()
+SPtr<TOptIAAddress> TClntOptIA_NA::getAddr()
 {
     SPtr<TOpt> ptr;
     do {
         ptr = SubOptions.get();
         if (ptr && ptr->getOptType()==OPTION_IAADDR) {
-            return SPtr_cast<TClntOptIAAddress>(ptr);
+            return SPtr_cast<TOptIAAddress>(ptr);
         }
     } while (ptr);
-    return SPtr<TClntOptIAAddress>();
+    return SPtr<TOptIAAddress>();
 }
 
 int TClntOptIA_NA::countAddr()
@@ -240,7 +234,7 @@ bool TClntOptIA_NA::doDuties() {
 
     // IAID found, set up new received options.
     SPtr<TAddrAddr> ptrAddrAddr;
-    SPtr<TClntOptIAAddress> ptrOptAddr;
+    SPtr<TOptIAAddress> ptrOptAddr;
 
     SPtr<TIfaceIface> ptrIface;
     ptrIface = ClntIfaceMgr().getIfaceByID(Iface_);
@@ -262,17 +256,19 @@ bool TClntOptIA_NA::doDuties() {
                 int prefixLen = ptrIface->getPrefixLength();
                 if (ptrOptAddr->getOption(OPTION_ADDRPARAMS)) {
                     Log(Debug) << "Experimental addr-params found." << LogEnd;
-                    SPtr<TClntOptAddrParams> optAddrParams =
-                        SPtr_cast<TClntOptAddrParams>(ptrOptAddr->getOption(OPTION_ADDRPARAMS));
+                    SPtr<TOptAddrParams> optAddrParams =
+                        SPtr_cast<TOptAddrParams>(ptrOptAddr->getOption(OPTION_ADDRPARAMS));
                     prefixLen = optAddrParams->getPrefix();
                 }
 
                 // add this address in addrDB...
-                ptrIA->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid(), prefixLen);
+                ptrIA->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(),
+                               ptrOptAddr->getValid(), prefixLen);
                 ptrIA->setDUID(this->DUID);
 
                 // ... and in IfaceMgr -
-                ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(), ptrOptAddr->getValid(), prefixLen);
+                ptrIface->addAddr(ptrOptAddr->getAddr(), ptrOptAddr->getPref(),
+                                  ptrOptAddr->getValid(), prefixLen);
             }
             else {
                 Log(Warning) << "Server send new addr with valid lifetime 0." << LogEnd;
@@ -358,7 +354,7 @@ int TClntOptIA_NA::countValidAddrs(SPtr<TAddrIA> ptrIA)
     //       B) Address can be assigned only in this IA, not in other
     //          This could be ommited if VerifyIA worked prooperly
     this->firstAddr();
-    SPtr<TClntOptIAAddress> ptrOptIAAddr;
+    SPtr<TOptIAAddress> ptrOptIAAddr;
     while(ptrOptIAAddr=this->getAddr())
     {
         if (!ptrOptIAAddr->getValid())
@@ -369,9 +365,9 @@ int TClntOptIA_NA::countValidAddrs(SPtr<TAddrIA> ptrIA)
     return count;
 }
 
-SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SPtr<TIPv6Addr> addr)
+SPtr<TOptIAAddress> TClntOptIA_NA::getAddr(SPtr<TIPv6Addr> addr)
 {
-    SPtr<TClntOptIAAddress> optAddr;
+    SPtr<TOptIAAddress> optAddr;
     this->firstAddr();
     while(optAddr=this->getAddr())
     {
@@ -379,7 +375,7 @@ SPtr<TClntOptIAAddress> TClntOptIA_NA::getAddr(SPtr<TIPv6Addr> addr)
         if ((*addr)==(*optAddr->getAddr()))
             return optAddr;
     };
-    return SPtr<TClntOptIAAddress>();
+    return SPtr<TOptIAAddress>();
 }
 
 void TClntOptIA_NA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )

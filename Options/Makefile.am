@@ -10,6 +10,7 @@ libOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/Messages
 
 libOptions_a_SOURCES  = OptAddr.cpp OptAddr.h
 libOptions_a_SOURCES += OptAddrLst.cpp OptAddrLst.h
+libOptions_a_SOURCES += OptAddrParams.cpp OptAddrParams.h
 libOptions_a_SOURCES += OptAuthentication.cpp OptAuthentication.h
 libOptions_a_SOURCES += Opt.cpp Opt.h
 libOptions_a_SOURCES += OptDUID.cpp OptDUID.h

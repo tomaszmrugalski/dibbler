@@ -26,7 +26,7 @@ class TSrvOptIA_NA : public TOptIA_NA
 
     TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TIPv6Addr> clntAddr, SPtr<TDUID> duid,
                  int iface, unsigned long &addrCount, int msgType , TMsg* parent);
-    TSrvOptIA_NA(char * buf, int bufsize, TMsg* parent);
+    TSrvOptIA_NA(char* buf, int bufsize, TMsg* parent);
     TSrvOptIA_NA(long IAID, long T1, long T2, TMsg* parent);
     TSrvOptIA_NA(long IAID, long T1, long T2, int Code, const std::string& Msg, TMsg* parent);
     TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, TMsg* parent);

@@ -184,7 +184,7 @@ void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
 
 	// IAID found, set up new received options.
 	SPtr<TAddrAddr> ptrAddrAddr;
-	SPtr<TClntOptIAAddress> ptrOptAddr;
+	SPtr<TOptIAAddress> ptrOptAddr;
 	
 	// are all addrs configured?
 	if (ptrOptIA->countAddr() != ptrAddrIA->countAddr() ) {

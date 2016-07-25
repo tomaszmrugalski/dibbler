@@ -19,8 +19,8 @@
 class TOptIAAddress : public TOpt
 {
   public:
-    TOptIAAddress(char* &addr, int& n, TMsg* parent);
-    TOptIAAddress( SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
+    TOptIAAddress(const char* addr, size_t len, TMsg* parent);
+    TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg* parent);
     size_t getSize();
 
     char * storeSelf( char* buf);

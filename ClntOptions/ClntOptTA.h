@@ -6,8 +6,6 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntOptTA.h,v 1.4 2008-08-29 00:07:29 thomson Exp $
- *
  */
 
 class TOptTA;
@@ -17,7 +15,7 @@ class TMsg;
 #define CLNTIA_TA_H
 
 #include "OptTA.h"
-#include "ClntOptIAAddress.h"
+#include "OptIAAddress.h"
 #include "IPv6Addr.h"
 #include "Msg.h"
 
@@ -32,8 +30,8 @@ class TClntOptTA : public TOptTA
     bool doDuties();
     int getStatusCode();
 
-    SPtr<TClntOptIAAddress> getAddr();
-    SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
+    SPtr<TOptIAAddress> getAddr();
+    SPtr<TOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
     bool isValid() const;

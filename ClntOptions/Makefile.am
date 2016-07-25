@@ -8,13 +8,13 @@ libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/ClntAddrMgr
 libClntOptions_a_CPPFLAGS += -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/ClntTransMgr
 
 #libClntOptions_a_SOURCES = ClntOptAAAAuthentication.cpp ClntOptAAAAuthentication.h 
-libClntOptions_a_SOURCES = ClntOptAddrParams.cpp ClntOptAddrParams.h 
+#libClntOptions_a_SOURCES = ClntOptAddrParams.cpp ClntOptAddrParams.h 
 #libClntOptions_a_SOURCES += ClntOptAuthentication.cpp ClntOptAuthentication.h
 #libClntOptions_a_SOURCES += ClntOptDNSServers.cpp ClntOptDNSServers.h 
 #libClntOptions_a_SOURCES += ClntOptDomainName.cpp ClntOptDomainName.h 
-libClntOptions_a_SOURCES += ClntOptElapsed.cpp ClntOptElapsed.h
+libClntOptions_a_SOURCES = ClntOptElapsed.cpp ClntOptElapsed.h
 libClntOptions_a_SOURCES += ClntOptFQDN.cpp ClntOptFQDN.h
-libClntOptions_a_SOURCES += ClntOptIAAddress.cpp ClntOptIAAddress.h
+#libClntOptions_a_SOURCES += ClntOptIAAddress.cpp ClntOptIAAddress.h
 libClntOptions_a_SOURCES += ClntOptIA_NA.cpp ClntOptIA_NA.h 
 libClntOptions_a_SOURCES += ClntOptIA_PD.cpp ClntOptIA_PD.h
 libClntOptions_a_SOURCES += ClntOptIAPrefix.cpp ClntOptIAPrefix.h

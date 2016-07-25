@@ -42,9 +42,6 @@ TEST(OptIAAddressTest, parse) {
     int len = 24;
     TOptIAAddress* opt = new TOptIAAddress(ptr, len, NULL);
     
-    EXPECT_EQ(len, 0);
-    EXPECT_EQ(ptr, expected + 28);
-
     SPtr<TIPv6Addr> addr = opt->getAddr();
 
     EXPECT_EQ(string("2001:db8:1::dead:beef"), addr->getPlain());

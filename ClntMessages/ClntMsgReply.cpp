@@ -6,13 +6,11 @@
  *
  * released under GNU GPL v2 only licence
  *
- * $Id: ClntMsgReply.cpp,v 1.9 2008-08-29 00:07:28 thomson Exp $
- *
  */
 
 #include "SmartPtr.h"
 #include "ClntMsgReply.h"
-#include "ClntOptIAAddress.h"
+#include "OptIAAddress.h"
 
 TClntMsgReply::TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
     :TClntMsg(iface, addr,buf,bufSize)

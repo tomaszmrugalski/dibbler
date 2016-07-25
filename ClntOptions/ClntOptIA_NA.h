@@ -11,7 +11,7 @@
 
 #include "ClntCfgIA.h"
 #include "OptIA_NA.h"
-#include "ClntOptIAAddress.h"
+#include "OptIAAddress.h"
 #include "IPv6Addr.h"
 
 class TOptIA_NA;
@@ -32,8 +32,8 @@ class TClntOptIA_NA : public TOptIA_NA
     void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, int iface);
     void setIface(int iface);
 
-    SPtr<TClntOptIAAddress> getAddr();
-    SPtr<TClntOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
+    SPtr<TOptIAAddress> getAddr();
+    SPtr<TOptIAAddress> getAddr(SPtr<TIPv6Addr> addr);
     void firstAddr();
     int countAddr();
     bool isValid() const;

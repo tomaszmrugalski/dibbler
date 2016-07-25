@@ -15,21 +15,21 @@
 #include "Opt.h"
 #include "OptIAAddress.h"
 
-TOptIAAddress::TOptIAAddress(char * &buf, int& n, TMsg* parent)
+TOptIAAddress::TOptIAAddress(const char * buf, size_t len, TMsg* parent)
     :TOpt(OPTION_IAADDR, parent), Valid_(false)
 {
-    if ( n >= 24) {
+    if ( len >= 24) {
         Addr_ = new TIPv6Addr(buf);
         buf += 16;
-        n -= 16;
+        len -= 16;
         PrefLifetime_ = readUint32(buf);
         buf += sizeof(uint32_t);
-        n -= sizeof(uint32_t);
+        len -= sizeof(uint32_t);
         ValidLifetime_ = readUint32(buf);
         buf += sizeof(uint32_t);
-        n -= sizeof(uint32_t);
+        len -= sizeof(uint32_t);
 
-        Valid_ = true;
+        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAADDR, "IAAddress option");
     }
 }
 
