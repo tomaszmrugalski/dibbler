@@ -403,7 +403,7 @@ bool TClntOptIA_NA::isValid() const {
     for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
         if ((*it)->getOptType() != OPTION_IAADDR)
             continue;
-        const TOptIAAddress* addr = (const TOptIAAddress*)it->get();
+        SPtr<TOptIAAddress> addr = SPtr_cast<TOptIAAddress>(*it);
 
         if (addr->getAddr()->linkLocal()) {
             Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_NA (IAID="

@@ -353,7 +353,7 @@ bool TClntOptIA_PD::isValid() const
     for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
         if ((*it)->getOptType() != OPTION_IAPREFIX)
             continue;
-        const TOptIAPrefix* prefix = (const TOptIAPrefix*)it->get();
+        SPtr<TOptIAPrefix> prefix = SPtr_cast<TOptIAPrefix>(*it);
 
         if (prefix->getPrefix()->linkLocal()) {
             Log(Warning) << "Prefix " << prefix->getPrefix()->getPlain() << " used in IA_PD (IAID="

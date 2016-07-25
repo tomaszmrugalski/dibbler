@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef SPtr_H
-#define SPtr_H
+#ifndef SmartPtr_H
+#define SmartPtr_H
 
 #include <iostream>
 
@@ -28,9 +28,6 @@ public:
     Ptr(void* object) {
         ptr = object;
         refcount = 1;
-    }
-
-    ~Ptr() {
     }
 
     int refcount; //refrence counter
@@ -86,27 +83,6 @@ public:
         decrease_reference();
         ptr = new Ptr(obj);
     }
-
-#if 0
-    /// @brief Returns pointer to the underlying object
-    ///
-    /// @todo Is this really used?
-    ///
-    /// @return raw pointer to the object
-    operator Ptr*() {
-      if (ptr->ptr)
-        return ptr;
-      else
-        return (Ptr*)NULL;
-    }
-
-    operator const Ptr*() const {
-      if (ptr->ptr)
-        return ptr;
-      else
-        return (Ptr*)NULL;
-    }
-#endif
 
     operator bool() const {
         if (ptr && ptr->ptr) {
@@ -199,7 +175,7 @@ SPtr<T>::SPtr(const SPtr& old) {
     ptr = old.ptr;
 
     // This doesn't make sense. It just copies value to itself
-    ptr->refcount = old.ptr->refcount;
+    //ptr->refcount = old.ptr->refcount;
 }
 
 template <class T>
@@ -207,25 +183,33 @@ SPtr<T>::~SPtr() {
     decrease_reference();
 }
 
+/// @brief This template is used to dereference an object from SmartPtr.
+///
+/// Example usage:
+///
+/// SPtr<TDUID> duid1 = new TDUID("1234567890abcdef");
+/// SPtr<TDUID> duid2 = new TDUID("12:34:56:78:90:ab:cd:ef");
+/// EXPECT_TRUE(*duid1 == *duid2);
 template <class T>
 T& SPtr<T>::operator*() const {
-    return *((T*)(ptr->ptr)); //it can return NULL
+    /// @todo: throw here if:
+    /// ptr is NULL
+    /// ptr->ptr is NULL
+    return *((T*)(ptr->ptr));
 }
 
+/// @brief This template is used to access an object using SmartPtr.
+///
+/// Example usage:
+///
+/// SPtr<TDUID> duid1 = new TDUID("1234567890abcdef");
+/// ASSERT_EQ(8u, duid1->getLen());
 template <class T>
 T* SPtr<T>::operator->() const {
     if (!ptr) {
         return 0;
     }
     return (T*)(ptr->ptr); //it can return NULL
-}
-
-template <class T>
-const T* SPtr<T>::get() const {
-    if (!ptr) {
-        return 0;
-    }
-    return (T*)(ptr->ptr);
 }
 
 template <class T>
