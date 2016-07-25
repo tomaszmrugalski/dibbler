@@ -39,38 +39,7 @@ TClntOptTA::TClntOptTA(unsigned int iaid, TMsg* parent)
 TClntOptTA::TClntOptTA(char * buf,int bufsize, TMsg* parent)
     :TOptTA(buf,bufsize, parent), Iface(-1)
 {
-    int pos=0, length=0;
-    while(pos<bufsize)
-    {
-        pos+=length;
-        int code= buf[pos]*256+buf[pos+1];
-        pos+=2;
-        int length=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        SPtr<TOpt> opt;
-
-        if(!allowOptInOpt(parent->getType(),OPTION_IA_TA,code)) {
-            Log(Warning) << "Option " << code << " is not allowed as suboption of "
-                         << OPTION_IA_TA << LogEnd;
-            continue;
-        }
-
-        switch (code) {
-        case OPTION_IAADDR:
-            opt = new TOptIAAddress(buf+pos, length, parent);
-            break;
-        case OPTION_STATUS_CODE:
-            opt = new TOptStatusCode(buf+pos, length, parent);
-            break;
-        default:
-            Log(Warning) <<"Option " << code<< " in message (type=" << parent->getType()
-                         <<") is currently not supported."<<LogEnd;
-            break;
-        }
-        if( (opt) && (opt->isValid()) )
-            SubOptions.append(opt);
-        pos+=length;
-    }
+    Valid = parseOptions(SubOptions, buf, bufsize, parent, IAID_, "IA_TA option");
 }
 
 TClntOptTA::TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent)
@@ -135,7 +104,8 @@ TClntOptTA::~TClntOptTA()
  * This function sets everything in motion, i.e. sets up temporary addresses
  *
  * @return
- */bool TClntOptTA::doDuties()
+ */
+bool TClntOptTA::doDuties()
 {
     // find this TA in addrMgr...
     SPtr<TAddrIA> ta = ClntAddrMgr().getTA(this->getIAID());
@@ -187,10 +157,10 @@ TClntOptTA::~TClntOptTA()
             }
             // add this address in addrDB...
             ta->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid());
-            ta->setDUID(duid->getDUID()
-);
+            ta->setDUID(duid->getDUID());
             // ... and in IfaceMgr -
-            ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(), ptrIface->getPrefixLength());
+            ptrIface->addAddr(optAddr->getAddr(), optAddr->getPref(), optAddr->getValid(),
+                              ptrIface->getPrefixLength());
             Log(Notice) << "Temp. address " << *optAddr->getAddr() << " has been added to "
                         << ptrIface->getName() << "/" << ptrIface->getID()
                         << " interface." << LogEnd;
@@ -249,7 +219,6 @@ void TClntOptTA::releaseAddr(long IAID, SPtr<TIPv6Addr> addr )
 
 bool TClntOptTA::isValid() const
 {
-
     const TOptList& opts = SubOptions.getSTL();
 
     for (TOptList::const_iterator it = opts.begin(); it != opts.end(); ++it) {
@@ -257,7 +226,7 @@ bool TClntOptTA::isValid() const
             continue;
         SPtr<TOptIAAddress> addr = SPtr_cast<TOptIAAddress>(*it);
 
-        if (addr->getAddr()->linkLocal()) {
+        if (addr && addr->getAddr()->linkLocal()) {
             Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_NA (IAID="
                          << IAID_ << ") is link local. The whole IA option is considered invalid."
                          << LogEnd;
@@ -269,10 +238,10 @@ bool TClntOptTA::isValid() const
 }
 
 void TClntOptTA::setContext(int iface, SPtr<TIPv6Addr> clntAddr) {
-    this->Iface    = iface;
-    this->Addr     = clntAddr;
+    this->Iface = iface;
+    this->Addr = clntAddr;
 }
 
 void TClntOptTA::setIface(int iface) {
-    this->Iface    = iface;
+    this->Iface = iface;
 }

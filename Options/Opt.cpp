@@ -12,6 +12,7 @@
 #include "Opt.h"
 #include "OptStatusCode.h"
 #include "OptGeneric.h"
+#include "OptIAAddress.h"
 #include "OptRtPrefix.h"
 #include "Logger.h"
 
@@ -164,6 +165,9 @@ bool TOpt::parseOptions(TOptContainer& options, const char* buf, size_t len,
         TOptPtr opt;
         opt.reset();
         switch (optType) {
+        case OPTION_IAADDR:
+            opt.reset(new TOptIAAddress(buf, len, parent));
+            break;
         case OPTION_STATUS_CODE:
             opt.reset(new TOptStatusCode(buf, len, parent));
             options.append(opt);

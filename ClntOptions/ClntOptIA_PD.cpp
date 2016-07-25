@@ -355,7 +355,7 @@ bool TClntOptIA_PD::isValid() const
             continue;
         SPtr<TOptIAPrefix> prefix = SPtr_cast<TOptIAPrefix>(*it);
 
-        if (prefix->getPrefix()->linkLocal()) {
+        if (prefix && prefix->getPrefix()->linkLocal()) {
             Log(Warning) << "Prefix " << prefix->getPrefix()->getPlain() << " used in IA_PD (IAID="
                          << IAID_ << ") is link local. The whole IA option is considered invalid."
                          << LogEnd;

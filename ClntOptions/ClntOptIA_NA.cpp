@@ -106,13 +106,13 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, SPtr<TAddrIA> ClntaddrI
  * @param parent
  */
 TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
-    :TOptIA_NA(ClntCfgIA->getIAID(),ClntCfgIA->getT1(),ClntCfgIA->getT2(), parent)
+    :TOptIA_NA(ClntCfgIA->getIAID(), ClntCfgIA->getT1(), ClntCfgIA->getT2(), parent)
 {
     ClntCfgIA->firstAddr();
     SPtr<TClntCfgAddr> ClntCfgAddr;
     // just copy all addresses defined in the CfgMgr
     while (ClntCfgAddr = ClntCfgIA->getAddr())
-        SubOptions.append(new TOptIAAddress(ClntCfgAddr->get(),  ClntCfgAddr->getPref(),
+        SubOptions.append(new TOptIAAddress(ClntCfgAddr->get(), ClntCfgAddr->getPref(),
                                             ClntCfgAddr->getValid(), parent) );
 }
 
@@ -123,50 +123,10 @@ TClntOptIA_NA::TClntOptIA_NA(SPtr<TClntCfgIA> ClntCfgIA, TMsg* parent)
  * @param bufsize
  * @param parent
  */
-TClntOptIA_NA::TClntOptIA_NA(char * buf,int bufsize, TMsg* parent)
+TClntOptIA_NA::TClntOptIA_NA(char * buf, int bufsize, TMsg* parent)
 :TOptIA_NA(buf,bufsize, parent)
 {
-    int pos=0;
-    while(pos<bufsize)
-    {
-        if (pos+4>bufsize) {
-            Log(Warning) << "Truncated IA_NA option received." << LogEnd;
-            return;
-        }
-        int code=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        int length=buf[pos]*256+buf[pos+1];
-        pos+=2;
-        if ((code>0)&&(code<=24))
-        {
-            if(allowOptInOpt(parent->getType(),OPTION_IA_NA,code))
-            {
-                switch (code)
-                {
-                case OPTION_IAADDR:
-                    SubOptions.append(new TOptIAAddress(buf+pos, length, parent));
-                    break;
-                case OPTION_STATUS_CODE:
-                    SubOptions.append(new TOptStatusCode(buf+pos, length, parent));
-                    break;
-                default:
-                    Log(Warning) <<"Option opttype=" << code<< "not supported "
-                        <<" in field of message (type="<< parent->getType()
-                        <<") in this version of server."<<LogEnd;
-                    break;
-                }
-            }
-            else
-                Log(Warning) << "Illegal option received, opttype=" << code
-                << " in field options of IA_NA option"<<LogEnd;
-        }
-        else
-        {
-            Log(Warning) <<"Unknown option in option IA_NA( optType="
-                         << code << "). Option ignored." << LogEnd;
-        };
-        pos+=length;
-    }
+    Valid = parseOptions(SubOptions, buf, bufsize, parent, IAID_, "IA_NA option");
 }
 
 void TClntOptIA_NA::firstAddr()
@@ -400,8 +360,7 @@ bool TClntOptIA_NA::isValid() const {
         if ((*it)->getOptType() != OPTION_IAADDR)
             continue;
         SPtr<TOptIAAddress> addr = SPtr_cast<TOptIAAddress>(*it);
-
-        if (addr->getAddr()->linkLocal()) {
+        if (addr && addr->getAddr()->linkLocal()) {
             Log(Warning) << "Address " << addr->getAddr()->getPlain() << " used in IA_NA (IAID="
                          << IAID_ << ") is link local. The whole IA option is considered invalid."
                          << LogEnd;
