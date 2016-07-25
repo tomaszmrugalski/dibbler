@@ -215,8 +215,7 @@
 /* Defines wiether the __ss_family field should be used */
 #undef HAVE___SS_FAMILY
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Support for /sbin/resolvconf enabled? */
