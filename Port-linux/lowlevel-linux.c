@@ -55,7 +55,9 @@
 #define ADDROPER_UPDATE 2
 
 struct rtnl_handle rth;
+
 char Message[1024] = {0};
+
 
 int lowlevelInit()
 {
@@ -194,11 +196,11 @@ struct iface * if_list_get()
 
     rtnl_open(&rth, 0);
     rtnl_wilddump_request(&rth, AF_INET6, RTM_GETLINK);
-    rtnl_dump_filter(&rth, store_nlmsg, &linfo, NULL, NULL);
+    rtnl_dump_filter(&rth, store_nlmsg, &linfo);
     
     /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
     rtnl_wilddump_request(&rth, AF_UNSPEC, RTM_GETADDR);
-    rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
+    rtnl_dump_filter(&rth, store_nlmsg, &ainfo);
 
     /* build list with interface names */
     for (l=linfo; l; l = l->next) {
@@ -363,6 +365,46 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, 
                       unsigned long preferred, unsigned long valid, int mode)
 {
+#if 0
+    /* This is an alternate code that call do_ipaddr. This function is defined
+       in ip/ipaddress.c in iproute2 package. It is not currently imported into
+       Dibbler sources. */
+    char* argv[8];
+
+    switch (mode) {
+    case ADDROPER_ADD:
+        argv[0] = "add";
+        break;
+    case ADDROPER_DEL:
+        argv[0] = "delete";
+    case ADDROPER_UPDATE:
+        argv[0] = "replace";
+        break;
+    }
+    char buf[64];
+    sprintf(buf, "%s/%d", addr, prefixLen);
+
+    char txt_valid[32];
+    char txt_pref[32];
+
+    sprintf(txt_valid, "%lu", valid);
+    sprintf(txt_pref, "%lu", preferred);
+    
+    argv[1] = buf;
+    argv[2] = "dev";
+    argv[3] = ifacename;
+    argv[4] = "valid_lft";
+    argv[5] = txt_valid;
+    argv[6] = "preferred_lft";
+    argv[7] = txt_pref;
+
+    int status = do_ipaddr(8, argv);
+    if (status < 0) {
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
+        return LOWLEVEL_NO_ERROR;
+    }
+#else    
     struct rtnl_handle rth;
     struct {
 	struct nlmsghdr 	n;
@@ -374,6 +416,7 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
+    int status = 0;
 #if ADD_ADDRESSES_WITH_LIFETIMES > 0
     struct ifa_cacheinfo ci;
 #endif
@@ -430,12 +473,18 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     /* is there an interface with this ifindex? */
     if ((req.ifa.ifa_index = ll_name_to_index((char*)ifacename)) == 0) {
 	sprintf(Message, "Cannot find device: %s", ifacename);
-       rtnl_close(&rth);
+        rtnl_close(&rth);
 	return LOWLEVEL_ERROR_UNSPEC;
     }
-    rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL); fflush(stdout);
+    
+    status = rtnl_talk(&rth, &req.n, NULL, 0);
     rtnl_close(&rth);
-    return LOWLEVEL_NO_ERROR;
+    if (status < 0) {
+        return LOWLEVEL_ERROR_UNSPEC;
+    } else {
+        return LOWLEVEL_NO_ERROR;
+    }
+#endif    
 }
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
@@ -666,7 +715,7 @@ int is_addr_tentative(char * ifacename, int iface, char * addr)
     /* 2nd attribute: AF_UNSPEC, AF_INET, AF_INET6 */
     /* rtnl_wilddump_request(&rth, AF_PACKET, RTM_GETLINK); */
     rtnl_wilddump_request(&rth, AF_INET6, RTM_GETADDR);
-    rtnl_dump_filter(&rth, store_nlmsg, &ainfo, NULL, NULL);
+    rtnl_dump_filter(&rth, store_nlmsg, &ainfo);
 
     head = ainfo;
     while (ainfo) {
@@ -777,26 +826,37 @@ int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
 /* iproute.c dummy link section */
 int show_stats = 0; /* to disable iproute.c messages */
 int preferred_family = AF_INET6;
-char* rtnl_rtntype_n2a(int id, char *buf, int len) { return 0;}
-char* rtnl_dsfield_n2a(int id, char *buf, int len) { return 0;}
-char* rtnl_rttable_n2a(int id, char *buf, int len) { return 0;}
-char* rtnl_rtprot_n2a(int id, char *buf, int len)  { return 0;}
-char* rtnl_rtscope_n2a(int id, char *buf, int len) { return 0;}
-char* rtnl_rtrealm_n2a(int id, char *buf, int len) { return 0;}
+//char* rtnl_rtntype_n2a(int id, char *buf, int len) { return 0;}
+const char* rtnl_dsfield_n2a(int id, char *buf, int len) { return 0;}
+const char* rtnl_rttable_n2a(__u32 id, char *buf, int len) { return 0;}
+const char* rtnl_rtprot_n2a(int id, char *buf, int len)  { return 0;}
+const char* rtnl_rtscope_n2a(int id, char *buf, int len) { return 0;}
+const char* rtnl_rtrealm_n2a(int id, char *buf, int len) { return 0;}
 
-int rtnl_rtprot_a2n(__u32 *id, char *arg)  { return 0; }
-int rtnl_rtscope_a2n(__u32 *id, char *arg) { return 0; }
-int rtnl_rttable_a2n(__u32 *id, char *arg) { return 0; }
-int rtnl_rtrealm_a2n(__u32 *id, char *arg) { return 0; }
-int rtnl_dsfield_a2n(__u32 *id, char *arg) { return 0; }
-int rtnl_rtntype_a2n(int *id, char *arg)   { return 0; }
+int rtnl_rtprot_a2n(__u32 *id, const char *arg)  { return 0; }
+int rtnl_rtscope_a2n(__u32 *id, const char *arg) { return 0; }
+int rtnl_rttable_a2n(__u32 *id, const char *arg) { return 0; }
+int rtnl_rtrealm_a2n(__u32 *id, const char *arg) { return 0; }
+int rtnl_dsfield_a2n(__u32 *id, const char *arg) { return 0; }
+//int rtnl_rtntype_a2n(int *id, char *arg)   { return 0; }
 int get_rt_realms(__u32 *realms, char *arg){ return 0; }
 int default_scope(inet_prefix *lcl)        { return 0; }
-char * _SL_; 
+int ll_addr_a2n(char *lladdr, int len, const char *arg) { return 0; }
+const char *ll_addr_n2a(const unsigned char *addr, int alen,
+                        int type, char *buf, int blen) { return 0; }
 
+int netns_switch(char *netns) { return 0; }
+int netns_get_fd(const char *netns) { return 0; } 
+int netns_foreach(int (*func)(char *nsname, void *arg), void *arg) { return 0; }
+
+const char * _SL_;
+int show_details;
+
+int mpls_pton(int af, const char *src, void *addr) { return 0; }
 int dnet_pton(int af, const char *src, void *addr) { return 0; }
 const char *dnet_ntop(int af, const void *addr, char *str, size_t len){ return 0; }
 const char *ipx_ntop(int af, const void *addr, char *str, size_t len) { return 0; }
+const char *mpls_ntop(int af, const void *addr, char *str, size_t len){ return 0; }
 
 #ifdef DEBUG
 #include <execinfo.h>

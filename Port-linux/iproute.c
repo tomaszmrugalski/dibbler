@@ -8,11 +8,6 @@
  *
  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  *
- *
- * Changes:
- *
- * Rani Assaf <rani@magic.metawire.com> 980929:	resolve addresses
- * Kunihiro Ishiguro <kunihiro@zebra.org> 001102: rtnh_ifindex was not initialized
  */
 
 #include <stdio.h>
@@ -28,7 +23,8 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <linux/in_route.h>
-/* #include <linux/ip_mp_alg.h> */
+#include <linux/icmpv6.h>
+#include <errno.h>
 
 #include "rt_names.h"
 #include "utils.h"
@@ -38,15 +34,40 @@
 #define RTAX_RTTVAR RTAX_HOPS
 #endif
 
-
+enum list_action {
+	IPROUTE_LIST,
+	IPROUTE_FLUSH,
+	IPROUTE_SAVE,
+};
+static const char *mx_names[RTAX_MAX+1] = {
+	[RTAX_MTU]	= "mtu",
+	[RTAX_WINDOW]	= "window",
+	[RTAX_RTT]	= "rtt",
+	[RTAX_RTTVAR]	= "rttvar",
+	[RTAX_SSTHRESH] = "ssthresh",
+	[RTAX_CWND]	= "cwnd",
+	[RTAX_ADVMSS]	= "advmss",
+	[RTAX_REORDERING]="reordering",
+	[RTAX_HOPLIMIT] = "hoplimit",
+	[RTAX_INITCWND] = "initcwnd",
+	[RTAX_FEATURES] = "features",
+	[RTAX_RTO_MIN]	= "rto_min",
+	[RTAX_INITRWND]	= "initrwnd",
+	[RTAX_QUICKACK]	= "quickack",
+	[RTAX_CC_ALGO]	= "congctl",
+};
 static void usage(void) __attribute__((noreturn));
 
 static void usage(void)
 {
 	fprintf(stderr, "Usage: ip route { list | flush } SELECTOR\n");
+	fprintf(stderr, "       ip route save SELECTOR\n");
+	fprintf(stderr, "       ip route restore\n");
+	fprintf(stderr, "       ip route showdump\n");
 	fprintf(stderr, "       ip route get ADDRESS [ from ADDRESS iif STRING ]\n");
-	fprintf(stderr, "                            [ oif STRING ]  [ tos TOS ]\n");
-	fprintf(stderr, "       ip route { add | del | change | append | replace | monitor } ROUTE\n");
+	fprintf(stderr, "                            [ oif STRING ] [ tos TOS ]\n");
+	fprintf(stderr, "                            [ mark NUMBER ]\n");
+	fprintf(stderr, "       ip route { add | del | change | append | replace } ROUTE\n");
 	fprintf(stderr, "SELECTOR := [ root PREFIX ] [ match PREFIX ] [ exact PREFIX ]\n");
 	fprintf(stderr, "            [ table TABLE_ID ] [ proto RTPROTO ]\n");
 	fprintf(stderr, "            [ type TYPE ] [ scope SCOPE ]\n");
@@ -54,28 +75,34 @@ static void usage(void)
 	fprintf(stderr, "NODE_SPEC := [ TYPE ] PREFIX [ tos TOS ]\n");
 	fprintf(stderr, "             [ table TABLE_ID ] [ proto RTPROTO ]\n");
 	fprintf(stderr, "             [ scope SCOPE ] [ metric METRIC ]\n");
-	fprintf(stderr, "             [ mpath MP_ALGO ]\n");
 	fprintf(stderr, "INFO_SPEC := NH OPTIONS FLAGS [ nexthop NH ]...\n");
-	fprintf(stderr, "NH := [ via ADDRESS ] [ dev STRING ] [ weight NUMBER ] NHFLAGS\n");
-	fprintf(stderr, "OPTIONS := FLAGS [ mtu NUMBER ] [ advmss NUMBER ]\n");
-	fprintf(stderr, "           [ rtt NUMBER ] [ rttvar NUMBER ]\n");
-	fprintf(stderr, "           [ window NUMBER] [ cwnd NUMBER ] [ ssthresh NUMBER ]\n");
-	fprintf(stderr, "           [ realms REALM ]\n");
+	fprintf(stderr, "NH := [ via [ FAMILY ] ADDRESS ] [ dev STRING ] [ weight NUMBER ] NHFLAGS\n");
+	fprintf(stderr, "FAMILY := [ inet | inet6 | ipx | dnet | mpls | bridge | link ]\n");
+	fprintf(stderr, "OPTIONS := FLAGS [ mtu NUMBER ] [ advmss NUMBER ] [ as [ to ] ADDRESS ]\n");
+	fprintf(stderr, "           [ rtt TIME ] [ rttvar TIME ] [ reordering NUMBER ]\n");
+	fprintf(stderr, "           [ window NUMBER] [ cwnd NUMBER ] [ initcwnd NUMBER ]\n");
+	fprintf(stderr, "           [ ssthresh NUMBER ] [ realms REALM ] [ src ADDRESS ]\n");
+	fprintf(stderr, "           [ rto_min TIME ] [ hoplimit NUMBER ] [ initrwnd NUMBER ]\n");
+	fprintf(stderr, "           [ features FEATURES ] [ quickack BOOL ] [ congctl NAME ]\n");
+	fprintf(stderr, "           [ pref PREF ]\n");
 	fprintf(stderr, "TYPE := [ unicast | local | broadcast | multicast | throw |\n");
 	fprintf(stderr, "          unreachable | prohibit | blackhole | nat ]\n");
 	fprintf(stderr, "TABLE_ID := [ local | main | default | all | NUMBER ]\n");
 	fprintf(stderr, "SCOPE := [ host | link | global | NUMBER ]\n");
-	fprintf(stderr, "FLAGS := [ equalize ]\n");
-	fprintf(stderr, "MP_ALGO := { rr | drr | random | wrandom }\n");
 	fprintf(stderr, "NHFLAGS := [ onlink | pervasive ]\n");
 	fprintf(stderr, "RTPROTO := [ kernel | boot | static | NUMBER ]\n");
+	fprintf(stderr, "PREF := [ low | medium | high ]\n");
+	fprintf(stderr, "TIME := NUMBER[s|ms]\n");
+	fprintf(stderr, "BOOL := [1|0]\n");
+	fprintf(stderr, "FEATURES := ecn\n");
 	exit(-1);
 }
 
 
 static struct
 {
-	int tb;
+	unsigned int tb;
+	int cloned;
 	int flushed;
 	char *flushb;
 	int flushp;
@@ -86,6 +113,7 @@ static struct
 	int tos, tosmask;
 	int iif, iifmask;
 	int oif, oifmask;
+	int mark, markmask;
 	int realm, realmmask;
 	inet_prefix rprefsrc;
 	inet_prefix rvia;
@@ -95,85 +123,51 @@ static struct
 	inet_prefix msrc;
 } filter;
 
-
-#if 0
-static char *mp_alg_names[IP_MP_ALG_MAX+1] = {
-	[IP_MP_ALG_NONE] = "none",
-	[IP_MP_ALG_RR] = "rr",
-	[IP_MP_ALG_DRR] = "drr",
-	[IP_MP_ALG_RANDOM] = "random",
-	[IP_MP_ALG_WRANDOM] = "wrandom"
-};
-#endif
-
 static int flush_update(void)
 {
-	if (rtnl_send(&rth, filter.flushb, filter.flushp) < 0) {
-		perror("Failed to send flush request\n");
+	if (rtnl_send_check(&rth, filter.flushb, filter.flushp) < 0) {
+		perror("Failed to send flush request");
 		return -1;
 	}
 	filter.flushp = 0;
 	return 0;
 }
 
-int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
+static int filter_nlmsg(struct nlmsghdr *n, struct rtattr **tb, int host_len)
 {
-	FILE *fp = (FILE*)arg;
 	struct rtmsg *r = NLMSG_DATA(n);
-	int len = n->nlmsg_len;
-	struct rtattr * tb[RTA_MAX+1];
-	char abuf[256];
 	inet_prefix dst;
 	inet_prefix src;
-	inet_prefix prefsrc;
 	inet_prefix via;
-	int host_len = -1;
-	SPRINT_BUF(b1);
-	
+	inet_prefix prefsrc;
+	__u32 table;
+	static int ip6_multiple_tables;
 
-	if (n->nlmsg_type != RTM_NEWROUTE && n->nlmsg_type != RTM_DELROUTE) {
-		fprintf(stderr, "Not a route: %08x %08x %08x\n",
-			n->nlmsg_len, n->nlmsg_type, n->nlmsg_flags);
+	table = rtm_get_table(r, tb);
+
+	if (preferred_family != AF_UNSPEC && r->rtm_family != preferred_family)
 		return 0;
-	}
-	if (filter.flushb && n->nlmsg_type != RTM_NEWROUTE)
+
+	if (r->rtm_family == AF_INET6 && table != RT_TABLE_MAIN)
+		ip6_multiple_tables = 1;
+
+	if (filter.cloned == !(r->rtm_flags&RTM_F_CLONED))
 		return 0;
-	len -= NLMSG_LENGTH(sizeof(*r));
-	if (len < 0) {
-		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
-		return -1;
-	}
 
-	if (r->rtm_family == AF_INET6)
-		host_len = 128;
-	else if (r->rtm_family == AF_INET)
-		host_len = 32;
-	else if (r->rtm_family == AF_DECnet)
-		host_len = 16;
-	else if (r->rtm_family == AF_IPX)
-		host_len = 80;
-
-	if (r->rtm_family == AF_INET6) {
+	if (r->rtm_family == AF_INET6 && !ip6_multiple_tables) {
 		if (filter.tb) {
-			if (filter.tb < 0) {
-				if (!(r->rtm_flags&RTM_F_CLONED))
+			if (filter.tb == RT_TABLE_LOCAL) {
+				if (r->rtm_type != RTN_LOCAL)
+					return 0;
+			} else if (filter.tb == RT_TABLE_MAIN) {
+				if (r->rtm_type == RTN_LOCAL)
 					return 0;
 			} else {
-				if (r->rtm_flags&RTM_F_CLONED)
-					return 0;
-				if (filter.tb == RT_TABLE_LOCAL) {
-					if (r->rtm_type != RTN_LOCAL)
-						return 0;
-				} else if (filter.tb == RT_TABLE_MAIN) {
-					if (r->rtm_type == RTN_LOCAL)
-						return 0;
-				} else {
-					return 0;
-				}
+				return 0;
 			}
 		}
 	} else {
-		if (filter.tb > 0 && filter.tb != r->rtm_table)
+		if (filter.tb > 0 && filter.tb != table)
 			return 0;
 	}
 	if ((filter.protocol^r->rtm_protocol)&filter.protocolmask)
@@ -198,12 +192,17 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 	    (r->rtm_family != filter.msrc.family ||
 	     (filter.msrc.bitlen >= 0 && filter.msrc.bitlen < r->rtm_src_len)))
 		return 0;
-	if (filter.rvia.family && r->rtm_family != filter.rvia.family)
-		return 0;
+	if (filter.rvia.family) {
+		int family = r->rtm_family;
+		if (tb[RTA_VIA]) {
+			struct rtvia *via = RTA_DATA(tb[RTA_VIA]);
+			family = via->rtvia_family;
+		}
+		if (family != filter.rvia.family)
+			return 0;
+	}
 	if (filter.rprefsrc.family && r->rtm_family != filter.rprefsrc.family)
 		return 0;
-
-	parse_rtattr(tb, RTA_MAX, RTM_RTA(r), len);
 
 	memset(&dst, 0, sizeof(dst));
 	dst.family = r->rtm_family;
@@ -219,13 +218,19 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		memset(&via, 0, sizeof(via));
 		via.family = r->rtm_family;
 		if (tb[RTA_GATEWAY])
-			memcpy(&via.data, RTA_DATA(tb[RTA_GATEWAY]), host_len);
+			memcpy(&via.data, RTA_DATA(tb[RTA_GATEWAY]), host_len/8);
+		if (tb[RTA_VIA]) {
+			size_t len = RTA_PAYLOAD(tb[RTA_VIA]) - 2;
+			struct rtvia *rtvia = RTA_DATA(tb[RTA_VIA]);
+			via.family = rtvia->rtvia_family;
+			memcpy(&via.data, rtvia->rtvia_addr, len);
+		}
 	}
 	if (filter.rprefsrc.bitlen>0) {
 		memset(&prefsrc, 0, sizeof(prefsrc));
 		prefsrc.family = r->rtm_family;
 		if (tb[RTA_PREFSRC])
-			memcpy(&prefsrc.data, RTA_DATA(tb[RTA_PREFSRC]), host_len);
+			memcpy(&prefsrc.data, RTA_DATA(tb[RTA_PREFSRC]), host_len/8);
 	}
 
 	if (filter.rdst.family && inet_addr_match(&dst, &filter.rdst, filter.rdst.bitlen))
@@ -247,7 +252,7 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 	if (filter.realmmask) {
 		__u32 realms = 0;
 		if (tb[RTA_FLOW])
-			realms = *(__u32*)RTA_DATA(tb[RTA_FLOW]);
+			realms = rta_getattr_u32(tb[RTA_FLOW]);
 		if ((realms^filter.realm)&filter.realmmask)
 			return 0;
 	}
@@ -265,12 +270,68 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		if ((oif^filter.oif)&filter.oifmask)
 			return 0;
 	}
-	if (filter.flushb && 
+	if (filter.markmask) {
+		int mark = 0;
+		if (tb[RTA_MARK])
+			mark = *(int *)RTA_DATA(tb[RTA_MARK]);
+		if ((mark ^ filter.mark) & filter.markmask)
+			return 0;
+	}
+	if (filter.flushb &&
 	    r->rtm_family == AF_INET6 &&
 	    r->rtm_dst_len == 0 &&
 	    r->rtm_type == RTN_UNREACHABLE &&
 	    tb[RTA_PRIORITY] &&
 	    *(int*)RTA_DATA(tb[RTA_PRIORITY]) == -1)
+		return 0;
+
+	return 1;
+}
+
+static void print_rtax_features(FILE *fp, unsigned int features)
+{
+	unsigned int of = features;
+
+	if (features & RTAX_FEATURE_ECN) {
+		fprintf(fp, " ecn");
+		features &= ~RTAX_FEATURE_ECN;
+	}
+
+	if (features)
+		fprintf(fp, " 0x%x", of);
+}
+
+int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
+{
+	FILE *fp = (FILE*)arg;
+	struct rtmsg *r = NLMSG_DATA(n);
+	int len = n->nlmsg_len;
+	struct rtattr * tb[RTA_MAX+1];
+	char abuf[256];
+	int host_len;
+	__u32 table;
+	SPRINT_BUF(b1);
+	static int hz;
+
+	if (n->nlmsg_type != RTM_NEWROUTE && n->nlmsg_type != RTM_DELROUTE) {
+		fprintf(stderr, "Not a route: %08x %08x %08x\n",
+			n->nlmsg_len, n->nlmsg_type, n->nlmsg_flags);
+		return 0;
+	}
+	if (filter.flushb && n->nlmsg_type != RTM_NEWROUTE)
+		return 0;
+	len -= NLMSG_LENGTH(sizeof(*r));
+	if (len < 0) {
+		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
+		return -1;
+	}
+
+	host_len = af_bit_len(r->rtm_family);
+
+	parse_rtattr(tb, RTA_MAX, RTM_RTA(r), len);
+	table = rtm_get_table(r, tb);
+
+	if (!filter_nlmsg(n, tb, host_len))
 		return 0;
 
 	if (filter.flushb) {
@@ -292,15 +353,15 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 
 	if (n->nlmsg_type == RTM_DELROUTE)
 		fprintf(fp, "Deleted ");
-	if (r->rtm_type != RTN_UNICAST && !filter.type)
+	if ((r->rtm_type != RTN_UNICAST || show_details > 0) && !filter.type)
 		fprintf(fp, "%s ", rtnl_rtntype_n2a(r->rtm_type, b1, sizeof(b1)));
 
 	if (tb[RTA_DST]) {
 		if (r->rtm_dst_len != host_len) {
 			fprintf(fp, "%s/%u ", rt_addr_n2a(r->rtm_family,
-							 RTA_PAYLOAD(tb[RTA_DST]),
-							 RTA_DATA(tb[RTA_DST]),
-							 abuf, sizeof(abuf)),
+						       RTA_PAYLOAD(tb[RTA_DST]),
+						       RTA_DATA(tb[RTA_DST]),
+						       abuf, sizeof(abuf)),
 				r->rtm_dst_len
 				);
 		} else {
@@ -318,9 +379,9 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 	if (tb[RTA_SRC]) {
 		if (r->rtm_src_len != host_len) {
 			fprintf(fp, "from %s/%u ", rt_addr_n2a(r->rtm_family,
-							 RTA_PAYLOAD(tb[RTA_SRC]),
-							 RTA_DATA(tb[RTA_SRC]),
-							 abuf, sizeof(abuf)),
+						       RTA_PAYLOAD(tb[RTA_SRC]),
+						       RTA_DATA(tb[RTA_SRC]),
+						       abuf, sizeof(abuf)),
 				r->rtm_src_len
 				);
 		} else {
@@ -333,63 +394,80 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 	} else if (r->rtm_src_len) {
 		fprintf(fp, "from 0/%u ", r->rtm_src_len);
 	}
+	if (tb[RTA_NEWDST]) {
+		fprintf(fp, "as to %s ", format_host(r->rtm_family,
+						  RTA_PAYLOAD(tb[RTA_NEWDST]),
+						  RTA_DATA(tb[RTA_NEWDST]),
+						  abuf, sizeof(abuf))
+			);
+	}
 	if (r->rtm_tos && filter.tosmask != -1) {
 		SPRINT_BUF(b1);
 		fprintf(fp, "tos %s ", rtnl_dsfield_n2a(r->rtm_tos, b1, sizeof(b1)));
 	}
 
-#if 0
-	if (tb[RTA_MP_ALGO]) {
-		__u32 mp_alg = *(__u32*) RTA_DATA(tb[RTA_MP_ALGO]);
-		if (mp_alg > IP_MP_ALG_NONE) {
-			fprintf(fp, "mpath %s ",
-			    mp_alg < IP_MP_ALG_MAX ? mp_alg_names[mp_alg] : "unknown");
-		}
-	}
-#endif
 	if (tb[RTA_GATEWAY] && filter.rvia.bitlen != host_len) {
-		fprintf(fp, "via %s ", 
+		fprintf(fp, "via %s ",
 			format_host(r->rtm_family,
 				    RTA_PAYLOAD(tb[RTA_GATEWAY]),
 				    RTA_DATA(tb[RTA_GATEWAY]),
+				    abuf, sizeof(abuf)));
+	}
+	if (tb[RTA_VIA]) {
+		size_t len = RTA_PAYLOAD(tb[RTA_VIA]) - 2;
+		struct rtvia *via = RTA_DATA(tb[RTA_VIA]);
+		fprintf(fp, "via %s %s ",
+			family_name(via->rtvia_family),
+			format_host(via->rtvia_family, len, via->rtvia_addr,
 				    abuf, sizeof(abuf)));
 	}
 	if (tb[RTA_OIF] && filter.oifmask != -1)
 		fprintf(fp, "dev %s ", ll_index_to_name(*(int*)RTA_DATA(tb[RTA_OIF])));
 
 	if (!(r->rtm_flags&RTM_F_CLONED)) {
-		if (r->rtm_table != RT_TABLE_MAIN && !filter.tb)
-			fprintf(fp, " table %s ", rtnl_rttable_n2a(r->rtm_table, b1, sizeof(b1)));
-		if (r->rtm_protocol != RTPROT_BOOT && filter.protocolmask != -1)
+		if ((table != RT_TABLE_MAIN || show_details > 0) && !filter.tb)
+			fprintf(fp, " table %s ", rtnl_rttable_n2a(table, b1, sizeof(b1)));
+		if ((r->rtm_protocol != RTPROT_BOOT || show_details > 0) && filter.protocolmask != -1)
 			fprintf(fp, " proto %s ", rtnl_rtprot_n2a(r->rtm_protocol, b1, sizeof(b1)));
-		if (r->rtm_scope != RT_SCOPE_UNIVERSE && filter.scopemask != -1)
+		if ((r->rtm_scope != RT_SCOPE_UNIVERSE || show_details > 0) && filter.scopemask != -1)
 			fprintf(fp, " scope %s ", rtnl_rtscope_n2a(r->rtm_scope, b1, sizeof(b1)));
 	}
 	if (tb[RTA_PREFSRC] && filter.rprefsrc.bitlen != host_len) {
 		/* Do not use format_host(). It is our local addr
 		   and symbolic name will not be useful.
 		 */
-		fprintf(fp, " src %s ", 
+		fprintf(fp, " src %s ",
 			rt_addr_n2a(r->rtm_family,
 				    RTA_PAYLOAD(tb[RTA_PREFSRC]),
 				    RTA_DATA(tb[RTA_PREFSRC]),
 				    abuf, sizeof(abuf)));
 	}
 	if (tb[RTA_PRIORITY])
-		fprintf(fp, " metric %d ", *(__u32*)RTA_DATA(tb[RTA_PRIORITY]));
+		fprintf(fp, " metric %u ", rta_getattr_u32(tb[RTA_PRIORITY]));
 	if (r->rtm_flags & RTNH_F_DEAD)
 		fprintf(fp, "dead ");
 	if (r->rtm_flags & RTNH_F_ONLINK)
 		fprintf(fp, "onlink ");
 	if (r->rtm_flags & RTNH_F_PERVASIVE)
 		fprintf(fp, "pervasive ");
-	if (r->rtm_flags & RTM_F_EQUALIZE)
-		fprintf(fp, "equalize ");
+	if (r->rtm_flags & RTNH_F_OFFLOAD)
+		fprintf(fp, "offload ");
 	if (r->rtm_flags & RTM_F_NOTIFY)
 		fprintf(fp, "notify ");
+	if (r->rtm_flags & RTNH_F_LINKDOWN)
+		fprintf(fp, "linkdown ");
+	if (tb[RTA_MARK]) {
+		unsigned int mark = *(unsigned int*)RTA_DATA(tb[RTA_MARK]);
+		if (mark) {
+			if (mark >= 16)
+				fprintf(fp, " mark 0x%x", mark);
+			else
+				fprintf(fp, " mark %u", mark);
+		}
+	}
 
 	if (tb[RTA_FLOW] && filter.realmmask != ~0U) {
-		__u32 to = *(__u32*)RTA_DATA(tb[RTA_FLOW]);
+		__u32 to = rta_getattr_u32(tb[RTA_FLOW]);
 		__u32 from = to>>16;
 		to &= 0xFFFF;
 		fprintf(fp, "realm%s ", from ? "s" : "");
@@ -424,14 +502,11 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		PRTFL(FAST, "fastroute");
 		PRTFL(NOTIFY, "notify");
 		PRTFL(TPROXY, "proxy");
-#ifdef RTCF_EQUALIZE
-		PRTFL(EQUALIZE, "equalize");
-#endif
+
 		if (flags)
 			fprintf(fp, "%s%x> ", first ? "<" : "", flags);
 		if (tb[RTA_CACHEINFO]) {
 			struct rta_cacheinfo *ci = RTA_DATA(tb[RTA_CACHEINFO]);
-			static int hz;
 			if (!hz)
 				hz = get_user_hz();
 			if (ci->rta_expires != 0)
@@ -446,19 +521,17 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 				if (ci->rta_lastuse != 0)
 					fprintf(fp, " age %dsec", ci->rta_lastuse/hz);
 			}
-#ifdef RTNETLINK_HAVE_PEERINFO
 			if (ci->rta_id)
 				fprintf(fp, " ipid 0x%04x", ci->rta_id);
 			if (ci->rta_ts || ci->rta_tsage)
-				fprintf(fp, " ts 0x%x tsage %dsec", ci->rta_ts, ci->rta_tsage);
-#endif
+				fprintf(fp, " ts 0x%x tsage %dsec",
+					ci->rta_ts, ci->rta_tsage);
 		}
 	} else if (r->rtm_family == AF_INET6) {
 		struct rta_cacheinfo *ci = NULL;
 		if (tb[RTA_CACHEINFO])
 			ci = RTA_DATA(tb[RTA_CACHEINFO]);
 		if ((r->rtm_flags & RTM_F_CLONED) || (ci && ci->rta_expires)) {
-			static int hz;
 			if (!hz)
 				hz = get_user_hz();
 			if (r->rtm_flags & RTM_F_CLONED)
@@ -490,44 +563,50 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 		if (mxrta[RTAX_LOCK])
 			mxlock = *(unsigned*)RTA_DATA(mxrta[RTAX_LOCK]);
 
-		for (i=2; i<=RTAX_MAX; i++) {
-			static char *mx_names[] = 
-			{
-				"mtu",
-				"window",
-				"rtt",
-				"rttvar",
-				"ssthresh",
-				"cwnd",
-				"advmss",
-				"reordering",
-			};
-			static int hz;
+		for (i=2; i<= RTAX_MAX; i++) {
+			__u32 val;
+
 			if (mxrta[i] == NULL)
 				continue;
-			if (!hz)
-				hz = get_hz();
-			if (i-2 < sizeof(mx_names)/sizeof(char*))
-				fprintf(fp, " %s", mx_names[i-2]);
+
+			if (i < sizeof(mx_names)/sizeof(char*) && mx_names[i])
+				fprintf(fp, " %s", mx_names[i]);
 			else
 				fprintf(fp, " metric %d", i);
+
 			if (mxlock & (1<<i))
 				fprintf(fp, " lock");
+			if (i != RTAX_CC_ALGO)
+				val = rta_getattr_u32(mxrta[i]);
 
-			if (i != RTAX_RTT && i != RTAX_RTTVAR)
-				fprintf(fp, " %u", *(unsigned*)RTA_DATA(mxrta[i]));
-			else {
-				unsigned val = *(unsigned*)RTA_DATA(mxrta[i]);
+			switch (i) {
+			case RTAX_FEATURES:
+				print_rtax_features(fp, val);
+				break;
+			case RTAX_HOPLIMIT:
+				if ((int)val == -1)
+					val = 0;
+				/* fall through */
+			default:
+				fprintf(fp, " %u", val);
+				break;
 
-				val *= 1000;
+			case RTAX_RTT:
+			case RTAX_RTTVAR:
+			case RTAX_RTO_MIN:
 				if (i == RTAX_RTT)
 					val /= 8;
-				else
+				else if (i == RTAX_RTTVAR)
 					val /= 4;
-				if (val >= hz)
-					fprintf(fp, " %ums", val/hz);
+
+				if (val >= 1000)
+					fprintf(fp, " %gs", val/1e3);
 				else
-					fprintf(fp, " %.2fms", (float)val/hz);
+					fprintf(fp, " %ums", val);
+				break;
+			case RTAX_CC_ALGO:
+				fprintf(fp, " %s", rta_getattr_str(mxrta[i]));
+				break;
 			}
 		}
 	}
@@ -555,11 +634,31 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 			if (nh->rtnh_len > sizeof(*nh)) {
 				parse_rtattr(tb, RTA_MAX, RTNH_DATA(nh), nh->rtnh_len - sizeof(*nh));
 				if (tb[RTA_GATEWAY]) {
-					fprintf(fp, " via %s ", 
+					fprintf(fp, " via %s ",
 						format_host(r->rtm_family,
 							    RTA_PAYLOAD(tb[RTA_GATEWAY]),
 							    RTA_DATA(tb[RTA_GATEWAY]),
 							    abuf, sizeof(abuf)));
+				}
+				if (tb[RTA_VIA]) {
+					size_t len = RTA_PAYLOAD(tb[RTA_VIA]) - 2;
+					struct rtvia *via = RTA_DATA(tb[RTA_VIA]);
+					fprintf(fp, "via %s %s ",
+						family_name(via->rtvia_family),
+						format_host(via->rtvia_family, len, via->rtvia_addr,
+							    abuf, sizeof(abuf)));
+				}
+				if (tb[RTA_FLOW]) {
+					__u32 to = rta_getattr_u32(tb[RTA_FLOW]);
+					__u32 from = to>>16;
+					to &= 0xFFFF;
+					fprintf(fp, " realm%s ", from ? "s" : "");
+					if (from) {
+						fprintf(fp, "%s/",
+							rtnl_rtrealm_n2a(from, b1, sizeof(b1)));
+					}
+					fprintf(fp, "%s",
+						rtnl_rtrealm_n2a(to, b1, sizeof(b1)));
 				}
 			}
 			if (r->rtm_flags&RTM_F_CLONED && r->rtm_type == RTN_MULTICAST) {
@@ -576,8 +675,28 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 				fprintf(fp, " onlink");
 			if (nh->rtnh_flags & RTNH_F_PERVASIVE)
 				fprintf(fp, " pervasive");
+			if (nh->rtnh_flags & RTNH_F_LINKDOWN)
+				fprintf(fp, " linkdown");
 			len -= NLMSG_ALIGN(nh->rtnh_len);
 			nh = RTNH_NEXT(nh);
+		}
+	}
+	if (tb[RTA_PREF]) {
+		unsigned int pref = rta_getattr_u8(tb[RTA_PREF]);
+		fprintf(fp, " pref ");
+
+		switch (pref) {
+		case ICMPV6_ROUTER_PREF_LOW:
+			fprintf(fp, "low");
+			break;
+		case ICMPV6_ROUTER_PREF_MEDIUM:
+			fprintf(fp, "medium");
+			break;
+		case ICMPV6_ROUTER_PREF_HIGH:
+			fprintf(fp, "high");
+			break;
+		default:
+			fprintf(fp, "%u", pref);
 		}
 	}
 	fprintf(fp, "\n");
@@ -586,16 +705,33 @@ int print_route(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
 }
 
 
-int parse_one_nh(struct rtattr *rta, struct rtnexthop *rtnh, int *argcp, char ***argvp)
+static int parse_one_nh(struct rtmsg *r, struct rtattr *rta,
+			struct rtnexthop *rtnh,
+			int *argcp, char ***argvp)
 {
 	int argc = *argcp;
 	char **argv = *argvp;
 
 	while (++argv, --argc > 0) {
 		if (strcmp(*argv, "via") == 0) {
+			inet_prefix addr;
+			int family;
 			NEXT_ARG();
-			rta_addattr32(rta, 4096, RTA_GATEWAY, get_addr32(*argv));
-			rtnh->rtnh_len += sizeof(struct rtattr) + 4;
+			family = read_family(*argv);
+			if (family == AF_UNSPEC)
+				family = r->rtm_family;
+			else
+				NEXT_ARG();
+			get_addr(&addr, *argv, family);
+			if (r->rtm_family == AF_UNSPEC)
+				r->rtm_family = addr.family;
+			if (addr.family == r->rtm_family) {
+				rta_addattr_l(rta, 4096, RTA_GATEWAY, &addr.data, addr.bytelen);
+				rtnh->rtnh_len += sizeof(struct rtattr) + addr.bytelen;
+			} else {
+				rta_addattr_l(rta, 4096, RTA_VIA, &addr.family, addr.bytelen+2);
+				rtnh->rtnh_len += sizeof(struct rtattr) + addr.bytelen+2;
+			}
 		} else if (strcmp(*argv, "dev") == 0) {
 			NEXT_ARG();
 			if ((rtnh->rtnh_ifindex = ll_name_to_index(*argv)) == 0) {
@@ -610,6 +746,13 @@ int parse_one_nh(struct rtattr *rta, struct rtnexthop *rtnh, int *argcp, char **
 			rtnh->rtnh_hops = w - 1;
 		} else if (strcmp(*argv, "onlink") == 0) {
 			rtnh->rtnh_flags |= RTNH_F_ONLINK;
+		} else if (matches(*argv, "realms") == 0) {
+			__u32 realm;
+			NEXT_ARG();
+			if (get_rt_realms_or_raw(&realm, *argv))
+				invarg("\"realm\" value is invalid\n", *argv);
+			rta_addattr32(rta, 4096, RTA_FLOW, realm);
+			rtnh->rtnh_len += sizeof(struct rtattr) + 4;
 		} else
 			break;
 	}
@@ -618,7 +761,8 @@ int parse_one_nh(struct rtattr *rta, struct rtnexthop *rtnh, int *argcp, char **
 	return 0;
 }
 
-int parse_nexthops(struct nlmsghdr *n, struct rtmsg *r, int argc, char **argv)
+static int parse_nexthops(struct nlmsghdr *n, struct rtmsg *r,
+			  int argc, char **argv)
 {
 	char buf[1024];
 	struct rtattr *rta = (void*)buf;
@@ -640,7 +784,7 @@ int parse_nexthops(struct nlmsghdr *n, struct rtmsg *r, int argc, char **argv)
 		memset(rtnh, 0, sizeof(*rtnh));
 		rtnh->rtnh_len = sizeof(*rtnh);
 		rta->rta_len += rtnh->rtnh_len;
-		parse_one_nh(rta, rtnh, &argc, &argv);
+		parse_one_nh(r, rta, rtnh, &argc, &argv);
 		rtnh = RTNH_NEXT(rtnh);
 	}
 
@@ -649,13 +793,12 @@ int parse_nexthops(struct nlmsghdr *n, struct rtmsg *r, int argc, char **argv)
 	return 0;
 }
 
-
 int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 {
 	struct {
-		struct nlmsghdr 	n;
-		struct rtmsg 		r;
-		char   			buf[1024];
+		struct nlmsghdr	n;
+		struct rtmsg		r;
+		char  			buf[1024];
 	} req;
 	char  mxbuf[256];
 	struct rtattr * mxrta = (void*)mxbuf;
@@ -666,6 +809,8 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 	int nhs_ok = 0;
 	int scope_ok = 0;
 	int table_ok = 0;
+	int raw = 0;
+	int type_ok = 0;
 
 	memset(&req, 0, sizeof(req));
 
@@ -693,14 +838,33 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (req.r.rtm_family == AF_UNSPEC)
 				req.r.rtm_family = addr.family;
 			addattr_l(&req.n, sizeof(req), RTA_PREFSRC, &addr.data, addr.bytelen);
-		} else if (strcmp(*argv, "via") == 0) {
+		} else if (strcmp(*argv, "as") == 0) {
 			inet_prefix addr;
-			gw_ok = 1;
 			NEXT_ARG();
+			if (strcmp(*argv, "to") == 0) {
+				NEXT_ARG();
+			}
 			get_addr(&addr, *argv, req.r.rtm_family);
 			if (req.r.rtm_family == AF_UNSPEC)
 				req.r.rtm_family = addr.family;
-			addattr_l(&req.n, sizeof(req), RTA_GATEWAY, &addr.data, addr.bytelen);
+			addattr_l(&req.n, sizeof(req), RTA_NEWDST, &addr.data, addr.bytelen);
+		} else if (strcmp(*argv, "via") == 0) {
+			inet_prefix addr;
+			int family;
+			gw_ok = 1;
+			NEXT_ARG();
+			family = read_family(*argv);
+			if (family == AF_UNSPEC)
+				family = req.r.rtm_family;
+			else
+				NEXT_ARG();
+			get_addr(&addr, *argv, family);
+			if (req.r.rtm_family == AF_UNSPEC)
+				req.r.rtm_family = addr.family;
+			if (addr.family == req.r.rtm_family)
+				addattr_l(&req.n, sizeof(req), RTA_GATEWAY, &addr.data, addr.bytelen);
+			else
+				addattr_l(&req.n, sizeof(req), RTA_VIA, &addr.family, addr.bytelen+2);
 		} else if (strcmp(*argv, "from") == 0) {
 			inet_prefix addr;
 			NEXT_ARG();
@@ -719,7 +883,7 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			req.r.rtm_tos = tos;
 		} else if (matches(*argv, "metric") == 0 ||
 			   matches(*argv, "priority") == 0 ||
-			   matches(*argv, "preference") == 0) {
+			   strcmp(*argv, "preference") == 0) {
 			__u32 metric;
 			NEXT_ARG();
 			if (get_u32(&metric, *argv, 0))
@@ -732,7 +896,6 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				invarg("invalid \"scope\" value\n", *argv);
 			req.r.rtm_scope = scope;
 			scope_ok = 1;
-
                 } else if (strcmp(*argv, "lifetime") == 0) {
                     /* this one is added by thomson */
                         static struct ifa_cacheinfo ci;
@@ -756,7 +919,16 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (get_unsigned(&mtu, *argv, 0))
 				invarg("\"mtu\" value is invalid\n", *argv);
 			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_MTU, mtu);
-#ifdef RTAX_ADVMSS
+		} else if (strcmp(*argv, "hoplimit") == 0) {
+			unsigned hoplimit;
+			NEXT_ARG();
+			if (strcmp(*argv, "lock") == 0) {
+				mxlock |= (1<<RTAX_HOPLIMIT);
+				NEXT_ARG();
+			}
+			if (get_unsigned(&hoplimit, *argv, 0))
+				invarg("\"hoplimit\" value is invalid\n", *argv);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_HOPLIMIT, hoplimit);
 		} else if (strcmp(*argv, "advmss") == 0) {
 			unsigned mss;
 			NEXT_ARG();
@@ -767,8 +939,6 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (get_unsigned(&mss, *argv, 0))
 				invarg("\"mss\" value is invalid\n", *argv);
 			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_ADVMSS, mss);
-#endif
-#ifdef RTAX_REORDERING
 		} else if (matches(*argv, "reordering") == 0) {
 			unsigned reord;
 			NEXT_ARG();
@@ -779,7 +949,6 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (get_unsigned(&reord, *argv, 0))
 				invarg("\"reordering\" value is invalid\n", *argv);
 			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_REORDERING, reord);
-#endif
 		} else if (strcmp(*argv, "rtt") == 0) {
 			unsigned rtt;
 			NEXT_ARG();
@@ -787,9 +956,19 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				mxlock |= (1<<RTAX_RTT);
 				NEXT_ARG();
 			}
-			if (get_unsigned(&rtt, *argv, 0))
+			if (get_time_rtt(&rtt, *argv, &raw))
 				invarg("\"rtt\" value is invalid\n", *argv);
-			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_RTT, rtt);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_RTT,
+				(raw) ? rtt : rtt * 8);
+		} else if (strcmp(*argv, "rto_min") == 0) {
+			unsigned rto_min;
+			NEXT_ARG();
+			mxlock |= (1<<RTAX_RTO_MIN);
+			if (get_time_rtt(&rto_min, *argv, &raw))
+				invarg("\"rto_min\" value is invalid\n",
+				       *argv);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_RTO_MIN,
+				      rto_min);
 		} else if (matches(*argv, "window") == 0) {
 			unsigned win;
 			NEXT_ARG();
@@ -810,6 +989,56 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			if (get_unsigned(&win, *argv, 0))
 				invarg("\"cwnd\" value is invalid\n", *argv);
 			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_CWND, win);
+		} else if (matches(*argv, "initcwnd") == 0) {
+			unsigned win;
+			NEXT_ARG();
+			if (strcmp(*argv, "lock") == 0) {
+				mxlock |= (1<<RTAX_INITCWND);
+				NEXT_ARG();
+			}
+			if (get_unsigned(&win, *argv, 0))
+				invarg("\"initcwnd\" value is invalid\n", *argv);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_INITCWND, win);
+		} else if (matches(*argv, "initrwnd") == 0) {
+			unsigned win;
+			NEXT_ARG();
+			if (strcmp(*argv, "lock") == 0) {
+				mxlock |= (1<<RTAX_INITRWND);
+				NEXT_ARG();
+			}
+			if (get_unsigned(&win, *argv, 0))
+				invarg("\"initrwnd\" value is invalid\n", *argv);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_INITRWND, win);
+		} else if (matches(*argv, "features") == 0) {
+			unsigned int features = 0;
+
+			while (argc > 0) {
+				NEXT_ARG();
+
+				if (strcmp(*argv, "ecn") == 0)
+					features |= RTAX_FEATURE_ECN;
+				else
+					invarg("\"features\" value not valid\n", *argv);
+				break;
+			}
+
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_FEATURES, features);
+		} else if (matches(*argv, "quickack") == 0) {
+			unsigned quickack;
+			NEXT_ARG();
+			if (get_unsigned(&quickack, *argv, 0))
+				invarg("\"quickack\" value is invalid\n", *argv);
+			if (quickack != 1 && quickack != 0)
+				invarg("\"quickack\" value should be 0 or 1\n", *argv);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_QUICKACK, quickack);
+		} else if (matches(*argv, "congctl") == 0) {
+			NEXT_ARG();
+			if (strcmp(*argv, "lock") == 0) {
+				mxlock |= 1 << RTAX_CC_ALGO;
+				NEXT_ARG();
+			}
+			rta_addattr_l(mxrta, sizeof(mxbuf), RTAX_CC_ALGO, *argv,
+				      strlen(*argv));
 		} else if (matches(*argv, "rttvar") == 0) {
 			unsigned win;
 			NEXT_ARG();
@@ -817,9 +1046,10 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				mxlock |= (1<<RTAX_RTTVAR);
 				NEXT_ARG();
 			}
-			if (get_unsigned(&win, *argv, 0))
+			if (get_time_rtt(&win, *argv, &raw))
 				invarg("\"rttvar\" value is invalid\n", *argv);
-			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_RTTVAR, win);
+			rta_addattr32(mxrta, sizeof(mxbuf), RTAX_RTTVAR,
+				(raw) ? win : win * 4);
 		} else if (matches(*argv, "ssthresh") == 0) {
 			unsigned win;
 			NEXT_ARG();
@@ -833,14 +1063,11 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 		} else if (matches(*argv, "realms") == 0) {
 			__u32 realm;
 			NEXT_ARG();
-			if (get_rt_realms(&realm, *argv))
+			if (get_rt_realms_or_raw(&realm, *argv))
 				invarg("\"realm\" value is invalid\n", *argv);
 			addattr32(&req.n, sizeof(req), RTA_FLOW, realm);
 		} else if (strcmp(*argv, "onlink") == 0) {
 			req.r.rtm_flags |= RTNH_F_ONLINK;
-		} else if (matches(*argv, "equalize") == 0 ||
-			   strcmp(*argv, "eql") == 0) {
-			req.r.rtm_flags |= RTM_F_EQUALIZE;
 		} else if (strcmp(*argv, "nexthop") == 0) {
 			nhs_ok = 1;
 			break;
@@ -855,26 +1082,29 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			NEXT_ARG();
 			if (rtnl_rttable_a2n(&tid, *argv))
 				invarg("\"table\" value is invalid\n", *argv);
-			req.r.rtm_table = tid;
+			if (tid < 256)
+				req.r.rtm_table = tid;
+			else {
+				req.r.rtm_table = RT_TABLE_UNSPEC;
+				addattr32(&req.n, sizeof(req), RTA_TABLE, tid);
+			}
 			table_ok = 1;
 		} else if (strcmp(*argv, "dev") == 0 ||
 			   strcmp(*argv, "oif") == 0) {
 			NEXT_ARG();
 			d = *argv;
-		} else if (strcmp(*argv, "mpath") == 0 ||
-			   strcmp(*argv, "mp") == 0) {
-#if 0
-			int i;
-			__u32 mp_alg = 0 /* IP_MP_ALG_NONE */;
-
+		} else if (matches(*argv, "pref") == 0) {
+			__u8 pref;
 			NEXT_ARG();
-			for (i = 1; i < ARRAY_SIZE(mp_alg_names); i++)
-				if (strcmp(*argv, mp_alg_names[i]) == 0)
-					mp_alg = i;
-			if (mp_alg == IP_MP_ALG_NONE)
-				invarg("\"mpath\" value is invalid\n", *argv);
-			addattr_l(&req.n, sizeof(req), RTA_MP_ALGO, &mp_alg, sizeof(mp_alg));
-#endif
+			if (strcmp(*argv, "low") == 0)
+				pref = ICMPV6_ROUTER_PREF_LOW;
+			else if (strcmp(*argv, "medium") == 0)
+				pref = ICMPV6_ROUTER_PREF_MEDIUM;
+			else if (strcmp(*argv, "high") == 0)
+				pref = ICMPV6_ROUTER_PREF_HIGH;
+			else if (get_u8(&pref, *argv, 0))
+				invarg("\"pref\" value is invalid\n", *argv);
+			addattr8(&req.n, sizeof(req), RTA_PREF, pref);
 		} else {
 			int type;
 			inet_prefix dst;
@@ -883,11 +1113,10 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 				NEXT_ARG();
 			}
 			if ((**argv < '0' || **argv > '9') &&
-			    (**argv < 'a' || **argv > 'f') &&
-			    (**argv < 'A' || **argv > 'F') &&
 			    rtnl_rtntype_a2n(&type, *argv) == 0) {
 				NEXT_ARG();
 				req.r.rtm_type = type;
+				type_ok = 1;
 			}
 
 			if (matches(*argv, "help") == 0)
@@ -905,18 +1134,19 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 		argc--; argv++;
 	}
 
+	if (!dst_ok)
+		usage();
+
 	if (d || nhs_ok)  {
+		int idx;
 
-            ll_init_map(&rth);
-
-            if (d) {
-                int idx;
-                if ((idx = ll_name_to_index(d)) == 0) {
-                    fprintf(stderr, "Cannot find device \"%s\"\n", d);
-                    return -1;
-                }
-                addattr32(&req.n, sizeof(req), RTA_OIF, idx);
-            }
+		if (d) {
+			if ((idx = ll_name_to_index(d)) == 0) {
+				fprintf(stderr, "Cannot find device \"%s\"\n", d);
+				return -1;
+			}
+			addattr32(&req.n, sizeof(req), RTA_OIF, idx);
+		}
 	}
 
 	if (mxrta->rta_len > RTA_LENGTH(0)) {
@@ -928,6 +1158,9 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 	if (nhs_ok)
 		parse_nexthops(&req.n, &req.r, argc, argv);
 
+	if (req.r.rtm_family == AF_UNSPEC)
+		req.r.rtm_family = AF_INET;
+
 	if (!table_ok) {
 		if (req.r.rtm_type == RTN_LOCAL ||
 		    req.r.rtm_type == RTN_BROADCAST ||
@@ -936,8 +1169,11 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 			req.r.rtm_table = RT_TABLE_LOCAL;
 	}
 	if (!scope_ok) {
-		if (req.r.rtm_type == RTN_LOCAL ||
-		    req.r.rtm_type == RTN_NAT)
+		if (req.r.rtm_family == AF_INET6 ||
+		    req.r.rtm_family == AF_MPLS)
+			req.r.rtm_scope = RT_SCOPE_UNIVERSE;
+		else if (req.r.rtm_type == RTN_LOCAL ||
+			 req.r.rtm_type == RTN_NAT)
 			req.r.rtm_scope = RT_SCOPE_HOST;
 		else if (req.r.rtm_type == RTN_BROADCAST ||
 			 req.r.rtm_type == RTN_MULTICAST ||
@@ -952,10 +1188,13 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
 		}
 	}
 
-	if (req.r.rtm_family == AF_UNSPEC)
-		req.r.rtm_family = AF_INET;
+	if (!type_ok && req.r.rtm_family == AF_MPLS)
+		req.r.rtm_type = RTN_UNICAST;
 
-	return rtnl_talk(&rth, &req.n, 0, 0, NULL, NULL, NULL);
+	if (rtnl_talk(&rth, &req.n, NULL, 0) < 0)
+		return -2;
+
+	return 0;
 }
 
 static int rtnl_rtcache_request(struct rtnl_handle *rth, int family)
@@ -990,32 +1229,87 @@ static int iproute_flush_cache(void)
 	char *buffer = "-1";
 
 	if (flush_fd < 0) {
-		fprintf (stderr, "Cannot open \"%s\"\n", ROUTE_FLUSH_PATH);
+		fprintf (stderr, "Cannot open \"%s\": %s\n",
+				ROUTE_FLUSH_PATH, strerror(errno));
 		return -1;
 	}
 
 	len = strlen (buffer);
-		
+
 	if ((write (flush_fd, (void *)buffer, len)) < len) {
 		fprintf (stderr, "Cannot flush routing cache\n");
-                close(flush_fd);
+		close(flush_fd);
 		return -1;
 	}
 	close(flush_fd);
 	return 0;
 }
 
+static __u32 route_dump_magic = 0x45311224;
 
-static int iproute_list_or_flush(int argc, char **argv, int flush)
+static int save_route(const struct sockaddr_nl *who, struct nlmsghdr *n,
+		      void *arg)
+{
+	int ret;
+	int len = n->nlmsg_len;
+	struct rtmsg *r = NLMSG_DATA(n);
+	struct rtattr *tb[RTA_MAX+1];
+	int host_len;
+
+	host_len = af_bit_len(r->rtm_family);
+	len -= NLMSG_LENGTH(sizeof(*r));
+	parse_rtattr(tb, RTA_MAX, RTM_RTA(r), len);
+
+	if (!filter_nlmsg(n, tb, host_len))
+		return 0;
+
+	ret = write(STDOUT_FILENO, n, n->nlmsg_len);
+	if ((ret > 0) && (ret != n->nlmsg_len)) {
+		fprintf(stderr, "Short write while saving nlmsg\n");
+		ret = -EIO;
+	}
+
+	return ret == n->nlmsg_len ? 0 : ret;
+}
+
+static int save_route_prep(void)
+{
+	int ret;
+
+	if (isatty(STDOUT_FILENO)) {
+		fprintf(stderr, "Not sending a binary stream to stdout\n");
+		return -1;
+	}
+
+	ret = write(STDOUT_FILENO, &route_dump_magic, sizeof(route_dump_magic));
+	if (ret != sizeof(route_dump_magic)) {
+		fprintf(stderr, "Can't write magic to dump file\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static int iproute_list_flush_or_save(int argc, char **argv, int action)
 {
 	int do_ipv6 = preferred_family;
 	char *id = NULL;
 	char *od = NULL;
+	unsigned int mark = 0;
+	rtnl_filter_t filter_fn;
 
-	iproute_reset_filter();
+	if (action == IPROUTE_SAVE) {
+		if (save_route_prep())
+			return -1;
+
+		filter_fn = save_route;
+	} else
+		filter_fn = print_route;
+
+	iproute_reset_filter(0);
 	filter.tb = RT_TABLE_MAIN;
 
-	if (flush && argc <= 0) {
+	if ((action == IPROUTE_FLUSH) && argc <= 0) {
 		fprintf(stderr, "\"ip route flush\" requires arguments.\n");
 		return -1;
 	}
@@ -1026,19 +1320,19 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 			NEXT_ARG();
 			if (rtnl_rttable_a2n(&tid, *argv)) {
 				if (strcmp(*argv, "all") == 0) {
-					tid = 0;
+					filter.tb = 0;
 				} else if (strcmp(*argv, "cache") == 0) {
-					tid = -1;
+					filter.cloned = 1;
 				} else if (strcmp(*argv, "help") == 0) {
 					usage();
 				} else {
 					invarg("table id value is invalid\n", *argv);
 				}
-			}
-			filter.tb = tid;
+			} else
+				filter.tb = tid;
 		} else if (matches(*argv, "cached") == 0 ||
 			   matches(*argv, "cloned") == 0) {
-			filter.tb = -1;
+			filter.cloned = 1;
 		} else if (strcmp(*argv, "tos") == 0 ||
 			   matches(*argv, "dsfield") == 0) {
 			__u32 tos;
@@ -1083,16 +1377,26 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 		} else if (strcmp(*argv, "iif") == 0) {
 			NEXT_ARG();
 			id = *argv;
-		} else if (strcmp(*argv, "via") == 0) {
+		} else if (strcmp(*argv, "mark") == 0) {
 			NEXT_ARG();
-			get_prefix(&filter.rvia, *argv, do_ipv6);
+			get_unsigned(&mark, *argv, 0);
+			filter.markmask = -1;
+		} else if (strcmp(*argv, "via") == 0) {
+			int family;
+			NEXT_ARG();
+			family = read_family(*argv);
+			if (family == AF_UNSPEC)
+				family = do_ipv6;
+			else
+				NEXT_ARG();
+			get_prefix(&filter.rvia, *argv, family);
 		} else if (strcmp(*argv, "src") == 0) {
 			NEXT_ARG();
 			get_prefix(&filter.rprefsrc, *argv, do_ipv6);
 		} else if (matches(*argv, "realms") == 0) {
 			__u32 realm;
 			NEXT_ARG();
-			if (get_rt_realms(&realm, *argv))
+			if (get_rt_realms_or_raw(&realm, *argv))
 				invarg("invalid realms\n", *argv);
 			filter.realm = realm;
 			filter.realmmask = ~0U;
@@ -1142,8 +1446,6 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 	if (do_ipv6 == AF_UNSPEC && filter.tb)
 		do_ipv6 = AF_INET;
 
-	ll_init_map(&rth);
-
 	if (id || od)  {
 		int idx;
 
@@ -1164,13 +1466,14 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 			filter.oifmask = -1;
 		}
 	}
+	filter.mark = mark;
 
-	if (flush) {
+	if (action == IPROUTE_FLUSH) {
 		int round = 0;
 		char flushb[4096-512];
 		time_t start = time(0);
 
-		if (filter.tb == -1) {
+		if (filter.cloned) {
 			if (do_ipv6 != AF_INET6) {
 				iproute_flush_cache();
 				if (show_stats)
@@ -1190,16 +1493,17 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 				exit(1);
 			}
 			filter.flushed = 0;
-			if (rtnl_dump_filter(&rth, print_route, stdout, NULL, NULL) < 0) {
+			if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
 				fprintf(stderr, "Flush terminated\n");
 				exit(1);
 			}
 			if (filter.flushed == 0) {
-				if (round == 0) {
-					if (filter.tb != -1 || do_ipv6 == AF_INET6)
-						fprintf(stderr, "Nothing to flush.\n");
-				} else if (show_stats)
-					printf("*** Flush is complete after %d round%s ***\n", round, round>1?"s":"");
+				if (show_stats) {
+					if (round == 0 && (!filter.cloned || do_ipv6 == AF_INET6))
+						printf("Nothing to flush.\n");
+					else
+						printf("*** Flush is complete after %d round%s ***\n", round, round>1?"s":"");
+				}
 				fflush(stdout);
 				return 0;
 			}
@@ -1209,7 +1513,7 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 
 			if (time(0) - start > 30) {
 				printf("\n*** Flush not completed after %ld seconds, %d entries remain ***\n",
-				       time(0) - start, filter.flushed);
+				       (long)(time(0) - start), filter.flushed);
 				exit(1);
 			}
 
@@ -1220,7 +1524,7 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 		}
 	}
 
-	if (filter.tb != -1) {
+	if (!filter.cloned) {
 		if (rtnl_wilddump_request(&rth, do_ipv6, RTM_GETROUTE) < 0) {
 			perror("Cannot send dump request");
 			exit(1);
@@ -1232,7 +1536,7 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 		}
 	}
 
-	if (rtnl_dump_filter(&rth, print_route, stdout, NULL, NULL) < 0) {
+	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
 		fprintf(stderr, "Dump terminated\n");
 		exit(1);
 	}
@@ -1241,21 +1545,23 @@ static int iproute_list_or_flush(int argc, char **argv, int flush)
 }
 
 
-int iproute_get(int argc, char **argv)
+static int iproute_get(int argc, char **argv)
 {
 	struct {
-		struct nlmsghdr 	n;
-		struct rtmsg 		r;
-		char   			buf[1024];
+		struct nlmsghdr	n;
+		struct rtmsg		r;
+		char  			buf[1024];
 	} req;
 	char  *idev = NULL;
 	char  *odev = NULL;
 	int connected = 0;
 	int from_ok = 0;
+	unsigned int mark = 0;
 
 	memset(&req, 0, sizeof(req));
 
-	iproute_reset_filter();
+	iproute_reset_filter(0);
+	filter.cloned = 2;
 
 	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
 	req.n.nlmsg_flags = NLM_F_REQUEST;
@@ -1268,7 +1574,7 @@ int iproute_get(int argc, char **argv)
 	req.r.rtm_src_len = 0;
 	req.r.rtm_dst_len = 0;
 	req.r.rtm_tos = 0;
-	
+
 	while (argc > 0) {
 		if (strcmp(*argv, "tos") == 0 ||
 		    matches(*argv, "dsfield") == 0) {
@@ -1292,6 +1598,9 @@ int iproute_get(int argc, char **argv)
 		} else if (matches(*argv, "iif") == 0) {
 			NEXT_ARG();
 			idev = *argv;
+		} else if (matches(*argv, "mark") == 0) {
+			NEXT_ARG();
+			get_unsigned(&mark, *argv, 0);
 		} else if (matches(*argv, "oif") == 0 ||
 			   strcmp(*argv, "dev") == 0) {
 			NEXT_ARG();
@@ -1318,11 +1627,9 @@ int iproute_get(int argc, char **argv)
 	}
 
 	if (req.r.rtm_dst_len == 0) {
-		fprintf(stderr, "need at least destination address\n");
+		fprintf(stderr, "need at least a destination address\n");
 		exit(1);
 	}
-
-	ll_init_map(&rth);
 
 	if (idev || odev)  {
 		int idx;
@@ -1342,12 +1649,14 @@ int iproute_get(int argc, char **argv)
 			addattr32(&req.n, sizeof(req), RTA_OIF, idx);
 		}
 	}
+	if (mark)
+		addattr32(&req.n, sizeof(req), RTA_MARK, mark);
 
 	if (req.r.rtm_family == AF_UNSPEC)
 		req.r.rtm_family = AF_INET;
 
-	if (rtnl_talk(&rth, &req.n, 0, 0, &req.n, NULL, NULL) < 0)
-		exit(2);
+	if (rtnl_talk(&rth, &req.n, &req.n, sizeof(req)) < 0)
+		return -2;
 
 	if (connected && !from_ok) {
 		struct rtmsg *r = NLMSG_DATA(&req.n);
@@ -1382,35 +1691,100 @@ int iproute_get(int argc, char **argv)
 			tb[RTA_OIF]->rta_type = 0;
 		if (tb[RTA_GATEWAY])
 			tb[RTA_GATEWAY]->rta_type = 0;
+		if (tb[RTA_VIA])
+			tb[RTA_VIA]->rta_type = 0;
 		if (!idev && tb[RTA_IIF])
 			tb[RTA_IIF]->rta_type = 0;
 		req.n.nlmsg_flags = NLM_F_REQUEST;
 		req.n.nlmsg_type = RTM_GETROUTE;
 
-		if (rtnl_talk(&rth, &req.n, 0, 0, &req.n, NULL, NULL) < 0)
-			exit(2);
+		if (rtnl_talk(&rth, &req.n, &req.n, sizeof(req)) < 0)
+			return -2;
 	}
 
 	if (print_route(NULL, &req.n, (void*)stdout) < 0) {
 		fprintf(stderr, "An error :-)\n");
-		exit(1);
+		return -1;
 	}
 
-	exit(0);
+	return 0;
 }
 
-void iproute_reset_filter()
+static int restore_handler(const struct sockaddr_nl *nl,
+			   struct rtnl_ctrl_data *ctrl,
+			   struct nlmsghdr *n, void *arg)
+{
+	int ret;
+
+	n->nlmsg_flags |= NLM_F_REQUEST | NLM_F_CREATE | NLM_F_ACK;
+
+	ll_init_map(&rth);
+
+	ret = rtnl_talk(&rth, n, n, sizeof(*n));
+	if ((ret < 0) && (errno == EEXIST))
+		ret = 0;
+
+	return ret;
+}
+
+static int route_dump_check_magic(void)
+{
+	int ret;
+	__u32 magic = 0;
+
+	if (isatty(STDIN_FILENO)) {
+		fprintf(stderr, "Can't restore route dump from a terminal\n");
+		return -1;
+	}
+
+	ret = fread(&magic, sizeof(magic), 1, stdin);
+	if (magic != route_dump_magic) {
+		fprintf(stderr, "Magic mismatch (%d elems, %x magic)\n", ret, magic);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int iproute_restore(void)
+{
+	if (route_dump_check_magic())
+		exit(-1);
+
+	exit(rtnl_from_file(stdin, &restore_handler, NULL));
+}
+
+static int show_handler(const struct sockaddr_nl *nl,
+			struct rtnl_ctrl_data *ctrl,
+			struct nlmsghdr *n, void *arg)
+{
+	print_route(nl, n, stdout);
+	return 0;
+}
+
+static int iproute_showdump(void)
+{
+	if (route_dump_check_magic())
+		exit(-1);
+
+	exit(rtnl_from_file(stdin, &show_handler, NULL));
+}
+
+void iproute_reset_filter(int ifindex)
 {
 	memset(&filter, 0, sizeof(filter));
 	filter.mdst.bitlen = -1;
 	filter.msrc.bitlen = -1;
+	filter.oif = ifindex;
+	if (filter.oif > 0)
+		filter.oifmask = -1;
 }
 
 int do_iproute(int argc, char **argv)
 {
 	if (argc < 1)
-		return iproute_list_or_flush(0, NULL, 0);
-	
+		return iproute_list_flush_or_save(0, NULL, IPROUTE_LIST);
+
 	if (matches(*argv, "add") == 0)
 		return iproute_modify(RTM_NEWROUTE, NLM_F_CREATE|NLM_F_EXCL,
 				      argc-1, argv+1);
@@ -1434,14 +1808,19 @@ int do_iproute(int argc, char **argv)
 				      argc-1, argv+1);
 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
 	    || matches(*argv, "lst") == 0)
-		return iproute_list_or_flush(argc-1, argv+1, 0);
+		return iproute_list_flush_or_save(argc-1, argv+1, IPROUTE_LIST);
 	if (matches(*argv, "get") == 0)
 		return iproute_get(argc-1, argv+1);
 	if (matches(*argv, "flush") == 0)
-		return iproute_list_or_flush(argc-1, argv+1, 1);
+		return iproute_list_flush_or_save(argc-1, argv+1, IPROUTE_FLUSH);
+	if (matches(*argv, "save") == 0)
+		return iproute_list_flush_or_save(argc-1, argv+1, IPROUTE_SAVE);
+	if (matches(*argv, "restore") == 0)
+		return iproute_restore();
+	if (matches(*argv, "showdump") == 0)
+		return iproute_showdump();
 	if (matches(*argv, "help") == 0)
 		usage();
 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip route help\".\n", *argv);
 	exit(-1);
 }
-

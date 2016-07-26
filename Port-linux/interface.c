@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include <net/if.h>
+//#include <net/if.h>
 
 #include "ethtool-local.h"
 #include "interface.h"
