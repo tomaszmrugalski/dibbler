@@ -51,7 +51,8 @@ void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
 
 
 TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
-    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT), ObeyRaBits_(false)
+    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT), InactiveMode(false),
+     Digest_(DIGEST_NONE), ObeyRaBits_(false)
 {
 
 #ifdef MOD_REMOTE_AUTOCONF
