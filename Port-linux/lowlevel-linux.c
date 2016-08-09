@@ -34,7 +34,7 @@
 #include <fnmatch.h>
 #include <time.h>
 #include <errno.h>
-
+#include <stdint.h>
 
 #include "libnetlink.h"
 #include "ll_map.h"
@@ -365,51 +365,11 @@ void ipaddr_global_get(int *count, char **bufPtr, int ifindex, struct nlmsg_list
 int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen, 
                       unsigned long preferred, unsigned long valid, int mode)
 {
-#if 0
-    /* This is an alternate code that call do_ipaddr. This function is defined
-       in ip/ipaddress.c in iproute2 package. It is not currently imported into
-       Dibbler sources. */
-    char* argv[8];
-
-    switch (mode) {
-    case ADDROPER_ADD:
-        argv[0] = "add";
-        break;
-    case ADDROPER_DEL:
-        argv[0] = "delete";
-    case ADDROPER_UPDATE:
-        argv[0] = "replace";
-        break;
-    }
-    char buf[64];
-    sprintf(buf, "%s/%d", addr, prefixLen);
-
-    char txt_valid[32];
-    char txt_pref[32];
-
-    sprintf(txt_valid, "%lu", valid);
-    sprintf(txt_pref, "%lu", preferred);
-    
-    argv[1] = buf;
-    argv[2] = "dev";
-    argv[3] = ifacename;
-    argv[4] = "valid_lft";
-    argv[5] = txt_valid;
-    argv[6] = "preferred_lft";
-    argv[7] = txt_pref;
-
-    int status = do_ipaddr(8, argv);
-    if (status < 0) {
-        return LOWLEVEL_ERROR_UNSPEC;
-    } else {
-        return LOWLEVEL_NO_ERROR;
-    }
-#else    
     struct rtnl_handle rth;
     struct {
-	struct nlmsghdr 	n;
-	struct ifaddrmsg 	ifa;
-	char   			buf[256];
+	struct nlmsghdr n;
+	struct ifaddrmsg ifa;
+	char buf[256];
     } req;
     inet_prefix lcl;
     /* inet_prefix peer; */
@@ -424,29 +384,35 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
 #ifdef LOWLEVEL_DEBUG
     printf("### iface=%s, addr=%s, add=%d ###\n", ifacename, addr, add);
 #endif
-    
+
+    /* clear the request structure */
     memset(&req, 0, sizeof(req));
-    req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
+
     switch (mode) {
-    case ADDROPER_DEL:
-        req.n.nlmsg_type = RTM_DELADDR; /* del address */
+    case ADDROPER_ADD: /* add address or prefix */
+        req.n.nlmsg_type = RTM_NEWADDR;
+        req.n.nlmsg_flags = NLM_F_CREATE|NLM_F_EXCL;
+        break;
+    case ADDROPER_UPDATE: /* update address or prefix */
+        req.n.nlmsg_type = RTM_NEWADDR;
+        req.n.nlmsg_flags = NLM_F_REPLACE; /* used for change command */
+        /*req.n.nlmsg_flags = NLM_F_REPLACE | NLM_F_CREATE; /* used for replace command */
+        break;
+    case ADDROPER_DEL: /* delete address or prefix */
+        req.n.nlmsg_type = RTM_DELADDR;
         req.n.nlmsg_flags = NLM_F_REQUEST;
         break;
-    case ADDROPER_ADD:
-        req.n.nlmsg_type = RTM_NEWADDR; /* add address */
-        req.n.nlmsg_flags = NLM_F_REQUEST |NLM_F_CREATE|NLM_F_EXCL;
-        break;
-    case ADDROPER_UPDATE:
-        req.n.nlmsg_type = RTM_NEWADDR; /* update address */
-        req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_REPLACE;
-        break;
     }
+
+    req.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifaddrmsg));
+    req.n.nlmsg_flags = NLM_F_REQUEST | req.n.nlmsg_flags;
+
     req.ifa.ifa_family = AF_INET6;
     req.ifa.ifa_flags = 0;
     req.ifa.ifa_prefixlen = prefixLen;
     
     get_prefix_1(&lcl, (char*)addr, AF_INET6);
-    
+
     addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
     local_len = lcl.bytelen;
 
@@ -476,6 +442,19 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
         rtnl_close(&rth);
 	return LOWLEVEL_ERROR_UNSPEC;
     }
+
+#if 0
+    /* define cache info only if preferred or valid are defined */
+    if ((preferred != UINT32_MAX) || (valid != UINT32_MAX)) {
+        memset(&ci, 0, sizeof(ci));
+        ci.ifa_prefered = preferred;
+        ci.ifa_valid = valid;
+        addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
+    }
+#endif
+
+    rtnl_open(&rth, 0);
+    ll_init_map(&rth);
     
     status = rtnl_talk(&rth, &req.n, NULL, 0);
     rtnl_close(&rth);
@@ -484,7 +463,6 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     } else {
         return LOWLEVEL_NO_ERROR;
     }
-#endif    
 }
 
 int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, unsigned long pref,
