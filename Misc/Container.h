@@ -24,6 +24,8 @@ public:
         lista.clear();
     }
 
+    TContainer(const TContainer& old);
+
     void append(const TYP &foo) {
         lista.push_back(foo);
     }
@@ -101,13 +103,21 @@ TContainer<TYP>::TContainer() {
 
 template <class TYP>
 void TContainer<TYP>::clear() {
-        lista.clear();
+    lista.clear();
 }
 
 template <class TYP>
 void TContainer<TYP>::first() {
-        it=lista.begin();
-        return;
+    it=lista.begin();
+    return;
 }
+
+template <class TYP>
+TContainer<TYP>::TContainer(const TContainer& old) {
+    for (typename std::list<TYP>::const_iterator elem = old.lista.begin(); elem != old.lista.end(); ++elem) {
+        lista.push_back(*elem);
+    }
+}
+
 
 #endif
