@@ -347,7 +347,9 @@ unsigned long TClntMsg::getTimeout()
 
 void TClntMsg::send()
 {
-    char* pkt = new char[getSize()];
+    size_t size = getSize();
+    char* pkt = new char[size];
+    memset(pkt, 0, size);
 
     srand((uint32_t)time(NULL));
     if (!RC)
@@ -365,7 +367,7 @@ void TClntMsg::send()
 
     RC++;
 
-    this->storeSelf(pkt);
+    storeSelf(pkt);
 
     SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(Iface);
     if (!ptrIface) {
