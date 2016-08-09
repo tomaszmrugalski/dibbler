@@ -132,7 +132,7 @@ void TClntMsgInfRequest::answer(SPtr<TClntMsg> msg)
 #if 0
     //which option have we requested from server
     SPtr<TClntOptOptionRequest> ptrORO;
-    ptrORO = (Ptr*)getOption(OPTION_ORO);
+    ptrORO = getOption(OPTION_ORO);
     
     SPtr<TOpt> option;
     msg->firstOption();

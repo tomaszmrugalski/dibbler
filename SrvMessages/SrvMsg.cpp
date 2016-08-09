@@ -1029,7 +1029,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE )
     { // && this->MsgType == ADVERTISE_MSG ) {
         SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
-        Options.push_back( (Ptr*)optKeyGeneration);
+        Options.push_back(optKeyGeneration);
     }
 #endif
 #endif

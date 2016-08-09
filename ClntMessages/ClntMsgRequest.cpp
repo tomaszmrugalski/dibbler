@@ -150,7 +150,7 @@ TClntMsgRequest::TClntMsgRequest(List(TAddrIA) IAs,
 	return;
     }
     
-    ptr = (Ptr*) new TOptDUID(OPTION_SERVERID, srvDUID,this);
+    ptr = new TOptDUID(OPTION_SERVERID, srvDUID,this);
     // all IAs provided by checkSolicit
     SPtr<TAddrIA> ClntAddrIA;
     Options.push_back( ptr );

@@ -316,7 +316,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 #if 0
 bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
                               SPtr<TSrvOptInterfaceID> interfaceID) {
-    SPtr<TIfaceIface> under = (Ptr*)this->getIfaceByID(underIfindex);
+    SPtr<TIfaceIface> under = this->getIfaceByID(underIfindex);
     if (!under) {
         Log(Crit) << "Unable to setup " << name << "/" << ifindex
                   << " relay: underlaying interface with id=" << underIfindex
@@ -339,7 +339,7 @@ bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
                                                         0,0, // global addresses
                                                         0);  // hardware type
     relay->setUnderlaying(under);
-    this->IfaceLst.append((Ptr*)relay);
+    this->IfaceLst.append(relay);
 
     if (!under->appendRelay(relay, interfaceID)) {
         Log(Crit) << "Unable to setup " << name << "/" << ifindex

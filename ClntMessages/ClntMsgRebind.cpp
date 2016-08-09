@@ -82,7 +82,7 @@ SPtr<TOpt> opt;
     
     // get DUID
     SPtr<TClntOptServerIdentifier> ptrDUID;
-    ptrDUID = (Ptr*) Reply->getOption(OPTION_SERVERID);
+    ptrDUID = Reply->getOption(OPTION_SERVERID);
     
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send
@@ -91,14 +91,14 @@ SPtr<TOpt> opt;
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             iaCnt++;
-            SPtr<TClntOptIA_NA> ptrOptIA = (Ptr*)opt;
+            SPtr<TClntOptIA_NA> ptrOptIA = opt;
             if (ptrOptIA->getStatusCode()!=STATUSCODE_SUCCESS) {
                 if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
                     ClntTransMgr().sendRequest(Options,Iface);
                     IsDone = true;
                     return;
                 }else{
-		    SPtr<TOptStatusCode> status = S(Ptr*) ptrOptIA->getOption(OPTION_STATUS_CODE);
+		    SPtr<TOptStatusCode> status = ptrOptIA->getOption(OPTION_STATUS_CODE);
                     Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code " <<
                         StatusCodeToString(status->getCode()) << ": "
                                  << status->getText() << LogEnd;
@@ -113,7 +113,7 @@ SPtr<TOpt> opt;
         }
         case OPTION_IA_PD: {
             iaCnt++;
-            SPtr<TClntOptIA_PD> pd = (Ptr*) opt;
+            SPtr<TClntOptIA_PD> pd = opt;
             if (pd->getStatusCode() != STATUSCODE_SUCCESS) {
                 if(pd->getStatusCode() == STATUSCODE_NOBINDING){
                     ClntTransMgr->sendRequest(Options,Iface);
@@ -121,7 +121,7 @@ SPtr<TOpt> opt;
                     return;
                 }
                 else{
-                    SPtr<TClntOptStatusCode> status = (Ptr*) pd->getOption(OPTION_STATUS_CODE);
+                    SPtr<TClntOptStatusCode> status = pd->getOption(OPTION_STATUS_CODE);
                     Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code " <<
                         StatusCodeToString(status->getCode()) << ": "
                                  << status->getText() << LogEnd;

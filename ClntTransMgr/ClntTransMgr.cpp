@@ -1541,7 +1541,7 @@ bool TClntTransMgr::processRemoteReply(SPtr<TClntMsg> reply) {
         return false;
     }
 
-    SPtr<TClntMsgReply> rpl = (Ptr*) reply;
+    SPtr<TClntMsgReply> rpl = reply;
     neigh->reply = reply;
     neigh->rcvdAddr = rpl->getFirstAddr();
     neigh->state = TNeighborInfo::NeighborInfoState_Received;
