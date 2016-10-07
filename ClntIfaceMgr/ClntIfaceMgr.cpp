@@ -589,79 +589,47 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     stringstream prefix_split; // textual representation, used to pass as script
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
 
-        char buf[16];
-        int subprefixLen;
-        memmove(buf, prefix->getAddr(), 16);
+        int subprefixLen = 0;
 
-        // Calculate how many bits are needed for handling this amount of downlink
-        // interfaces.
-        int bit_shift = numBits(ifaceLst.size());
+        int numPrefixes = ifaceLst.size();
 
-        if (ifaceLst.size() == 1) {
-            // just one interface - use delegated prefix as is
-            subprefixLen = prefixLen;
-        } else if (ifaceLst.size()<256) {
-            subprefixLen = prefixLen + bit_shift;
-            int offset = prefixLen/bit_shift;
-            if (prefixLen%8 == 0) {
-                // that's easy, just put ID in the next octet
-                buf[offset] = (*i)->getID();
-            } else {
-                // here's fun
-                uint16_t existing = readUint16(buf+offset);
-                uint16_t bitmask = 0xff00;
-                uint16_t infixmask = ((uint8_t)(*i)->getID()) << 8;
-                bitmask = bitmask >> (prefixLen%8);
-                infixmask = infixmask >> (prefixLen%8);
-
-                // clear out if there is anything there, i.e. server assigned prefix
-                // with garbage in host section
-                existing = existing & (~bitmask);
-                existing = existing | (bitmask & infixmask);
-                writeUint16(buf+offset, existing);
-            }
-
-        } else {
+        if (numPrefixes > 256) {
             // users with too much time that play with virtual interfaces are out of luck
             Log(Error) << "Something is wrong. Detected 256 or more interfaces." << LogEnd;
             return false;
         }
 
-        // Ok, some users are unhappy if the get prefixes larger than /64,
-        // so trim down downlink prefixes to /64 if we get something larger.
-        // One day this parameter will have to be configurable.
-        if (subprefixLen < 64) {
-            Log(Info) << "PD: Prefix per downlink interface could be /" << subprefixLen
-                      << ", trimming down to /64" << LogEnd;
-            subprefixLen = 64;
-        }
+        SPtr<TIPv6Addr> subprefix = calculateSubprefix(prefix, prefixLen,
+                                                       numPrefixes, (*i)->getID(), subprefixLen);
 
-        SPtr<TIPv6Addr> tmpAddr = new TIPv6Addr(buf, false);
-
-        Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << subprefixLen
+        Log(Notice) << "PD: " << action << " prefix " << subprefix->getPlain() << "/" << subprefixLen
                     << " on the " << (*i)->getFullName() << " interface." << LogEnd;
 
         if (params) {
-          prefix_split << (*i)->getName() << " " << tmpAddr->getPlain()
+          prefix_split << (*i)->getName() << " " << subprefix->getPlain()
                        << "/" << subprefixLen << " ";
         }
 
         switch (mode) {
         case PREFIX_MODIFY_ADD:
-            status = prefix_add( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
+            status = prefix_add( (*i)->getName(), (*i)->getID(), subprefix->getPlain(),
+                                 subprefixLen, pref, valid);
             break;
         case PREFIX_MODIFY_UPDATE:
-            status = prefix_update( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen, pref, valid);
+            status = prefix_update( (*i)->getName(), (*i)->getID(), subprefix->getPlain(),
+                                    subprefixLen, pref, valid);
             break;
         case PREFIX_MODIFY_DEL:
-          status = prefix_del( (*i)->getName(), (*i)->getID(), tmpAddr->getPlain(), subprefixLen);
+          status = prefix_del( (*i)->getName(), (*i)->getID(), subprefix->getPlain(),
+                               subprefixLen);
             break;
         }
         if (status==LOWLEVEL_NO_ERROR) {
             conf++;
         } else {
             string tmp = error_message();
-            Log(Error) << "Prefix error encountered during " << action << " operation: " << tmp << LogEnd;
+            Log(Error) << "Prefix error encountered during " << action << " operation: "
+                       << tmp << LogEnd;
         }
 
     }
@@ -678,6 +646,68 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         // We failed again... dammit.
         return false;
     }
+}
+
+/// @brief Calculates subprefix based on prefix/prefixLen and a given
+///        number of sub-prefixes
+///
+/// @param prefix delegated prefix
+/// @param prefixLen delegated prefix length
+/// @param numPrefixes total number of sub-prefixes
+/// @param i index of the interface
+/// @param [out] subprefixLen This parameter is set to appropriate value
+///
+/// @return Generated subprefix
+SPtr<TIPv6Addr>
+TClntIfaceMgr::calculateSubprefix(const SPtr<TIPv6Addr>& prefix, int prefixLen,
+                                  int numPrefixes, int i, int& subprefixLen) {
+    if (numPrefixes == 1) {
+        // just one interface - use delegated prefix as is
+        subprefixLen = prefixLen;
+        return (prefix);
+    }
+
+    // Get the prefix in binary form. (we need one octet extra to handle operations
+    // on very long prefixes: /120 to /127).
+    char buf[17];
+    memset(buf, 0, 17);
+    memmove(buf, prefix->getAddr(), 16);
+
+    // Calculate how many bits are needed for handling this amount of downlink
+    // interfaces.
+    int bit_shift = numBits(numPrefixes);
+
+    subprefixLen = prefixLen + bit_shift;
+    int offset = prefixLen / 8;
+    if (prefixLen%8 == 0) {
+        // that's easy, just put ID in the next octet
+        buf[offset] = i;
+    } else {
+        // here's fun
+        uint16_t existing = readUint16(buf+offset);
+        uint16_t bitmask = 0xff00;
+        uint16_t infixmask = ((uint8_t)i) << 8;
+        bitmask = bitmask >> (prefixLen%8);
+        infixmask = infixmask >> (prefixLen%8);
+
+        // clear out if there is anything there, i.e. server assigned prefix
+        // with garbage in host section
+        existing = existing & (~bitmask);
+        existing = existing | (bitmask & infixmask);
+        writeUint16(buf+offset, existing);
+    }
+
+    // Ok, some users are unhappy if they get prefixes larger than /64,
+    // so trim down downlink prefixes to /64 if we get something larger.
+    // One day this parameter will have to be configurable.
+    if (subprefixLen < 64) {
+        Log(Info) << "PD: Prefix per downlink interface could be /" << subprefixLen
+                  << ", trimming down to /64" << LogEnd;
+        subprefixLen = 64;
+    }
+
+    SPtr<TIPv6Addr> tmpAddr(new TIPv6Addr(buf, false));
+    return (tmpAddr);
 }
 
 void TClntIfaceMgr::redetectIfaces() {

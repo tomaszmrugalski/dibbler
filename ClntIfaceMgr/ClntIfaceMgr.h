@@ -81,6 +81,9 @@ public:
 
     int numBits(int i);
 
+    SPtr<TIPv6Addr> calculateSubprefix(const SPtr<TIPv6Addr>& prefix, int prefixLen,
+                                       int numPrefixes, int i, int& subprefixLen);
+
   private:
 
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
