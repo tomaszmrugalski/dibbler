@@ -36,10 +36,10 @@ public:
         PREFIX_MODIFY_UPDATE,
         PREFIX_MODIFY_DEL
     } PrefixModifyMode;
-    
+
 private:
     TClntIfaceMgr(const std::string& xmlFile); // this is singleton
-    
+
 public:
     static void instanceCreate(const std::string& xmlFile);
     static TClntIfaceMgr& instance();
@@ -47,16 +47,16 @@ public:
     ~TClntIfaceMgr();
     friend std::ostream & operator <<(std::ostream & strum, TClntIfaceMgr &x);
     void dump();
-    
+
     bool sendUnicast(int iface, char *msg, int size, SPtr<TIPv6Addr> addr);
-    
+
     bool sendMulticast(int iface, char *msg, int msgsize);
-    
+
     SPtr<TClntMsg> select(unsigned int timeout);
 
 #ifdef MOD_REMOTE_AUTOCONF
     bool notifyRemoteScripts(SPtr<TIPv6Addr> receivedAddr, SPtr<TIPv6Addr> serverAddr, int ifindex);
-#endif    
+#endif
 
     bool fqdnAdd(SPtr<TClntIfaceIface> iface, const std::string& domainname);
     bool fqdnDel(SPtr<TClntIfaceIface> iface, SPtr<TAddrIA> ia, const std::string& domainname);
@@ -74,13 +74,14 @@ public:
     void removeAllOpts();
 
     unsigned int getTimeout();
-    
+
     bool doDuties();
 
     void redetectIfaces();
 
-  private:
     int numBits(int i);
+
+  private:
 
     bool modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
                       unsigned int pref, unsigned int valid, PrefixModifyMode mode,
@@ -91,4 +92,4 @@ public:
     static TClntIfaceMgr* Instance;
 };
 
-#endif 
+#endif

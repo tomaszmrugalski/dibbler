@@ -127,11 +127,11 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
         switch (msgtype) {
         case ADVERTISE_MSG:
             ptr = new TClntMsgAdvertise(ifaceid, peer, buf, bufsize);
-	    break;
+            break;
 
         case REPLY_MSG:
             ptr = new TClntMsgReply(ifaceid, peer, buf, bufsize);
-	    break;
+            break;
 
         case RECONFIGURE_MSG:
             ptr = new TClntMsgReconfigure(ifaceid, peer, buf, bufsize);
@@ -158,15 +158,15 @@ SPtr<TClntMsg> TClntIfaceMgr::select(unsigned int timeout)
             ptr->getReconfKeyFromAddrMgr();
         }
 
-	if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
+        if (!ptr->validateAuthInfo(buf, bufsize, ClntCfgMgr().getAuthProtocol(),
                                    ClntCfgMgr().getAuthAcceptMethods())) {
 
             /// @todo Implement AUTH_DROP_UNAUTH_ on client-side
             Log(Warning) << "Message dropped, authentication validation failed." << LogEnd;
             return SPtr<TClntMsg>(); // NULL
-	}
+        }
 #endif
-	return ptr;
+        return ptr;
 
     } else {
         return SPtr<TClntMsg>(); // NULL
@@ -443,14 +443,14 @@ bool TClntIfaceMgr::delPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
 /// @param i
 /// @return ceil(log2(i)) or 0 for 0
 int TClntIfaceMgr::numBits(int i) {
-    int j = 0;
+    int bits = 0;
     if (i == 0) {
         return (0);
     } else {
         i--;
     }
-    while (i >>= 1) { ++j; }
-    return (j + 1);
+    while (i >>= 1) { ++bits; }
+    return (bits + 1);
 }
 
 bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLen,
@@ -518,6 +518,9 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     }
 
     if (!skip && (ifaceLst.empty()) ) {
+        // Ok, the sysadmin didn't provide a list of downlink interfaces and didn't tell us to skip,
+        // we need to generate the list dynamically.
+
         SPtr<TIfaceIface> x;
         firstIface();
         while ( x = getIface() ) {
@@ -561,18 +564,19 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         }
     }
 
+    // Generate text representation of all downlink interfaces.
     TIfaceIfaceLst::const_iterator i;
     string dl_ifaces;
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
-      dl_ifaces += string((*i)->getName()) + " ";
+        dl_ifaces += string((*i)->getName()) + " ";
     }
     if (skip) {
         dl_ifaces += string("[none]");
     }
     Log(Info) << "PD: Using " << ifaceLst.size() << " suitable interface(s):"
-	      << dl_ifaces << LogEnd;
+              << dl_ifaces << LogEnd;
 
-    // pass this info to the script as well
+    // Pass this info to the script as well
     if (params) {
         params->addParam("DOWNLINK_PREFIX_IFACES", dl_ifaces);
     }
@@ -637,10 +641,10 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         Log(Notice) << "PD: " << action << " prefix " << tmpAddr->getPlain() << "/" << subprefixLen
                     << " on the " << (*i)->getFullName() << " interface." << LogEnd;
 
-	if (params) {
-	  prefix_split << (*i)->getName() << " " << tmpAddr->getPlain()
-		       << "/" << subprefixLen << " ";
-	}
+        if (params) {
+          prefix_split << (*i)->getName() << " " << tmpAddr->getPlain()
+                       << "/" << subprefixLen << " ";
+        }
 
         switch (mode) {
         case PREFIX_MODIFY_ADD:
@@ -743,5 +747,3 @@ ostream & operator <<(ostream & strum, TClntIfaceMgr &x) {
     strum << "</ClntIfaceMgr>" << std::endl;
     return strum;
 }
-
-
