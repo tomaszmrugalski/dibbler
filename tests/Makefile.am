@@ -1,2 +1,1 @@
-SUBDIRS = . utils Srv
-
+SUBDIRS = . utils Clnt Srv

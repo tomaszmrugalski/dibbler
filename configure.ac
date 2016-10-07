@@ -610,6 +610,7 @@ Misc/tests/Makefile
 RelTransMgr/tests/Makefile
 tests/Makefile
 tests/Srv/Makefile
+tests/Clnt/Makefile
 tests/utils/Makefile)
 
 dnl ----------------------------------------
