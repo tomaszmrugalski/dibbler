@@ -587,6 +587,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
     }
 
     stringstream prefix_split; // textual representation, used to pass as script
+    uint32_t infix = 0;
     for (TIfaceIfaceLst::const_iterator i=ifaceLst.begin(); i!=ifaceLst.end(); ++i) {
 
         int subprefixLen = 0;
@@ -600,7 +601,7 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         }
 
         SPtr<TIPv6Addr> subprefix = calculateSubprefix(prefix, prefixLen,
-                                                       numPrefixes, (*i)->getID(), subprefixLen);
+                                                       numPrefixes, infix, subprefixLen);
 
         Log(Notice) << "PD: " << action << " prefix " << subprefix->getPlain() << "/" << subprefixLen
                     << " on the " << (*i)->getFullName() << " interface." << LogEnd;
@@ -632,6 +633,8 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
                        << tmp << LogEnd;
         }
 
+
+        infix++;
     }
 
     if (params) {
