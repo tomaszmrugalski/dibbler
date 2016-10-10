@@ -226,8 +226,9 @@ bool TIfaceIface::addAddr(SPtr<TIPv6Addr> addr,long pref, long valid, int prefix
     Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " added to "
                 << getFullName() << " interface." << LogEnd;
 
-    return (bool)ipaddr_add(this->Name, this->ID, addr->getPlain(),
+    int status = ipaddr_add(this->Name, this->ID, addr->getPlain(),
                             pref, valid, prefixLen);
+    return (status == LOWLEVEL_NO_ERROR);
 }
 
 /**
@@ -237,7 +238,8 @@ bool TIfaceIface::addAddr(SPtr<TIPv6Addr> addr,long pref, long valid, int prefix
 bool TIfaceIface::delAddr(SPtr<TIPv6Addr> addr, int prefixLen) {
     Log(Notice) << "Address " << addr->getPlain() << "/" << prefixLen << " deleted from "
                 << getFullName() << " interface." << LogEnd;
-    return (bool)ipaddr_del( this->Name, this->ID, addr->getPlain(), prefixLen);
+    int status = ipaddr_del( this->Name, this->ID, addr->getPlain(), prefixLen);
+    return (status == LOWLEVEL_NO_ERROR);
 }
 
 /**
@@ -251,10 +253,7 @@ bool TIfaceIface::updateAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     result = ipaddr_update((char *)this->Name, this->ID, (char *)addr->getPlain(),
                            pref, valid, this->PrefixLen);
 
-    if (result!=LOWLEVEL_NO_ERROR)
-        return false;
-
-    return true;
+    return (result == LOWLEVEL_NO_ERROR);
 }
 
 /**
