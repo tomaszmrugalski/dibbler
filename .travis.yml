@@ -1,0 +1,22 @@
+language: cpp
+compiler:
+  - clang
+  - gcc
+
+before_install:
+ - sudo apt-get -qq update
+ - sudo apt-get install -y libgtest-dev
+ - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
+
+before_script:
+ - ./configure --with-gtest
+
+script: make && make check
+
+
+notifications:
+  recipients:
+    - spam.travis@klub.com.pl
+  email:
+    on_success: change
+    on_failure: always
