@@ -2,12 +2,12 @@
  Dibbler changelog
 -------------------
 
-1.0.2 [not-released-yet]
+1.0.2RC1 [2016-10-10]
   - Fix for calling a script when rapid-commit is used
   - Win: Added expansion of relative paths passed to -d to absolute path.
     Thanks to Hernan Martinez for the patch. (github #30)
   - Win: Dibbler now detects Windows 8.1 and 10. It was not tested, though.
-    Use with care and please report on dibbler mailing lists.
+    Use with care and please report on the dibbler mailing lists.
   - Cli: Delegated prefix is now split into /64s, even if larger prefixes
     are possible.
   - Cli: received options are now rejected if the client didn't request them,
@@ -18,8 +18,15 @@
     Thanks to nerzhul (github pull request #29)
   - Linux: file descriptor leak in dibbler-client fixed. Thanks to
     Mircea Ciosan for providing a patch (bug #327)
-  - Major Smart pointers update. This is not user-visible change, but it
-    makes the code much safer.
+  - Major Smart pointers update. This is not user-visible change, but it should
+    make the code much safer.
+  - Linux client no longer configures address and prefix lifetimes. There
+    There seems to be a bug in the kernel that adds the addresses with
+    lifetimes only if they're not duplicated, whereas the expected
+    behavior is the kernel to add them always, but report them as
+    duplicate if needed. This causes the client to get confused if the address
+    is duplicate. This can be changed by modifying ADD_ADDRESSES_WITH_LIFETIMES
+    in Misc/Portable.h.in and rerunning configure
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for

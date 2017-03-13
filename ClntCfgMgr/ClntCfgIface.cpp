@@ -513,6 +513,10 @@ void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout,
  * @param sendAlways should this option be always sent? Even when already configured?
  */
 void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool sendAlways) {
+    if (!this) {
+        Log(Error) << "Option " << opttype << " defined in global scope will not work. Please define it in the appropriate interface scope" << LogEnd;
+        return;
+    }
     SPtr<TOptionStatus> optStatus = new TOptionStatus();
     optStatus->OptionType = opttype;
     optStatus->Always = sendAlways;

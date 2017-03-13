@@ -405,10 +405,12 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
     local_len = lcl.bytelen;
 
+#if ADD_ADDRESSES_WITH_LIFETIMES > 0
     memset(&ci, 0, sizeof(ci));
     ci.ifa_valid = valid;
     ci.ifa_prefered = preferred;
     addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
+#endif
     
     if (peer_len == 0 && local_len) {
 	/* peer = lcl; */

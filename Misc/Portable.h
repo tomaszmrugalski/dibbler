@@ -94,6 +94,18 @@ struct iface {
 
 #define MAX_LINK_STATE_CHANGES_AT_ONCE 16
 
+/* This constant defines whether addresses configured on Linux are added with
+   preferred and valid lifetimes. There seems to be a bug in the kernel that
+   adds the addresses with lifetimes only if they're not duplicated, whereas
+   the expected behavior is the kernel to add them always, but report them as
+   duplicate if needed. This causes the client to get confused if the address
+   is duplicate.
+
+   Since adding the address without lifetimes in a safer bet (the Duplicate Address
+   Detection will work), this is the default. If you really need to add adresses
+   with lifetimes, please set this to 1, but be aware that DAD may not work. */
+#define ADD_ADDRESSES_WITH_LIFETIMES 0
+
 struct link_state_notify_t
 {
     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed.

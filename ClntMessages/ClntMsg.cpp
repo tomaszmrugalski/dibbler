@@ -530,7 +530,7 @@ void TClntMsg::appendRequestedOptions() {
 	Options.push_back(optReconfigure);
     }
 
-    SPtr<TOptOptionRequest> optORO = new TOptOptionRequest(iface, this);
+    SPtr<TOptOptionRequest> optORO = new TOptOptionRequest(OPTION_ORO, this);
 
     if (iface->getUnicast()) {
 	optORO->addOption(OPTION_UNICAST);
