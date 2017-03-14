@@ -2,7 +2,7 @@
  Dibbler changelog
 -------------------
 
-1.0.2RC1 [2016-10-10]
+1.0.2RC1 [2017-XX-XX]
   - Fix for calling a script when rapid-commit is used
   - Win: Added expansion of relative paths passed to -d to absolute path.
     Thanks to Hernan Martinez for the patch. (github #30)
