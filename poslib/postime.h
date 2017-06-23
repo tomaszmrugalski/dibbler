@@ -28,11 +28,6 @@
 
 #ifdef WIN32
 #include <time.h>
-struct timespec
-  {
-    time_t tv_sec;            /* Seconds.  */
-    long int tv_nsec;           /* Nanoseconds.  */
-  };
 #endif
 
 

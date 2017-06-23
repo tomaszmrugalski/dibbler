@@ -224,7 +224,7 @@ dnl ---------------------------------------------
       PORT_SUBDIR="Port-linux"
       PORT_CFLAGS=""
       PORT_LDFLAGS=""
-      EXTRA_DIST_SUBDIRS="Port-bsd Port-winnt2k Port-sun"
+      EXTRA_DIST_SUBDIRS="Port-bsd Port-sun"
       ;;
     Darwin | FreeBSD | NetBSD)
       ARCH="BSD"
@@ -234,21 +234,21 @@ dnl ---------------------------------------------
         PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
       fi
       PORT_LDFLAGS=
-      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-sun"
       ;;
     OpenBSD)
       ARCH="BSD"
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS="-DOPENBSD"
       PORT_LDFLAGS=
-      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-sun"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-sun"
       ;;
     SunOS)
       ARCH="SUNOS"
       PORT_SUBDIR="Port-sun"
       PORT_CFLAGS="-DSUNOS -D__EXTENSIONS__"
       PORT_LDFLAGS="-lsocket -lnsl"
-      EXTRA_DIST_SUBDIRS="Port-linux Port-winnt2k Port-bsd"
+      EXTRA_DIST_SUBDIRS="Port-linux Port-bsd"
       ;;
     MINGW32*)
       ARCH="WIN2K"
@@ -595,7 +595,6 @@ Port-linux/Makefile
 Port-bsd/Makefile
 Port-sun/Makefile
 Port-win32/Makefile
-Port-winnt2k/Makefile
 doc/Makefile
 Misc/Portable.h
 doc/doxygen.cfg

@@ -69,7 +69,6 @@ int lowlevelInit()
     return 1;
 }
 
-/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 uint32_t getAAASPIfromFile() {
     char filename[1024];
     struct stat st;
@@ -91,7 +90,6 @@ uint32_t getAAASPIfromFile() {
     return ret;
 }
 
-/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 char * getAAAKeyFilename(uint32_t SPI)
 {
     static char filename[1024];
@@ -102,7 +100,6 @@ char * getAAAKeyFilename(uint32_t SPI)
     return filename;
 }
 
-/* when updating this file, remember to also update copy in Port-winnt2k/lowlevel-winnt2k.c */
 char * getAAAKey(uint32_t SPI, uint32_t *len) {
 
     char * filename;
@@ -312,13 +309,15 @@ extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr)
 	    adaptaddr=adaptaddr->Next;
     }
     
-    free(buffer);
+	int result;
     if (!found)
-        return ADDRSTATUS_UNKNOWN; /* not found */
-    if (found->DadState==IpDadStateDuplicate)
-        return ADDRSTATUS_YES;     /* tentative */
+        result = ADDRSTATUS_UNKNOWN; /* not found */
+    else if (found->DadState==IpDadStateDuplicate)
+		result = ADDRSTATUS_YES;     /* tentative */
     else
-        return ADDRSTATUS_NO;      /* not tentative */
+		result = ADDRSTATUS_NO;      /* not tentative */
+	free(buffer);
+	return result;
 }
 extern int ipaddr_add(const char * ifacename, int ifaceid, const char * addr, 
                       unsigned long pref, unsigned long valid, int prefixLen)

@@ -23,7 +23,6 @@
 #ifdef WIN32
 #include <winsock2.h>
 #define strcasecmp strcmpi
-#define snprintf _snprintf
 #endif
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
@@ -161,10 +160,12 @@ struct link_state_notify_t
 #endif
 
 
+#ifndef DEFAULT_WORKDIR
 #if defined(BSD)
 #define DEFAULT_WORKDIR       "/var/db/dibbler"
 #else
 #define DEFAULT_WORKDIR       "/var/lib/dibbler"
+#endif
 #endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)

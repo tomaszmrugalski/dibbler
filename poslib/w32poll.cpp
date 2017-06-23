@@ -28,11 +28,17 @@
 #include "w32poll.h"
 
 #ifdef _WIN32
-#define ECONNRESET WSAECONNRESET
-#define ECONNREFUSED WSAECONNREFUSED
-#define ENETDOWN WSAENETDOWN
-#define ECONNABORTED WSAECONNABORTED
-#define EBADF WSAEBADF
+#define COMPAT_ECONNRESET WSAECONNRESET
+#define COMPAT_ECONNREFUSED WSAECONNREFUSED
+#define COMPAT_ENETDOWN WSAENETDOWN
+#define COMPAT_ECONNABORTED WSAECONNABORTED
+#define COMPAT_EBADF WSAEBADF
+#else
+#define COMPAT_ECONNRESET ECONNRESET
+#define COMPAT_ECONNREFUSED ECONNREFUSED
+#define COMPAT_ENETDOWN ENETDOWN
+#define COMPAT_ECONNABORTED ECONNABORTED
+#define COMPAT_EBADF EBADF
 #endif
 
 #include <stdio.h>
@@ -91,13 +97,13 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout) {
       u_long arg = 0; socklen_t arglen = sizeof(arg);
       if (!getsockopt(ufds[x].fd, SOL_SOCKET, SO_ERROR, (char *)&arg, &arglen) && arg != 0) {
         switch (arg) {
-          case ECONNRESET:
-          case ECONNREFUSED:
-          case ENETDOWN:
-          case ECONNABORTED:
+          case COMPAT_ECONNRESET:
+          case COMPAT_ECONNREFUSED:
+          case COMPAT_ENETDOWN:
+          case COMPAT_ECONNABORTED:
             ufds[x].revents |= POLLHUP;
             break;
-          case EBADF:
+          case COMPAT_EBADF:
             ufds[x].revents |= POLLERR;
             break;
         }
