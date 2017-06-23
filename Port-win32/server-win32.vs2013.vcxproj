@@ -20,6 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectName>server-win32</ProjectName>
     <ProjectGuid>{B4A3663C-44D7-46D2-B397-9D7E0E4EB557}</ProjectGuid>
     <RootNamespace>server-win32</RootNamespace>
     <Keyword>Win32Proj</Keyword>
@@ -65,23 +66,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
     <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
-    <GenerateManifest>false</GenerateManifest>
     <TargetName>dibbler-server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <GenerateManifest>false</GenerateManifest>
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
     <TargetName>dibbler-server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
     <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <GenerateManifest>false</GenerateManifest>
     <TargetName>dibbler-server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Configuration)\$(TargetName).obj\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <GenerateManifest>false</GenerateManifest>
     <TargetName>dibbler-server</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
