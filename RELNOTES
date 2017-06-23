@@ -1,11 +1,53 @@
+  Dibbler 1.0.2 Release Candidate 1 [2017-06-23]
+ ------------------------------------------------
 
-  Dibbler 1.0.1 [2015-08-09]
- ----------------------------
+ This is the first release candidate of the 1.0.2 release of the Dibbler
+ software. This update contains a number of fixes.
 
- This is the final version of the 1.0.1 release of the Dibbler software.
+ The Dibbler project started in 2003 an a double master thesis of
+ Marek Senderski and mine. We graduated, Marek left and I continued
+ the development for a while. First users appeared and the whole
+ thing took off as a real project. Dibbler was always my hobby
+ project and for most of the time it was a one man project. There
+ were several contributors who were interested in certain aspects
+ and contributed great deal of patches, but once the functionality
+ was there, they usually left after a while. Dibbler was the reason
+ I was invited to several conferences and DHCP inter-op events. One
+ of the things that appeared on the horizon was IETF. If you're not
+ familiar with it, this is the organization that defines RFC documents
+ that govern how Internet works. Somehow I got sucked into this
+ world and soon realized that if I do a good job with the code
+ I can make one implementation better, but if I write a better
+ Internet standard, I can make all of them better.
 
- This update contains a number of small fixes, with one of them possibly
- having security implications. Upgrade is strongly recommended.
+ Things have changed significantly for me in 2011. Internet Systems
+ Consortium, a small non-profit company from Silicon Valley noticed
+ my work on Dibbler and DHCPv6 standardization and offered my a job.
+ DHCPv6 used to be my hobby and it became my full time job. This
+ turned my whole perspective upside down. The main goal of Dibbler
+ project was to stimulate IPv6 adoption. You may perhaps noticed
+ that Dibbler does everything in IPv6-only manner. Legacy technologies,
+ such as IPv4, is not and was never supported. This was nice, but
+ somehow idealistic approach.
+
+ Sadly, after over 14 years of development, I no longer have time
+ to continue development of Dibbler.
+
+ After 1.0.2 is released, the server component will be deprecated. The
+ Kea software (http://kea.isc.org) provides a high quality open source
+ DHCPv6 server that is of superior quality, is much more modern and
+ has more features. Please migrate to Kea, if you are interested in the
+ server component.
+
+ If you're interested in the client component of Dibbler, the situation
+ is a bit more blurry. Kea does not yet feature a client. ISC may implement
+ a client if funding for it will appear. ISC DHCP, another implementation,
+ features a client, but it is often difficult to use and definitely complex
+ to extend. But given that Dibbler will no longer get any serious development,
+ it may be a viable alternative, if you want to migrate away from dibbler
+ client and Kea client is not yet available. Also, a proposal for a new,
+ modern DHCPv6 client will be announced in the near future. News will
+ appear on dibber-users and kea-dev mailing lists. Stay tuned.
 
  If you find bugs, please report them on http://klub.com.pl/bugzilla/.
  Appropriate links are on project website: http://klub.com.pl/dhcpv6/.
@@ -16,5 +58,5 @@
 
  Thank you for using Dibbler.
 
-			       Tomek Mrugalski,
-			       author
+                               Tomek Mrugalski,
+                               author
