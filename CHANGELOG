@@ -27,6 +27,9 @@
     duplicate if needed. This causes the client to get confused if the address
     is duplicate. This can be changed by modifying ADD_ADDRESSES_WITH_LIFETIMES
     in Misc/Portable.h.in and rerunning configure
+  - Cli: Fixed several problems in delegated prefix handling. Error messages
+    are now printed for failed prefix add, proper prefix length is used
+    when deleting prefixes and sent in Release message.
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for

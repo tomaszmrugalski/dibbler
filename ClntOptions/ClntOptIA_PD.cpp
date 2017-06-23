@@ -43,9 +43,10 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TAddrIA> addrPD, TMsg* parent)
     addrPD->firstPrefix();
     while ( ptrPrefix = addrPD->getPrefix() )
     {
-        SubOptions.append(new TOptIAPrefix(ptrPrefix->get(), zeroTimes?0:ptrPrefix->getPref(),
-                                               zeroTimes?0:ptrPrefix->getValid(),
-                                               ptrPrefix->getLength(), this->Parent) );
+        SubOptions.append(new TOptIAPrefix(ptrPrefix->get(), ptrPrefix->getLength(),
+                                           zeroTimes?0:ptrPrefix->getPref(),
+                                           zeroTimes?0:ptrPrefix->getValid(),
+                                           this->Parent));
     }
 }
 
