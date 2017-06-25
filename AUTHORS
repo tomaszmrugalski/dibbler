@@ -139,5 +139,7 @@
   - nerzhul <loic(dot)blot(at)unix-experience(dot)fr>
     2016-03: Paths on BSD system improved
 
+  - Vitaly Greck <vintozver(at)ya(dot)ru>
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>

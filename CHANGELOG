@@ -30,6 +30,8 @@
   - Cli: Fixed several problems in delegated prefix handling. Error messages
     are now printed for failed prefix add, proper prefix length is used
     when deleting prefixes and sent in Release message.
+  - Windows NT and 2000 support has been removed, migrated to Visual Studio 2017.
+    Memory access issue fix in windows. Thanks to Vitaly Greck for the patch!
 
 1.0.1 [2015-08-09]
   - Fixed code for NoAddrsAvailable case (thanks to Etienne Buira for
