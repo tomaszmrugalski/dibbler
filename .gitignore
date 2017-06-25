@@ -42,7 +42,8 @@ RelIfaceMgr/Makefile
 Port-linux/Makefile
 Makefile
 doc/html
-Port-win32/Debug*
+Port-win32/Debug
+Port-win32/Release
 Port-win32/*.user
 Port-win32/dibbler-win32.vs2008.ncb
 Port-win32/dibbler-win32.vs2008.suo
@@ -69,5 +70,4 @@ tests/Srv/Srv_tests
 client-CfgMgr.xml
 client-IfaceMgr.xml
 dibbler-*-win32.exe
-Port-win32/Debug32
-Port-win32/Release32
+.vs

@@ -614,7 +614,6 @@ RECURSIVE              = YES
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
 EXCLUDE                = ./Port-win32 \
-                         ./Port-winnt2k \
                          ./tests \
                          ./dibbler-* \
                          ./bison++ \
@@ -632,7 +631,7 @@ EXCLUDE_SYMLINKS       = YES
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */.svn/* *~ bison++ Port-win32 Port-winnt2k */tests/* dibbler-@PACKAGE_VERSION@
+EXCLUDE_PATTERNS       = */.svn/* *~ bison++ Port-win32 */tests/* dibbler-@PACKAGE_VERSION@
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the

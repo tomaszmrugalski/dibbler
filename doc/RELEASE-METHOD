@@ -11,11 +11,6 @@ Win32:
 5. Modify Port-win32/dibber.iss to use proper version.
 6. Run Inno setup on Port-win32/dibbler.iss
 
-WinNT/2000
-7. Compile all 3 projects in Port-winnt2k/ in Dev-cpp.
-8. Modify Port-winnt2k/dibber.iss to use proper version.
-9. Run Inno setup on Port-winnt2k/dibbler.iss
-
 Linux:
 1. make release-src
 2. make release-doc

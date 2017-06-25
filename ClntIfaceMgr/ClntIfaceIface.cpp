@@ -412,7 +412,7 @@ bool TClntIfaceIface::setNISServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Lis
 bool TClntIfaceIface::setNISDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
     if (domain==this->NISDomain) {
         // NIS Domain has not changed
-        Log(Info) << "NIS Domain " << timezone << " is already set on the interface "
+        Log(Info) << "NIS Domain " << this->Timezone << " is already set on the interface "
                   << this->getName() << "/" << this->getID() << ", no change is needed." << LogEnd;
         return true;
     }
@@ -479,7 +479,7 @@ bool TClntIfaceIface::setNISPServerLst(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, Li
 bool TClntIfaceIface::setNISPDomain(SPtr<TDUID> duid, SPtr<TIPv6Addr> srv, const std::string& domain) {
     if (domain==this->NISPDomain) {
         // NIS+ Domain has not changed
-        Log(Info) << "NIS+ Domain " << timezone << " is already set on the interface "
+        Log(Info) << "NIS+ Domain " << this->Timezone << " is already set on the interface "
                   << this->getName() << "/" << this->getID() << ", no change is needed." << LogEnd;
         return true;
     }
