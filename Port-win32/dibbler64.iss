@@ -5,8 +5,8 @@
 
 [Setup]
 AppName=Dibbler - a portable DHCPv6
-AppVerName=Dibbler 1.0.1 x64 (2003/Vista/7/8 port)
-OutputBaseFilename=dibbler-1.0.1-win64
+AppVerName=Dibbler 1.0.2RC1 x64 (XP/2003/Vista/7/8/10 port)
+OutputBaseFilename=dibbler-1.0.2RC1-win64
 OutputDir=..
 DefaultDirName={sd}\dibbler
 DefaultGroupName=Dibbler
@@ -25,15 +25,15 @@ Name: "Documentation"; Description: "User's Guide"; Types: Full Compact;
 Name: "Tools";  Description: "DHCPv6 requestor and other tools"; Types: Full;
 
 [Files]
-Source: "x64\Debug64\dibbler-client.exe"; DestDir: "{app}"; Components: Client;
+Source: "Debug\bin\dibbler-client.exe"; DestDir: "{app}"; Components: Client;
 Source: "..\doc\examples\client*.conf"; DestDir: "{app}\examples"; Components: Client;
 Source: "..\doc\examples\client-win32.conf"; DestDir: "{app}"; DestName: "client.conf"; Components: Client;
 Source: "client.log"; DestDir: "{app}"; Components: Client;
-Source: "x64\Debug64\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
+Source: "Debug\bin\dibbler-relay.exe"; DestDir: "{app}"; Components: Relay;
 Source: "..\doc\examples\relay*.conf"; DestDir: "{app}\examples"; Components: Relay;
 Source: "relay.log"; DestDir: "{app}"; Components: Relay;
-Source: "x64\Debug64\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
-Source: "x64\Debug64\dibbler-requestor.exe"; DestDir: "{app}"; Components: Tools;
+Source: "Debug\bin\dibbler-server.exe"; DestDir: "{app}"; Components: Server;
+Source: "Debug\bin\dibbler-requestor.exe"; DestDir: "{app}"; Components: Tools;
 Source: "..\doc\examples\server*.conf"; DestDir: "{app}\examples"; Components: Server;
 Source: "..\doc\examples\server-win32.conf"; DestDir: "{app}"; DestName: "server.conf"; Components: Server;
 Source: "server.log"; DestDir: "{app}"; Components: Server;
