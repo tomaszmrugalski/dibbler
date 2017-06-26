@@ -33,7 +33,14 @@
  You may have noticed that dibbler's development slowed down to almost
  nothing in the recent years. Sadly, after over 14 years of
  development, I no longer have time to continue development of
- Dibbler.
+ Dibbler. This is the primary reason, but there are others. Dibbler
+ started as my master thesis and I was learning C++ back then. Some of
+ the design assumptions are ridiculous, the code is not that good
+ and updating it would require huge investement of time. And time is
+ a precious commodity these days. Also, over the years many use cases
+ faded into obscurity and new scenarios emerged. Handling some of them
+ properly would require a huge refactoring that I'm unwilling to
+ undertake.
 
  After 1.0.2 is released, the server component will be deprecated. The
  Kea software (http://kea.isc.org) provides a high quality open source
@@ -56,7 +63,7 @@
  addresses, more prefixes, release now, do reconfiguration, perhaps tell
  it that MAC address has changed and it must assume a new identity -
  that's a big deal for privacy oriented solutions and more. News will
- appear on dibber-users and kea-dev mailing lists. Stay tuned.
+ appear on dibbler-users and kea-dev mailing lists. Stay tuned.
 
  If you find bugs, please report them on http://klub.com.pl/bugzilla/,
  but given the above, they may not be addressed. Appropriate links are
