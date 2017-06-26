@@ -13,7 +13,7 @@ install:
     - cd /usr/src/gtest
     - sudo cmake .
     - sudo make
-    - sudo mov libg* /usr/local/lib
+    - sudo mv libg* /usr/local/lib
     - cd -
 
 before_script:
