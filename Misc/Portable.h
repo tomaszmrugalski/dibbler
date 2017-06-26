@@ -164,6 +164,7 @@ struct link_state_notify_t
 #if defined(BSD)
 #define DEFAULT_WORKDIR       "/var/db/dibbler"
 #else
+#if !defined(WIN32)
 #define DEFAULT_WORKDIR       "/var/lib/dibbler"
 #endif
 #endif
