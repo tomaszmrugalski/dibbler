@@ -18013,23 +18013,35 @@ fi
 
 
 #echo "After gtest"
-
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for google test" >&5
+$as_echo_n "checking for google test... " >&6; }
 if test "$gtest_path" != "no"
 then
-    if test -x "${gtest_path}/scripts/gtest-config"
+    if test "${gtest_path}" == "yes"
     then
-        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-        GTEST_LDADD=`${GTEST_CONFIG} --libs`
-
-        # Linking gtest statically
-        if test "$gtest_static" != "no"
-        then
-            GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
-        fi
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes trying /usr/include/gtest" >&5
+$as_echo "yes trying /usr/include/gtest" >&6; }
+        GTEST_INCLUDES="-I/usr/include/gtest"
+        GTEST_LDFLAGS=""
+        GTEST_LDADD="/usr/local/lib/libgtest.a -pthread"
     else
-        as_fn_error $? "Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config" "$LINENO" 5
+       if test -x "${gtest_path}/scripts/gtest-config"
+       then
+           { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in ${gtest_path}" >&5
+$as_echo "found in ${gtest_path}" >&6; }
+           GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+           GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+           GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+           GTEST_LDADD=`${GTEST_CONFIG} --libs`
+
+           # Linking gtest statically
+           if test "$gtest_static" != "no"
+           then
+               GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
+           fi
+       else
+           as_fn_error $? "Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config" "$LINENO" 5
+       fi
     fi
 fi
 

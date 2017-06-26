@@ -463,23 +463,32 @@ AC_ARG_ENABLE(gtest-static,
 
 
 #echo "After gtest"
-
+AC_MSG_CHECKING(for google test)
 if test "$gtest_path" != "no"
 then
-    if test -x "${gtest_path}/scripts/gtest-config"
+    if test "${gtest_path}" == "yes"
     then
-        GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-        GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-        GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-        GTEST_LDADD=`${GTEST_CONFIG} --libs`
-
-        # Linking gtest statically
-        if test "$gtest_static" != "no"
-        then
-            GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
-        fi
+        AC_MSG_RESULT(yes trying /usr/include/gtest)
+        GTEST_INCLUDES="-I/usr/include/gtest"
+        GTEST_LDFLAGS=""
+        GTEST_LDADD="/usr/local/lib/libgtest.a -pthread"
     else
-        AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
+       if test -x "${gtest_path}/scripts/gtest-config"
+       then
+           AC_MSG_RESULT(found in ${gtest_path})
+           GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
+           GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+           GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+           GTEST_LDADD=`${GTEST_CONFIG} --libs`
+
+           # Linking gtest statically
+           if test "$gtest_static" != "no"
+           then
+               GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
+           fi
+       else
+           AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
+       fi
     fi
 fi
 
