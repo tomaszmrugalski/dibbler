@@ -434,7 +434,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign serial-tests
 COMMON_SUBDIRS = @PORT_SUBDIR@ nettle $(am__append_1) Misc poslib \
 	Messages Options AddrMgr CfgMgr IfaceMgr doc
 SRV_SUBDIRS = SrvOptions SrvIfaceMgr SrvAddrMgr SrvMessages SrvTransMgr SrvCfgMgr

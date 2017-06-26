@@ -18021,9 +18021,7 @@ then
     then
         GTEST_SOURCE=
         for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
-           echo "#### trying [$d]: $d/src/gtest-all.cc -a $d/src/gtest_main.cc"
            if test -f $d/src/gtest-all.cc -a $d/src/gtest_main.cc; then
-               echo "#### found in [$d]"
                GTEST_SOURCE=$d
                { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GTEST_SOURCE" >&5
 $as_echo "$GTEST_SOURCE" >&6; }

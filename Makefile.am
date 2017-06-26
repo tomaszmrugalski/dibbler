@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign serial-tests
 
 COMMON_SUBDIRS = @PORT_SUBDIR@ nettle
 if HAVE_GTEST

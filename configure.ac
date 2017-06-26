@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.67])
 AC_INIT([dibbler], [1.0.2RC1], [dibbler@klub.com.pl])
-AM_INIT_AUTOMAKE(foreign)
+AM_INIT_AUTOMAKE([foreign serial-tests])
 AC_CONFIG_SRCDIR([IfaceMgr/SocketIPv6.cpp])
 AC_CONFIG_HEADERS([include/dibbler-config.h])
 AC_CONFIG_MACRO_DIR([m4])
