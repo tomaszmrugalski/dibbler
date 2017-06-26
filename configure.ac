@@ -463,15 +463,40 @@ AC_ARG_ENABLE(gtest-static,
 
 
 #echo "After gtest"
-AC_MSG_CHECKING(for google test)
+AC_MSG_CHECKING(for gtest sources)
 if test "$gtest_path" != "no"
 then
     if test "${gtest_path}" == "yes"
     then
-        AC_MSG_RESULT(yes trying /usr/include/gtest)
-        GTEST_INCLUDES="-I/usr/include/gtest"
-        GTEST_LDFLAGS=""
-        GTEST_LDADD="/usr/local/lib/libgtest.a -pthread"
+        GTEST_SOURCE=
+        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
+           if test -f $d/src/gtest-all.cc -a $d/src/gtest_main.cc; then
+               GTEST_SOURCE=$d
+               AC_MSG_RESULT([$GTEST_SOURCE])
+               GTEST_INCLUDES="-I${GTEST_SOURCE}/includes"
+               GTEST_LDFLAGS=""
+               break
+           fi
+        done
+
+        if test "x$GTEST_SOURCE" == "x"; then
+            AC_MSG_ERROR([Failed to locate gtest sources. Please specify with --with-gtest=path])
+        fi
+
+        GTEST_LIB=
+        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
+           if test -f $d/libgtest.a; then
+               GTEST_LDADD="$d/libgtest.a -pthread"
+               break
+           fi
+           if test -f $d/lib/libgtest.a; then
+               GTEST_LDADD="$d/lib/libgtest.a -pthread"
+               break
+           fi
+        done
+        if test "x$GTEST_LDADD" == "x"; then
+             AC_MSG_ERROR([Failed to find libgtest.a])
+        fi
     else
        if test -x "${gtest_path}/scripts/gtest-config"
        then
