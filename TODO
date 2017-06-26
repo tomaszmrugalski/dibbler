@@ -2,6 +2,9 @@
  Dibbler code TODO
 -------------------
 
+Travis build fails, because the ubuntu 12.04 images install libgtest-dev.
+dibbler doesn't handle this packet too well, as it's sources only.
+
 Note: This is a scratchpad. It just happens to be available with the
    rest of the code.
 
