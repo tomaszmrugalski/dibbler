@@ -167,6 +167,7 @@ struct link_state_notify_t
 #define DEFAULT_WORKDIR       "/var/lib/dibbler"
 #endif
 #endif
+#endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)
 #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
