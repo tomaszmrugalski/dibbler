@@ -49,12 +49,16 @@ namespace {
 TEST_F(SrvCfgMgrTest, constructor) {
 
     ASSERT_TRUE(iface_);
+
+    // We need to add inactive-mode here in case the interface does not
+    // support IPv6.
     string cfg = string("iface \"") + iface_->getName() + "\" {\n"
                         "  class { pool 2001:db8:1111::/64 }\n"
                         "  option nis-server 2000::400,2000::401,2000::404,2000::405,2000::405\n"
                         "  option nis-domain nis.example.com\n"
                         "  option nis+-server 2000::501,2000::502\n"
                         "  option nis+-domain nisplus.example.com\n"
+                        "  inactive-mode\n"
                         "}\n"
                         "\n"
                         "iface nonexistent0 {\n"
