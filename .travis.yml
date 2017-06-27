@@ -11,6 +11,8 @@ compiler:
 install:
     - sudo apt-get install libgtest-dev
     - cd /usr/src/gtest
+    - which clang
+    - which clang++
     - sudo cmake .
     - sudo make
     - sudo mv libg* /usr/local/lib
