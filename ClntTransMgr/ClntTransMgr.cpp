@@ -382,7 +382,8 @@ void TClntTransMgr::checkDB()
 bool TClntTransMgr::openLoopbackSocket() {
     SPtr<TIfaceIface> ptrIface;
 
-    if (!this->BindReuse)
+    // if BindReuse is set, return true from here and dont create new loopback socket to allow multiple instances 
+    if (this->BindReuse)
         return true;
 
 #ifndef WIN32
