@@ -34,7 +34,7 @@ volatile int * notifier = 0;
 int isDone = 0;
 pthread_t parent_id;
 pthread_t ntid;
-pthread_mutex_t lock;
+pthread_mutex_t dibbler_lock;
 
 struct state {
     int id;
@@ -86,9 +86,9 @@ void link_state_changed(int ifindex)
     {
 	if (changed_links->cnt<16)
 	    changed_links->ifindex[changed_links->cnt++] = ifindex;
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&dibbler_lock);
 	*notifier = 1; /* notify that change has occured */
-	pthread_mutex_unlock(&lock);
+	pthread_mutex_unlock(&dibbler_lock);
 	pthread_kill(parent_id,SIGUSR1);
     } else
     {

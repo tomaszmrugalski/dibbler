@@ -26,7 +26,7 @@ using namespace std;
 
 #define IF_RECONNECTED_DETECTED -1
 
-extern pthread_mutex_t lock;
+extern pthread_mutex_t dibbler_lock;
 
 TDHCPClient* ptr = 0;
 
@@ -44,8 +44,8 @@ void signal_handler(int n) {
 #ifdef MOD_CLNT_CONFIRM
 void signal_handler_of_linkstate_change(int n) {
     Log(Notice) << "Network switch off event detected. initiating CONFIRM." << LogEnd;
-    pthread_mutex_lock(&lock);
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_lock(&dibbler_lock);
+    pthread_mutex_unlock(&dibbler_lock);
 }
 #endif
 
