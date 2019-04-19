@@ -197,6 +197,9 @@
     <ClCompile Include="..\Options\OptDUID.cpp">
       <Filter>Source Files\Options</Filter>
     </ClCompile>
+    <ClCompile Include="..\Options\OptStatusCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource3.h">
@@ -312,6 +315,9 @@
     </ClInclude>
     <ClInclude Include="..\Options\OptDUID.h">
       <Filter>Header Files\Options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptStatusCode.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

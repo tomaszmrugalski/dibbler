@@ -188,9 +188,6 @@
     <ClCompile Include="..\Options\OptVendorSpecInfo.cpp">
       <Filter>Source Files\Options</Filter>
     </ClCompile>
-    <ClCompile Include="..\ClntOptions\ClntOptAddrParams.cpp">
-      <Filter>Source Files\ClntOptions</Filter>
-    </ClCompile>
     <ClCompile Include="..\ClntOptions\ClntOptElapsed.cpp">
       <Filter>Source Files\ClntOptions</Filter>
     </ClCompile>
@@ -203,22 +200,10 @@
     <ClCompile Include="..\ClntOptions\ClntOptIA_PD.cpp">
       <Filter>Source Files\ClntOptions</Filter>
     </ClCompile>
-    <ClCompile Include="..\ClntOptions\ClntOptIAAddress.cpp">
-      <Filter>Source Files\ClntOptions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ClntOptions\ClntOptIAPrefix.cpp">
-      <Filter>Source Files\ClntOptions</Filter>
-    </ClCompile>
     <ClCompile Include="..\ClntOptions\ClntOptLifetime.cpp">
       <Filter>Source Files\ClntOptions</Filter>
     </ClCompile>
-    <ClCompile Include="..\ClntOptions\ClntOptOptionRequest.cpp">
-      <Filter>Source Files\ClntOptions</Filter>
-    </ClCompile>
     <ClCompile Include="..\ClntOptions\ClntOptPreference.cpp">
-      <Filter>Source Files\ClntOptions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ClntOptions\ClntOptStatusCode.cpp">
       <Filter>Source Files\ClntOptions</Filter>
     </ClCompile>
     <ClCompile Include="..\ClntOptions\ClntOptTA.cpp">
@@ -431,6 +416,12 @@
     <ClCompile Include="..\nettle\memxor.c">
       <Filter>Source Files\nettle</Filter>
     </ClCompile>
+    <ClCompile Include="..\Options\OptAddrParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\OptIA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ClntCfgMgr\ClntParser.y">
@@ -559,9 +550,6 @@
     <ClInclude Include="..\Options\OptVendorSpecInfo.h">
       <Filter>Header Files\Options</Filter>
     </ClInclude>
-    <ClInclude Include="..\ClntOptions\ClntOptAddrParams.h">
-      <Filter>Header Files\ClntOptions</Filter>
-    </ClInclude>
     <ClInclude Include="..\ClntOptions\ClntOptElapsed.h">
       <Filter>Header Files\ClntOptions</Filter>
     </ClInclude>
@@ -574,22 +562,10 @@
     <ClInclude Include="..\ClntOptions\ClntOptIA_PD.h">
       <Filter>Header Files\ClntOptions</Filter>
     </ClInclude>
-    <ClInclude Include="..\ClntOptions\ClntOptIAAddress.h">
-      <Filter>Header Files\ClntOptions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ClntOptions\ClntOptIAPrefix.h">
-      <Filter>Header Files\ClntOptions</Filter>
-    </ClInclude>
     <ClInclude Include="..\ClntOptions\ClntOptLifetime.h">
       <Filter>Header Files\ClntOptions</Filter>
     </ClInclude>
-    <ClInclude Include="..\ClntOptions\ClntOptOptionRequest.h">
-      <Filter>Header Files\ClntOptions</Filter>
-    </ClInclude>
     <ClInclude Include="..\ClntOptions\ClntOptPreference.h">
-      <Filter>Header Files\ClntOptions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ClntOptions\ClntOptStatusCode.h">
       <Filter>Header Files\ClntOptions</Filter>
     </ClInclude>
     <ClInclude Include="..\ClntOptions\ClntOptTA.h">
@@ -783,6 +759,9 @@
     </ClInclude>
     <ClInclude Include="..\nettle\sha.h">
       <Filter>Header Files\nettle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Options\OptAddrParams.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

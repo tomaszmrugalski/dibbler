@@ -440,6 +440,9 @@
     <ClCompile Include="..\nettle\memxor.c">
       <Filter>Source Files\nettle</Filter>
     </ClCompile>
+    <ClCompile Include="..\Options\OptIA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SrvCfgMgr\SrvLexer.l">
