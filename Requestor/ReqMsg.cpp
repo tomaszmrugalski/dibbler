@@ -48,19 +48,6 @@ void TReqMsg::multipleQuery()
 {
 }
 
-//this->setAttributes(iface,addr,msgSize,msgType,transID);
-string TReqMsg::getName()
-{
-    switch (MsgType) {
-    case LEASEQUERY_MSG:
-        return "LEASEQUERY";
-    case LEASEQUERY_REPLY_MSG:
-        return "LEASEQUERY_RSP";
-    default:
-        return "unknown";
-    }
-}
-
 std::string TReqMsg::getName() const
 {
     switch (MsgType) {

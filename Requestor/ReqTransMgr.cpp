@@ -330,7 +330,7 @@ bool ReqTransMgr::SendTcpMsg()
 
     switch (CfgMgr->queryType) {
 
-    case QUERY_BY_ADDRESS:
+    case QUERY_BY_ADDRESS: {
         if (CfgMgr->addr) {
             Log(Debug) << "Creating ADDRESS-based query. Asking for " << CfgMgr->addr << " address." << LogEnd;
             // Address based query
@@ -350,15 +350,17 @@ bool ReqTransMgr::SendTcpMsg()
             return false;
         }
 
-    if (CfgMgr->relayId) {
-        Log(Debug) << "Creating RelayId-based query. Asking for " << CfgMgr->relayId << " RelayId." << LogEnd;
-        // RelayId-based query
-        buf[0] = QUERY_BY_RELAY_ID;
-        // buf[1..16] - link address, leave as ::
-        memset(buf+1, 16, 0);
-        bufLen = 17;
-
-    case QUERY_BY_LINK_ADDRESS:
+        if (CfgMgr->relayId) {
+            Log(Debug) << "Creating RelayId-based query. Asking for " << CfgMgr->relayId << " RelayId." << LogEnd;
+            // RelayId-based query
+            buf[0] = QUERY_BY_RELAY_ID;
+            // buf[1..16] - link address, leave as ::
+            memset(buf+1, 0, 16);
+            bufLen = 17;
+        }
+        break;
+    }
+    case QUERY_BY_LINK_ADDRESS: {
         if(CfgMgr->linkAddr) {
 
             Log(Debug) << "Creating LINK-ADDRESS-based query. Asking for " << CfgMgr->linkAddr << " address." << LogEnd;
@@ -371,9 +373,10 @@ bool ReqTransMgr::SendTcpMsg()
             Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
             return false;
         }
-    break;
+        break;
+    }
 
-    case QUERY_BY_CLIENT_ID:
+    case QUERY_BY_CLIENT_ID: {
 
         if (CfgMgr->clientId) {
             Log(Debug) << "Creating ClientId-based query. Asking for " << CfgMgr->clientId << " RelayId." << LogEnd;
@@ -393,9 +396,10 @@ bool ReqTransMgr::SendTcpMsg()
             Log(Debug) << "Cannot creating ClientId-based query for " << CfgMgr->clientId << " RelayId." << "It's not present in the server" <<LogEnd;
             return false;
         }
-    break;
+        break;
+    }
 
-    case QUERY_BY_RELAY_ID:
+    case QUERY_BY_RELAY_ID: {
         if (CfgMgr->relayId) {
             Log(Debug) << "Creating RelayId-based query. Asking for " << CfgMgr->relayId << " RelayId." << LogEnd;
             // RelayId-based query
@@ -414,9 +418,9 @@ bool ReqTransMgr::SendTcpMsg()
             Log(Debug) << "Cannot creating RelayId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
             return false;
         }
-    break;
-
-    case QUERY_BY_REMOTE_ID:
+        break;
+    }
+    case QUERY_BY_REMOTE_ID: {
         if (CfgMgr->remoteId && CfgMgr->enterpriseNumber) {
             Log(Debug) << "Creating RemoteId-based query. Asking for " << CfgMgr->remoteId << " RelayId." << LogEnd;
             // RelayId-based query
@@ -443,7 +447,11 @@ bool ReqTransMgr::SendTcpMsg()
                 return false;
             }
         }
-    break;
+        break;
+    }
+    };
+#if 0
+// merge went horribly wrong here.
 
         // add new  option
         //TReqOptLinkAddr(int optType, char * data, int dataLen, TMsg* parent);
@@ -455,6 +463,7 @@ bool ReqTransMgr::SendTcpMsg()
     } else {
         Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
     }
+#endif    
 
     // is it use as link - layer adress ??
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
@@ -486,7 +495,7 @@ bool ReqTransMgr::SendTcpMsg()
         return false;
     }
 
-     Log(Info) << "LQ_QUERY message has been send." << LogEnd;
+    Log(Info) << "LQ_QUERY message has been send." << LogEnd;
     return true;
 }
 
