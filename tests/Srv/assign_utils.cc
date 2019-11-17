@@ -198,6 +198,7 @@ bool ServerTest::checkIA_PD(SPtr<TSrvOptIA_PD> pd, SPtr<TIPv6Addr> minRange,
 SPtr<TSrvMsg> ServerTest::sendAndReceive(SPtr<TSrvMsg> clntMsg,
                                          unsigned int expectedMsgCount/* = 1*/) {
     EXPECT_EQ(expectedMsgCount - 1, transmgr_->getMsgLst().size());
+    // EXPECT_EQ(expectedMsgCount - 1, transmgr_->getMsgLst().count());
 
     // process it through server usual routines
     transmgr_->relayMsg(clntMsg);

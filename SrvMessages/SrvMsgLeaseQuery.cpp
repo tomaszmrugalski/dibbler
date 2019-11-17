@@ -1,12 +1,11 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+/*
+ * Dibbler - a portable DHCPv6
  *
- * released under GNU GPL v2 only licence                                
- *                                                                           
- * $Id: SrvMsgLeaseQuery.cpp,v 1.4 2008-08-29 00:07:35 thomson Exp $
- *                                                                           
+ * author:  Tomasz Mrugalski <thomson(at)klub.com.pl>
+ * changes: Karol Podolski <podol(at)ds.pg.gda.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 #include "SrvMsgLeaseQuery.h"
@@ -18,10 +17,10 @@
 #include "AddrClient.h"
 #include "Logger.h"
 
-TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
+TSrvMsgLeaseQuery::TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize, bool istcp /* =false*/ )
     :TSrvMsg(iface,addr,buf,bufSize) {
+    tcp = istcp;
 }
-
 
 void TSrvMsgLeaseQuery::doDuties() {
     return;

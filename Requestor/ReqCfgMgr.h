@@ -21,6 +21,10 @@ typedef struct {
     // message specific parameters
     char * addr;
     char * duid;
+    char * bulk;
+    char * linkAddr; //to będzie nie potrzebne
+    char * remoteId; //to będzie nie potrzebne
+
 } ReqCfgMgr;
 
 #endif

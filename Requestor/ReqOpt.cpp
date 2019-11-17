@@ -39,3 +39,31 @@ bool TReqOptGeneric::doDuties()
 {
     return true;
 }
+
+TReqOptRelayId::TReqOptRelayId(int type,int optionLen,SPtr<TDUID> duid, TMsg *parent)
+{
+}
+
+bool TReqOptRelayId::doDuties()
+{
+    return true;
+}
+
+TReqOptRemoteId::TReqOptRemoteId(int optType, char *data, int dataLen, TMsg *parent)
+{
+}
+
+bool TReqOptRemoteId::doDuties()
+{
+    return true;
+}
+
+TReqOptLinkAddr::TReqOptLinkAddr(int optType, char *data, int dataLen, TMsg *parent)
+{
+}
+
+bool TReqOptLinkAddr::doDuties()
+{
+    return true;
+}
+

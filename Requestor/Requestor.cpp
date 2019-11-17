@@ -29,6 +29,7 @@ void printHelp()
          << "-i IFACE - send query using iface inteface, e.g. -i eth0" << endl
          << "-addr ADDR - query about address, e.g. -addr 2000::43" << endl
          << "-duid DUID - query about DUID, e.g. -duid 00:11:22:33:44:55:66:77:88" << endl
+	 << "-bulk ADDR - query about link-address, e.g. -bulk 2000::43" << endl
          << "-timeout 10 - query timeout, specified in seconds" << endl
          << "-dstaddr 2000::1 - destination address (by default it is ff02::1:2)" << endl;
 }
@@ -37,6 +38,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 {
     char * addr    = 0;
     char * duid    = 0;
+    char * bulk    = 0;
     char * iface   = 0;
     char * dstaddr = 0;
     int timeout  = 60; // default timeout value
@@ -55,6 +57,14 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
                 return false;
             }
             duid = argv[++i];
+            continue;
+        }
+        if (!strncmp(argv[i], "-bulk", 5)) {
+            if (argc == i) {
+                Log(Error) << "Unable to parse command-line. -bulk used, but actual link-address is missing." << LogEnd;
+                return false;
+            }
+            bulk = argv[++i];
             continue;
         }
         if (!strncmp(argv[i],"-i", 2)) {
@@ -89,7 +99,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
         Log(Error) << "Please use -h for help." << LogEnd;
         return false;
     }
-
+/*
     if (!addr && !duid) {
         Log(Error) << "Both address and DUID not defined." << LogEnd;
         return false;
@@ -98,7 +108,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
         Log(Error) << "Both address and DUID defined." << LogEnd;
         return false;
     }
-
+*/
     if (!iface) {
         Log(Error) << "Interface not defined. Please use -i command-line switch." << LogEnd;
         return false;
@@ -106,6 +116,7 @@ bool parseCmdLine(ReqCfgMgr *a, int argc, char *argv[])
 
     a->addr  = addr;
     a->duid  = duid;
+    a->bulk  = bulk;
     a->iface = iface;
     a->timeout= timeout;
     a->dstaddr = dstaddr;

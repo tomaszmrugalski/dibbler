@@ -111,6 +111,88 @@ bool ReqTransMgr::BindSockets()
     return true;    
 }
 
+bool ReqTransMgr::BindTcpSockets()
+{
+    if (!CfgMgr) {
+        Log(Crit) << "Unable to bind sockets: no configration set." << LogEnd;
+        return false;
+    }
+
+    Iface = IfaceMgr->getIfaceByName(CfgMgr->iface);
+    if (!Iface) {
+        Log(Crit) << "Unable to bind sockets: Interface " << CfgMgr->iface << " not found." << LogEnd;
+        return false;
+        this->Iface = Iface;
+    }
+
+#ifndef WIN32
+    Log(Info) << "Binding socket on loopback interface." << LogEnd;
+
+    SPtr<TIfaceIface> ptrIface;
+    SPtr<TIfaceIface> loopback;
+    IfaceMgr->firstIface();
+    while (ptrIface=IfaceMgr->getIface()) {
+        if (!ptrIface->flagLoopback()) {
+            continue;
+        }
+        loopback = ptrIface;
+        break;
+    }
+
+    if (!loopback) {
+       Log(Crit) << "Loopback interface not found!" << LogEnd;
+       return false;
+    }
+
+    SPtr<TIPv6Addr> loopAddr = new TIPv6Addr("::", true);
+    Log(Notice) << "Creating control (" << *loopAddr << ") socket on the " << loopback->getName()
+        << "/" << loopback->getID() << " interface." << LogEnd;
+//zły port, dodam później
+    if (!loopback->addTcpSocket(loopback,DHCLIENT_PORT, false,true,true,false)){
+        Log(Crit) << "Proper socket creation failed." << LogEnd;
+        return false;
+    }
+
+    loopback->firstSocket();
+    Socket = loopback->getSocket();
+    if (!Socket) {
+        Log(Crit) << "No socket found. Something is wrong." << LogEnd;
+        return false;
+    }
+    Log(Debug) << "Socket " << Socket->getFD() << " created on the " << loopback->getFullName() << " interface." << LogEnd;
+
+
+#endif
+
+    // get link-local address
+    char* llAddr = 0;
+    Iface->firstLLAddress();
+    llAddr=Iface->getLLAddress();
+    if (!llAddr) {
+        Log(Error) << "Interface " << Iface->getFullName() << " does not have link-layer address. Weird." << LogEnd;
+        return false;
+    }
+    SPtr<TIPv6Addr> ll = new TIPv6Addr(llAddr);
+// zły port, dopiszę później
+    if (!Iface->addTcpSocket(ll, DHCPCLIENT_PORT, true, true, true, false)) {
+        Log(Crit) << "Socket creation or binding failed." << LogEnd;
+        return false;
+    }
+
+    Iface->firstSocket();
+    Socket = Iface->getSocket();
+    if (!Socket) {
+        Log(Crit) << "No socket found. Something is wrong." << LogEnd;
+        return false;
+    }
+    Log(Debug) << "Socket " << Socket->getFD() << " created on the " << Iface->getFullName() << " interface." << LogEnd;
+    return true;
+
+
+    return true;
+
+}
+
 bool ReqTransMgr::SendMsg()
 {
     // TODO
@@ -144,10 +226,10 @@ bool ReqTransMgr::SendMsg()
         bufLen += optAddr->getSize();
         delete optAddr;
         
-    } else {
+    } else if (CfgMgr->duid) {
         Log(Debug) << "Creating DUID-based query. Asking for " << CfgMgr->duid << " DUID." << LogEnd;
         // DUID based query
-        buf[0] = QUERY_BY_CLIENTID;
+        buf[0] = QUERY_BY_CLIENT_ID;
         // buf[1..16] - link address, leave as ::
         memset(buf+1, 0, 16);
         bufLen = 17;
@@ -156,8 +238,22 @@ bool ReqTransMgr::SendMsg()
         TReqOptDUID * optDuid = new TReqOptDUID(OPTION_CLIENTID, duid, msg);
         optDuid->storeSelf(buf+bufLen);
         bufLen += optDuid->getSize();
-
         delete optDuid;
+    
+    } else {
+        Log(Debug) << "Creating LINK-ADDRESS-based query. Asking for " << CfgMgr->bulk << " address." << LogEnd;
+        // Link-address based query
+        buf[0] = QUERY_BY_LINK_ADDRESS;
+        // buf[1..16] - link address, leave as ::
+        memset(buf+1, 16, 0);
+        bufLen = 17;
+
+        // add new IAADDR option
+        SPtr<TIPv6Addr> a = new TIPv6Addr(CfgMgr->bulk, true);
+        TReqOptAddr * optAddr = new TReqOptAddr(OPTION_IAADDR, a, msg);
+        optAddr->storeSelf(buf+bufLen);
+        bufLen += optAddr->getSize();
+        free(optAddr);
     }
 
     SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
@@ -182,6 +278,119 @@ bool ReqTransMgr::SendMsg()
     Log(Info) << "LQ_QUERY message sent." << LogEnd;
     return true;
 }
+
+bool ReqTransMgr::SendTcpMsg()
+{
+
+    // bulk leasequery assumed three types of queries:
+    //by Relay Id
+    //Link Address
+    //by Remote Id
+
+    SPtr<TIPv6Addr> dstAddr;
+    if (!CfgMgr->dstaddr)
+    dstAddr = new TIPv6Addr("ff02::1:2", true);
+    else
+    dstAddr = new TIPv6Addr(CfgMgr->dstaddr, true);
+
+
+    Log(Debug) << "Transmitting data on the " << Iface->getFullName() << " interface to "
+           << dstAddr->getPlain() << " address by tcp protocol." << LogEnd;
+
+
+
+    TReqMsg * msg = new TReqMsg(Iface->getID(), dstAddr, msgSize, LEASEQUERY_MSG);
+
+    char buf[1024];
+    int bufLen;
+    memset(buf, 1024, 0xff);
+
+
+    if (CfgMgr->relayId) {
+        Log(Debug) << "Creating RelayId-based query. Asking for " << CfgMgr->relayId << " RelayId." << LogEnd;
+        // RelayId-based query
+        buf[0] = QUERY_BY_RELAY_ID;
+        // buf[1..16] - link address, leave as ::
+        memset(buf+1, 16, 0);
+        bufLen = 17;
+
+        // add new OPTION_RELAY_ID option
+        SPtr<TDUID> duid = new TDUID(CfgMgr->duid);
+        TReqOptRelayId * optRelayId = new TReqOptRelayId(OPTION_RELAY_ID, bufLen, duid, msg);//bufLen=optLen ?
+        optRelayId->storeSelf(buf+bufLen);
+        bufLen += optRelayId->getSize();
+        free(optRelayId);
+
+    } else {
+        Log(Debug) << "Cannot creating RelayId-based query for " << CfgMgr->relayId << " RelayId." << "It's not present in the server" <<LogEnd;
+    }
+
+    if(CfgMgr->remoteId) {
+
+        Log(Debug) << "Creating RemoteId-based query. Asking for " << CfgMgr->remoteId << " RemoteId." << LogEnd;
+        // RelayId-based query
+        buf[0] = QUERY_BY_REMOTE_ID;
+        // buf[1..16] - link address, leave as ::
+        memset(buf+1, 16, 0);
+        bufLen = 17;
+
+        //skad wziac enterpise
+        //add new remoteId option
+        TRelOptRemoteID * optRemoteId = new TRelOptRemoteID(enterprise,buf, bufLen, msg);
+
+        optRemoteId->storeSelf(buf+bufLen);
+        bufLen += optAddr->getSize();
+        free(optRemoteId);
+
+    } else {
+        Log(Debug) << "Cannot creating RemoteId-based query for " << CfgMgr->remoteId << " RemoteId." << "It's not present in the server" <<LogEnd;
+    }
+
+    if(CfgMgr->linkAddr) {
+
+        Log(Debug) << "Creating LINK-ADDRESS-based query. Asking for " << CfgMgr->linkAddr << " address." << LogEnd;
+        // Link-address based query
+        buf[0] = QUERY_BY_LINK_ADDRESS;
+        // buf[1..16] - link address, leave as ::
+        memset(buf+1, 16, 0);
+        bufLen = 17;
+
+        // add new  option
+        //TReqOptLinkAddr(int optType, char * data, int dataLen, TMsg* parent);
+        TReqOptLinkAddr * optLinkAddr = new TReqOptLinkAddr(OPTION_);
+        optLinkAddr->storeSelf(buf+bufLen);
+        bufLen += optLinkAddr->getSize();
+        free(optLinkAddr);
+
+    } else {
+        Log(Debug) << "Cannot creating LinkAddr-based query for " << CfgMgr->remoteId << " link address." << "It's not present in the server" <<LogEnd;
+    }
+
+
+    SPtr<TDUID> clientDuid = new TDUID("00:01:00:01:0e:ec:13:db:00:02:02:02:02:02");
+    SPtr<TOpt> opt = new TReqOptDUID(OPTION_CLIENTID, clientDuid, msg);
+    msg->addOption(opt);
+
+    opt = new TReqOptGeneric(OPTION_LQ_QUERY, buf, bufLen, msg);
+    msg->addOption(opt);
+
+    char msgbuf[1024];
+    int  msgbufLen;
+    memset(msgbuf, 0xff, 1024);
+
+    msgbufLen = msg->storeSelf(msgbuf);
+
+    Log(Debug) << msg->getSize() << "-byte long LQ_QUERY message prepared." << LogEnd;
+
+    if (this->Socket->send(msgbuf, msgbufLen, dstAddr, DHCPSERVER_PORT)<0) {
+        Log(Error) << "Message transmission failed." << LogEnd;
+        return false;
+    }
+
+    Log(Info) << "LQ_QUERY message sent." << LogEnd;
+    return true;
+}
+
 
 bool ReqTransMgr::WaitForRsp()
 {
@@ -337,5 +546,19 @@ bool ReqTransMgr::ParseOpts(int msgType, int recurseLevel, char * buf, int bufLe
 string ReqTransMgr::BinToString(char * buf, int bufLen)
 {
     return (hexToText((uint8_t*)buf, bufLen, true));
+}
+
+bool ReqTransMgr::RetryConnection()
+{
+    if (ReqTransMgr::SendTcpMsg()==false) {
+        ReqTransMgr::SendTcpMsg()
+        Log(Debug) << "Retrying TCP connection with address:" << CfgMgr->addr << " address." << LogEnd;
+    }
+}
+
+void ReqTransMgr::TerminateTcpConn()
+{
+
+
 }
 

@@ -707,3 +707,164 @@ void fill_random(uint8_t* buffer, int len) {
         buffer[i] = (number%256);
     }
 }
+
+extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int thisifaceonly, int reuse){
+
+    SOCKET s;
+    struct sockaddr_in6 bindme;
+    struct w2k_ipv6_mreq ipmreq;
+    int	hops=1;
+    char packedAddr[16];
+    //char multiAddr[16] = { 0xff,2, 0,0, 0,0, 0,0, 0,0, 0,0, 0,1, 0,2};
+
+    inet_pton6(addr,packedAddr);
+    if ((s=socket(AF_INET6,SOCK_STREAM, 0)) == INVALID_SOCKET)
+    return -2;
+
+    memset(&bindme, 0, sizeof(bindme));
+    bindme.sin6_family   = AF_INET6;
+    bindme.sin6_port     = htons(port);
+
+
+    /*(if (!IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) 	{
+        inet_pton6(addr, (char*)&bindme.sin6_addr);
+    }*/
+
+    // REUSEADDR must be before bind() in order to take effect
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char*)&hops, sizeof(hops)))
+    return -9;
+
+    if (bind(s, (struct sockaddr*)&bindme, sizeof(bindme))) {
+        // displayError(WSAGetLastError());
+        return -4;
+    }
+
+    //if (IN6_IS_ADDR_MULTICAST((IN6_ADDR*)packedAddr)) {
+    /* multicast */
+    /*ipmreq.ipv6mr_interface=ifaceid;
+    memcpy(&ipmreq.ipv6mr_multiaddr,packedAddr,16);
+    if(setsockopt(s,IPPROTO_IPV6,IPV6_ADD_MEMBERSHIP,(char*)&ipmreq,sizeof(ipmreq)))
+        return -6;
+    if(setsockopt(s,IPPROTO_IPV6,IPV6_MULTICAST_HOPS,(char*)&hops,sizeof(hops)))
+        return -5;
+    } */
+    return s;
+}
+
+extern int bind_tcp_socket(int fd, char * addr, struct socketStruct) {
+
+    addrLenght=sizeof(socketStruct.sockaddr_in);
+    if(bind(fd,(struct sockaddr*) &addr,addrLength) < 0){
+        printf( "Bind failed with error: %ld\n", WSAGetLastError() );
+        closesocket(fd);
+        WSACleanup();
+        return 1;
+    }
+}
+
+extern int listen_tcp (int fd,int connectionNumber ) {
+
+    if ( listen( fd, connectionNumber ) == SOCKET_ERROR ) {
+              printf( "Listen failed with error: %ld\n", WSAGetLastError() );
+              closesocket(fd);
+              WSACleanup();
+              return 1;
+    } else {
+        return 0;
+    }
+}
+
+extern int accept_tcp (int fd,char * addr, struct socketStruct) {
+
+    //addrLength = sizeof(struct addr.sockaddr_in;
+    addrLength = sizeof(socketStruct.sockaddr_in);
+    fd_new = accept(fd,(struct sockaddr*) &addr, &addrLength);
+    if (fd_new == -1) {
+        printf( "Accept function failed with error: %ld\nCannot create net socket descriptor\n", WSAGetLastError() );
+        closesocket(fd_new);
+        WSACleanup();
+        return 1;
+    } else {
+        return fd_new;
+    }
+
+}
+
+extern int getPeerName_ipv6(int fd,struct socketStruct,char * addr) {
+
+     addrLength = sizeof(socketStruct.sockaddr_in);
+     if(getpeername(fd, addr, addrLength) < 0) {
+         printf( "Getpeername function failed with error: %ld\nCannot return peername address\n", WSAGetLastError() );
+         closesocket(fd_new);
+         WSACleanup();
+         return 1;
+     } else {
+         return 0;
+     }
+
+}
+
+extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
+
+    //int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen)
+
+    int iResult;
+
+    if (!(iResult = recv (fd, recvBuffer, bufLength, flags))) {
+        return -1;
+    } else if(iResult < 0)  {
+        return 0;
+    } else  {
+        return iResult;
+       // printf("recv failed: %d\n", WSAGetLastError());
+    }
+}
+
+
+extern int sock_send_tcp(int fd,char *buf, int buflen, int flags ) {
+
+    int iResult;
+
+    /*if(IN6_IS_ADDR_LINKLOCAL((struct in6_addr*)packaddr)
+       ||IN6_IS_ADDR_SITELOCAL((struct in6_addr*)packaddr))
+    strcat(strcat(addrStr,"%"),ifaceStr);*/
+
+    if (!buflen){
+        buflen=(int)strlen(buf);
+    }
+    if (iResult=send(fd,buf,buflen,0))
+    {
+        freeaddrinfo(remote);
+        if (iResult < 0) displayError(WSAGetLastError());
+        return 0;
+    }
+
+    return iResult;
+}
+
+extern int terminate_tcp_connection(int fd,int how) {
+
+    //SD_RECEIVE 0
+    //SD_SEND    1
+    //SD_BOTH    2
+    int howInt;
+    if(how==0) {
+        howInt=SD_RECEIVE;
+    }
+    if(how==1) {
+        howInt=SD_SEND;
+    }
+    if(how==2) {
+        howInt=SD_BOTH;
+    }
+    iResult = shutdown(ConnectSocket,howInt);
+    if (iResult == SOCKET_ERROR) {
+        wprintf(L"shutdown failed with error: %d\n", WSAGetLastError());
+        closesocket(ConnectSocket);
+        WSACleanup();
+        return 1;
+    }
+    return iResult;
+
+}
+

@@ -1,10 +1,10 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6                                               
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
+/*
+ * Dibbler - a portable DHCPv6
  *
- * released under GNU GPL v2 only licence                                
- *                                                                           
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *
+ * released under GNU GPL v2 only licence
+ *
  */
 
 class TSrvMsgLeaseQuery;
@@ -18,14 +18,16 @@ class TSrvMsgLeaseQuery;
 class TSrvMsgLeaseQuery : public TSrvMsg
 {
   public:
-    TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-    
+    TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+                      int bufSize, bool tcp = false);
+
     void doDuties();
     bool check();
     ~TSrvMsgLeaseQuery();
     std::string getName() const;
-
+    bool isTCP() { return tcp; };
   private:
+    bool tcp;
 };
 
 

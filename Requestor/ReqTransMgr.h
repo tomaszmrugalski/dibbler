@@ -19,8 +19,12 @@ public:
     ReqTransMgr(TIfaceMgr * ifaceMgr);
     void SetParams(ReqCfgMgr * cfgMgr);
     bool BindSockets();
+    bool BindTcpSockets();
     bool SendMsg();
+    bool SendTcpMsg();
     bool WaitForRsp();
+    bool RetryConnection(); //if server doesn't answer retry attemption
+    void TerminateTcpConn();
 
 private:
     void PrintRsp(char * buf, int bufLen);

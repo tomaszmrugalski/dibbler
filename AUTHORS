@@ -69,6 +69,9 @@
   - Tomasz Gierszewski <tomag(at)eti(dot)pg(dot)gda(dot)pl>
     2011-07: NetBSD compilation fix.
 
+  - Karol Podolski <podol(at)ds(dot)pg(dot)gda(dot)pl>
+    2011-08: Initial, partial implementation of bulk leasequery.
+
   - Harro Haan <hrhaan(at)gmail(dot)com>
     2011-10: fix alignment errors (ARMv5)
 

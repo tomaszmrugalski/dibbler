@@ -35,6 +35,8 @@
 #include "SrvMsg.h"
 #include "SrvMsgLeaseQuery.h"
 #include "SrvMsgLeaseQueryReply.h"
+#include "SrvMsgLeaseQueryData.h"
+#include "SrvMsgLeaseQueryDone.h"
 #include "SrvOptIA_NA.h"
 #include "OptStatusCode.h"
 #include "NodeClientSpecific.h"
@@ -376,7 +378,9 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
             return;
         }
         Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-        a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
+        //a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
+        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
+        processLeaseQuery(lq);
         break;
     }
     case RECONFIGURE_MSG:
@@ -682,6 +686,32 @@ bool TSrvTransMgr::sanitizeAddrDB() {
 
     return SrvAddrMgr().updateInterfacesInfo(currentNameToIndex,
                                              currentIndexToName);
+}
+
+void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
+    SPtr<TSrvMsg> asnw;
+    int iface = lq->getIface();
+    if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport()) {
+        Log(Error) << "LQ: LeaseQuery message received on " << iface << " interface, but it is not supported there." << LogEnd;
+        return;
+    }
+
+    if (lq->isTCP()) {
+        Log(Debug) << "BLQ: LeaseQuery received over TCP, preparing answer." << LogEnd;
+    } else {
+        Log(Debug) << "LQ: LeaseQuery received over UDP, preparing answer." << LogEnd;
+    }
+    
+    SPtr<TSrvOptLQ> query;
+    query = (Ptr*) lq->getOption(OPTION_LQ_QUERY);
+    if (!query) {
+        Log(Warning) << "LQ: Unable to find LQ_QUERY option in LQ message. Not sending reply." << LogEnd;
+        return;
+    }
+
+    SPtr<TSrvMsg> answ = new TSrvMsgLeaseQueryReply(lq);
+    // don't add to MsgLst (no need to store cached reply)
+    // LQ-REPLY was sent from TSrvMsgLeaseQueryReply constructor
 }
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)

@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 #include "SmartPtr.h"
-#include "Container.h"
 #include "Opt.h"
 #include "SrvMsg.h"
+#include "SrvMsgLeaseQuery.h"
 #include "SrvIfaceMgr.h"
 #include "SrvCfgIface.h"
 #include "SrvAddrMgr.h"
@@ -44,6 +44,7 @@ class TSrvTransMgr
     /// @return true (accept message) or false (drop it)
     bool unicastCheck(SPtr<TSrvMsg> msg);
 
+    void processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq);
     void doDuties();
     void dump();
 
