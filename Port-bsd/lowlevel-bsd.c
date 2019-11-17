@@ -24,6 +24,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
 #include <ifaddrs.h>
 
 #include <net/if_dl.h>
@@ -575,6 +576,7 @@ int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
     /// @todo: Implement this for BSD
     /// see "/usr/sbin/ndp -a -n"
     return LOWLEVEL_ERROR_NOT_IMPLEMENTED;
+}
 
 extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
 
