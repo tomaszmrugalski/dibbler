@@ -19,16 +19,9 @@ system=`uname -s`
 s_version=`uname -r`
 case $system in
     Darwin)
-	    case $s_version in
-            12*|13*|14*)
-                AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
-                NEED_RFC_3542=yes
-		# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
-		;;
-	    *)
-		# Let's hope that madness will go way one day.
-	    ;;
-        esac
+        AC_DEFINE([__APPLE_USE_RFC_3542], [1], [Are we _special_?])
+        NEED_RFC_3542=yes
+	# Yup, Mac OS X 10.6.x is special. 10.9 is no different, too.
     ;;
 esac
 
@@ -231,7 +224,7 @@ dnl ---------------------------------------------
       PORT_SUBDIR="Port-bsd"
       PORT_CFLAGS=""
       if test "$NEED_RFC_3542" = "yes"; then
-        PORT_CFLAGS="-D__APPLE_USE_RFC_3542"
+        PORT_CFLAGS="-D__APPLE_USE_RFC_3542" 
       fi
       PORT_LDFLAGS=
       EXTRA_DIST_SUBDIRS="Port-linux Port-sun"
