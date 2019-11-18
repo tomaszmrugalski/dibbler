@@ -6,29 +6,15 @@
 
 
 TOptRemoteID::TOptRemoteID(int type, char * buf,  int n, TMsg* parent)
-    :TOpt(type, parent){
-
+    :TOpt(type, parent) {
 }
 
 TOptRemoteID::TOptRemoteID(int type, int enterprise, char *data, int dataLen, TMsg* parent)
-    :TOpt(type, parent){
-
-
+    :TOpt(type, parent) {
 }
 
-size_t TOptRemoteID::getSize(){
-
-    SPtr<TOpt> opt;
-    unsigned int len = 8; // normal header(4) + remoteId(4)
-    firstOption();
-    while (opt = getOption()) {
-        len += opt->getSize();
-    }
-    if (len < 5 ) {
-        Log(Debug) << "Option-len filed in remoteId option is to short." <<LogEnd;
-    }
-    return len;
-
+size_t TOptRemoteID::getSize() {
+    return 4 + 4 + RemoteId_.size();
 }
 
 char * TOptRemoteID::storeSelf( char* buf) {
@@ -37,46 +23,29 @@ char * TOptRemoteID::storeSelf( char* buf) {
     buf = writeUint16(buf,OptType);
 
     // option-len size of total option-data
-    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint16(buf, getSize() - 4);
 
     // enterprise-number (4 bytes long)
+    buf = writeUint32(buf, EnterpriseId_);
 
-
-    //TODO: conversion of enterprise number should be here:
-
-    int tmp=0;
-    buf = writeUint32(buf,tmp);
-
-    SPtr<TOpt> opt;
-    firstOption();
-
-    while (opt = getOption())
-    {
-        buf = opt->storeSelf(buf);
+    if (!RemoteId_.empty()) {
+        buf = writeData(buf, (char*)&RemoteId_[0], RemoteId_.size());
     }
-    buf = storeSubOpt(buf);
+
     return buf;
-
-
 }
 
-bool TOptRemoteID::isValid() {
-    return 0;
+std::vector<uint8_t> TOptRemoteID::getRemoteId() {
+    return RemoteId_;
 }
 
-unsigned int TOptRemoteID::getRemoteId(){
-
-    return this->RemoteId;
+std::string TOptRemoteID::getPlain() {
+    return Plain_;
 }
 
-std::string TOptRemoteID::getPlain()
-{
-    return this->Plain;
+TOptRemoteID::~TOptRemoteID() {
 }
 
-TOptRemoteID::~TOptRemoteID()
-{
-
+bool TOptRemoteID::doDuties() {
+    return true;
 }
-
-bool TOptRemoteID::doDuties() { return true; }
