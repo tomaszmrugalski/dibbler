@@ -2,7 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Tomasz Mrugalski <thomson@klub.com.pl>
- * 
+ *
  * released under GNU GPL v2 only licence
  *
  */
@@ -27,38 +27,38 @@ TSrvOptLQ::TSrvOptLQ(char * buf, int bufsize, TMsg* parent)
         IsValid = false;
         return;
     }
-    QueryType = (ELeaseQueryType)buf[0];
+    QueryType = static_cast<ELeaseQueryType>(buf[0]);
     Addr = new TIPv6Addr(buf+1);
     int pos = 17;
 
     while (pos<bufsize) {
-	if (pos+4>bufsize) {
-	    IsValid = false;
-	    Log(Warning) << "Truncated IA_NA option received." << LogEnd;
-	    return;
-	}
+        if (pos+4>bufsize) {
+            IsValid = false;
+            Log(Warning) << "Truncated IA_NA option received." << LogEnd;
+            return;
+        }
         int code=buf[pos]*256+buf[pos+1];
         pos+=2;
         int length=buf[pos]*256+buf[pos+1];
         pos+=2;
 
-	if (allowOptInOpt(parent->getType(), OPTION_LQ_QUERY, code)) {
-	    switch (code) {
-	    case OPTION_IAADDR:
-		SubOptions.append( new TSrvOptIAAddress(buf+pos, length, Parent));
-		break;
-	    case OPTION_CLIENTID:
-		SubOptions.append( new TOptDUID(OPTION_CLIENTID, buf+pos, length, Parent) );
-		break;
-	    default:
-		Log(Warning) << "Not supported option " << code << " received in LQ_QUERY option." << LogEnd;
-	    }
-	} else {
-	    Log(Warning) << "Illegal option " << code << " received inside LQ_QUERY option." << LogEnd;
-	}
+        if (allowOptInOpt(parent->getType(), OPTION_LQ_QUERY, code)) {
+            switch (code) {
+            case OPTION_IAADDR:
+                SubOptions.append( new TSrvOptIAAddress(buf+pos, length, Parent));
+                break;
+            case OPTION_CLIENTID:
+                SubOptions.append( new TOptDUID(OPTION_CLIENTID, buf+pos, length, Parent) );
+                break;
+            default:
+                Log(Warning) << "Not supported option " << code << " received in LQ_QUERY option." << LogEnd;
+            }
+        } else {
+            Log(Warning) << "Illegal option " << code << " received inside LQ_QUERY option." << LogEnd;
+        }
 
-	pos += length;
-	continue;
+        pos += length;
+        continue;
     }
 
 }
@@ -86,12 +86,9 @@ TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
     }
     while (pos<bufSize)	{
 
-        //unsigned short tmpl;
-        //Log(Debug) << "pos:"<<pos<<tmpl<<LogEnd;
         code   = buf[pos]*256 + buf[pos+1];
         pos+=2;
         length = buf[pos]*256 + buf[pos+1];
-        //Log(Debug) << "pos:"<<pos<<tmpl<<LogEnd;
         pos+=2;
         if (pos+length>bufSize) {
             Log(Error) << "Malformed option (type=" << code << ", len=" << length
@@ -108,8 +105,6 @@ TSrvOptLQ::TSrvOptLQ(char *buf, int bufSize, TMsg *parent, int msgType)
             pos+=length;
             continue;
         }
-        ptr= 0;
-
 
         switch (code) {
         case OPTION_CLIENTID:
@@ -156,7 +151,7 @@ size_t TSrvOptLQ::getSize() {
     int len = 17;
     SubOptions.first();
     while (opt = SubOptions.get() ) {
-	len += opt->getSize();
+        len += opt->getSize();
     }
     return len;
 }
@@ -170,7 +165,7 @@ char * TSrvOptLQ::storeSelf(char* buf)
 
 // -----------------------------------------------------------------------------------
 
-TSrvOptLQClientData::TSrvOptLQClientData(TMsg * parent) 
+TSrvOptLQClientData::TSrvOptLQClientData(TMsg * parent)
     :TOpt(OPTION_CLIENT_DATA, parent)
 {
 }
@@ -181,7 +176,7 @@ size_t TSrvOptLQClientData::getSize()
     SPtr<TOpt> x;
     SubOptions.first();
     while ( x=SubOptions.get() ) {
-	cnt += x->getSize();
+        cnt += x->getSize();
     }
     return cnt+4;
 }

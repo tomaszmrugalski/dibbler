@@ -130,7 +130,7 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
     SPtr<TIfaceSocket> sock;
     SPtr<TIfaceSocket> backup;
     ptrIface->firstSocket();
-    while (sock = ptrIface->getSocket()) {
+    while ((sock = ptrIface->getSocket())) {
         if (sock->multicast())
             continue; // don't send anything via multicast sockets
         if (!backup) {
@@ -194,7 +194,7 @@ bool TSrvIfaceMgr::sendTcp(int iface, char *msg, int size, SPtr<TIPv6Addr> addr,
     // find this socket
     SPtr<TIfaceSocket> sock;
     ptrIface->firstSocket();
-    while (sock = ptrIface->getSocket()) {
+    while ((sock = ptrIface->getSocket())) {
         if (sock->multicast())
             continue; // don't send anything via multicast sockets
         break;
@@ -244,8 +244,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         return SPtr<TSrvMsg>(); // NULL
     }
 
-    SPtr<TSrvMsg> ptr;
-
     if (bufsize<4) {
         if (bufsize == 1 && buf[0] == CONTROL_MSG) {
             Log(Debug) << "Control message received." << LogEnd;
@@ -253,220 +251,72 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         }
     }
 
-        SPtr<TSrvIfaceIface> ptrIface;
-
-        // get interface
-        ptrIface = (Ptr*)getIfaceBySocket(sockid);
-
-        Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-                   << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-                   << ")." << LogEnd;
-
-
-        // create specific message object
-        SPtr<TSrvMsg> ptr;
-        if (!this->isTcp) {
-            msgtype = buf[0];
-            switch (msgtype) {
-
-                case SOLICIT_MSG:
-                case REQUEST_MSG:
-                case CONFIRM_MSG:
-                case RENEW_MSG:
-                case REBIND_MSG:
-                case RELEASE_MSG:
-                case DECLINE_MSG:
-                case INFORMATION_REQUEST_MSG:
-                case LEASEQUERY_MSG:
-                {
-                    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
-                    if (!ptr->validateReplayDetection() ||
-                        !ptr->validateAuthInfo(buf, bufsize)) {
-                        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                        return 0;   
-                    }
-
-                    return ptr;
-                }
-                case RELAY_FORW_MSG:
-                {
-                    ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-                    if (!ptr)
-                        return 0;
-                    if (!ptr->validateReplayDetection() ||
-                        !ptr->validateAuthInfo(buf, bufsize)) {
-                        Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                        return 0;
-                    }
-                }
-                return ptr;
-            }
-        case RELAY_FORW_MSG:
-            {
-                ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-                if (!ptr)
-                    return 0;
-                if (!ptr->validateReplayDetection() ||
-                    !ptr->validateAuthInfo(buf, bufsize)) {
-                    Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                    return 0;
-                default:
-                Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-                return 0;
-
-            }
-        } else {
-            if (bufsize<6) {
-                Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
-                return 0; //NULL
-            }
-            msgtype = buf[2];
-
-            switch (msgtype) {
-
-                case LEASEQUERY_MSG:
-                {
-                    Log(Debug) << "[Bulk] Leasequery messege coming" << LogEnd;
-                    ptr = decodeMsg(ptrIface, peer, buf, bufsize);
-                    if (!ptr->validateReplayDetection() ||
-                        !ptr->validateAuthInfo(buf, bufsize)) {
-                        Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                        return 0;
-                    }
-                    ptr->Bulk = true;
-                    return ptr;
-                }
-            }
-            return ptr;
-        case ADVERTISE_MSG:
-        case REPLY_MSG:
-        case RECONFIGURE_MSG:
-        case RELAY_REPL_MSG:
-        case LEASEQUERY_REPLY_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; //NULL;
-        case LEASEQUERY_DONE_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        case LEASEQUERY_DATA_MSG:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        default:
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-            
-            }
-    } else {
-        msgtype = buf[3];
-        
-        switch (msgtype) {
-            
-        case LEASEQUERY_MSG:
-            {
-                Log(Debug) << "[Bulk] Leasequery messege coming" << LogEnd;
-                ptr = decodeMsg(ptrIface, peer, buf, bufsize);
-                if (!ptr->validateReplayDetection() ||
-                    !ptr->validateAuthInfo(buf, bufsize)) {
-                    Log(Error) << "Auth: Authorization failed, message dropped." << LogEnd;
-                    return 0;
-                }
-                return ptr;
-            }
-        case RELAY_FORW_MSG:
-            {
-                Log(Debug) << "[Bulk] Relay_Forward messege coming" << LogEnd;
-                ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-                if (!ptr)
-                    return 0;
-                if (!ptr->validateReplayDetection() ||
-                    !ptr->validateAuthInfo(buf, bufsize)) {
-                    Log(Error) << "Auth: validation failed, message dropped." << LogEnd;
-                    return 0;
-                }
-            }
-            return ptr;
-        case LEASEQUERY_REPLY_MSG:
-            Log(Debug) << "[Bulk] Leasequery_Reply messege coming" << LogEnd;
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0; //NULL;
-        case LEASEQUERY_DONE_MSG:
-            Log(Debug) << "[Bulk] Leasequery_Done coming" << LogEnd;
-            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        case LEASEQUERY_DATA_MSG:
-            Log(Debug) << "[Bulk] Leasequery_Data coming" << LogEnd;
-            Log(Warning) << "[Bulk] Illegal message type " << msgtype << " received." << LogEnd;
-            return 0;
-        default:
-            Log(Warning) << "[Bulk] Illegal message type (default) " << msgtype << " received." << LogEnd;
-            return 0;
-        }
-    }
-    Log(Warning) << "Received message is too short (" << bufsize
-                 << ") bytes, at least 4 are required." << LogEnd;
-    return SPtr<TSrvMsg>(); // NULL
-}
-
-    // check message type
-    int msgtype = buf[0];
-
     SPtr<TIfaceIface> ptrIface;
 
     // get interface
     ptrIface = getIfaceBySocket(sockid);
-    if (!ptrIface) {
-        Log(Error) << "Unable to find interface for socket id=" << sockid << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
 
     Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
                << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
                << ")." << LogEnd;
 
+
     // create specific message object
-    switch (msgtype) {
-    case SOLICIT_MSG:
-    case REQUEST_MSG:
-    case CONFIRM_MSG:
-    case RENEW_MSG:
-    case REBIND_MSG:
-    case RELEASE_MSG:
-    case DECLINE_MSG:
-    case INFORMATION_REQUEST_MSG:
-    case LEASEQUERY_MSG:  {
-            ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
+    SPtr<TSrvMsg> ptr;
+    if (!this->isTcp) {
+        // Handle UDP packet
+        msgtype = buf[0];
+        switch (msgtype) {
+
+        case SOLICIT_MSG:
+        case REQUEST_MSG:
+        case CONFIRM_MSG:
+        case RENEW_MSG:
+        case REBIND_MSG:
+        case RELEASE_MSG:
+        case DECLINE_MSG:
+        case INFORMATION_REQUEST_MSG:
+        case LEASEQUERY_MSG: {
+            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
             break;
-    }
-    case RELAY_FORW_MSG: {
-        ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-        break;
-    }
-    case ADVERTISE_MSG:
-    case REPLY_MSG:
-    case RECONFIGURE_MSG:
-    case RELAY_REPL_MSG:
-    case LEASEQUERY_REPLY_MSG:
-        Log(Warning) << "Illegal message type " << msgtype << " received."
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    default:
-        Log(Warning) << "Message type " << msgtype << " not supported. Ignoring."
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
+        }
+        case RELAY_FORW_MSG: {
+            ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+            break;
+        }
+        default: {
+            Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+            return SPtr<TSrvMsg>();
+        }
+        }
+
+    } else {
+        // Handle TCP "packet"
+        if (bufsize<6) {
+            Log(Warning) << "Received message is too short (" << bufsize << ") bytes." << LogEnd;
+            return SPtr<TSrvMsg>(); //NULL
+        }
+
+        msgtype = buf[2];
+
+        switch (msgtype) {
+        case LEASEQUERY_MSG: {
+            Log(Debug) << "Bulk Leasequery messege received over TCP." << LogEnd;
+            ptr = decodeMsg(ptrIface, peer, buf, bufsize);
+            ptr->Bulk = true;
+            break;
+        }
+        default: {
+            Log(Warning) << "Illegal message type " << msgtype << " received over TCP." << LogEnd;
+            return SPtr<TSrvMsg>();
+        }
+        }
     }
 
     if (!ptr)
-        return SPtr<TSrvMsg>(); // NULL
-
-    ptr->setLocalAddr(myaddr);
+        return SPtr<TSrvMsg>();
 
 #ifndef MOD_DISABLE_AUTH
-    if (!ptr->validateReplayDetection()) {
-        Log(Warning) << "Auth: message replay detection failed, message dropped"
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
-
     bool authOk = ptr->validateAuthInfo(buf, bufsize,
                                         SrvCfgMgr().getAuthProtocol(),
                                         SrvCfgMgr().getAuthDigests());
@@ -483,8 +333,6 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
         return SPtr<TSrvMsg>(); // NULL
     }
 #endif
-
-    /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 
     char mac[20]; // maximum mac address for Infiniband is 20 bytes
     int mac_len = sizeof(mac);
@@ -577,7 +425,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
 
         SPtr<TSrvOptInterfaceID> ptrIfaceID;
 
-	how_found = "";
+        how_found = "";
 
         char type = buf[0];
         if (type!=RELAY_FORW_MSG)
@@ -692,7 +540,7 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
                   << ", peer=" << peerAddr->getPlain();
 
-	// --- selectSubnet() starts here ---
+        // --- selectSubnet() starts here ---
 
         bool guessMode = SrvCfgMgr().guessMode();
 
@@ -701,24 +549,24 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
             Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
             ifindex = SrvCfgMgr().getRelayByInterfaceID(ptrIfaceID);
             if (ifindex == -1) {
-		Log(Debug) << "Unable to find relay interface with interfaceID="
-			   << ptrIfaceID->getPlain() << " defined on the "
-			   << physicalIface->getFullName() << " interface." << LogEnd;
+                Log(Debug) << "Unable to find relay interface with interfaceID="
+                           << ptrIfaceID->getPlain() << " defined on the "
+                           << physicalIface->getFullName() << " interface." << LogEnd;
             } else {
-		how_found = "using interface-id=" + ptrIfaceID->getPlain();
-	    }
+                how_found = "using interface-id=" + ptrIfaceID->getPlain();
+            }
         } else {
             Log(Cont) << ", no interface-id option." << LogEnd;
-	}
+        }
 
         // then try to find a relay based on the link address
         if (ifindex == -1) {
             ifindex = SrvCfgMgr().getRelayByLinkAddr(linkAddr);
-	    if (ifindex == -1) {
+            if (ifindex == -1) {
                 Log(Info) << "Unable to find relay interface using link address: "
-			  << linkAddr->getPlain() << LogEnd;
-	    } else {
-		how_found = string("using link-addr=") + linkAddr->getPlain();
+                          << linkAddr->getPlain() << LogEnd;
+            } else {
+                how_found = string("using link-addr=") + linkAddr->getPlain();
             }
         }
 
@@ -726,11 +574,11 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         if ((ifindex == -1) && guessMode) {
             ifindex = SrvCfgMgr().getAnyRelay();
             if (ifindex != -1) {
-		how_found = "using guess-mode";
+                how_found = "using guess-mode";
             }
         }
 
-	// --- selectSubnet() ends here ---
+        // --- selectSubnet() ends here ---
 
         // now switch to relay interface
         buf = relay_buf;
@@ -738,15 +586,15 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
     }
 
     if (ifindex == -1) {
-	Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
+        Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
         return SPtr<TSrvMsg>(); // NULL
     } else {
-	SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
-	Log(Notice) << "Found relay " << cfgIface->getFullName()
-		    << " by " << how_found << LogEnd;
+        SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
+        Log(Notice) << "Found relay " << cfgIface->getFullName()
+                    << " by " << how_found << LogEnd;
     }
 
-    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize, false);
+    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
     if (!msg) {
         return SPtr<TSrvMsg>(); // NULL
     }
@@ -764,50 +612,58 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         /// @todo: WTF is that? ----v
         remoteID.reset();
         remoteID = msg->getRemoteID();
-        
+
         PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
     }
 
     return msg;
  }
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(SPtr<TSrvIfaceIface> ptrIface,
-                                             SPtr<TIPv6Addr> peer,
-                                             char * buf, int bufsize) {
-    int ifaceid = ptrIface->getID();
-    if (bufsize < 4) {// 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
+                                      SPtr<TIPv6Addr> peer,
+                                      char * buf, int bufsize) {
+    // 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
+    if (bufsize < 4) {
         Log(Warning) << "Truncated message received (len " << bufsize
                      << ", at least 4 is required)." << LogEnd;
         return SPtr<TSrvMsg>(); // NULL
     }
+
     if (!isTcp) {
+        // Parse UDP packet
         switch (buf[0]) {
         case SOLICIT_MSG:
-                  return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+            return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
         case REQUEST_MSG:
-                  return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+            return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
         case CONFIRM_MSG:
-                  return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+            return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
         case RENEW_MSG:
-                  return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+            return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
         case REBIND_MSG:
-                  return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+            return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
         case RELEASE_MSG:
-                  return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+            return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
         case DECLINE_MSG:
-                  return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+            return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
         case INFORMATION_REQUEST_MSG:
-                  return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+            return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
         case LEASEQUERY_MSG:
-                  return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,this->isTcp);
+            return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,this->isTcp);
         default:
             Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-            return 0; //NULL;;
+            break;
        }
     } else {
-        if (buf[2] == LEASEQUERY_MSG)
+        // Parse TCP "packet"
+        if (buf[2] == LEASEQUERY_MSG) {
             return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize,LEASEQUERY_MSG,this->isTcp);
+        } else {
+            Log(Warning) << "Unable to parse TCP packet: type=" << int(buf[2]) << LogEnd;
+        }
     }
+
+    return SPtr<TSrvMsg>();
 }
 
 /**
@@ -891,11 +747,11 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
         DnsUpdateResult result = DNSUPDATE_SKIP;
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
                                        DNSUPDATE_PTR, proto2);
-	
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
+
+        if (key) {
+            act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
+                         key->Fudge_);
+        }
 
         result = act->run(timeout);
         act->showResult(result);
@@ -910,10 +766,10 @@ bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
                                        addr->getPlain(),
                                        DNSUPDATE_AAAA, proto2);
 
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
+        if (key) {
+            act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
+                         key->Fudge_);
+        }
 
         result = act->run(timeout);
         act->showResult(result);
@@ -967,10 +823,10 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
                                        DNSUPDATE_PTR_CLEANUP, proto2);
 
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
+        if (key) {
+            act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
+                         key->Fudge_);
+        }
 
         int result = act->run(timeout);
         act->showResult(result);
@@ -987,10 +843,10 @@ bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> a
         DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
                                        DNSUPDATE_AAAA_CLEANUP, proto2);
 
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
+        if (key) {
+            act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
+                         key->Fudge_);
+        }
 
         int result = act->run(timeout);
         act->showResult(result);
@@ -1045,7 +901,7 @@ ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
     strum << "<SrvIfaceMgr>" << std::endl;
     SPtr<TIfaceIface> ptr;
     x.IfaceLst.first();
-    while (ptr = x.IfaceLst.get()) {
+    while ((ptr = x.IfaceLst.get())) {
         strum << *ptr;
     }
     strum << "</SrvIfaceMgr>" << std::endl;
