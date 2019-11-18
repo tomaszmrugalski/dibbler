@@ -53,13 +53,13 @@ TSrvTransMgr::TSrvTransMgr(const std::string xmlFile, int port)
     // for each interface in CfgMgr, create socket (in IfaceMgr)
     SPtr<TSrvCfgIface> confIface;
     SrvCfgMgr().firstIface();
-    while (confIface = SrvCfgMgr().getIface()) {
+    while ((confIface = SrvCfgMgr().getIface())) {
         if (!this->openSocket(confIface, port)) {
             this->IsDone = true;
             break;
         }
     }
-    
+
     if (SrvCfgMgr().getReconfigureSupport()) {
         int clients = checkReconfigures();
         Log(Info) << "Sent Reconfigure to " << clients << " client(s)." << LogEnd;
@@ -90,23 +90,23 @@ int TSrvTransMgr::checkReconfigures() {
 
     Log(Debug) << "Checking which clients need RECONFIGURE." << LogEnd;
 
-    while (cli = SrvAddrMgr().getClient() ) 
+    while ((cli = SrvAddrMgr().getClient()))
     {
         /// @todo clean up this shit
         check=true;
         ptrDUID=cli->getDUID();
         SPtr<TAddrIA> ia;
         cli->firstIA();
-        while ( (ia = cli->getIA()) && check) 
+        while ( (ia = cli->getIA()) && check)
         {
-            IAID=ia->getIAID();	
+            IAID=ia->getIAID();
             iface=ia->getIfindex();
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
             SPtr<TIPv6Addr> unicast=ia->getSrvAddr();
             SPtr<TAddrAddr> adr;
             SPtr<TIPv6Addr> addra;
             ia->firstAddr();
-            while( (adr=ia->getAddr()) && check ) 
+            while( (adr=ia->getAddr()) && check )
             {
                 PD=false;
                 if(ClientInPool1(adr->get(),iface,PD))
@@ -114,7 +114,7 @@ int TSrvTransMgr::checkReconfigures() {
                     Log(Debug) << "Client " << cli->getDUID()->getPlain()
                                << " doesn't need to reconfigure IA (iaid=" << ia->getIAID() << ")." << LogEnd;
                 }
-                else 
+                else
                 {
                     Log(Info) << "Client " << cli->getDUID()->getPlain()
                               << " uses outdated info. Sending RECONFIGURE." << LogEnd;
@@ -137,10 +137,10 @@ int TSrvTransMgr::checkReconfigures() {
                     break; // break inner while loop
                 }
             }
-        } 
+        }
         SPtr<TAddrIA> pd;
         cli->firstPD();
-        while ( (pd = cli->getPD()) && check ) 
+        while ( (pd = cli->getPD()) && check )
         {
             IAID=pd->getIAID();
             iface=pd->getIfindex();
@@ -149,7 +149,7 @@ int TSrvTransMgr::checkReconfigures() {
             SPtr<TIfaceIface> ptrIface = SrvIfaceMgr().getIfaceByID(iface);
             SPtr<TIPv6Addr> unicast=pd->getSrvAddr();
             pd->firstPrefix();
-            while(prefix=pd->getPrefix() ) 
+            while((prefix=pd->getPrefix()))
             {
                 PD=true;
                 if(ClientInPool1(prefix->get(),iface,PD))
@@ -208,13 +208,13 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
 
     if (confIface->isRelay()) {
         Log(Info) << "Relay init: Creating socket on the underlaying interface: "
-		  << iface->getFullName() << "." << LogEnd;
+                  << iface->getFullName() << "." << LogEnd;
     }
 
     if (unicast) {
         /* unicast */
         Log(Notice) << "Creating unicast (" << *unicast << ") socket on "
-		    << confIface->getFullName() << " interface." << LogEnd;
+                    << confIface->getFullName() << " interface." << LogEnd;
         if (!iface->addSocket(unicast, port, true, false)) {
             Log(Crit) << "Proper socket creation failed." << LogEnd;
             return false;
@@ -351,75 +351,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
         }
         break;
     }
-        case REQUEST_MSG: {
-            SPtr<TSrvMsgRequest> nmsg = (Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case CONFIRM_MSG: {
-            SPtr<TSrvMsgConfirm> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case RENEW_MSG: {
-            SPtr<TSrvMsgRenew> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case REBIND_MSG: {
-            SPtr<TSrvMsgRebind> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case DECLINE_MSG: {
-            SPtr<TSrvMsgDecline> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case RELEASE_MSG: {
-            SPtr<TSrvMsgRelease> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case INFORMATION_REQUEST_MSG : {
-            SPtr<TSrvMsgInfRequest> nmsg=(Ptr*)msg;
-            a = new TSrvMsgReply(nmsg);
-            break;
-        }
-        case LEASEQUERY_MSG: {
 
-            if(!msg->Bulk) {
-                int iface = msg->getIface();
-                if (!SrvCfgMgr().getIfaceByID(iface) || !SrvCfgMgr().getIfaceByID(iface)->leaseQuerySupport() ) {
-                    Log(Error) << "LQ: LeaseQuery message received on " << iface
-                               << " interface, but it is not supported there." << LogEnd;
-                    return;
-                }
-                Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-                SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
-                a = new TSrvMsgLeaseQueryReply(lq);
-                //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
-                //                  int bufSize,int MsgType, bool tcp = false);
-                break;
-            } else {
-                int iface = msg->getIface();
-                if (!SrvCfgMgr().getIfaceByID(iface) || (!SrvCfgMgr().getIfaceByID(iface)->bulkLeaseQuerySupport()) ) {
-                    Log(Error) << "BLQ: LeaseQuery message received on " << iface
-                               << " interface, but it is not supported there." << LogEnd;
-                    return;
-                }
-                Log(Debug) << "BLQ: Bulk LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-                SPtr<TSrvMsgLeaseQuery> lq = (Ptr*) msg;
-                a = new TSrvMsgLeaseQueryReply(lq);
-                //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
-                //                  int bufSize,int MsgType, bool tcp = false);
-                break;
-
-            }
-
-        }
-        break;
-    }
     case REQUEST_MSG: {
         a = new TSrvMsgReply(SPtr_cast<TSrvMsgRequest>(msg));
         break;
@@ -456,10 +388,26 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
                        << " interface, but it is not supported there." << LogEnd;
             return;
         }
-        Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
-        //a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
-        SPtr<TSrvMsgLeaseQuery> lq = (Ptr*)msg;
-        a = new TSrvMsgLeaseQueryReply(lq);
+        SPtr<TSrvMsgLeaseQuery> lq = SPtr_cast<TSrvMsgLeaseQuery>(msg);
+
+        if (!msg->Bulk) {
+            Log(Debug) << "LQ: LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+            //a = new TSrvMsgLeaseQueryReply(SPtr_cast<TSrvMsgLeaseQuery>(msg));
+            a = new TSrvMsgLeaseQueryReply(lq);
+        } else {
+            int iface = msg->getIface();
+            if (!SrvCfgMgr().getIfaceByID(iface) || (!SrvCfgMgr().getIfaceByID(iface)->bulkLeaseQuerySupport()) ) {
+                Log(Error) << "BLQ: LeaseQuery message received on " << iface
+                           << " interface, but it is not supported there." << LogEnd;
+                return;
+            }
+            Log(Debug) << "BLQ: Bulk LeaseQuery received, preparing RQ_REPLY" << LogEnd;
+            a = new TSrvMsgLeaseQueryReply(lq);
+            //TSrvMsgLeaseQuery(int iface, SPtr<TIPv6Addr> addr, char* buf,
+            //                  int bufSize,int MsgType, bool tcp = false);
+            break;
+
+        }
         break;
     }
     case RECONFIGURE_MSG:
@@ -474,8 +422,7 @@ void TSrvTransMgr::relayMsg(SPtr<TSrvMsg> msg)
     case RELAY_REPL_MSG:
     default:
     {
-        Log(Warning)<< "Message type " << msg->getType()
-                    << " not supported." << LogEnd;
+        Log(Warning)<< "Message type " << msg->getType() << " not supported." << LogEnd;
         break;
     }
     }
@@ -566,30 +513,6 @@ void TSrvTransMgr::doDuties()
         removeExpired(addrLst, tempAddrLst, prefixLst);
     }
 
-    // for each message on list, let it do its duties, if timeout is reached
-    SPtr<TSrvMsg> msg;
-    MsgLst.first();
-    while (msg=MsgLst.get())
-        if ( (!msg->getTimeout()) && (!msg->isDone()) )
-            msg->doDuties();
-
-    // now delete messages marked as done
-    MsgLst.first();
-    while (msg = MsgLst.get() )
-    {
-        if (msg->isDone())
-        {
-            msg->getType();
-            MsgLst.del();
-            deletedCnt++;
-
-        }
-    }
-    if (deletedCnt) {
-        Log(Debug) << deletedCnt << " message(s) were removed from cache." << LogEnd;
-    }
-
-
     // Open socket on interface which becames ready during server run
     if (SrvCfgMgr().inactiveMode())
     {
@@ -630,7 +553,7 @@ void TSrvTransMgr::notifyExpireInfo(TNotifyScriptParams& params,
     case IATYPE_PD:
     {
         params.addPrefix(exp.addr, exp.prefixLen, 0, 0);
-	break;
+        break;
     }
     }
 
@@ -657,13 +580,13 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
                     << addr->client->getDUID()->getPlain()
                     << "\") has expired." << LogEnd;
 
-	// FQDN - remove
-	SPtr<TIPv6Addr> dnsAddr = addr->ia->getFQDNDnsServer();
-	SPtr<TFQDN> fqdn = addr->ia->getFQDN();
+        // FQDN - remove
+        SPtr<TIPv6Addr> dnsAddr = addr->ia->getFQDNDnsServer();
+        SPtr<TFQDN> fqdn = addr->ia->getFQDN();
         if (dnsAddr && fqdn) {
-	    SrvIfaceMgr().delFQDN(addr->ia->getIfindex(), dnsAddr,
-				  addr->addr, fqdn->getName());
-	    /// @todo: remove this FQDN from the list of used names
+            SrvIfaceMgr().delFQDN(addr->ia->getIfindex(), dnsAddr,
+                                  addr->addr, fqdn->getName());
+            /// @todo: remove this FQDN from the list of used names
         }
 
         SrvAddrMgr().delClntAddr(addr->client->getDUID(),
@@ -674,9 +597,9 @@ void TSrvTransMgr::removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst
 
         TNotifyScriptParams params;
         notifyExpireInfo(params, *addr, IATYPE_IA);
-		std::string scriptName = SrvCfgMgr().getScriptName();
-		if( !scriptName.empty() )
-			SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
+                std::string scriptName = SrvCfgMgr().getScriptName();
+                if( !scriptName.empty() )
+                        SrvIfaceMgr().notifyScript(SrvCfgMgr().getScriptName(), "expire", params);
     }
 
     for (vector<TSrvAddrMgr::TExpiredInfo>::iterator addr = tempAddrLst.begin();
@@ -791,6 +714,7 @@ bool TSrvTransMgr::sanitizeAddrDB() {
                                              currentIndexToName);
 }
 
+#if 0
 void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
     SPtr<TSrvMsg> asnw;
     int iface = lq->getIface();
@@ -804,7 +728,7 @@ void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
     } else {
         Log(Debug) << "LQ: LeaseQuery received over UDP, preparing answer." << LogEnd;
     }
-    
+
     SPtr<TSrvOptLQ> query;
     query = (Ptr*) lq->getOption(OPTION_LQ_QUERY);
     if (!query) {
@@ -816,6 +740,7 @@ void TSrvTransMgr::processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq) {
     // don't add to MsgLst (no need to store cached reply)
     // LQ-REPLY was sent from TSrvMsgLeaseQueryReply constructor
 }
+#endif
 
 ostream & operator<<(ostream &s, TSrvTransMgr &x)
 {
@@ -831,21 +756,21 @@ ostream & operator<<(ostream &s, TSrvTransMgr &x)
 /// We need to check if client's leases are still within current configuration.
 ///
 /// @param addr address
-/// @param iface interface 
+/// @param iface interface
 /// @param PD is this PD?
 ///
-/// @return 
+/// @return
 bool TSrvTransMgr::ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD) {
 
     SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface)
-	return false;
-    
+        return false;
+
     if(PD) {
         // checking prefix delegation
         ptrIface->firstPD();
         SPtr<TSrvCfgPD> PDClass;
-        while (PDClass = ptrIface->getPD()) {
+        while ((PDClass = ptrIface->getPD())) {
             if (PDClass->prefixInPool(addr)){
                 return true;
             }
@@ -854,14 +779,14 @@ bool TSrvTransMgr::ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD) {
     }
     else {
         // checking addresses
-    	ptrIface->firstAddrClass();
-    	SPtr<TSrvCfgAddrClass> addrClass;
-    	while (addrClass = ptrIface->getAddrClass()) {
+        ptrIface->firstAddrClass();
+        SPtr<TSrvCfgAddrClass> addrClass;
+        while ((addrClass = ptrIface->getAddrClass())) {
             if (addrClass->addrInPool(addr)){
                 return true;
             }
-    	}
-    	return false;
+        }
+        return false;
    }
 }
 

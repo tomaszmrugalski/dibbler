@@ -319,7 +319,6 @@ unsigned long pref, unsigned long valid, int prefixLength);
     extern int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
                                  char* mac, int* mac_len);
 
-    extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port, int connectionNumber);
     extern int sock_add_tcp(char * ifacename,int ifaceid, char * addr, int port);
     extern int listen_tcp (int fd,int connectionNumber );
     //extern int accept_tcp (int fd,char * addr, struct socketStruct, fd_set *master_set)

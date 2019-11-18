@@ -123,7 +123,7 @@ void TDHCPServer::run()
 
         msg->firstOption();
 
-        while (ptrOpt = msg->getOption())
+        while ((ptrOpt = msg->getOption()))
             Log(Cont) << " " << ptrOpt->getOptType();
         if (msg->RelayInfo_.size()) {
             Log(Cont) << " (" << logicalIface->getFullName() << ", "
@@ -142,10 +142,10 @@ void TDHCPServer::run()
 
         SrvTransMgr().relayMsg(msg);
 
+#if 0
         //do this to keep TCP session alive
         if(msg->Bulk) {
             //msg->IsDone=true;
-
 
             if(ptrIface->closeTcpConnection())
                 Log(Info) << "Closing OK" << LogEnd;
@@ -165,6 +165,8 @@ void TDHCPServer::run()
             SrvIfaceMgr().isTcpSet = false;
 
         }
+#endif
+
     }
 
     SrvCfgMgr().setPerformanceMode(false);

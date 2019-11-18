@@ -44,7 +44,6 @@ class TSrvTransMgr
     /// @return true (accept message) or false (drop it)
     bool unicastCheck(SPtr<TSrvMsg> msg);
 
-    void processLeaseQuery(SPtr<TSrvMsgLeaseQuery> lq);
     void doDuties();
     void dump();
 
