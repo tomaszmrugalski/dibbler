@@ -691,7 +691,7 @@ extern int sock_add_tcp (char * ifacename,int ifaceid, char * addr, int port) {
                 printf("\n TCP socket has been created correctly\n " );
             }
             if (connect(Insock, rp->ai_addr, rp->ai_addrlen) != 0) {
-                 Rerror("Unable to connect with DHCP server, connect function failed");
+                 perror("Unable to connect with DHCP server, connect function failed");
             } else {
                  result++;
                  break;
@@ -764,7 +764,7 @@ extern int getsOpt(int fd) {
     len = sizeof(sockType);
     result = getsockopt(fd,SOL_SOCKET,SO_TYPE,&sockType,&len);
     if (result < 0) {
-        Rerror("Getsockopt function failed");
+        perror("Getsockopt function failed");
         return result;
     } else {
         sprintf(Message, "Getsockopt OK");
@@ -788,7 +788,7 @@ extern int accept_tcp (int fd, char *peerPlainAddr) {
 
         if (errno !=  EWOULDBLOCK) {
             printf("Cannot create net socket descriptor.\n");
-            Rerror("Accept function failed with error:");
+            perror("Accept function failed with error:");
             //Here should be check if client didn't close connection
             //close(fd_new);
             return -1;
@@ -820,7 +820,7 @@ extern int sock_recv_tcp(int fd, char * recvBuffer, int bufLength, int flags) {
     iResult = recv (fd, recvBuffer, bufLength, flags);
     if (iResult < 0) {
         sprintf (Message,"Cannot receive data, receive function socket error");
-        Rerror("Receive function error:");
+        perror("Receive function error:");
         return LOWLEVEL_ERROR_UNSPEC;
     } else {
         return iResult;
@@ -852,7 +852,7 @@ extern int sock_send_tcp(int fd,char * addr, char *buf, int buflen, int flags, i
     if (iResult < 0)
     {
         sprintf(Message, "Unable to send data (dst addr: %s)", addr);
-        Rerror("Tcp send function error");
+        perror("Tcp send function error");
         return LOWLEVEL_ERROR_SOCKET;
     } else {
         printf("\n %d bytes has been send\n",iResult);
