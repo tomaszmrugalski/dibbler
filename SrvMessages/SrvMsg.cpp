@@ -251,7 +251,7 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
     // --- process this message ---
     clientMsg->firstOption();
-    while ( opt = clientMsg->getOption()) {
+    while ((opt = clientMsg->getOption())) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA : {
             processIA_NA(clientMsg, SPtr_cast<TSrvOptIA_NA>(opt));
@@ -320,7 +320,7 @@ bool TSrvMsg::releaseAll(bool quiet) {
     bool released = false;
     SPtr<TOpt> opt;
     this->firstOption();
-    while ( opt = this->getOption()) {
+    while ((opt = this->getOption())) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             SPtr<TSrvOptIA_NA> ptrOptIA_NA;
@@ -415,7 +415,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
                 << hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
     SPtr<TOpt> ptrOpt;
     this->firstOption();
-    while (ptrOpt = this->getOption() )
+    while ((ptrOpt = this->getOption()))
         Log(Cont) << " " << ptrOpt->getOptType();
     Log(Cont) << ", " << RelayInfo_.size() << " relay(s)." << LogEnd;
 
@@ -486,11 +486,11 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     }
 
     if(!this->Bulk) {
-        SrvIfaceMgr().send(ptrIface->getID(), buf, offset, this->PeerAddr, port);
+        SrvIfaceMgr().send(ptrIface->getID(), buf, offset, PeerAddr_, port);
     } else {
         port = DHCPSERVER_PORT;
         Log(Info) <<"Trying to send Bulk Leasequery reply"<<LogEnd;
-        SrvIfaceMgr().sendTcp(ptrIface->getID(),buf,offset,this->PeerAddr,port);
+        SrvIfaceMgr().sendTcp(ptrIface->getID(),buf,offset,PeerAddr_, port);
     }
 
     delete [] buf;
@@ -1121,7 +1121,7 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOp
 
     if (vsLst.count()) {
         vsLst.first();
-        while (vs=vsLst.get())
+        while ((vs=vsLst.get()))
         {
             Options.push_back(SPtr_cast<TOpt>(vs));
         }
@@ -1202,11 +1202,11 @@ void TSrvMsg::appendStatusCode()
     //rootLevel = getOption(OPTION_STATUS_CODE);
 
     firstOption();
-    while (opt = getOption()) {
+    while ((opt = getOption())) {
         switch ( opt->getOptType() ) {
         case OPTION_IA_NA:
             {
-                if (optLevel= SPtr_cast<TOptStatusCode>(opt->getOption(OPTION_STATUS_CODE))) {
+                if ((optLevel= SPtr_cast<TOptStatusCode>(opt->getOption(OPTION_STATUS_CODE)))) {
                     if (optLevel->getCode() != STATUSCODE_SUCCESS) {
                         // copy status code to root-level
                         delOption(OPTION_STATUS_CODE);
