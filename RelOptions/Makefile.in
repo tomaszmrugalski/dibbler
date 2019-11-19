@@ -109,12 +109,12 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libRelOptions_a_AR = $(AR) $(ARFLAGS)
 libRelOptions_a_LIBADD =
-am_libRelOptions_a_OBJECTS = libRelOptions_a-RelOptEcho.$(OBJEXT) \
+am_libRelOptions_a_OBJECTS = libRelOptions_a-RelOptDUID.$(OBJEXT) \
+	libRelOptions_a-RelOptEcho.$(OBJEXT) \
 	libRelOptions_a-RelOptGeneric.$(OBJEXT) \
 	libRelOptions_a-RelOptInterfaceID.$(OBJEXT) \
 	libRelOptions_a-RelOptRelayMsg.$(OBJEXT) \
-	libRelOptions_a-RelOptRemoteID.$(OBJEXT) \
-	libRelOptions_a-RelOptDUID.$(OBJEXT)
+	libRelOptions_a-RelOptRemoteID.$(OBJEXT)
 libRelOptions_a_OBJECTS = $(am_libRelOptions_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -335,7 +335,7 @@ top_srcdir = @top_srcdir@
 noinst_LIBRARIES = libRelOptions.a
 libRelOptions_a_CPPFLAGS = -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/Options -I$(top_srcdir)/RelOptions
-libRelOptions_a_SOURCES = RelOptEcho.cpp RelOptEcho.h RelOptGeneric.cpp RelOptGeneric.h RelOptInterfaceID.cpp RelOptInterfaceID.h RelOptRelayMsg.cpp RelOptRelayMsg.h RelOptRemoteID.cpp RelOptRemoteID.h RelOptDUID.cpp RelOptDUID.h
+libRelOptions_a_SOURCES = RelOptDUID.cpp RelOptDUID.h RelOptEcho.cpp RelOptEcho.h RelOptGeneric.cpp RelOptGeneric.h RelOptInterfaceID.cpp RelOptInterfaceID.h RelOptRelayMsg.cpp RelOptRelayMsg.h RelOptRemoteID.cpp RelOptRemoteID.h
 all: all-am
 
 .SUFFIXES:
@@ -384,12 +384,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptDUID.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptEcho.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptGeneric.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptInterfaceID.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptRelayMsg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptRemoteID.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libRelOptions_a-RelOptDUID.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -411,6 +411,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+libRelOptions_a-RelOptDUID.o: RelOptDUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRelOptions_a-RelOptDUID.o -MD -MP -MF $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo -c -o libRelOptions_a-RelOptDUID.o `test -f 'RelOptDUID.cpp' || echo '$(srcdir)/'`RelOptDUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo $(DEPDIR)/libRelOptions_a-RelOptDUID.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RelOptDUID.cpp' object='libRelOptions_a-RelOptDUID.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRelOptions_a-RelOptDUID.o `test -f 'RelOptDUID.cpp' || echo '$(srcdir)/'`RelOptDUID.cpp
+
+libRelOptions_a-RelOptDUID.obj: RelOptDUID.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRelOptions_a-RelOptDUID.obj -MD -MP -MF $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo -c -o libRelOptions_a-RelOptDUID.obj `if test -f 'RelOptDUID.cpp'; then $(CYGPATH_W) 'RelOptDUID.cpp'; else $(CYGPATH_W) '$(srcdir)/RelOptDUID.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo $(DEPDIR)/libRelOptions_a-RelOptDUID.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RelOptDUID.cpp' object='libRelOptions_a-RelOptDUID.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRelOptions_a-RelOptDUID.obj `if test -f 'RelOptDUID.cpp'; then $(CYGPATH_W) 'RelOptDUID.cpp'; else $(CYGPATH_W) '$(srcdir)/RelOptDUID.cpp'; fi`
 
 libRelOptions_a-RelOptEcho.o: RelOptEcho.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRelOptions_a-RelOptEcho.o -MD -MP -MF $(DEPDIR)/libRelOptions_a-RelOptEcho.Tpo -c -o libRelOptions_a-RelOptEcho.o `test -f 'RelOptEcho.cpp' || echo '$(srcdir)/'`RelOptEcho.cpp
@@ -481,23 +495,6 @@ libRelOptions_a-RelOptRemoteID.obj: RelOptRemoteID.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RelOptRemoteID.cpp' object='libRelOptions_a-RelOptRemoteID.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRelOptions_a-RelOptRemoteID.obj `if test -f 'RelOptRemoteID.cpp'; then $(CYGPATH_W) 'RelOptRemoteID.cpp'; else $(CYGPATH_W) '$(srcdir)/RelOptRemoteID.cpp'; fi`
-
-libRelOptions_a-RelOptDUID.o: RelOptDUID.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRelOptions_a-RelOptDUID.o -MD -MP -MF $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo -c -o libRelOptions_a-RelOptDUID.o `test -f 'RelOptDUID.cpp' || echo '$(srcdir)/'`RelOptDUID.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo $(DEPDIR)/libRelOptions_a-RelOptDUID.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RelOptDUID.cpp' object='libRelOptions_a-RelOptDUID.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRelOptions_a-RelOptDUID.o `test -f 'RelOptDUID.cpp' || echo '$(srcdir)/'`RelOptDUID.cpp
-
-libRelOptions_a-RelOptDUID.obj: RelOptDUID.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libRelOptions_a-RelOptDUID.obj -MD -MP -MF $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo -c -o libRelOptions_a-RelOptDUID.obj `if test -f 'RelOptDUID.cpp'; then $(CYGPATH_W) 'RelOptDUID.cpp'; else $(CYGPATH_W) '$(srcdir)/RelOptDUID.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libRelOptions_a-RelOptDUID.Tpo $(DEPDIR)/libRelOptions_a-RelOptDUID.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RelOptDUID.cpp' object='libRelOptions_a-RelOptDUID.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libRelOptions_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libRelOptions_a-RelOptDUID.obj `if test -f 'RelOptDUID.cpp'; then $(CYGPATH_W) 'RelOptDUID.cpp'; else $(CYGPATH_W) '$(srcdir)/RelOptDUID.cpp'; fi`
-
 
 mostlyclean-libtool:
 	-rm -f *.lo

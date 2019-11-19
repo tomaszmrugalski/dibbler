@@ -20,7 +20,7 @@ class TOptIAPrefix : public TOpt
 {
   public:
     TOptIAPrefix(const char * addr, size_t len, TMsg* parent);
-    TOptIAPrefix(SPtr<TIPv6Addr> addr, char prefix_length,unsigned long pref,
+    TOptIAPrefix(SPtr<TIPv6Addr> addr, char prefix_length, unsigned long pref,
                  unsigned long valid, TMsg* parent);
     size_t getSize();
 
