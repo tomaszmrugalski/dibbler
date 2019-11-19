@@ -433,85 +433,8 @@ AM_COND_IF([RESOLVCONF], [AC_DEFINE([MOD_RESOLVCONF], [1], [Support for /sbin/re
    fi
 
 ### gtests #################################################
-AC_ARG_WITH(gtest,
-[  --with-gtest=PATH    specify a path to gtest header files and library],
-   gtest_path="$withval", 
-   gtest_path="no")
-
-AC_ARG_ENABLE(gtest-static,
-     [  --enable-gtest-static   Enables static linking for gtest (default: yes)],
-     [  case "${enableval}" in
-          yes)
-            gtest_static=yes
-            ;;
-          no)
-            gtest_static=no
-            ;;
-          *)
-            AC_MSG_ERROR(bad value ${enableval} for --enable-gtest-static)
-            ;;
-        esac],
-     [ gtest_static=yes]
-   )
-
-
-#echo "After gtest"
-AC_MSG_CHECKING(for gtest sources)
-if test "$gtest_path" != "no"
-then
-    if test "${gtest_path}" == "yes"
-    then
-        GTEST_SOURCE=
-        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
-           if test -f $d/src/gtest-all.cc -a $d/src/gtest_main.cc; then
-               GTEST_SOURCE=$d
-               AC_MSG_RESULT([$GTEST_SOURCE])
-               GTEST_INCLUDES="-I${GTEST_SOURCE}/includes"
-               GTEST_LDFLAGS=""
-               break
-           fi
-        done
-
-        if test "x$GTEST_SOURCE" == "x"; then
-            AC_MSG_ERROR([Failed to locate gtest sources. Please specify with --with-gtest=path])
-        fi
-
-        GTEST_LIB=
-        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
-           if test -f $d/libgtest.a; then
-               GTEST_LDADD="$d/libgtest.a -pthread"
-               break
-           fi
-           if test -f $d/lib/libgtest.a; then
-               GTEST_LDADD="$d/lib/libgtest.a -pthread"
-               break
-           fi
-        done
-        if test "x$GTEST_LDADD" == "x"; then
-             AC_MSG_ERROR([Failed to find libgtest.a])
-        fi
-    else
-       if test -x "${gtest_path}/scripts/gtest-config"
-       then
-           AC_MSG_RESULT(found in ${gtest_path})
-           GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-           GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-           GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-           GTEST_LDADD=`${GTEST_CONFIG} --libs`
-
-           # Linking gtest statically
-           if test "$gtest_static" != "no"
-           then
-               GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
-           fi
-       else
-           AC_MSG_ERROR(Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config)
-       fi
-    fi
-fi
-
-AC_SUBST(GTEST_INCLUDES)
-AC_SUBST(GTEST_LDFLAGS)
+AX_ISC_GTEST
+GTEST_LDADD="\$(top_builddir)/tests/utils/libgtest.a"
 AC_SUBST(GTEST_LDADD)
 
 ### Link-state change detections ##########################
@@ -577,14 +500,6 @@ AC_SUBST(LINKPRINT)
 
 AC_CONFIG_SUBDIRS([bison++])
 #AC_CONFIG_SUBDIRS([poslib])
-
-
-if test "$gtest_path" != "no"; then
-  echo "GTEST enabled, generating Makefiles"
-  AC_DEFINE(HAVE_GTEST, 1, [Defines if google test is available and should be used])
-fi
-
-AM_CONDITIONAL(HAVE_GTEST, [test "$gtest_path" != "no"])
 
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
 dnl and use autoreconf to generate Makefile.in in Port directories.
@@ -663,12 +578,15 @@ echo "CPPFLAGS       : $CPPFLAGS"
 echo "CXXFLAGS       : $CXXFLAGS"
 echo "LDFLAGS        : $LDFLAGS"
 echo
-echo "Google test    : $gtest_path"
-if test "$gtest_path" != "no"
+echo "Google test    : $enable_gtest"
+if test "$enable_gtest" != "no"
 then
-echo "GTEST_INCLUDES : $GTEST_INCLUDES"
-echo "GTEST_LDFLAGS  : $GTEST_LDFLAGS"
-echo "GTEST_LDADD    : $GTEST_LDADD"
+echo "GTEST_VERSION  : ${GTEST_VERSION}"
+echo "GTEST_INCLUDES : ${GTEST_INCLUDES}"
+echo "GTEST_LDFLAGS  : ${GTEST_LDFLAGS}"
+echo "GTEST_LDADD    : ${GTEST_LDADD}"
+echo "GTEST_SOURCE   : ${GTEST_SOURCE}"
+
 echo
 fi
 echo Type make to compile dibbler.
