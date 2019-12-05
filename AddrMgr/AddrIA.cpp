@@ -47,6 +47,13 @@ TAddrIA::TAddrIA(const std::string& ifacename, int ifindex, TIAType type, SPtr<T
         this->setUnicast(addr);
     else
         this->setMulticast();
+
+    struct timespec clockts;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+        //The time we are taking is with reference to boot time,
+        //which is not changed wvwn when the NTP updates the latest time.
+        this->setTimestamp((unsigned long)clockts.tv_sec);
+    }
 }
 
 unsigned long TAddrIA::getIAID()
@@ -288,6 +295,13 @@ unsigned long TAddrIA::getT1Timeout() {
     }
     
     x  = (unsigned long)time(NULL);
+    struct timespec clockts;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+        //The time we are taking is with reference to boot time,
+        //which is not changed wvwn when the NTP updates the latest time.
+        x = (unsigned long)clockts.tv_sec;
+    }
+    this->setTimestamp(ts);
     if (ts>x)  
         return ts-x;
     else
@@ -302,6 +316,13 @@ unsigned long TAddrIA::getT2Timeout() {
     }
 
     x  = (unsigned long)time(NULL);
+    struct timespec clockts;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+        //The time we are taking is with reference to boot time,
+        //which is not changed wvwn when the NTP updates the latest time.
+        ts = (unsigned long)clockts.tv_sec;
+    }
+    this->setTimestamp(ts);
     if (ts>x) 
         return ts-x;
     else 
@@ -375,7 +396,14 @@ void TAddrIA::setTimestamp(unsigned long ts)
 }
 
 void TAddrIA::setTimestamp() {
-    this->setTimestamp((unsigned long)time(NULL));
+    unsigned long ts = (unsigned long)time(NULL);
+    struct timespec clockts;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+        //The time we are taking is with reference to boot time,
+        //which is not changed wvwn when the NTP updates the latest time.
+        ts = (unsigned long)clockts.tv_sec;
+    }
+    this->setTimestamp(ts);
 }
 
 unsigned long TAddrIA::getTimestamp()
@@ -404,10 +432,17 @@ unsigned long TAddrIA::getTentativeTimeout()
         AddrLst.first();
         while ( ptrAddr = AddrLst.get() )
         {
+            unsigned long x = (unsigned long)time(NULL);
+            struct timespec clockts;
+            if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+               //The time we are taking is with reference to boot time,
+               //which is not changed wvwn when the NTP updates the latest time.
+               x = (unsigned long)clockts.tv_sec;
+            }
             if (ptrAddr->getTentative()==ADDRSTATUS_UNKNOWN)
-                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL) )
+                if (min > ptrAddr->getTimestamp()+DADTIMEOUT-x)
                 {
-                    min = ptrAddr->getTimestamp()+DADTIMEOUT-(unsigned long)time(NULL);
+                    min = ptrAddr->getTimestamp()+DADTIMEOUT-x;
                 }
         }
     }
@@ -428,6 +463,13 @@ enum EAddrStatus TAddrIA::getTentative()
 
     SPtr<TAddrAddr> ptrAddr;
     AddrLst.first();
+    unsigned long localts = (unsigned long)time(NULL);
+    struct timespec clockts;
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
+        //The time we are taking is with reference to boot time,
+        //which is not changed wvwn when the NTP updates the latest time.
+        localts = (unsigned long)clockts.tv_sec;
+    }
 
     bool allChecked = true;
 
@@ -441,7 +483,7 @@ enum EAddrStatus TAddrIA::getTentative()
 	case ADDRSTATUS_NO:
 	    continue;
 	case ADDRSTATUS_UNKNOWN:
-        if ( ptrAddr->getTimestamp()+DADTIMEOUT < (unsigned long)time(NULL) )
+        if ( ptrAddr->getTimestamp()+DADTIMEOUT < localts )
         {
 
             switch (is_addr_tentative(NULL, Ifindex_, ptrAddr->get()->getPlain()) ) 
