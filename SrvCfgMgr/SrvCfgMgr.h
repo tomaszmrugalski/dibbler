@@ -27,7 +27,9 @@ class TSrvCfgMgr;
 
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
+namespace dibbler {
 class SrvParser;
+}
 
 class TSrvCfgMgr : public TCfgMgr
 {

@@ -110,26 +110,26 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
 
     // setup global options
-    setGlobalOptions(ctx.ParserOptStack.getLast());
+    setGlobalOptions(ctx.ParserOptStack_.getLast());
 
     // setup ClientClass  List
-    ClientClassLst = ctx.SrvCfgClientClassLst;
+    ClientClassLst = ctx.SrvCfgClientClassLst_;
 
     Log(Info) << ClientClassLst.count() << " client class(es) defined." << LogEnd;
 
     // analyse interfaces mentioned in config file
-    if (!this->matchParsedSystemInterfaces(ctx)) {
+    if (!matchParsedSystemInterfaces(ctx)) {
         this->IsDone = true;
         return false;
     }
 
     // check for invalid values, e.g. T1>T2
-    if(!this->validateConfig()) {
+    if(!validateConfig()) {
         this->IsDone = true;
         return false;
     }
 
-    if (this->stateless()) {
+    if (stateless()) {
         Log(Notice) << "Running in stateless mode." << LogEnd;
     } else {
         Log(Notice) << "Running in stateful mode." << LogEnd;
@@ -168,18 +168,18 @@ bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
  */
 bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParserContext& parser) {
     int cfgIfaceCnt;
-    cfgIfaceCnt = parser.SrvCfgIfaceLst.count();
+    cfgIfaceCnt = parser.SrvCfgIfaceLst_.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << LogEnd;
 
     SPtr<TSrvCfgIface> cfgIface;
     SPtr<TIfaceIface>  ifaceIface;
 
-    parser.SrvCfgIfaceLst.first();
-    while(cfgIface = parser.SrvCfgIfaceLst.get()) {
+    parser.SrvCfgIfaceLst_.first();
+    while(cfgIface = parser.SrvCfgIfaceLst_.get()) {
         // for each interface from config file
 
         // map deny and allow list
-        cfgIface->mapAllowDenyList(parser.SrvCfgClientClassLst);
+        cfgIface->mapAllowDenyList(parser.SrvCfgClientClassLst_);
 
         // relay interface
         if (cfgIface->isRelay()) {
