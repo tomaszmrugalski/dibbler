@@ -1,6 +1,9 @@
-%name SrvParser
+%skeleton "lalr1.cc" /* -*- C++ -*- */
+%require "3.0.0"
+%defines
+%define api.parser.class {SrvParser}
 
-%header{
+%code requires {
 #include <iostream>
 #include <string>
 #include <stdint.h>
