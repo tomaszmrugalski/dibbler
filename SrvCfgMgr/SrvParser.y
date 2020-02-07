@@ -4,8 +4,10 @@
 %define api.parser.class {SrvParser}
 %define api.namespace {dibbler}
 
-// %define api.token.constructor
-// %define api.value.type variant
+ // %define api.value.type union
+     
+ //%define api.token.constructor
+ //%define api.value.type variant
 
 %code requires {
 #include <iostream>
@@ -50,7 +52,7 @@ class SrvParserContext;
 //#define YY_USE_CLASS
 
 
-#include <FlexLexer.h>
+//#include <FlexLexer.h>
 
 }
 

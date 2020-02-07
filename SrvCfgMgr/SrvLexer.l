@@ -16,6 +16,8 @@ using namespace std;
    check for defined YY_FATAL_ERROR() go away. */
 #define YY_FATAL_ERROR(msg) SrvParserContext::fatal(msg)
 
+using namespace dibbler;
+
 %}
 
 %option noyywrap
