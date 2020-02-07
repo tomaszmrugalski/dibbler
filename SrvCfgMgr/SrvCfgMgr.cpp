@@ -19,8 +19,8 @@
 #include <string>
 #include "SmartPtr.h"
 #include "Portable.h"
-#include "FlexLexer.h"
 #include "SrvParser.h"
+#include "SrvParserContext.h"
 #include "SrvCfgMgr.h"
 #include "SrvCfgIface.h"
 #include "Logger.h"
@@ -79,16 +79,24 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     // parse config file
     f.open( cfgFile.c_str() );
     if ( ! f.is_open() ) {
-            Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
-            return false;
+        Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
+        return false;
     } else {
         Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
-    yyFlexLexer lexer(&f,&clog);
-    SrvParser parser(&lexer);
-    parser.CfgMgr = this; // just a workaround (parser is called, while SrvCfgMgr is still
-                          // in constructor, so instance() singleton method can't be called
-    result = parser.yyparse();
+
+    SrvParserContext ctx;
+
+    // just a workaround (parser is called, while SrvCfgMgr is still
+    // in constructor, so instance() singleton method can't be called
+    ctx.CfgMgr_ = this;
+    
+    result = ctx.parseFile(f);
+    
+    // yyFlexLexer lexer(&f,&clog);
+    // SrvParser parser(&lexer);
+    // parser.CfgMgr = this; 
+    // result = parser.yyparse();
     Log(Debug) << "Parsing " << cfgFile << " done." << LogEnd;
     f.close();
 
@@ -102,15 +110,15 @@ bool TSrvCfgMgr::parseConfigFile(const std::string& cfgFile) {
     }
 
     // setup global options
-    this->setGlobalOptions(parser.ParserOptStack.getLast());
+    setGlobalOptions(ctx.ParserOptStack.getLast());
 
     // setup ClientClass  List
-    ClientClassLst = parser.SrvCfgClientClassLst;
+    ClientClassLst = ctx.SrvCfgClientClassLst;
 
     Log(Info) << ClientClassLst.count() << " client class(es) defined." << LogEnd;
 
     // analyse interfaces mentioned in config file
-    if (!this->matchParsedSystemInterfaces(&parser)) {
+    if (!this->matchParsedSystemInterfaces(ctx)) {
         this->IsDone = true;
         return false;
     }
@@ -158,20 +166,20 @@ bool TSrvCfgMgr::setGlobalOptions(SPtr<TSrvParsGlobalOpt> opt) {
  * Now parsed information should be placed in config manager
  * in accordance with information provided by interface manager
  */
-bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParser *parser) {
+bool TSrvCfgMgr::matchParsedSystemInterfaces(SrvParserContext& parser) {
     int cfgIfaceCnt;
-    cfgIfaceCnt = parser->SrvCfgIfaceLst.count();
+    cfgIfaceCnt = parser.SrvCfgIfaceLst.count();
     Log(Debug) << cfgIfaceCnt << " interface(s) specified in " << SRVCONF_FILE << LogEnd;
 
     SPtr<TSrvCfgIface> cfgIface;
     SPtr<TIfaceIface>  ifaceIface;
 
-    parser->SrvCfgIfaceLst.first();
-    while(cfgIface=parser->SrvCfgIfaceLst.get()) {
+    parser.SrvCfgIfaceLst.first();
+    while(cfgIface = parser.SrvCfgIfaceLst.get()) {
         // for each interface from config file
 
         // map deny and allow list
-        cfgIface->mapAllowDenyList(parser->SrvCfgClientClassLst);
+        cfgIface->mapAllowDenyList(parser.SrvCfgClientClassLst);
 
         // relay interface
         if (cfgIface->isRelay()) {

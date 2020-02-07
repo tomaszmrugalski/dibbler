@@ -23,6 +23,7 @@ class TSrvCfgMgr;
 #include "DUID.h"
 #include "KeyList.h"
 #include "SrvCfgClientClass.h"
+#include "SrvParserContext.h"
 
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
@@ -156,7 +157,7 @@ protected:
     List(TSrvCfgIface) SrvCfgIfaceLst;
     List(TSrvCfgIface) InactiveLst;
     List(TSrvCfgClientClass) ClientClassLst;
-    bool matchParsedSystemInterfaces(SrvParser *parser);
+    bool matchParsedSystemInterfaces(SrvParserContext& parser);
 
     // global options
     bool Stateless;
