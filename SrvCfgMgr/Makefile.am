@@ -20,7 +20,7 @@ dist_noinst_DATA = SrvLexer.l SrvParser.y
 
 parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
-	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d SrvParser.y -o SrvParser.cpp
+	bison -v --debug --defines -d SrvParser.y -o SrvParser.cpp
 	@echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	flex -+ -i -oSrvLexer.cpp SrvLexer.l
 	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"

@@ -498,7 +498,6 @@ AC_SUBST(PORT_LDFLAGS)
 AC_SUBST(PORT_CFLAGS)
 AC_SUBST(LINKPRINT)
 
-AC_CONFIG_SUBDIRS([bison++])
 #AC_CONFIG_SUBDIRS([poslib])
 
 dnl replace "$PORT_SUBDIR/Makefile with Port-linux/Makefile Port-bsd/Makefile"
