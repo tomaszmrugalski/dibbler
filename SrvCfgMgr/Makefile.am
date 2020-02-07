@@ -14,16 +14,28 @@ libSrvCfgMgr_a_CPPFLAGS += -I$(top_srcdir)/SrvMessages -I$(top_srcdir)/Messages
 libSrvCfgMgr_a_CPPFLAGS += -I$(top_srcdir)/poslib -I$(top_srcdir)/poslib/poslib
 libSrvCfgMgr_a_CPPFLAGS += -I$(top_srcdir)/@PORT_SUBDIR@
 
-libSrvCfgMgr_a_SOURCES = NodeClientSpecific.cpp NodeClientSpecific.h NodeConstant.cpp NodeConstant.h Node.cpp Node.h NodeOperator.cpp NodeOperator.h SrvCfgAddrClass.cpp SrvCfgAddrClass.h SrvCfgClientClass.cpp SrvCfgClientClass.h SrvCfgIface.cpp SrvCfgIface.h SrvCfgMgr.cpp SrvCfgMgr.h SrvCfgOptions.cpp SrvCfgOptions.h SrvCfgPD.cpp SrvCfgPD.h SrvCfgTA.cpp SrvCfgTA.h SrvLexer.cpp SrvParsClassOpt.cpp SrvParsClassOpt.h SrvParser.cpp SrvParser.h SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h SrvParsIfaceOpt.cpp SrvParsIfaceOpt.h
+libSrvCfgMgr_a_SOURCES  = NodeClientSpecific.cpp NodeClientSpecific.h
+libSrvCfgMgr_a_SOURCES += NodeConstant.cpp NodeConstant.h
+libSrvCfgMgr_a_SOURCES += Node.cpp Node.h
+libSrvCfgMgr_a_SOURCES += NodeOperator.cpp NodeOperator.h
+libSrvCfgMgr_a_SOURCES += SrvCfgAddrClass.cpp SrvCfgAddrClass.h
+libSrvCfgMgr_a_SOURCES += SrvCfgClientClass.cpp SrvCfgClientClass.h
+libSrvCfgMgr_a_SOURCES += SrvCfgIface.cpp SrvCfgIface.h
+libSrvCfgMgr_a_SOURCES += SrvCfgMgr.cpp SrvCfgMgr.h
+libSrvCfgMgr_a_SOURCES += SrvCfgOptions.cpp SrvCfgOptions.h
+libSrvCfgMgr_a_SOURCES += SrvCfgPD.cpp SrvCfgPD.h
+libSrvCfgMgr_a_SOURCES += SrvCfgTA.cpp SrvCfgTA.h
+libSrvCfgMgr_a_SOURCES += SrvLexer.cpp
+libSrvCfgMgr_a_SOURCES += SrvParsClassOpt.cpp SrvParsClassOpt.h
+libSrvCfgMgr_a_SOURCES += SrvParser.cpp SrvParser.h
+libSrvCfgMgr_a_SOURCES += SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h
+libSrvCfgMgr_a_SOURCES += SrvParsIfaceOpt.cpp SrvParsIfaceOpt.h
+libSrvCfgMgr_a_SOURCES += SrvParserContext.cpp SrvParserContext.h
 
 dist_noinst_DATA = SrvLexer.l SrvParser.y
 
 parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
-	bison -v --debug --defines -d SrvParser.y -o SrvParser.cpp
+	bison -v --defines=SrvParser.h -d SrvParser.y -o SrvParser.cpp
 	@echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
 	flex -+ -i -oSrvLexer.cpp SrvLexer.l
-	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
-	cat SrvLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > SrvLexer.cpp2
-	rm -f SrvLexer.cpp
-	mv SrvLexer.cpp2 SrvLexer.cpp
