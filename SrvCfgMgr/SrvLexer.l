@@ -1,7 +1,7 @@
-%option noyywrap
-%option yylineno
+%{ /* -*- C++ -*- */
 
-%{
+#include "SrvParserContext.h"
+
 #ifdef WIN32
 #define strncasecmp _strnicmp
 #endif
@@ -14,9 +14,16 @@ using namespace std;
 
 /* duplicate default definition from flex. This makes cppcheck
    check for defined YY_FATAL_ERROR() go away. */
-#define YY_FATAL_ERROR(msg) LexerError(msg)
+#define YY_FATAL_ERROR(msg) SrvParserContext::fatal(msg)
 
 %}
+
+%option noyywrap
+%option yylineno
+%option nounput
+%option batch
+%option debug
+%option noinput
 
 %x COMMENT
 %x ADDR
@@ -42,9 +49,6 @@ using namespace std;
   char AddrPart[16];
   unsigned intpos,pos;
 
-namespace std{
-  yy_SrvParser_stype yylval;
-}
 %}
 
 %%
