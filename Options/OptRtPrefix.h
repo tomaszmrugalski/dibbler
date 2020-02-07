@@ -8,6 +8,9 @@
  *
  */
 
+#ifndef OPT_RT_PREFIX_H
+#define OPT_RT_PREFIX_H
+
 #include "IPv6Addr.h"
 #include "SmartPtr.h"
 #include "Opt.h"
@@ -32,4 +35,6 @@ protected:
     uint8_t Metric;
     SPtr<TIPv6Addr> Prefix;
 };
+
+#endif
 
