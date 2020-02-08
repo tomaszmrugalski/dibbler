@@ -20,6 +20,7 @@ class TDUID
     friend std::ostream& operator<<(std::ostream& out,TDUID &range);
  public:
     TDUID(); // @todo: remove this
+    TDUID(const std::string duid);
     TDUID(const char* DUID,int DUIDlen); // packed
     TDUID(const char* text); // plain
     TDUID(const TDUID &duid);

@@ -12,6 +12,7 @@
 #define IPV6ADDR_H
 
 #include <list>
+#include <string>
 #include <SmartPtr.h>
 
 class TIPv6Addr
@@ -19,6 +20,7 @@ class TIPv6Addr
         friend std::ostream& operator<<(std::ostream& out,TIPv6Addr& group);
 public:
     TIPv6Addr();    //Creates any address
+    TIPv6Addr(const std::string addr, bool plain = false);
     TIPv6Addr(const char* addr, bool plain=false);
     /* creates address from prefix+host, used in SrvCfgPD */
     TIPv6Addr(const char* prefix, const char* host, int prefixLength);
