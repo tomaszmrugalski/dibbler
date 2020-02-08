@@ -38,4 +38,4 @@ parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
 	bison -v --defines=SrvParser.h -d SrvParser.y -o SrvParser.cpp
 	@echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
-	flex -+ -i -oSrvLexer.cpp SrvLexer.l
+	flex --prefix dibbler_ -o SrvLexer.cpp SrvLexer.l

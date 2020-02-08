@@ -7,8 +7,8 @@
 
  // %define api.value.type union
      
- //%define api.token.constructor
- //%define api.value.type variant
+%define api.token.constructor
+%define api.value.type variant
 
 
  // this will be inserted in the .h file.
@@ -87,17 +87,17 @@ using namespace std;
 //                     yychar = 0;                                        \
 //                     PDPrefix = 0;
 
-%union
-{
-    unsigned int ival;
-    char *strval;
-    struct SDuid
-    {
-	int length;
-	char* duid;
-    } duidval;
-    char addrval[16];
-}
+//%union
+//{
+//    unsigned int ival;
+//    char *strval;
+//    struct SDuid
+//    {
+//	int length;
+//	char* duid;
+//    } duidval;
+//    char addrval[16];
+//}
 
 %define api.token.prefix {TOKEN_}
 
@@ -208,13 +208,13 @@ using namespace std;
 %token INFINITE_
 %token SUBNET_
 
-%token <strval>     STRING_
-%token <ival>       HEXNUMBER_
-%token <ival>       INTNUMBER_
-%token <addrval>    IPV6ADDR_
-%token <duidval>    DUID_
+%token <std::string>     STRING_
+%token <uint32_t>       HEXNUMBER_
+%token <uint32_t>       INTNUMBER_
+%token <std::string>    IPV6ADDR_
+%token <std::string>    DUID_
 
-%type  <ival>       Number
+%type  <uint32_t>       Number
 
 %%
 
@@ -312,7 +312,6 @@ InterfaceDeclarationsList '}'
 {
     //Information about new interface has been read
     //Add it to list of read interfaces
-    delete [] $2;
     ctx.EndIfaceDeclaration();
 }
 /* iface 5 { ... } */
@@ -408,7 +407,7 @@ Client
 : CLIENT_ DUID_KEYWORD_ DUID_ '{'
 {
     ctx.ParserOptStack_.append(new TSrvParsGlobalOpt());
-    SPtr<TDUID> duid = new TDUID($3.duid,$3.length);
+    SPtr<TDUID> duid = new TDUID($3);
     ctx.ClientLst_.append(new TSrvCfgOptions(duid));
 } ClientOptions
 '}'
@@ -624,15 +623,15 @@ AuthProtocol
 : AUTH_PROTOCOL_ STRING_ {
 
 #ifndef MOD_DISABLE_AUTH
-    if (!strcasecmp($2,"none")) {
+    if ($2 == "none") {
         ctx.CfgMgr_->setAuthProtocol(AUTH_PROTO_NONE);
         ctx.CfgMgr_->setAuthAlgorithm(AUTH_ALGORITHM_NONE);
-    } else if (!strcasecmp($2, "delayed")) {
+    } else if ($2 == "delayed") {
         ctx.CfgMgr_->setAuthProtocol(AUTH_PROTO_DELAYED);
-    } else if (!strcasecmp($2, "reconfigure-key")) {
+    } else if ($2 == "reconfigure-key") {
         ctx.CfgMgr_->setAuthProtocol(AUTH_PROTO_RECONFIGURE_KEY);
         ctx.CfgMgr_->setAuthAlgorithm(AUTH_ALGORITHM_RECONFIGURE_KEY);
-    } else if (!strcasecmp($2, "dibbler")) {
+    } else if ($2 == "dibbler") {
         ctx.CfgMgr_->setAuthProtocol(AUTH_PROTO_DIBBLER);
     } else {
         Log(Crit) << "Invalid auth-protocol parameter: " << string($2) << LogEnd;
@@ -653,9 +652,9 @@ AuthReplay
 : AUTH_REPLAY_ STRING_ {
 
 #ifndef MOD_DISABLE_AUTH
-    if (strcasecmp($2, "none")) {
+    if ($2 == "none") {
         ctx.CfgMgr_->setAuthReplay(AUTH_REPLAY_NONE);
-    } else if (strcasecmp($2, "monotonic")) {
+    } else if ($2 == "monotonic") {
         ctx.CfgMgr_->setAuthReplay(AUTH_REPLAY_MONOTONIC);
     } else {
         Log(Crit) << "Invalid auth-replay parameter: " << string($2) << LogEnd;
@@ -750,14 +749,14 @@ FQDNList
 }
 | FQDNList ',' STRING_ '-' DUID_
 {
-    TDUID* duidNew = new TDUID($5.duid,$5.length);
-    Log(Debug)<< "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
+    TDUID* duidNew = new TDUID($5);
+    Log(Debug) << "FQDN:" << $3 << " reserved for DUID "<< duidNew->getPlain() << LogEnd;
     ctx.PresentFQDNLst_.append(new TFQDN( duidNew, $3,false));
 }
 | FQDNList ',' STRING_ '-' IPV6ADDR_
 {
     ctx.addr_ = new TIPv6Addr($5);
-    Log(Debug)<< "FQDN:" << $3<<" reserved for address "<< ctx.addr_->getPlain() << LogEnd;
+    Log(Debug) << "FQDN:" << $3 << " reserved for address " << ctx.addr_->getPlain() << LogEnd;
     ctx.PresentFQDNLst_.append(new TFQDN(new TIPv6Addr($5), $3,false));
 }
 ;
@@ -782,7 +781,7 @@ VendorSpecList
 : Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
-	       << $3 << ", valuelen=" << $5.length << LogEnd;
+	       << $3 << ", valuelen=" << $5.ength() << LogEnd;
 
     ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
 								    $5.duid, $5.length, 0), false);

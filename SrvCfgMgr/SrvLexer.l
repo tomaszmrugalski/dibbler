@@ -58,132 +58,132 @@ using namespace std;
 {EOL}*   ; // ignore end of line
 [ \t]    ; // ignore TABs and spaces
 
-iface               { return SrvParser::IFACE_;}
-class               { return SrvParser::CLASS_;}
-ta-class            { return SrvParser::TACLASS_; }
-stateless           { return SrvParser::STATELESS_; }
-relay               { return SrvParser::RELAY_; }
-interface-id        { return SrvParser::IFACE_ID_; }
-interface-id-order  { return SrvParser::IFACE_ID_ORDER_; }
+iface               { return SrvParser::make_IFACE_(driver.loc_); }
+class               { return SrvParser::make_CLASS_(driver.loc_); }
+ta-class            { return SrvParser::make_TACLASS_(driver.loc_);  }
+stateless           { return SrvParser::make_STATELESS_(driver.loc_);  }
+relay               { return SrvParser::make_RELAY_(driver.loc_);  }
+interface-id        { return SrvParser::make_IFACE_ID_(driver.loc_);  }
+interface-id-order  { return SrvParser::make_IFACE_ID_ORDER_(driver.loc_);  }
 
-log-name            { return SrvParser::LOGNAME_;}
-log-level           { return SrvParser::LOGLEVEL_;}
-log-mode            { return SrvParser::LOGMODE_; }
-log-colors          { return SrvParser::LOGCOLORS_; }
+log-name            { return SrvParser::make_LOGNAME_(driver.loc_); }
+log-level           { return SrvParser::make_LOGLEVEL_(driver.loc_); }
+log-mode            { return SrvParser::make_LOGMODE_(driver.loc_);  }
+log-colors          { return SrvParser::make_LOGCOLORS_(driver.loc_);  }
 
-work-dir            { return SrvParser::WORKDIR_;}
+work-dir            { return SrvParser::make_WORKDIR_(driver.loc_); }
 
-accept-only         { return SrvParser::ACCEPT_ONLY_;}
-reject-clients      { return SrvParser::REJECT_CLIENTS_;}
+accept-only         { return SrvParser::make_ACCEPT_ONLY_(driver.loc_); }
+reject-clients      { return SrvParser::make_REJECT_CLIENTS_(driver.loc_); }
 
-T1                  { return SrvParser::T1_;}
-T2                  { return SrvParser::T2_;}
-preferred-lifetime  { return SrvParser::PREF_TIME_;}
-prefered-lifetime   { return SrvParser::PREF_TIME_;}
-valid-lifetime      { return SrvParser::VALID_TIME_;}
+T1                  { return SrvParser::make_T1_(driver.loc_); }
+T2                  { return SrvParser::make_T2_(driver.loc_); }
+preferred-lifetime  { return SrvParser::make_PREF_TIME_(driver.loc_); }
+prefered-lifetime   { return SrvParser::make_PREF_TIME_(driver.loc_); }
+valid-lifetime      { return SrvParser::make_VALID_TIME_(driver.loc_); }
 
-drop-unicast        { return SrvParser::DROP_UNICAST_; }
-unicast             { return SrvParser::UNICAST_;}
-preference          { return SrvParser::PREFERENCE_;}
-pool                { return SrvParser::POOL_;}
-share               { return SrvParser::SHARE_;}
-rapid-commit        { return SrvParser::RAPID_COMMIT_;}
-iface-max-lease     { return SrvParser::IFACE_MAX_LEASE_; }
-class-max-lease     { return SrvParser::CLASS_MAX_LEASE_; }
-client-max-lease    { return SrvParser::CLNT_MAX_LEASE_;  }
-client              { return SrvParser::CLIENT_; }
-duid                { return SrvParser::DUID_KEYWORD_; }
-remote-id           { return SrvParser::REMOTE_ID_; }
-link-local					{ return SrvParser::LINK_LOCAL_; }
-address             { return SrvParser::ADDRESS_;}
-prefix              { return SrvParser::PREFIX_; }
-guess-mode          { return SrvParser::GUESS_MODE_; }
+drop-unicast        { return SrvParser::make_DROP_UNICAST_(driver.loc_);  }
+unicast             { return SrvParser::make_UNICAST_(driver.loc_); }
+preference          { return SrvParser::make_PREFERENCE_(driver.loc_); }
+pool                { return SrvParser::make_POOL_(driver.loc_); }
+share               { return SrvParser::make_SHARE_(driver.loc_); }
+rapid-commit        { return SrvParser::make_RAPID_COMMIT_(driver.loc_); }
+iface-max-lease     { return SrvParser::make_IFACE_MAX_LEASE_(driver.loc_);  }
+class-max-lease     { return SrvParser::make_CLASS_MAX_LEASE_(driver.loc_);  }
+client-max-lease    { return SrvParser::make_CLNT_MAX_LEASE_(driver.loc_);   }
+client              { return SrvParser::make_CLIENT_(driver.loc_);  }
+duid                { return SrvParser::make_DUID_KEYWORD_(driver.loc_);  }
+remote-id           { return SrvParser::make_REMOTE_ID_(driver.loc_);  }
+link-local					{ return SrvParser::make_LINK_LOCAL_(driver.loc_);  }
+address             { return SrvParser::make_ADDRESS_(driver.loc_); }
+prefix              { return SrvParser::make_PREFIX_(driver.loc_);  }
+guess-mode          { return SrvParser::make_GUESS_MODE_(driver.loc_);  }
 
-option              { return SrvParser::OPTION_; }
-dns-server          { return SrvParser::DNS_SERVER_;}
-domain              { return SrvParser::DOMAIN_;}
-ntp-server          { return SrvParser::NTP_SERVER_;}
-time-zone           { return SrvParser::TIME_ZONE_;}
-sip-server          { return SrvParser::SIP_SERVER_; }
-sip-domain          { return SrvParser::SIP_DOMAIN_; }
-next-hop            { return SrvParser::NEXT_HOP_; }
-subnet              { return SrvParser::SUBNET_; }
-route               { return SrvParser::ROUTE_; }
-fqdn                { return SrvParser::FQDN_; }
-infinite            { return SrvParser::INFINITE_; }
-accept-unknown-fqdn { return SrvParser::ACCEPT_UNKNOWN_FQDN_; }
-fqdn-ddns-address   { return SrvParser::FQDN_DDNS_ADDRESS_; }
-ddns-protocol       { return SrvParser::DDNS_PROTOCOL_; }
-ddns-timeout        { return SrvParser::DDNS_TIMEOUT_; }
-nis-server          { return SrvParser::NIS_SERVER_; }
-nis-domain          { return SrvParser::NIS_DOMAIN_; }
-nis\+-server        { return SrvParser::NISP_SERVER_; }
-nis\+-domain        { return SrvParser::NISP_DOMAIN_; }
-lifetime            { return SrvParser::LIFETIME_; }
-cache-size          { return SrvParser::CACHE_SIZE_; }
-pd-class	    { return SrvParser::PDCLASS_; }
-pd-length	    { return SrvParser::PD_LENGTH_; }
-pd-pool             { return SrvParser::PD_POOL_;}
-vendor-spec         { return SrvParser::VENDOR_SPEC_; }
-script              { return SrvParser::SCRIPT_; }
+option              { return SrvParser::make_OPTION_(driver.loc_);  }
+dns-server          { return SrvParser::make_DNS_SERVER_(driver.loc_); }
+domain              { return SrvParser::make_DOMAIN_(driver.loc_); }
+ntp-server          { return SrvParser::make_NTP_SERVER_(driver.loc_); }
+time-zone           { return SrvParser::make_TIME_ZONE_(driver.loc_); }
+sip-server          { return SrvParser::make_SIP_SERVER_(driver.loc_);  }
+sip-domain          { return SrvParser::make_SIP_DOMAIN_(driver.loc_);  }
+next-hop            { return SrvParser::make_NEXT_HOP_(driver.loc_);  }
+subnet              { return SrvParser::make_SUBNET_(driver.loc_);  }
+route               { return SrvParser::make_ROUTE_(driver.loc_);  }
+fqdn                { return SrvParser::make_FQDN_(driver.loc_);  }
+infinite            { return SrvParser::make_INFINITE_(driver.loc_);  }
+accept-unknown-fqdn { return SrvParser::make_ACCEPT_UNKNOWN_FQDN_(driver.loc_);  }
+fqdn-ddns-address   { return SrvParser::make_FQDN_DDNS_ADDRESS_(driver.loc_);  }
+ddns-protocol       { return SrvParser::make_DDNS_PROTOCOL_(driver.loc_);  }
+ddns-timeout        { return SrvParser::make_DDNS_TIMEOUT_(driver.loc_);  }
+nis-server          { return SrvParser::make_NIS_SERVER_(driver.loc_);  }
+nis-domain          { return SrvParser::make_NIS_DOMAIN_(driver.loc_);  }
+nis\+-server        { return SrvParser::make_NISP_SERVER_(driver.loc_);  }
+nis\+-domain        { return SrvParser::make_NISP_DOMAIN_(driver.loc_);  }
+lifetime            { return SrvParser::make_LIFETIME_(driver.loc_);  }
+cache-size          { return SrvParser::make_CACHE_SIZE_(driver.loc_);  }
+pd-class	    { return SrvParser::make_PDCLASS_(driver.loc_);  }
+pd-length	    { return SrvParser::make_PD_LENGTH_(driver.loc_);  }
+pd-pool             { return SrvParser::make_PD_POOL_(driver.loc_); }
+vendor-spec         { return SrvParser::make_VENDOR_SPEC_(driver.loc_);  }
+script              { return SrvParser::make_SCRIPT_(driver.loc_);  }
 
-experimental        { return SrvParser::EXPERIMENTAL_; }
-addr-params         { return SrvParser::ADDR_PARAMS_; }
-neighbors           { return SrvParser::REMOTE_AUTOCONF_NEIGHBORS_; }
+experimental        { return SrvParser::make_EXPERIMENTAL_(driver.loc_);  }
+addr-params         { return SrvParser::make_ADDR_PARAMS_(driver.loc_);  }
+neighbors           { return SrvParser::make_REMOTE_AUTOCONF_NEIGHBORS_(driver.loc_);  }
 
-aftr                { return SrvParser::AFTR_; }
-inactive-mode       { return SrvParser::INACTIVE_MODE_; }
-accept-leasequery   { return SrvParser::ACCEPT_LEASEQUERY_; }
-bulk-leasequery-accept    { return SrvParser::BULKLQ_ACCEPT_; }
-bulk-leasequery-tcp-port  { return SrvParser::BULKLQ_TCPPORT_; }
-bulk-leasequery-max-conns { return SrvParser::BULKLQ_MAX_CONNS_; }
-bulk-leasequery-timeout   { return SrvParser::BULKLQ_TIMEOUT_; }
-auth-protocol       { return SrvParser::AUTH_PROTOCOL_; }
-auth-algorithm      { return SrvParser::AUTH_ALGORITHM_; }
-auth-replay         { return SrvParser::AUTH_REPLAY_;}
-auth-realm          { return SrvParser::AUTH_REALM_; }
-auth-methods        { return SrvParser::AUTH_METHODS_; }
-auth-required       { return SrvParser::AUTH_DROP_UNAUTH_; }
-digest-none         { return SrvParser::DIGEST_NONE_; }
-digest-plain        { return SrvParser::DIGEST_PLAIN_; }
-digest-hmac-md5     { return SrvParser::DIGEST_HMAC_MD5_; }
-hmac-md5            { return SrvParser::DIGEST_HMAC_MD5_; }
-digest-hmac-sha1    { return SrvParser::DIGEST_HMAC_SHA1_; }
-hmac-sha1           { return SrvParser::DIGEST_HMAC_SHA1_; }
-digest-hmac-sha224  { return SrvParser::DIGEST_HMAC_SHA224_; }
-hmac-sha224         { return SrvParser::DIGEST_HMAC_SHA224_; }
-digest-hmac-sha256  { return SrvParser::DIGEST_HMAC_SHA256_; }
-hmac-sha256         { return SrvParser::DIGEST_HMAC_SHA256_; }
-digest-hmac-sha384  { return SrvParser::DIGEST_HMAC_SHA384_; }
-hmac-sha384         { return SrvParser::DIGEST_HMAC_SHA384_; }
-digest-hmac-sha512  { return SrvParser::DIGEST_HMAC_SHA512_; }
-hmac-sha512         { return SrvParser::DIGEST_HMAC_SHA512_; }
-key                 { return SrvParser::KEY_; }
-secret              { return SrvParser::SECRET_; }
-algorithm           { return SrvParser::ALGORITHM_; }
-reconfigure-enabled { return SrvParser::RECONFIGURE_ENABLED_; }
-fudge               { return SrvParser::FUDGE_; }
-client-class        { return SrvParser::CLIENT_CLASS_; }
-match-if            { return SrvParser::MATCH_IF_; }
-==                  { return SrvParser::EQ_; }
-and                 { return SrvParser::AND_; }
-or                  { return SrvParser::OR_; }
-client.vendor-spec.en    { return SrvParser::CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_; }
-client.vendor-spec.data   { return SrvParser::CLIENT_VENDOR_SPEC_DATA_; }
-client.vendor-class.en    { return SrvParser::CLIENT_VENDOR_CLASS_EN_; }
-client.vendor-class.data   { return SrvParser::CLIENT_VENDOR_CLASS_DATA_; }
-allow		    { return SrvParser::ALLOW_; }
-deny		    { return SrvParser::DENY_; }
-substring	    { return SrvParser::SUBSTRING_; }
-contain	    { return SrvParser::CONTAIN_; }
-string              { return SrvParser::STRING_KEYWORD_; }
-address-list        { return SrvParser::ADDRESS_LIST_; }
-performance-mode    { return SrvParser::PERFORMANCE_MODE_; }
+aftr                { return SrvParser::make_AFTR_(driver.loc_);  }
+inactive-mode       { return SrvParser::make_INACTIVE_MODE_(driver.loc_);  }
+accept-leasequery   { return SrvParser::make_ACCEPT_LEASEQUERY_(driver.loc_);  }
+bulk-leasequery-accept    { return SrvParser::make_BULKLQ_ACCEPT_(driver.loc_);  }
+bulk-leasequery-tcp-port  { return SrvParser::make_BULKLQ_TCPPORT_(driver.loc_);  }
+bulk-leasequery-max-conns { return SrvParser::make_BULKLQ_MAX_CONNS_(driver.loc_);  }
+bulk-leasequery-timeout   { return SrvParser::make_BULKLQ_TIMEOUT_(driver.loc_);  }
+auth-protocol       { return SrvParser::make_AUTH_PROTOCOL_(driver.loc_);  }
+auth-algorithm      { return SrvParser::make_AUTH_ALGORITHM_(driver.loc_);  }
+auth-replay         { return SrvParser::make_AUTH_REPLAY_(driver.loc_); }
+auth-realm          { return SrvParser::make_AUTH_REALM_(driver.loc_);  }
+auth-methods        { return SrvParser::make_AUTH_METHODS_(driver.loc_);  }
+auth-required       { return SrvParser::make_AUTH_DROP_UNAUTH_(driver.loc_);  }
+digest-none         { return SrvParser::make_DIGEST_NONE_(driver.loc_);  }
+digest-plain        { return SrvParser::make_DIGEST_PLAIN_(driver.loc_);  }
+digest-hmac-md5     { return SrvParser::make_DIGEST_HMAC_MD5_(driver.loc_);  }
+hmac-md5            { return SrvParser::make_DIGEST_HMAC_MD5_(driver.loc_);  }
+digest-hmac-sha1    { return SrvParser::make_DIGEST_HMAC_SHA1_(driver.loc_);  }
+hmac-sha1           { return SrvParser::make_DIGEST_HMAC_SHA1_(driver.loc_);  }
+digest-hmac-sha224  { return SrvParser::make_DIGEST_HMAC_SHA224_(driver.loc_);  }
+hmac-sha224         { return SrvParser::make_DIGEST_HMAC_SHA224_(driver.loc_);  }
+digest-hmac-sha256  { return SrvParser::make_DIGEST_HMAC_SHA256_(driver.loc_);  }
+hmac-sha256         { return SrvParser::make_DIGEST_HMAC_SHA256_(driver.loc_);  }
+digest-hmac-sha384  { return SrvParser::make_DIGEST_HMAC_SHA384_(driver.loc_);  }
+hmac-sha384         { return SrvParser::make_DIGEST_HMAC_SHA384_(driver.loc_);  }
+digest-hmac-sha512  { return SrvParser::make_DIGEST_HMAC_SHA512_(driver.loc_);  }
+hmac-sha512         { return SrvParser::make_DIGEST_HMAC_SHA512_(driver.loc_);  }
+key                 { return SrvParser::make_KEY_(driver.loc_);  }
+secret              { return SrvParser::make_SECRET_(driver.loc_);  }
+algorithm           { return SrvParser::make_ALGORITHM_(driver.loc_);  }
+reconfigure-enabled { return SrvParser::make_RECONFIGURE_ENABLED_(driver.loc_);  }
+fudge               { return SrvParser::make_FUDGE_(driver.loc_);  }
+client-class        { return SrvParser::make_CLIENT_CLASS_(driver.loc_);  }
+match-if            { return SrvParser::make_MATCH_IF_(driver.loc_);  }
+==                  { return SrvParser::make_EQ_(driver.loc_);  }
+and                 { return SrvParser::make_AND_(driver.loc_);  }
+or                  { return SrvParser::make_OR_(driver.loc_);  }
+client.vendor-spec.en    { return SrvParser::make_CLIENT_VENDOR_SPEC_ENTERPRISE_NUM_(driver.loc_);  }
+client.vendor-spec.data   { return SrvParser::make_CLIENT_VENDOR_SPEC_DATA_(driver.loc_);  }
+client.vendor-class.en    { return SrvParser::make_CLIENT_VENDOR_CLASS_EN_(driver.loc_);  }
+client.vendor-class.data   { return SrvParser::make_CLIENT_VENDOR_CLASS_DATA_(driver.loc_);  }
+allow		    { return SrvParser::make_ALLOW_(driver.loc_);  }
+deny		    { return SrvParser::make_DENY_(driver.loc_);  }
+substring	    { return SrvParser::make_SUBSTRING_(driver.loc_);  }
+contain	    { return SrvParser::make_CONTAIN_(driver.loc_);  }
+string              { return SrvParser::make_STRING_KEYWORD_(driver.loc_);  }
+address-list        { return SrvParser::make_ADDRESS_LIST_(driver.loc_);  }
+performance-mode    { return SrvParser::make_PERFORMANCE_MODE_(driver.loc_);  }
 
-yes                 { yylval.ival=1; return SrvParser::INTNUMBER_;}
-no                  { yylval.ival=0; return SrvParser::INTNUMBER_;}
-true                { yylval.ival=1; return SrvParser::INTNUMBER_;}
-false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
+yes                 { return SrvParser::make_INTNUMBER_(1, driver.loc_); }
+no                  { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
+true                { return SrvParser::make_INTNUMBER_(1, driver.loc_); }
+false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 
 #.* ;
 
@@ -208,7 +208,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
     }
 }
 
@@ -217,7 +217,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
     }
 }
 
@@ -226,7 +226,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
     }
 }
 
@@ -235,7 +235,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(driver.loc_); 
     }
 }
 
@@ -244,7 +244,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(driver.loc_); 
     }
 }
 
@@ -253,7 +253,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(driver.loc_); 
     }
 }
 
@@ -262,7 +262,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::IPV6ADDR_;
+	return SrvParser::make_IPV6ADDR_(driver.loc_); 
     }
 }
 
@@ -273,7 +273,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
     yylval.strval=new char[strlen(yytext)-1];
     strncpy(yylval.strval, yytext+1, strlen(yytext)-2);
     yylval.strval[strlen(yytext)-2]=0;
-    return SrvParser::STRING_;
+    return SrvParser::make_STRING_(driver.loc_); 
 }
 
 ([a-zA-Z][a-zA-Z0-9\.-]+) {
@@ -282,19 +282,19 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	 ( (len>3) && !strncasecmp("true", yytext,4) )
        ) {
        yylval.ival = 1;
-       return SrvParser::INTNUMBER_;
+       return SrvParser::make_INTNUMBER_(driver.loc_); 
    }
     if ( ( (len>1) && !strncasecmp("no",yytext,2) ) ||
 	 ( (len>4) && !strncasecmp("false",yytext,5) )
        ) {
        yylval.ival = 0;
-       return SrvParser::INTNUMBER_;
+       return SrvParser::make_INTNUMBER_(driver.loc_); 
     }
 
     yylval.strval=new char[strlen(yytext)+1];
     strncpy(yylval.strval, yytext, strlen(yytext));
     yylval.strval[strlen(yytext)]=0;
-    return SrvParser::STRING_;
+    return SrvParser::make_STRING_(driver.loc_); 
 }
 
 0x{hexdigit}+ {
@@ -326,7 +326,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	    yylval.duidval.duid[i>>1]|=ptr[i]-'0';
 	}
    }
-   return SrvParser::DUID_;
+   return SrvParser::make_DUID_(driver.loc_); 
 }
 
 {hexdigit}{2}(:{hexdigit}{2})+ {
@@ -353,7 +353,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
       i++;
    }
 
-   return SrvParser::DUID_;
+   return SrvParser::make_DUID_(driver.loc_); 
 }
 
 {hexnumber} {
@@ -363,7 +363,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
       Log(Crit) << "Hex value [" << yytext << "] parsing failed." << LogEnd;
       YYABORT;
     }
-    return SrvParser::HEXNUMBER_;
+    return SrvParser::make_HEXNUMBER_(driver.loc_); 
 }
 
 {integer} {
@@ -372,7 +372,7 @@ false               { yylval.ival=0; return SrvParser::INTNUMBER_;}
 	Log(Crit) << "Decimal value [" << yytext << "] parsing failed." << LogEnd;
 	YYABORT;
     }
-    return SrvParser::INTNUMBER_;
+    return SrvParser::make_INTNUMBER_(driver.loc_); 
 }
 
 .  { return yytext[0]; }
