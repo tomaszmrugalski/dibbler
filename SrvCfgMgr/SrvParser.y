@@ -21,7 +21,7 @@ class SrvParserContext;
 %code {
 #include <iostream>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -421,7 +421,7 @@ Client
 | CLIENT_ REMOTE_ID_ Number '-' DUID_ '{'
 {
     ctx.ParserOptStack_.append(new TSrvParsGlobalOpt());
-    SPtr<TOptVendorData> remoteid = new TOptVendorData(OPTION_REMOTE_ID, $3, $5, 0);
+    SPtr<TOptVendorData> remoteid = new TOptVendorData(OPTION_REMOTE_ID, $3, $5.c_str(), $5.length(), 0);
     ctx.ClientLst_.append(new TSrvCfgOptions(remoteid));
 } ClientOptions
 '}'
