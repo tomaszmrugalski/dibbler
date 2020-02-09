@@ -32,7 +32,7 @@ libSrvCfgMgr_a_SOURCES += SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h
 libSrvCfgMgr_a_SOURCES += SrvParsIfaceOpt.cpp SrvParsIfaceOpt.h
 libSrvCfgMgr_a_SOURCES += SrvParserContext.cpp SrvParserContext.h
 
-dist_noinst_DATA = SrvLexer.l SrvParser.y
+dist_noinst_DATA = SrvLexer.l SrvParser.y position.hh location.hh stack.hh
 
 parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
