@@ -3,23 +3,21 @@ compiler:
   - clang
   - gcc
 
-#before_install:
+before_install:
+  - lsb_release -a
+  - which clang
+  - which clang++
 # - sudo apt-get -qq update
 # - sudo apt-get install -y libgtest-dev
 # - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
 
 install:
     - sudo apt-get install libgtest-dev
-    - cd /usr/src/gtest
-    - which clang
-    - which clang++
-    - sudo cmake .
-    - sudo make
-    - sudo mv libg* /usr/local/lib
-    - cd -
+    - dpkg -L libgtest-dev
+    - ls -lR /usr/src/gtest
 
 before_script:
- - ./configure --with-gtest
+ - ./configure --with-gtest-source=/usr/src/gtest
 
 script: make && make check
 
