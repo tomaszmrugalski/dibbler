@@ -421,7 +421,7 @@ Client
 | CLIENT_ REMOTE_ID_ Number '-' DUID_ '{'
 {
     ctx.ParserOptStack_.append(new TSrvParsGlobalOpt());
-    SPtr<TOptVendorData> remoteid = new TOptVendorData($3, $5.duid, $5.length, 0);
+    SPtr<TOptVendorData> remoteid = new TOptVendorData(OPTION_REMOTE_ID, $3, $5, 0);
     ctx.ClientLst_.append(new TSrvCfgOptions(remoteid));
 } ClientOptions
 '}'
@@ -732,7 +732,7 @@ FQDNList
 | STRING_ '-' DUID_
 {
     /// @todo: Use SPtr()
-    TDUID* duidNew = new TDUID($3.duid,$3.length);
+    TDUID* duidNew = new TDUID($3);
     Log(Debug)<< "FQDN:" << $1 <<" reserved for DUID " << duidNew->getPlain()<<LogEnd;
     ctx.PresentFQDNLst_.append(new TFQDN(duidNew, $1,false));
 }
@@ -781,10 +781,9 @@ VendorSpecList
 : Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
-	       << $3 << ", valuelen=" << $5.ength() << LogEnd;
+	       << $3 << ", valuelen=" << $5.length() << LogEnd;
 
-    ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
-								    $5.duid, $5.length, 0), false);
+    ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3, $5, 0), false);
 }
 | Number '-' Number '-' IPV6ADDR_ 
 {
@@ -797,7 +796,7 @@ VendorSpecList
 | Number '-' Number '-' STRING_ 
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $1 << ", optionCode: "
-	       << $3 << ", valuelen=" << strlen($5) << LogEnd;
+	       << $3 << ", valuelen=" << $5.length() << LogEnd;
 
     ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $1, $3,
 								    $5, 0), false);
@@ -805,9 +804,8 @@ VendorSpecList
 | VendorSpecList ',' Number '-' Number '-' DUID_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
-	       << $5 << ", valuelen=" << $7.length << LogEnd;
-    ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
-								    $7.duid, $7.length, 0), false);
+	       << $5 << ", valuelen=" << $7.length() << LogEnd;
+    ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5, $7, 0), false);
 }
 | VendorSpecList ',' Number '-' Number '-' IPV6ADDR_ 
 {
@@ -820,7 +818,7 @@ VendorSpecList
 | VendorSpecList ',' Number '-' Number '-' STRING_
 {
     Log(Debug) << "Vendor-spec defined: Enterprise: " << $3 << ", optionCode: "
-	       << $5 << ", valuelen=" << strlen($7) << LogEnd;
+	       << $5 << ", valuelen=" << $7.length() << LogEnd;
     ctx.ParserOptStack_.getLast()->addExtraOption(new TOptVendorSpecInfo(OPTION_VENDOR_OPTS, $3, $5,
 								    $7, 0), false);
 }
@@ -853,8 +851,8 @@ ADDRESSRangeList
 	    error(@3, "Invalid prefix defined: " + to_string(prefix) + ". Allowed range: 1..128.");
 	    YYABORT;
 	}
-	SPtr<TIPv6Addr> addr1 = ctx.getRangeMin($1, prefix);
-	SPtr<TIPv6Addr> addr2 = ctx.getRangeMax($1, prefix);
+	SPtr<TIPv6Addr> addr1 = ctx.getRangeMin($1.c_str(), prefix);
+	SPtr<TIPv6Addr> addr2 = ctx.getRangeMax($1.c_str(), prefix);
 	if (*addr1<=*addr2)
 	    ctx.PresentRangeLst_.append(new THostRange(addr1,addr2));
 	else
@@ -885,8 +883,8 @@ PDRangeList
             YYABORT;
 	}
 
-	SPtr<TIPv6Addr> addr1 = ctx.getRangeMin($1, prefix);
-	SPtr<TIPv6Addr> addr2 = ctx.getRangeMax($1, prefix);
+	SPtr<TIPv6Addr> addr1 = ctx.getRangeMin($1.c_str(), prefix);
+	SPtr<TIPv6Addr> addr2 = ctx.getRangeMax($1.c_str(), prefix);
 	SPtr<THostRange> range;
 	if (*addr1<=*addr2)
 	    range = new THostRange(addr1,addr2);
@@ -926,38 +924,32 @@ ADDRESSDUIDRangeList
 }
 | DUID_
 {
-    SPtr<TDUID> duid(new TDUID($1.duid, $1.length));
+    SPtr<TDUID> duid(new TDUID($1));
     ctx.PresentRangeLst_.append(new THostRange(duid, duid));
-    delete $1.duid;
 }
 | DUID_ '-' DUID_
 {
-    SPtr<TDUID> duid1(new TDUID($1.duid,$1.length));
-    SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
+    SPtr<TDUID> duid1(new TDUID($1));
+    SPtr<TDUID> duid2(new TDUID($3));
 
     if (*duid1<=*duid2)
 	ctx.PresentRangeLst_.append(new THostRange(duid1,duid2));
     else
 	ctx.PresentRangeLst_.append(new THostRange(duid2,duid1));
-
-    /// @todo: delete [] $1.duid; delete [] $3.duid?
 }
 | ADDRESSDUIDRangeList ',' DUID_
 {
-    SPtr<TDUID> duid(new TDUID($3.duid, $3.length));
+    SPtr<TDUID> duid(new TDUID($3));
     ctx.PresentRangeLst_.append(new THostRange(duid, duid));
-    delete $3.duid;
 }
 | ADDRESSDUIDRangeList ',' DUID_ '-' DUID_
 {
-    SPtr<TDUID> duid2(new TDUID($3.duid,$3.length));
-    SPtr<TDUID> duid1(new TDUID($5.duid,$5.length));
+    SPtr<TDUID> duid2(new TDUID($3));
+    SPtr<TDUID> duid1(new TDUID($5));
     if (*duid1<=*duid2)
 	ctx.PresentRangeLst_.append(new THostRange(duid1,duid2));
     else
 	ctx.PresentRangeLst_.append(new THostRange(duid2,duid1));
-    delete $3.duid;
-    delete $5.duid;
 }
 ;
 
@@ -1114,10 +1106,9 @@ DsLiteAftrName
 ExtraOption
 :OPTION_ Number DUID_KEYWORD_ DUID_
 {
-    SPtr<TOpt> opt = new TOptGeneric($2, $4.duid, $4.length, 0);
+    SPtr<TOpt> opt = new TOptGeneric($2, $4.c_str(), $4.length(), 0);
     ctx.ParserOptStack_.getLast()->addExtraOption(opt, false);
-    Log(Debug) << "Extra option defined: code=" << $2 << ", length="
-               << $4.length << LogEnd;
+    Log(Debug) << "Extra option defined: code=" << $2 << ", length=" << $4.length() << LogEnd;
 }
 |OPTION_ Number ADDRESS_ IPV6ADDR_
 {
@@ -1304,19 +1295,18 @@ Experimental
 IfaceIDOrder
 :IFACE_ID_ORDER_ STRING_
 {
-    if (!strncasecmp($2,"before",6))
+    if ($2 == "before")
     {
 		ctx.ParserOptStack_.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_BEFORE);
     } else
-    if (!strncasecmp($2,"after",5))
+    if ($2 == "after")
     {
 		ctx.ParserOptStack_.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_AFTER);
     } else
-    if (!strncasecmp($2,"omit",4))
+    if ($2 == "omit")
     {
 		ctx.ParserOptStack_.getLast()->setInterfaceIDOrder(SRV_IFACE_ID_ORDER_NONE);
-    } else
-    {
+    } else {
 		Log(Crit) << "Invalid interface-id-order specified. Allowed "
                           << "values: before, after, omit" << LogEnd;
 		YYABORT;
@@ -1407,12 +1397,12 @@ InterfaceIDOption
 }
 |IFACE_ID_ DUID_
 {
-    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2.duid, $2.length, 0);
+    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2.c_str(), $2.length(), 0);
     ctx.ParserOptStack_.getLast()->setRelayInterfaceID(id);
 }
 |IFACE_ID_ STRING_
 {
-    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2, strlen($2), 0);
+    SPtr<TSrvOptInterfaceID> id = new TSrvOptInterfaceID($2.c_str(), $2.length(), 0);
     ctx.ParserOptStack_.getLast()->setRelayInterfaceID(id);
 }
 ;
@@ -1426,15 +1416,15 @@ Subnet
               + " in subnet definition.");
         YYABORT;
     }
-    SPtr<TIPv6Addr> min = ctx.getRangeMin($2, prefix);
-    SPtr<TIPv6Addr> max = ctx.getRangeMax($2, prefix);
+    SPtr<TIPv6Addr> min = ctx.getRangeMin($2.c_str(), prefix);
+    SPtr<TIPv6Addr> max = ctx.getRangeMax($2.c_str(), prefix);
     ctx.SrvCfgIfaceLst_.getLast()->addSubnet(min, max);
     Log(Debug) << "Defined subnet " << min->getPlain() << "/" << $4
                << " on " << ctx.SrvCfgIfaceLst_.getLast()->getFullName() << LogEnd;
 }|SUBNET_ IPV6ADDR_ '-' IPV6ADDR_
 {
-    SPtr<TIPv6Addr> min = new TIPv6Addr($2);
-    SPtr<TIPv6Addr> max = new TIPv6Addr($4);
+    SPtr<TIPv6Addr> min = new TIPv6Addr($2.c_str());
+    SPtr<TIPv6Addr> max = new TIPv6Addr($4.c_str());
     ctx.SrvCfgIfaceLst_.getLast()->addSubnet(min, max);
     Log(Debug) << "Defined subnet " << min->getPlain() << "-" << max->getPlain()
                << "on " << ctx.SrvCfgIfaceLst_.getLast()->getFullName() << LogEnd;
@@ -1461,7 +1451,7 @@ AllowClientClassDeclaration
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
     ctx.SrvCfgClientClassLst_.first();
-    while (clntClass = ctx.SrvCfgClientClassLst_.get())
+    while ((clntClass = ctx.SrvCfgClientClassLst_.get()))
     {
 	if (clntClass->getClassName() == string($2))
 	    found = true;
@@ -1489,7 +1479,7 @@ DenyClientClassDeclaration
     SPtr<TSrvCfgClientClass> clntClass;
     bool found = false;
     ctx.SrvCfgClientClassLst_.first();
-    while (clntClass = ctx.SrvCfgClientClassLst_.get())
+    while ((clntClass = ctx.SrvCfgClientClassLst_.get()))
     {
 	if (clntClass->getClassName() == string($2))
 	    found = true;
@@ -1700,11 +1690,11 @@ FqdnDdnsAddress
 DdnsProtocol
 :DDNS_PROTOCOL_ STRING_
 {
-    if (!strcasecmp($2,"tcp"))
+    if ($2 == "tcp")
 	ctx.CfgMgr_->setDDNSProtocol(TSrvCfgMgr::DNSUPDATE_TCP);
-    else if (!strcasecmp($2,"udp"))
+    else if ($2 == "udp")
 	ctx.CfgMgr_->setDDNSProtocol(TSrvCfgMgr::DNSUPDATE_UDP);
-    else if (!strcasecmp($2,"any"))
+    else if ($2 == "any")
 	ctx.CfgMgr_->setDDNSProtocol(TSrvCfgMgr::DNSUPDATE_ANY);
     else {
         Log(Crit) << "Invalid ddns-protocol specifed:" << ($2) 

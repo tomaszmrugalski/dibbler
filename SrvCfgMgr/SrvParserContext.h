@@ -73,8 +73,8 @@ class SrvParserContext
     bool EndIfaceDeclaration();
     void StartClassDeclaration();
     bool EndClassDeclaration();
-    SPtr<TIPv6Addr> getRangeMin(char * addrPacked, int prefix);
-    SPtr<TIPv6Addr> getRangeMax(char * addrPacked, int prefix);
+    SPtr<TIPv6Addr> getRangeMin(const char * addrPacked, int prefix);
+    SPtr<TIPv6Addr> getRangeMax(const char * addrPacked, int prefix);
     void StartTAClassDeclaration();
     bool EndTAClassDeclaration();
     void StartPDDeclaration();

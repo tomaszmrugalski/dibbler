@@ -269,7 +269,7 @@ SrvParserContext::~SrvParserContext() {
 
 static char bitMask[]= { 0, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff };
 
-SPtr<TIPv6Addr> SrvParserContext::getRangeMin(char * addrPacked, int prefix) {
+SPtr<TIPv6Addr> SrvParserContext::getRangeMin(const char * addrPacked, int prefix) {
     char packed[16];
     char mask;
     memcpy(packed, addrPacked, 16);
@@ -284,7 +284,7 @@ SPtr<TIPv6Addr> SrvParserContext::getRangeMin(char * addrPacked, int prefix) {
     return new TIPv6Addr(packed, false);
 }
 
-SPtr<TIPv6Addr> SrvParserContext::getRangeMax(char * addrPacked, int prefix){
+SPtr<TIPv6Addr> SrvParserContext::getRangeMax(const char * addrPacked, int prefix){
     char packed[16];
     char mask;
     memcpy(packed, addrPacked,16);

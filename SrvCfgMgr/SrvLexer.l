@@ -16,6 +16,8 @@ using namespace std;
 /* duplicate default definition from flex. This makes cppcheck
    check for defined YY_FATAL_ERROR() go away. */
 #define YY_FATAL_ERROR(msg) SrvParserContext::fatal(msg)
+
+#undef yyterminate
 #define yyterminate SrvParserContext::fatal("")
 
 using namespace dibbler;
@@ -30,7 +32,6 @@ using namespace dibbler;
 %option noinput
 
 %x COMMENT
-%x ADDR
 
 hexdigit [0-9A-Fa-f]
 hexnumber {hexdigit}+h
