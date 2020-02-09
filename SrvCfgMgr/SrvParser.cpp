@@ -45,7 +45,7 @@
 
 #include <iostream>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <sstream>
 #include "Portable.h"
 #include "DHCPConst.h"
@@ -777,7 +777,7 @@ namespace dibbler {
 #line 422 "SrvParser.y"
     {
     ctx.ParserOptStack_.append(new TSrvParsGlobalOpt());
-    SPtr<TOptVendorData> remoteid = new TOptVendorData(OPTION_REMOTE_ID, yystack_[3].value.as < uint32_t > (), yystack_[1].value.as < std::string > (), 0);
+    SPtr<TOptVendorData> remoteid = new TOptVendorData(OPTION_REMOTE_ID, yystack_[3].value.as < uint32_t > (), yystack_[1].value.as < std::string > ().c_str(), yystack_[1].value.as < std::string > ().length(), 0);
     ctx.ClientLst_.append(new TSrvCfgOptions(remoteid));
 }
 #line 784 "SrvParser.cpp"
