@@ -141,5 +141,8 @@
 
   - Vitaly Greck <vintozver(at)ya(dot)ru>
 
+  - Balaji Punnuru <balaji_punnuru(at)cable(dot)comcast(dot)com>
+    2020-02: Fixed vulnerabilities with time checking
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
