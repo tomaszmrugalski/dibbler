@@ -9,7 +9,7 @@ before_install:
   - which clang++
 
 install:
-    - apt install wget
+    - sudo apt install wget
     - cd /tmp && wget -nd https://github.com/google/googletest/archive/release-1.10.0.tar.gz && tar zxvf release-1.10.0.tar.gz
 
 before_script:
