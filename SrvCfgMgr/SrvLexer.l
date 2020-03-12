@@ -210,7 +210,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -219,7 +219,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -228,7 +228,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -237,7 +237,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -246,7 +246,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -255,7 +255,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -264,7 +264,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	Log(Crit) << "Invalid address format: [" << yytext << "]" << LogEnd;
 	YYABORT;
     } else {
-	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_); 
+	return SrvParser::make_IPV6ADDR_(string(yytext), driver.loc_);
     }
 }
 
@@ -277,8 +277,8 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
         str = string(yytext + 1);
     }
     str = str.substr(0, str.size() - 1);
-    
-    return SrvParser::make_STRING_(str, driver.loc_); 
+
+    return SrvParser::make_STRING_(str, driver.loc_);
 }
 
 ([a-zA-Z][a-zA-Z0-9\.-]+) {
@@ -286,15 +286,15 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
     if ( ( (len>2) && !strncasecmp("yes",yytext,3) ) ||
 	 ( (len>3) && !strncasecmp("true", yytext,4) )
        ) {
-       return SrvParser::make_INTNUMBER_(1, driver.loc_); 
+       return SrvParser::make_INTNUMBER_(1, driver.loc_);
    }
     if ( ( (len>1) && !strncasecmp("no",yytext,2) ) ||
 	 ( (len>4) && !strncasecmp("false",yytext,5) )
        ) {
-       return SrvParser::make_INTNUMBER_(0, driver.loc_); 
+       return SrvParser::make_INTNUMBER_(0, driver.loc_);
     }
 
-    return SrvParser::make_STRING_(string(yytext), driver.loc_); 
+    return SrvParser::make_STRING_(string(yytext), driver.loc_);
 }
 
 0x{hexdigit}+ {
@@ -311,7 +311,7 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
     }
 
     //and now there is an even number of hex digits
-    string duid(0, len >> 1);
+    string duid(len >> 1, 0);
     for (int i=0 ; i<len; i++)
     {
 	duid[i>>1]<<=4;
@@ -325,13 +325,13 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
 	    duid[i>>1] |= ptr[i]-'0';
 	}
    }
-   return SrvParser::make_DUID_(duid, driver.loc_); 
+   return SrvParser::make_DUID_(duid, driver.loc_);
 }
 
 {hexdigit}{2}(:{hexdigit}{2})+ {
    int len = (strlen(yytext)+1)/3;
    char * pos = 0;
-   string duid(0, len);
+   string duid(len, 0);
 
    int i=0;
    for (pos = yytext; pos<=yytext+strlen(yytext)-2; pos+=3)
@@ -351,28 +351,28 @@ false               { return SrvParser::make_INTNUMBER_(0, driver.loc_); }
       i++;
    }
 
-   return SrvParser::make_DUID_(duid, driver.loc_); 
+   return SrvParser::make_DUID_(duid, driver.loc_);
 }
 
 {hexnumber} {
     // HEX NUMBER
     yytext[strlen(yytext)-1]='\n';
-    int x = 0;
+    unsigned int x = 0;
     if(!sscanf(yytext,"%20x",&x)) {
       Log(Crit) << "Hex value [" << yytext << "] parsing failed." << LogEnd;
       YYABORT;
     }
-    return SrvParser::make_HEXNUMBER_(x, driver.loc_); 
+    return SrvParser::make_HEXNUMBER_(x, driver.loc_);
 }
 
 {integer} {
     // DECIMAL NUMBER
-    int x = 0;
+    unsigned int x = 0;
     if(!sscanf(yytext,"%20u",&x)) {
 	Log(Crit) << "Decimal value [" << yytext << "] parsing failed." << LogEnd;
 	YYABORT;
     }
-    return SrvParser::make_INTNUMBER_(x, driver.loc_); 
+    return SrvParser::make_INTNUMBER_(x, driver.loc_);
 }
 
 .  { driver.error(driver.loc_, "Invalid character: " +std::string(yytext)); }
