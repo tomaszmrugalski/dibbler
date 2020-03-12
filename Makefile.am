@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = foreign serial-tests
+ACLOCAL_AMFLAGS = -I m4
 
 COMMON_SUBDIRS = @PORT_SUBDIR@ nettle
 if HAVE_GTEST
