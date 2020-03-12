@@ -7,17 +7,13 @@ before_install:
   - lsb_release -a
   - which clang
   - which clang++
-# - sudo apt-get -qq update
-# - sudo apt-get install -y libgtest-dev
-# - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
 
 install:
-    - sudo apt-get install libgtest-dev
-    - dpkg -L libgtest-dev
-    - ls -lR /usr/src/gtest
+    - apt install wget
+    - cd /tmp && wget -nd https://github.com/google/googletest/archive/release-1.10.0.tar.gz && tar zxvf release-1.10.0.tar.gz
 
 before_script:
- - ./configure --with-gtest-source=/usr/src/gtest
+ - ./configure --with-gtest-source=/tmp/googletest-release-1.10.0
 
 script: make && make check
 
