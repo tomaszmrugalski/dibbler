@@ -12,9 +12,6 @@ matrix:
               - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
 language: cpp
-compiler:
-    - clang
-    - gcc
 
 before_install:
     - lsb_release -a
@@ -22,7 +19,7 @@ before_install:
     - which clang++
 
 install:
-    - sudo apt install wget
+    - sudo apt-get -y install wget
     - wget -nd https://github.com/google/googletest/archive/release-1.10.0.tar.gz
     - tar zxvf release-1.10.0.tar.gz
 
