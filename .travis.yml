@@ -16,11 +16,11 @@ install:
 before_script:
     - pwd
     - ls -l
-    - ./configure --with-gtest-source=/home/travis/googletest-release-1.10.0
+    - ./configure --with-gtest-source=`pwd`/googletest-release-1.10.0
 
 script:
-    - # make
-    - # make check
+    - make
+    - make check
 
 notifications:
     recipients:
