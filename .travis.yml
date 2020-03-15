@@ -1,26 +1,28 @@
 language: cpp
 compiler:
-  - clang
-  - gcc
+    - clang
+    - gcc
 
 before_install:
-  - lsb_release -a
-  - which clang
-  - which clang++
+    - lsb_release -a
+    - which clang
+    - which clang++
 
 install:
     - sudo apt install wget
-    - cd /tmp && wget -nd https://github.com/google/googletest/archive/release-1.10.0.tar.gz && tar zxvf release-1.10.0.tar.gz
+    - wget -nd https://github.com/google/googletest/archive/release-1.10.0.tar.gz
+    - tar zxvf release-1.10.0.tar.gz
 
 before_script:
- - ./configure --with-gtest-source=/tmp/googletest-release-1.10.0
+    - ./configure --with-gtest-source=/home/travis/googletest-release-1.10.0
 
-script: make && make check
-
+script:
+    - make
+    - make check
 
 notifications:
-  recipients:
-    - spam.travis@klub.com.pl
-  email:
-    on_success: change
-    on_failure: always
+    recipients:
+        - spam.travis@klub.com.pl
+    email:
+        on_success: change
+        on_failure: always
