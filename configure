@@ -632,23 +632,29 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-enable_option_checking=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-HAVE_GTEST_FALSE
-HAVE_GTEST_TRUE
-subdirs
 LINKPRINT
 PORT_CFLAGS
 PORT_LDFLAGS
 EXTRA_DIST_SUBDIRS
 PORT_SUBDIR
 ARCH
+GTEST_SOURCE
 GTEST_LDADD
 GTEST_LDFLAGS
 GTEST_INCLUDES
+DISTCHECK_GTEST_CONFIGURE_FLAG
+HAVE_GTEST_SOURCE_FALSE
+HAVE_GTEST_SOURCE_TRUE
+HAVE_GTEST_FALSE
+HAVE_GTEST_TRUE
+GTEST_CONFIG
+USE_LCOV
+GENHTML
+LCOV
 RESOLVCONF_FALSE
 RESOLVCONF_TRUE
 MOD_SRV_DST_ADDR_CHECK_FALSE
@@ -799,8 +805,9 @@ enable_dst_addr_filter
 enable_resolvconf
 enable_dns_update
 enable_auth
+with_gtest_source
 with_gtest
-enable_gtest_static
+with_lcov
 enable_link_state
 enable_remote_autoconf
 '
@@ -818,7 +825,7 @@ CFLAGS
 LT_SYS_LIBRARY_PATH
 CPP
 CXXCPP'
-ac_subdirs_all='bison++'
+
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1459,7 +1466,6 @@ Dibbler modular features:
   --enable-resolvconf	  Enables support for resolvconf (/sbin/resolvcof) (default: no)
   --enable-dns-update     Enables DNS Update mechanism (default: yes)
   --enable-auth           Enables authentication (default: yes)
-  --enable-gtest-static   Enables static linking for gtest (default: yes)
   --enable-link-state     Enables link-state change detections (default: yes)
  --enable-remote-autoconf Enables *experimental* remote autoconfiguration (default: no)
 
@@ -1474,7 +1480,12 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
-  --with-gtest=PATH    specify a path to gtest header files and library
+  --with-gtest-source=PATH
+                          location of the Googletest source
+  --with-gtest=PATH       specify a path to gtest header files (PATH/include)
+                          and library (PATH/lib)
+  --with-lcov=PROGRAM     enable gtest and coverage target using the specified
+                          lcov
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -17965,94 +17976,314 @@ fi
 
 ### gtests #################################################
 
+
+enable_gtest="no"
+GTEST_INCLUDES=
+
+
+# Check whether --with-gtest-source was given.
+if test "${with_gtest_source+set}" = set; then :
+  withval=$with_gtest_source; enable_gtest="yes" ; GTEST_SOURCE="$withval"
+fi
+
+
+
 # Check whether --with-gtest was given.
 if test "${with_gtest+set}" = set; then :
-  withval=$with_gtest; gtest_path="$withval"
+  withval=$with_gtest; gtest_path="$withval"; enable_gtest="yes"
 else
   gtest_path="no"
 fi
 
 
-# Check whether --enable-gtest-static was given.
-if test "${enable_gtest_static+set}" = set; then :
-  enableval=$enable_gtest_static;   case "${enableval}" in
-          yes)
-            gtest_static=yes
-            ;;
-          no)
-            gtest_static=no
-            ;;
-          *)
-            as_fn_error $? "bad value ${enableval} for --enable-gtest-static" "$LINENO" 5
-            ;;
-        esac
+
+# Check whether --with-lcov was given.
+if test "${with_lcov+set}" = set; then :
+  withval=$with_lcov; lcov="$withval"
 else
-   gtest_static=yes
+  lcov="no"
+fi
+
+
+USE_LCOV="no"
+if test "$lcov" != "no"; then
+        # force gtest if not set
+        if test "$enable_gtest" = "no"; then
+#               AC_MSG_ERROR("lcov needs gtest for test coverage report")
+                { $as_echo "$as_me:${as_lineno-$LINENO}: gtest support is now enabled, because used by coverage tests" >&5
+$as_echo "$as_me: gtest support is now enabled, because used by coverage tests" >&6;}
+                enable_gtest="yes"
+        fi
+        if test "$lcov" != "yes"; then
+                LCOV=$lcov
+        else
+                # Extract the first word of "lcov", so it can be a program name with args.
+set dummy lcov; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_LCOV+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $LCOV in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_LCOV="$LCOV" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_LCOV="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+LCOV=$ac_cv_path_LCOV
+if test -n "$LCOV"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LCOV" >&5
+$as_echo "$LCOV" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+        fi
+        if test -x "${LCOV}"; then
+                USE_LCOV="yes"
+        else
+                as_fn_error $? "Cannot find lcov." "$LINENO" 5
+        fi
+        # is genhtml always in the same directory?
+        GENHTML=`echo "$LCOV" | ${SED} s/lcov$/genhtml/`
+        if test ! -x $GENHTML; then
+                as_fn_error $? "genhtml not found, needed for lcov" "$LINENO" 5
+        fi
+        # GCC specific?
+        CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
+        LIBS=" $LIBS -lgcov"
+
+
+
 
 fi
 
 
+#
+# Check availability of gtest, which will be used for unit tests.
+#
+GTEST_LDFLAGS=
+GTEST_LDADD=
+DISTCHECK_GTEST_CONFIGURE_FLAG=
+GTEST_VERSION="unknown"
 
-#echo "After gtest"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gtest sources" >&5
-$as_echo_n "checking for gtest sources... " >&6; }
-if test "$gtest_path" != "no"
-then
-    if test "${gtest_path}" == "yes"
-    then
-        GTEST_SOURCE=
-        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
-           if test -f $d/src/gtest-all.cc -a $d/src/gtest_main.cc; then
-               GTEST_SOURCE=$d
-               { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GTEST_SOURCE" >&5
+if test "x$enable_gtest" = "xyes" ; then
+
+    DISTCHECK_GTEST_CONFIGURE_FLAG="--with-gtest=$gtest_path"
+
+    if test -n "$with_gtest_source" ; then
+
+        if test "x$GTEST_SOURCE" = "xyes" ; then
+
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gtest source" >&5
+$as_echo_n "checking for gtest source... " >&6; }
+            # If not specified, try some common paths.
+            GTEST_SOURCE=
+            for d in /usr/src/gtest /usr/local /usr/pkg /opt /opt/local ; do
+                if test -f $d/src/gtest-all.cc -a $d/src/gtest_main.cc; then
+                    GTEST_SOURCE=$d
+                    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GTEST_SOURCE" >&5
 $as_echo "$GTEST_SOURCE" >&6; }
-               GTEST_INCLUDES="-I${GTEST_SOURCE}/includes"
-               GTEST_LDFLAGS=""
-               break
-           fi
-        done
+                    break
+                fi
+            done
+            if test -z $GTEST_SOURCE ; then
+                as_fn_error $? "no gtest source but it was selected" "$LINENO" 5
+            fi
+        else
+            if test ! -d $GTEST_SOURCE/src -a -d $GTEST_SOURCE/googletest; then
+                GTEST_SOURCE=$GTEST_SOURCE/googletest
+            fi
+            as_ac_File=`$as_echo "ac_cv_file_$GTEST_SOURCE/src/gtest-all.cc" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $GTEST_SOURCE/src/gtest-all.cc" >&5
+$as_echo_n "checking for $GTEST_SOURCE/src/gtest-all.cc... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$GTEST_SOURCE/src/gtest-all.cc"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
 
-        if test "x$GTEST_SOURCE" == "x"; then
-            as_fn_error $? "Failed to locate gtest sources. Please specify with --with-gtest=path" "$LINENO" 5
+cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$GTEST_SOURCE/src/gtest-all.cc" | $as_tr_cpp` 1
+_ACEOF
+have_gtest_source=yes
+else
+  as_fn_error $? "no gtest source at $GTEST_SOURCE" "$LINENO" 5
+fi
+as_ac_File=`$as_echo "ac_cv_file_$GTEST_SOURCE/src/gtest_main.cc" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $GTEST_SOURCE/src/gtest_main.cc" >&5
+$as_echo_n "checking for $GTEST_SOURCE/src/gtest_main.cc... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$GTEST_SOURCE/src/gtest_main.cc"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+
+cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$GTEST_SOURCE/src/gtest_main.cc" | $as_tr_cpp` 1
+_ACEOF
+have_gtest_source=yes
+else
+  as_fn_error $? "no gtest source at $GTEST_SOURCE" "$LINENO" 5
+fi
+
+        fi
+        have_gtest_source=yes
+        GTEST_LDADD="\$(top_builddir)/ext/gtest/libgtest.a"
+        DISTCHECK_GTEST_CONFIGURE_FLAG="--with-gtest-source=$GTEST_SOURCE"
+        GTEST_INCLUDES="-I$GTEST_SOURCE -I$GTEST_SOURCE/include"
+        GTEST_VERSION="`basename $GTEST_SOURCE`"
+    fi
+
+    if test "$gtest_path" != "no" ; then
+        if test "$gtest_path" != "yes"; then
+            GTEST_PATHS=$gtest_path
+            if test -x "${gtest_path}/bin/gtest-config" ; then
+                GTEST_CONFIG="${gtest_path}/bin/gtest-config"
+            fi
+        else
+            # Extract the first word of "gtest-config", so it can be a program name with args.
+set dummy gtest-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_GTEST_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $GTEST_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GTEST_CONFIG="$GTEST_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_GTEST_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+GTEST_CONFIG=$ac_cv_path_GTEST_CONFIG
+if test -n "$GTEST_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GTEST_CONFIG" >&5
+$as_echo "$GTEST_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+        fi
+        if test -x "${GTEST_CONFIG}" ; then :
+            # using cppflags instead of cxxflags
+            GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
+            GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
+            GTEST_LDADD=`${GTEST_CONFIG} --libs`
+            GTEST_VERSION=`${GTEST_CONFIG} --version`
+            GTEST_FOUND="true"
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Unable to locate Google Test gtest-config." >&5
+$as_echo "$as_me: WARNING: Unable to locate Google Test gtest-config." >&2;}
+            if test -z "${GTEST_PATHS}" ; then
+                GTEST_PATHS="/usr /usr/local"
+            fi
+            GTEST_FOUND="false"
+        fi
+        if test "${GTEST_FOUND}" != "true"; then
+            GTEST_FOUND="false"
+            for dir in $GTEST_PATHS; do
+                if test -f "$dir/include/gtest/gtest.h"; then
+                    if ! test -f "$dir/lib/libgtests.a"; then
+                        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Found Google Test include but not the library in $dir." >&5
+$as_echo "$as_me: WARNING: Found Google Test include but not the library in $dir." >&2;}
+                        continue
+                    fi
+                    GTEST_INCLUDES="-I$dir/include"
+                    GTEST_LDFLAGS="-L$dir/lib"
+                    GTEST_LDADD="-lgtest"
+                    GTEST_FOUND="true"
+                    break
+                fi
+            done
+        fi
+        if test "${GTEST_FOUND}" != "true"; then
+            as_fn_error $? "Cannot find gtest in: $GTEST_PATHS" "$LINENO" 5
         fi
 
-        GTEST_LIB=
-        for d in /usr/src/test /usr/src/gtest /usr/local /usr/pkt /opt /opt/local ~/gtest ; do
-           if test -f $d/libgtest.a; then
-               GTEST_LDADD="$d/libgtest.a -pthread"
-               break
-           fi
-           if test -f $d/lib/libgtest.a; then
-               GTEST_LDADD="$d/lib/libgtest.a -pthread"
-               break
-           fi
-        done
-        if test "x$GTEST_LDADD" == "x"; then
-             as_fn_error $? "Failed to find libgtest.a" "$LINENO" 5
-        fi
-    else
-       if test -x "${gtest_path}/scripts/gtest-config"
-       then
-           { $as_echo "$as_me:${as_lineno-$LINENO}: result: found in ${gtest_path}" >&5
-$as_echo "found in ${gtest_path}" >&6; }
-           GTEST_CONFIG="${gtest_path}/scripts/gtest-config"
-           GTEST_INCLUDES=`${GTEST_CONFIG} --cppflags`
-           GTEST_LDFLAGS=`${GTEST_CONFIG} --ldflags`
-           GTEST_LDADD=`${GTEST_CONFIG} --libs`
-
-           # Linking gtest statically
-           if test "$gtest_static" != "no"
-           then
-               GTEST_LDFLAGS="${GTEST_LDFLAGS} -static"
-           fi
-       else
-           as_fn_error $? "Google test not found: couldn't execute ${gtest_path}/scripts/gtest-config" "$LINENO" 5
-       fi
     fi
 fi
+ if test $enable_gtest != "no"; then
+  HAVE_GTEST_TRUE=
+  HAVE_GTEST_FALSE='#'
+else
+  HAVE_GTEST_TRUE='#'
+  HAVE_GTEST_FALSE=
+fi
+
+ if test "X$have_gtest_source" = "Xyes"; then
+  HAVE_GTEST_SOURCE_TRUE=
+  HAVE_GTEST_SOURCE_FALSE='#'
+else
+  HAVE_GTEST_SOURCE_TRUE='#'
+  HAVE_GTEST_SOURCE_FALSE=
+fi
 
 
 
+
+
+
+
+
+GTEST_LDADD="\$(top_builddir)/tests/utils/libgtest.a"
 
 
 ### Link-state change detections ##########################
@@ -18122,28 +18353,7 @@ fi
 
 
 
-
-
-subdirs="$subdirs bison++"
-
 #AC_CONFIG_SUBDIRS([poslib])
-
-
-if test "$gtest_path" != "no"; then
-  echo "GTEST enabled, generating Makefiles"
-
-$as_echo "#define HAVE_GTEST 1" >>confdefs.h
-
-fi
-
- if test "$gtest_path" != "no"; then
-  HAVE_GTEST_TRUE=
-  HAVE_GTEST_FALSE='#'
-else
-  HAVE_GTEST_TRUE='#'
-  HAVE_GTEST_FALSE=
-fi
-
 
 
 ac_config_files="$ac_config_files Makefile AddrMgr/Makefile CfgMgr/Makefile ClntAddrMgr/Makefile ClntCfgMgr/Makefile ClntIfaceMgr/Makefile ClntMessages/Makefile ClntOptions/Makefile ClntTransMgr/Makefile IfaceMgr/Makefile Messages/Makefile Misc/Makefile Options/Makefile RelCfgMgr/Makefile RelIfaceMgr/Makefile RelMessages/Makefile RelOptions/Makefile RelTransMgr/Makefile Requestor/Makefile SrvAddrMgr/Makefile SrvCfgMgr/Makefile SrvIfaceMgr/Makefile SrvMessages/Makefile SrvOptions/Makefile SrvTransMgr/Makefile poslib/Makefile nettle/Makefile $PORT_SUBDIR/Makefile Port-linux/Makefile Port-bsd/Makefile Port-sun/Makefile Port-win32/Makefile doc/Makefile Misc/Portable.h doc/doxygen.cfg doc/version.tex AddrMgr/tests/Makefile IfaceMgr/tests/Makefile Options/tests/Makefile SrvCfgMgr/tests/Makefile CfgMgr/tests/Makefile poslib/tests/Makefile Misc/tests/Makefile RelTransMgr/tests/Makefile tests/Makefile tests/Srv/Makefile tests/Clnt/Makefile tests/utils/Makefile"
@@ -18299,6 +18509,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_GTEST_TRUE}" && test -z "${HAVE_GTEST_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_GTEST\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_GTEST_SOURCE_TRUE}" && test -z "${HAVE_GTEST_SOURCE_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_GTEST_SOURCE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -20756,151 +20970,6 @@ if test "$no_create" != yes; then
   # would make configure fail if this is the last instruction.
   $ac_cs_success || as_fn_exit 1
 fi
-
-#
-# CONFIG_SUBDIRS section.
-#
-if test "$no_recursion" != yes; then
-
-  # Remove --cache-file, --srcdir, and --disable-option-checking arguments
-  # so they do not pile up.
-  ac_sub_configure_args=
-  ac_prev=
-  eval "set x $ac_configure_args"
-  shift
-  for ac_arg
-  do
-    if test -n "$ac_prev"; then
-      ac_prev=
-      continue
-    fi
-    case $ac_arg in
-    -cache-file | --cache-file | --cache-fil | --cache-fi \
-    | --cache-f | --cache- | --cache | --cach | --cac | --ca | --c)
-      ac_prev=cache_file ;;
-    -cache-file=* | --cache-file=* | --cache-fil=* | --cache-fi=* \
-    | --cache-f=* | --cache-=* | --cache=* | --cach=* | --cac=* | --ca=* \
-    | --c=*)
-      ;;
-    --config-cache | -C)
-      ;;
-    -srcdir | --srcdir | --srcdi | --srcd | --src | --sr)
-      ac_prev=srcdir ;;
-    -srcdir=* | --srcdir=* | --srcdi=* | --srcd=* | --src=* | --sr=*)
-      ;;
-    -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
-      ac_prev=prefix ;;
-    -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* | --p=*)
-      ;;
-    --disable-option-checking)
-      ;;
-    *)
-      case $ac_arg in
-      *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
-      esac
-      as_fn_append ac_sub_configure_args " '$ac_arg'" ;;
-    esac
-  done
-
-  # Always prepend --prefix to ensure using the same prefix
-  # in subdir configurations.
-  ac_arg="--prefix=$prefix"
-  case $ac_arg in
-  *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
-  esac
-  ac_sub_configure_args="'$ac_arg' $ac_sub_configure_args"
-
-  # Pass --silent
-  if test "$silent" = yes; then
-    ac_sub_configure_args="--silent $ac_sub_configure_args"
-  fi
-
-  # Always prepend --disable-option-checking to silence warnings, since
-  # different subdirs can have different --enable and --with options.
-  ac_sub_configure_args="--disable-option-checking $ac_sub_configure_args"
-
-  ac_popdir=`pwd`
-  for ac_dir in : $subdirs; do test "x$ac_dir" = x: && continue
-
-    # Do not complain, so a configure script can configure whichever
-    # parts of a large source tree are present.
-    test -d "$srcdir/$ac_dir" || continue
-
-    ac_msg="=== configuring in $ac_dir (`pwd`/$ac_dir)"
-    $as_echo "$as_me:${as_lineno-$LINENO}: $ac_msg" >&5
-    $as_echo "$ac_msg" >&6
-    as_dir="$ac_dir"; as_fn_mkdir_p
-    ac_builddir=.
-
-case "$ac_dir" in
-.) ac_dir_suffix= ac_top_builddir_sub=. ac_top_build_prefix= ;;
-*)
-  ac_dir_suffix=/`$as_echo "$ac_dir" | sed 's|^\.[\\/]||'`
-  # A ".." for each directory in $ac_dir_suffix.
-  ac_top_builddir_sub=`$as_echo "$ac_dir_suffix" | sed 's|/[^\\/]*|/..|g;s|/||'`
-  case $ac_top_builddir_sub in
-  "") ac_top_builddir_sub=. ac_top_build_prefix= ;;
-  *)  ac_top_build_prefix=$ac_top_builddir_sub/ ;;
-  esac ;;
-esac
-ac_abs_top_builddir=$ac_pwd
-ac_abs_builddir=$ac_pwd$ac_dir_suffix
-# for backward compatibility:
-ac_top_builddir=$ac_top_build_prefix
-
-case $srcdir in
-  .)  # We are building in place.
-    ac_srcdir=.
-    ac_top_srcdir=$ac_top_builddir_sub
-    ac_abs_top_srcdir=$ac_pwd ;;
-  [\\/]* | ?:[\\/]* )  # Absolute name.
-    ac_srcdir=$srcdir$ac_dir_suffix;
-    ac_top_srcdir=$srcdir
-    ac_abs_top_srcdir=$srcdir ;;
-  *) # Relative name.
-    ac_srcdir=$ac_top_build_prefix$srcdir$ac_dir_suffix
-    ac_top_srcdir=$ac_top_build_prefix$srcdir
-    ac_abs_top_srcdir=$ac_pwd/$srcdir ;;
-esac
-ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
-
-
-    cd "$ac_dir"
-
-    # Check for guested configure; otherwise get Cygnus style configure.
-    if test -f "$ac_srcdir/configure.gnu"; then
-      ac_sub_configure=$ac_srcdir/configure.gnu
-    elif test -f "$ac_srcdir/configure"; then
-      ac_sub_configure=$ac_srcdir/configure
-    elif test -f "$ac_srcdir/configure.in"; then
-      # This should be Cygnus configure.
-      ac_sub_configure=$ac_aux_dir/configure
-    else
-      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: no configuration information is in $ac_dir" >&5
-$as_echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2;}
-      ac_sub_configure=
-    fi
-
-    # The recursion is here.
-    if test -n "$ac_sub_configure"; then
-      # Make the cache file name correct relative to the subdirectory.
-      case $cache_file in
-      [\\/]* | ?:[\\/]* ) ac_sub_cache_file=$cache_file ;;
-      *) # Relative name.
-	ac_sub_cache_file=$ac_top_build_prefix$cache_file ;;
-      esac
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&5
-$as_echo "$as_me: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&6;}
-      # The eval makes quoting arguments work.
-      eval "\$SHELL \"\$ac_sub_configure\" $ac_sub_configure_args \
-	   --cache-file=\"\$ac_sub_cache_file\" --srcdir=\"\$ac_srcdir\"" ||
-	as_fn_error $? "$ac_sub_configure failed for $ac_dir" "$LINENO" 5
-    fi
-
-    cd "$ac_popdir"
-  done
-fi
 if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
@@ -20928,12 +20997,15 @@ echo "CPPFLAGS       : $CPPFLAGS"
 echo "CXXFLAGS       : $CXXFLAGS"
 echo "LDFLAGS        : $LDFLAGS"
 echo
-echo "Google test    : $gtest_path"
-if test "$gtest_path" != "no"
+echo "Google test    : $enable_gtest"
+if test "$enable_gtest" != "no"
 then
-echo "GTEST_INCLUDES : $GTEST_INCLUDES"
-echo "GTEST_LDFLAGS  : $GTEST_LDFLAGS"
-echo "GTEST_LDADD    : $GTEST_LDADD"
+echo "GTEST_VERSION  : ${GTEST_VERSION}"
+echo "GTEST_INCLUDES : ${GTEST_INCLUDES}"
+echo "GTEST_LDFLAGS  : ${GTEST_LDFLAGS}"
+echo "GTEST_LDADD    : ${GTEST_LDADD}"
+echo "GTEST_SOURCE   : ${GTEST_SOURCE}"
+
 echo
 fi
 echo Type make to compile dibbler.
