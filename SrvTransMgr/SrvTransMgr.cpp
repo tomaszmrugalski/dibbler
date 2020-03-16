@@ -222,12 +222,16 @@ bool TSrvTransMgr::openSocket(SPtr<TSrvCfgIface> confIface, int port) {
     }
 
     // Creating TCP socket
-    if (SrvCfgMgr().isBulkSupported()) {
-        Log(Notice) << "Bulk-leasequery accepted. Creating TCP socket on" << confIface->getName()
-                       <<"/" << confIface->getID() << " interface." << LogEnd;
-        if (!iface->addTcpSocket(unicast,DHCPSERVER_PORT,0)) {
+    if (SrvCfgMgr().isBulkSupported() && unicast) {
+        Log(Notice) << "Bulk-leasequery accepted. Creating TCP socket on " << confIface->getName()
+                    <<"/" << confIface->getID() << " interface or address"
+                    << unicast->getPlain() << "." << LogEnd;
+        if (!iface->addTcpSocket(unicast, DHCPSERVER_PORT, 0)) {
             Log(Crit) << "Proper TCP socket creation failed." << LogEnd;
         }
+    } else {
+        Log(Notice) << "Bulk-leasequery either disabled or unicast address not defined. Skipping."
+                    << LogEnd;
     }
 
     char srvAddr[16];
