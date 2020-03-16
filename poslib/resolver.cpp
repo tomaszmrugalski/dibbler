@@ -65,17 +65,22 @@ void pos_resolver::tcpdisconnect(int sockid) {
 void pos_resolver::tcpquery(DnsMessage *q, DnsMessage*& a, int sockid) {
   q->ID = posrandom();
   tcpsendmessage(q, sockid);
-  if (!a) a = q->initialize_answer ();
+  if (!a)
+      a = q->initialize_answer ();
   
   try {
     tcpwaitanswer(a, sockid);
   } catch (PException p) {
-    if (a) delete a; a = NULL;
+      if (a) {
+          delete a;
+          a = NULL;
+      }
     throw p;
   }
     
   if (a->ID != q->ID) {
-    delete a; a = NULL;
+    delete a;
+    a = NULL;
     throw PException("Answer ID does not match question ID!");
   }
 }
@@ -223,7 +228,9 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
         } else throw PException("Unknown address family");
         sendmessage(q, &*server, sockid);
         waitdata.push_front(WaitAnswerData(q->ID, *server));
-        if (a) delete a; a = q->initialize_answer ();
+        if (a)
+            delete a;
+        a = q->initialize_answer ();
         if (waitanswer(a, waitdata, udp_tries[x], it, sockid)) {
           /* answer received */
           if (a->TC && flags == Q_DFL) {
@@ -243,17 +250,34 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
                      a->RCODE == RCODE_REFUSED ||
                      a->RCODE == RCODE_NOTIMP) {
             stl_slist(_addr)::iterator tmpit = server;
-            ++tmpit; if (tmpit == servers.end()) tmpit = servers.begin();
+            ++tmpit;
+            if (tmpit == servers.end())
+                tmpit = servers.begin();
             if (tmpit != sbegin) throw PException("Answer has error RCODE");
           }
-          if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-          if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
+          if (ipv6sock) {
+              udpclose(ipv6sock);
+              ipv6sock = 0;
+          }
+          if (ipv4sock) {
+              udpclose(ipv4sock);
+              ipv4sock = 0;
+          }
           return it->from;
         } else if (quit_flag) throw PException("Interrupted");
       } catch(PException p) {
-        if (a) delete a; a = NULL;
-        if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-        if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
+        if (a) {
+            delete a;
+            a = NULL;
+        }
+        if (ipv6sock) {
+            udpclose(ipv6sock);
+            ipv6sock = 0;
+        }
+        if (ipv4sock) {
+            udpclose(ipv4sock);
+            ipv4sock = 0;
+        }
         stl_slist(_addr)::iterator s2 = server; ++s2;
         if (s2 == servers.end()) s2 = servers.begin();
         if (s2 == sbegin) throw PException("Resolving failed: ", p);
@@ -262,8 +286,14 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
       if (server == servers.end()) server = servers.begin();
     } while (server != sbegin);
   }
-  if (ipv6sock) udpclose(ipv6sock); ipv6sock = 0;
-  if (ipv4sock) udpclose(ipv4sock); ipv4sock = 0;
+  if (ipv6sock) {
+      udpclose(ipv6sock);
+      ipv6sock = 0;
+  }
+  if (ipv4sock) {
+      udpclose(ipv4sock);
+      ipv4sock = 0;
+  }
   throw PException("No server could be reached!");
 }
 

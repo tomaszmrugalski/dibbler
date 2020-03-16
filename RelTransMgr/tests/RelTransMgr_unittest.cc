@@ -128,7 +128,7 @@ TEST(RelTransMgrTest, getLinkAddrFromDUID) {
 
     ASSERT_NO_THROW(opt = transmgr.getLinkAddrFromDuid(opt));
     ASSERT_TRUE(opt);
-    EXPECT_EQ(12, opt->getSize());
+    EXPECT_EQ(size_t(12), opt->getSize());
 
     char output[100];
     char* ptr = 0;
@@ -147,7 +147,7 @@ TEST(RelTransMgrTest, getLinkAddrFromDUID) {
 
     ASSERT_NO_THROW(opt = transmgr.getLinkAddrFromDuid(opt));
     ASSERT_TRUE(opt);
-    EXPECT_EQ(12, opt->getSize());
+    EXPECT_EQ(12u, opt->getSize());
 
     memset(output, 0, 100);
     ASSERT_NO_THROW(ptr = opt->storeSelf(output));

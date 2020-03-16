@@ -741,7 +741,7 @@ int iproute_modify(int cmd, unsigned flags, int argc, char **argv)
                         NEXT_ARG();
                         __u32 validlft;
                         if (get_u32(&validlft, *argv, 0))
-                            invarg("\lifetime value is invalid\n", *argv);
+                            invarg("lifetime value is invalid\n", *argv);
 
                         ci.ifa_valid = validlft;
                         ci.ifa_prefered = validlft - 1;

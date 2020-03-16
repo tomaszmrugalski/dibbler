@@ -35,7 +35,7 @@ TEST_F(ContainerTest, empty) {
     TContainer< SPtr<Base> > container;
 
     EXPECT_TRUE(container.empty());
-    EXPECT_EQ(0, container.count());
+    EXPECT_EQ(size_t(0), container.count());
 
     container.first();
     EXPECT_FALSE(container.get());

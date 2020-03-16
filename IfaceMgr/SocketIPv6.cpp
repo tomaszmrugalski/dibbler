@@ -86,7 +86,7 @@ int TIfaceSocket::createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr,
     int sock;
 
     // store info about this socket 
-    strncpy(this->Iface,iface,MAX_IFNAME_LENGTH);
+    strncpy(this->Iface, iface, MAX_IFNAME_LENGTH - 1);
     this->IfaceID = ifaceid;
     this->Port = port;
     this->IfaceOnly = ifaceonly;

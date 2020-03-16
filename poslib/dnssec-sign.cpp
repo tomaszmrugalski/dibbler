@@ -71,12 +71,12 @@ void verify_signature (DnsRR *check_tsig, DnsRR *message_tsig,
     else throw PException (true, "Unknown sign error: %d", err);
   }
   
-  time_t clienttime = time (NULL);
+  u_int48 /*time_t*/ clienttime = time (NULL);
   u_int48 servertime = uint48_value (rr_getdata (check_tsig->RDATA, DNS_TYPE_TSIG, 1));
   uint16_t fudge = rr_getshort (check_tsig->RDATA, DNS_TYPE_TSIG, 2);
   
-  if ( (clienttime > servertime && clienttime - servertime > fudge) ||
-       (servertime > clienttime && servertime - clienttime > fudge) ) {
+  if ( ((clienttime > servertime) && (clienttime - servertime > fudge)) ||
+       ((servertime > clienttime) && (servertime - clienttime > fudge)) ) {
       throw PException (true, "Answer sign time invalid (answer time %d, real time %d)",
                         uint48_value (rr_getdata (message_tsig->RDATA, DNS_TYPE_TSIG, 1)),
                         clienttime);

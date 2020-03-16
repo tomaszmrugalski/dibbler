@@ -99,10 +99,7 @@ int main(int argc, char * argv[])
 
     // parse command line parameters
     if (argc>1) {
-	int len = strlen(argv[1])+1;
-	if (len > 255)
-	    len = 255;
-	strncpy(command, argv[1], len);
+	snprintf(command, 255, "%s", argv[1]);
     } else {
 	memset(command,0,256);
     }

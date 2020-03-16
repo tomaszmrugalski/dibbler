@@ -131,7 +131,7 @@ TEST(OptAuthTest, constructorDelayedAuth) {
     expLen = TOpt::OPTION6_HDR_LEN + TOptAuthentication::OPT_AUTH_FIXED_SIZE
         + realm.size() + + DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE;
     EXPECT_EQ(expLen, opt->getSize());
-    EXPECT_EQ(ptr - buf, expLen);
+    EXPECT_EQ(size_t(ptr - buf), expLen);
     EXPECT_TRUE(0 == memcmp(buf, expData2, expLen));
 }
 

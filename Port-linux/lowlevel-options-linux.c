@@ -476,8 +476,8 @@ void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLengt
     fprintf(f, "     prefix %s/%d\n", prefixPlain, prefixLength);
     fprintf(f, "     { \n");
     fprintf(f, "         AdvOnLink on;\n");
-    fprintf(f, "         AdvPreferredLifetime %lu;\n", preferred);
-    fprintf(f, "         AdvValidLifetime %lu;\n", valid);
+    fprintf(f, "         AdvPreferredLifetime %u;\n", preferred);
+    fprintf(f, "         AdvValidLifetime %u;\n", valid);
     fprintf(f, "         AdvAutonomous on;\n");
     fprintf(f, "     };\n");
     fprintf(f, "};\n");

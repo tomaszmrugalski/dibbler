@@ -14,7 +14,7 @@ TEST(AddrPrefixTest, constructor) {
 
     EXPECT_EQ(100u, prefix->getPref() );
     EXPECT_EQ(200u, prefix->getValid() );
-    EXPECT_EQ(64u,  prefix->getLength() );
+    EXPECT_EQ(64,  prefix->getLength() );
     EXPECT_EQ(string("fe80::abcd"), prefix->get()->getPlain());
 }
 

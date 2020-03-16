@@ -374,7 +374,9 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
     int local_len = 0;
     int peer_len = 0;
     int scoped = 0;
+#if ADD_ADDRESSES_WITH_LIFETIMES > 0
     struct ifa_cacheinfo ci;
+#endif
 
 #ifdef LOWLEVEL_DEBUG
     printf("### iface=%s, addr=%s, add=%d ###\n", ifacename, addr, add);

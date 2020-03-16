@@ -8,7 +8,7 @@
  */
 
 // We need this, so unistd.h include gethostname() definition
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 
 #include <unistd.h>
 #include <stdio.h>

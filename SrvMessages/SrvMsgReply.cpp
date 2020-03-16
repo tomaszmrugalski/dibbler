@@ -10,6 +10,7 @@
  */
 
 #include <cmath>
+#include <sstream>
 #include "SmartPtr.h"
 #include "OptEmpty.h" // rapid-commit option
 #include "SrvMsgReply.h"
@@ -267,11 +268,10 @@ TSrvMsgReply::TSrvMsgReply(SPtr<TSrvMsgDecline> decline)
                 };
             }
             Options.push_back(replyIA_NA);
-            char buf[10];
-            sprintf(buf,"%d",AddrsDeclinedCnt);
-            string tmp = buf;
+            stringstream tmp;
+            tmp << AddrsDeclinedCnt << " addr(s) declined";
             SPtr<TOpt> optStatusCode(new TOptStatusCode(STATUSCODE_SUCCESS,
-                                     tmp + " addrs declined.", this));
+                                                        tmp.str(), this));
             replyIA_NA->addOption(optStatusCode);
             break;
         };
