@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = foreign serial-tests
+AUTOMAKE_OPTIONS = foreign serial-tests subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 
 COMMON_SUBDIRS = @PORT_SUBDIR@ nettle

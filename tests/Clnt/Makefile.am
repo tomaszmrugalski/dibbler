@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 Clnt_tests_CPPFLAGS  = -I$(top_srcdir)
 Clnt_tests_CPPFLAGS += -I$(top_srcdir)/IfaceMgr
 Clnt_tests_CPPFLAGS += -I$(top_srcdir)/Misc

@@ -112,23 +112,24 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(docdir)"
 PROGRAMS = $(sbin_PROGRAMS)
-am_dibbler_client_OBJECTS = dibbler_client-dibbler-client.$(OBJEXT) \
-	dibbler_client-DHCPClient.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_dibbler_client_OBJECTS = $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.$(OBJEXT) \
+	$(top_builddir)/Misc/dibbler_client-DHCPClient.$(OBJEXT)
 dibbler_client_OBJECTS = $(am_dibbler_client_OBJECTS)
 dibbler_client_DEPENDENCIES =
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_dibbler_relay_OBJECTS = dibbler_relay-dibbler-relay.$(OBJEXT) \
-	dibbler_relay-DHCPRelay.$(OBJEXT)
+am_dibbler_relay_OBJECTS = $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.$(OBJEXT) \
+	$(top_builddir)/Misc/dibbler_relay-DHCPRelay.$(OBJEXT)
 dibbler_relay_OBJECTS = $(am_dibbler_relay_OBJECTS)
 dibbler_relay_DEPENDENCIES =
-am_dibbler_requestor_OBJECTS = dibbler_requestor-Requestor.$(OBJEXT)
+am_dibbler_requestor_OBJECTS = $(top_builddir)/Requestor/dibbler_requestor-Requestor.$(OBJEXT)
 dibbler_requestor_OBJECTS = $(am_dibbler_requestor_OBJECTS)
 dibbler_requestor_DEPENDENCIES =
-am_dibbler_server_OBJECTS = dibbler_server-dibbler-server.$(OBJEXT) \
-	dibbler_server-DHCPServer.$(OBJEXT)
+am_dibbler_server_OBJECTS = $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.$(OBJEXT) \
+	$(top_builddir)/Misc/dibbler_server-DHCPServer.$(OBJEXT)
 dibbler_server_OBJECTS = $(am_dibbler_server_OBJECTS)
 dibbler_server_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -146,13 +147,13 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/dibbler_client-DHCPClient.Po \
-	./$(DEPDIR)/dibbler_client-dibbler-client.Po \
-	./$(DEPDIR)/dibbler_relay-DHCPRelay.Po \
-	./$(DEPDIR)/dibbler_relay-dibbler-relay.Po \
-	./$(DEPDIR)/dibbler_requestor-Requestor.Po \
-	./$(DEPDIR)/dibbler_server-DHCPServer.Po \
-	./$(DEPDIR)/dibbler_server-dibbler-server.Po
+am__depfiles_remade = $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po \
+	$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po \
+	$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po \
+	$(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po \
+	$(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po \
+	$(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po \
+	$(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -447,7 +448,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign serial-tests
+AUTOMAKE_OPTIONS = foreign serial-tests subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 COMMON_SUBDIRS = @PORT_SUBDIR@ nettle $(am__append_1) Misc poslib \
 	Messages Options AddrMgr CfgMgr IfaceMgr doc
@@ -649,18 +650,57 @@ clean-sbinPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+$(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/@PORT_SUBDIR@
+	@: > $(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp)
+$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)
+	@: > $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.$(OBJEXT):  \
+	$(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp) \
+	$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Misc/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Misc
+	@: > $(top_builddir)/Misc/$(am__dirstamp)
+$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Misc/$(DEPDIR)
+	@: > $(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Misc/dibbler_client-DHCPClient.$(OBJEXT):  \
+	$(top_builddir)/Misc/$(am__dirstamp) \
+	$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
 
 dibbler-client$(EXEEXT): $(dibbler_client_OBJECTS) $(dibbler_client_DEPENDENCIES) $(EXTRA_dibbler_client_DEPENDENCIES) 
 	@rm -f dibbler-client$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dibbler_client_OBJECTS) $(dibbler_client_LDADD) $(LIBS)
+$(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.$(OBJEXT):  \
+	$(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp) \
+	$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Misc/dibbler_relay-DHCPRelay.$(OBJEXT):  \
+	$(top_builddir)/Misc/$(am__dirstamp) \
+	$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
 
 dibbler-relay$(EXEEXT): $(dibbler_relay_OBJECTS) $(dibbler_relay_DEPENDENCIES) $(EXTRA_dibbler_relay_DEPENDENCIES) 
 	@rm -f dibbler-relay$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dibbler_relay_OBJECTS) $(dibbler_relay_LDADD) $(LIBS)
+$(top_builddir)/Requestor/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Requestor
+	@: > $(top_builddir)/Requestor/$(am__dirstamp)
+$(top_builddir)/Requestor/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Requestor/$(DEPDIR)
+	@: > $(top_builddir)/Requestor/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Requestor/dibbler_requestor-Requestor.$(OBJEXT):  \
+	$(top_builddir)/Requestor/$(am__dirstamp) \
+	$(top_builddir)/Requestor/$(DEPDIR)/$(am__dirstamp)
 
 dibbler-requestor$(EXEEXT): $(dibbler_requestor_OBJECTS) $(dibbler_requestor_DEPENDENCIES) $(EXTRA_dibbler_requestor_DEPENDENCIES) 
 	@rm -f dibbler-requestor$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dibbler_requestor_OBJECTS) $(dibbler_requestor_LDADD) $(LIBS)
+$(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.$(OBJEXT):  \
+	$(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp) \
+	$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Misc/dibbler_server-DHCPServer.$(OBJEXT):  \
+	$(top_builddir)/Misc/$(am__dirstamp) \
+	$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
 
 dibbler-server$(EXEEXT): $(dibbler_server_OBJECTS) $(dibbler_server_DEPENDENCIES) $(EXTRA_dibbler_server_DEPENDENCIES) 
 	@rm -f dibbler-server$(EXEEXT)
@@ -668,17 +708,20 @@ dibbler-server$(EXEEXT): $(dibbler_server_OBJECTS) $(dibbler_server_DEPENDENCIES
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f $(top_builddir)/@PORT_SUBDIR@/*.$(OBJEXT)
+	-rm -f $(top_builddir)/Misc/*.$(OBJEXT)
+	-rm -f $(top_builddir)/Requestor/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_client-DHCPClient.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_client-dibbler-client.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_relay-DHCPRelay.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_relay-dibbler-relay.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_requestor-Requestor.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_server-DHCPServer.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dibbler_server-dibbler-server.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -687,123 +730,126 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-dibbler_client-dibbler-client.o: $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_client-dibbler-client.o -MD -MP -MF $(DEPDIR)/dibbler_client-dibbler-client.Tpo -c -o dibbler_client-dibbler-client.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_client-dibbler-client.Tpo $(DEPDIR)/dibbler_client-dibbler-client.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp' object='dibbler_client-dibbler-client.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.o: $(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.o -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_client-dibbler-client.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp
 
-dibbler_client-dibbler-client.obj: $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_client-dibbler-client.obj -MD -MP -MF $(DEPDIR)/dibbler_client-dibbler-client.Tpo -c -o dibbler_client-dibbler-client.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_client-dibbler-client.Tpo $(DEPDIR)/dibbler_client-dibbler-client.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp' object='dibbler_client-dibbler-client.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.obj: $(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.obj -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_client-dibbler-client.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_client-dibbler-client.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-client.cpp'; fi`
 
-dibbler_client-DHCPClient.o: $(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_client-DHCPClient.o -MD -MP -MF $(DEPDIR)/dibbler_client-DHCPClient.Tpo -c -o dibbler_client-DHCPClient.o `test -f '$(top_srcdir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_client-DHCPClient.Tpo $(DEPDIR)/dibbler_client-DHCPClient.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPClient.cpp' object='dibbler_client-DHCPClient.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_client-DHCPClient.o: $(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_client-DHCPClient.o -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Tpo -c -o $(top_builddir)/Misc/dibbler_client-DHCPClient.o `test -f '$(top_builddir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPClient.cpp' object='$(top_builddir)/Misc/dibbler_client-DHCPClient.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_client-DHCPClient.o `test -f '$(top_srcdir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_client-DHCPClient.o `test -f '$(top_builddir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPClient.cpp
 
-dibbler_client-DHCPClient.obj: $(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_client-DHCPClient.obj -MD -MP -MF $(DEPDIR)/dibbler_client-DHCPClient.Tpo -c -o dibbler_client-DHCPClient.obj `if test -f '$(top_srcdir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPClient.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_client-DHCPClient.Tpo $(DEPDIR)/dibbler_client-DHCPClient.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPClient.cpp' object='dibbler_client-DHCPClient.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_client-DHCPClient.obj: $(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_client-DHCPClient.obj -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Tpo -c -o $(top_builddir)/Misc/dibbler_client-DHCPClient.obj `if test -f '$(top_builddir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPClient.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPClient.cpp' object='$(top_builddir)/Misc/dibbler_client-DHCPClient.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_client-DHCPClient.obj `if test -f '$(top_srcdir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPClient.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_client_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_client-DHCPClient.obj `if test -f '$(top_builddir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPClient.cpp'; fi`
 
-dibbler_relay-dibbler-relay.o: $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_relay-dibbler-relay.o -MD -MP -MF $(DEPDIR)/dibbler_relay-dibbler-relay.Tpo -c -o dibbler_relay-dibbler-relay.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_relay-dibbler-relay.Tpo $(DEPDIR)/dibbler_relay-dibbler-relay.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp' object='dibbler_relay-dibbler-relay.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.o: $(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.o -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_relay-dibbler-relay.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp
 
-dibbler_relay-dibbler-relay.obj: $(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_relay-dibbler-relay.obj -MD -MP -MF $(DEPDIR)/dibbler_relay-dibbler-relay.Tpo -c -o dibbler_relay-dibbler-relay.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_relay-dibbler-relay.Tpo $(DEPDIR)/dibbler_relay-dibbler-relay.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp' object='dibbler_relay-dibbler-relay.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.obj: $(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.obj -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_relay-dibbler-relay.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-relay.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_relay-dibbler-relay.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-relay.cpp'; fi`
 
-dibbler_relay-DHCPRelay.o: $(top_srcdir)/Misc/DHCPRelay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_relay-DHCPRelay.o -MD -MP -MF $(DEPDIR)/dibbler_relay-DHCPRelay.Tpo -c -o dibbler_relay-DHCPRelay.o `test -f '$(top_srcdir)/Misc/DHCPRelay.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPRelay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_relay-DHCPRelay.Tpo $(DEPDIR)/dibbler_relay-DHCPRelay.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPRelay.cpp' object='dibbler_relay-DHCPRelay.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_relay-DHCPRelay.o: $(top_builddir)/Misc/DHCPRelay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_relay-DHCPRelay.o -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Tpo -c -o $(top_builddir)/Misc/dibbler_relay-DHCPRelay.o `test -f '$(top_builddir)/Misc/DHCPRelay.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPRelay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPRelay.cpp' object='$(top_builddir)/Misc/dibbler_relay-DHCPRelay.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_relay-DHCPRelay.o `test -f '$(top_srcdir)/Misc/DHCPRelay.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPRelay.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_relay-DHCPRelay.o `test -f '$(top_builddir)/Misc/DHCPRelay.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPRelay.cpp
 
-dibbler_relay-DHCPRelay.obj: $(top_srcdir)/Misc/DHCPRelay.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_relay-DHCPRelay.obj -MD -MP -MF $(DEPDIR)/dibbler_relay-DHCPRelay.Tpo -c -o dibbler_relay-DHCPRelay.obj `if test -f '$(top_srcdir)/Misc/DHCPRelay.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPRelay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPRelay.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_relay-DHCPRelay.Tpo $(DEPDIR)/dibbler_relay-DHCPRelay.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPRelay.cpp' object='dibbler_relay-DHCPRelay.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_relay-DHCPRelay.obj: $(top_builddir)/Misc/DHCPRelay.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_relay-DHCPRelay.obj -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Tpo -c -o $(top_builddir)/Misc/dibbler_relay-DHCPRelay.obj `if test -f '$(top_builddir)/Misc/DHCPRelay.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPRelay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPRelay.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPRelay.cpp' object='$(top_builddir)/Misc/dibbler_relay-DHCPRelay.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_relay-DHCPRelay.obj `if test -f '$(top_srcdir)/Misc/DHCPRelay.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPRelay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPRelay.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_relay_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_relay-DHCPRelay.obj `if test -f '$(top_builddir)/Misc/DHCPRelay.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPRelay.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPRelay.cpp'; fi`
 
-dibbler_requestor-Requestor.o: $(top_srcdir)/Requestor/Requestor.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_requestor-Requestor.o -MD -MP -MF $(DEPDIR)/dibbler_requestor-Requestor.Tpo -c -o dibbler_requestor-Requestor.o `test -f '$(top_srcdir)/Requestor/Requestor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Requestor/Requestor.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_requestor-Requestor.Tpo $(DEPDIR)/dibbler_requestor-Requestor.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Requestor/Requestor.cpp' object='dibbler_requestor-Requestor.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Requestor/dibbler_requestor-Requestor.o: $(top_builddir)/Requestor/Requestor.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Requestor/dibbler_requestor-Requestor.o -MD -MP -MF $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Tpo -c -o $(top_builddir)/Requestor/dibbler_requestor-Requestor.o `test -f '$(top_builddir)/Requestor/Requestor.cpp' || echo '$(srcdir)/'`$(top_builddir)/Requestor/Requestor.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Tpo $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Requestor/Requestor.cpp' object='$(top_builddir)/Requestor/dibbler_requestor-Requestor.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_requestor-Requestor.o `test -f '$(top_srcdir)/Requestor/Requestor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Requestor/Requestor.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Requestor/dibbler_requestor-Requestor.o `test -f '$(top_builddir)/Requestor/Requestor.cpp' || echo '$(srcdir)/'`$(top_builddir)/Requestor/Requestor.cpp
 
-dibbler_requestor-Requestor.obj: $(top_srcdir)/Requestor/Requestor.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_requestor-Requestor.obj -MD -MP -MF $(DEPDIR)/dibbler_requestor-Requestor.Tpo -c -o dibbler_requestor-Requestor.obj `if test -f '$(top_srcdir)/Requestor/Requestor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Requestor/Requestor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Requestor/Requestor.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_requestor-Requestor.Tpo $(DEPDIR)/dibbler_requestor-Requestor.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Requestor/Requestor.cpp' object='dibbler_requestor-Requestor.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Requestor/dibbler_requestor-Requestor.obj: $(top_builddir)/Requestor/Requestor.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Requestor/dibbler_requestor-Requestor.obj -MD -MP -MF $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Tpo -c -o $(top_builddir)/Requestor/dibbler_requestor-Requestor.obj `if test -f '$(top_builddir)/Requestor/Requestor.cpp'; then $(CYGPATH_W) '$(top_builddir)/Requestor/Requestor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Requestor/Requestor.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Tpo $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Requestor/Requestor.cpp' object='$(top_builddir)/Requestor/dibbler_requestor-Requestor.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_requestor-Requestor.obj `if test -f '$(top_srcdir)/Requestor/Requestor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Requestor/Requestor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Requestor/Requestor.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_requestor_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Requestor/dibbler_requestor-Requestor.obj `if test -f '$(top_builddir)/Requestor/Requestor.cpp'; then $(CYGPATH_W) '$(top_builddir)/Requestor/Requestor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Requestor/Requestor.cpp'; fi`
 
-dibbler_server-dibbler-server.o: $(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_server-dibbler-server.o -MD -MP -MF $(DEPDIR)/dibbler_server-dibbler-server.Tpo -c -o dibbler_server-dibbler-server.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_server-dibbler-server.Tpo $(DEPDIR)/dibbler_server-dibbler-server.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp' object='dibbler_server-dibbler-server.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.o: $(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.o -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_server-dibbler-server.o `test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp' || echo '$(srcdir)/'`$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.o `test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp' || echo '$(srcdir)/'`$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp
 
-dibbler_server-dibbler-server.obj: $(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_server-dibbler-server.obj -MD -MP -MF $(DEPDIR)/dibbler_server-dibbler-server.Tpo -c -o dibbler_server-dibbler-server.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_server-dibbler-server.Tpo $(DEPDIR)/dibbler_server-dibbler-server.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp' object='dibbler_server-dibbler-server.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.obj: $(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.obj -MD -MP -MF $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Tpo -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Tpo $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp' object='$(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_server-dibbler-server.obj `if test -f '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; then $(CYGPATH_W) '$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/@PORT_SUBDIR@/dibbler-server.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/@PORT_SUBDIR@/dibbler_server-dibbler-server.obj `if test -f '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; then $(CYGPATH_W) '$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/@PORT_SUBDIR@/dibbler-server.cpp'; fi`
 
-dibbler_server-DHCPServer.o: $(top_srcdir)/Misc/DHCPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_server-DHCPServer.o -MD -MP -MF $(DEPDIR)/dibbler_server-DHCPServer.Tpo -c -o dibbler_server-DHCPServer.o `test -f '$(top_srcdir)/Misc/DHCPServer.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_server-DHCPServer.Tpo $(DEPDIR)/dibbler_server-DHCPServer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPServer.cpp' object='dibbler_server-DHCPServer.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_server-DHCPServer.o: $(top_builddir)/Misc/DHCPServer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_server-DHCPServer.o -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Tpo -c -o $(top_builddir)/Misc/dibbler_server-DHCPServer.o `test -f '$(top_builddir)/Misc/DHCPServer.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPServer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPServer.cpp' object='$(top_builddir)/Misc/dibbler_server-DHCPServer.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_server-DHCPServer.o `test -f '$(top_srcdir)/Misc/DHCPServer.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPServer.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_server-DHCPServer.o `test -f '$(top_builddir)/Misc/DHCPServer.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPServer.cpp
 
-dibbler_server-DHCPServer.obj: $(top_srcdir)/Misc/DHCPServer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dibbler_server-DHCPServer.obj -MD -MP -MF $(DEPDIR)/dibbler_server-DHCPServer.Tpo -c -o dibbler_server-DHCPServer.obj `if test -f '$(top_srcdir)/Misc/DHCPServer.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPServer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dibbler_server-DHCPServer.Tpo $(DEPDIR)/dibbler_server-DHCPServer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPServer.cpp' object='dibbler_server-DHCPServer.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/dibbler_server-DHCPServer.obj: $(top_builddir)/Misc/DHCPServer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/dibbler_server-DHCPServer.obj -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Tpo -c -o $(top_builddir)/Misc/dibbler_server-DHCPServer.obj `if test -f '$(top_builddir)/Misc/DHCPServer.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPServer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Tpo $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPServer.cpp' object='$(top_builddir)/Misc/dibbler_server-DHCPServer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dibbler_server-DHCPServer.obj `if test -f '$(top_srcdir)/Misc/DHCPServer.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPServer.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dibbler_server_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/dibbler_server-DHCPServer.obj `if test -f '$(top_builddir)/Misc/DHCPServer.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPServer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPServer.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1169,6 +1215,12 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)" || rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/$(am__dirstamp)
+	-test -z "$(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp)" || rm -f $(top_builddir)/@PORT_SUBDIR@/$(am__dirstamp)
+	-test -z "$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)" || rm -f $(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
+	-test -z "$(top_builddir)/Misc/$(am__dirstamp)" || rm -f $(top_builddir)/Misc/$(am__dirstamp)
+	-test -z "$(top_builddir)/Requestor/$(DEPDIR)/$(am__dirstamp)" || rm -f $(top_builddir)/Requestor/$(DEPDIR)/$(am__dirstamp)
+	-test -z "$(top_builddir)/Requestor/$(am__dirstamp)" || rm -f $(top_builddir)/Requestor/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1180,13 +1232,13 @@ clean-am: clean-generic clean-libtool clean-sbinPROGRAMS \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/dibbler_client-DHCPClient.Po
-	-rm -f ./$(DEPDIR)/dibbler_client-dibbler-client.Po
-	-rm -f ./$(DEPDIR)/dibbler_relay-DHCPRelay.Po
-	-rm -f ./$(DEPDIR)/dibbler_relay-dibbler-relay.Po
-	-rm -f ./$(DEPDIR)/dibbler_requestor-Requestor.Po
-	-rm -f ./$(DEPDIR)/dibbler_server-DHCPServer.Po
-	-rm -f ./$(DEPDIR)/dibbler_server-dibbler-server.Po
+		-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po
+	-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po
+	-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po
+	-rm -f $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -1234,13 +1286,13 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/dibbler_client-DHCPClient.Po
-	-rm -f ./$(DEPDIR)/dibbler_client-dibbler-client.Po
-	-rm -f ./$(DEPDIR)/dibbler_relay-DHCPRelay.Po
-	-rm -f ./$(DEPDIR)/dibbler_relay-dibbler-relay.Po
-	-rm -f ./$(DEPDIR)/dibbler_requestor-Requestor.Po
-	-rm -f ./$(DEPDIR)/dibbler_server-DHCPServer.Po
-	-rm -f ./$(DEPDIR)/dibbler_server-dibbler-server.Po
+		-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_client-dibbler-client.Po
+	-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_relay-dibbler-relay.Po
+	-rm -f $(top_builddir)/@PORT_SUBDIR@/$(DEPDIR)/dibbler_server-dibbler-server.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_client-DHCPClient.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_relay-DHCPRelay.Po
+	-rm -f $(top_builddir)/Misc/$(DEPDIR)/dibbler_server-DHCPServer.Po
+	-rm -f $(top_builddir)/Requestor/$(DEPDIR)/dibbler_requestor-Requestor.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

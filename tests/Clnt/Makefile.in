@@ -122,10 +122,11 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__Clnt_tests_SOURCES_DIST = run_tests.cc ClntIfaceMgr_unittest.cc \
 	$(top_srcdir)/Misc/DHCPClient.cpp \
 	$(top_srcdir)/Misc/DHCPClient.h
+am__dirstamp = $(am__leading_dot)dirstamp
 @HAVE_GTEST_TRUE@am_Clnt_tests_OBJECTS =  \
 @HAVE_GTEST_TRUE@	Clnt_tests-run_tests.$(OBJEXT) \
 @HAVE_GTEST_TRUE@	Clnt_tests-ClntIfaceMgr_unittest.$(OBJEXT) \
-@HAVE_GTEST_TRUE@	Clnt_tests-DHCPClient.$(OBJEXT)
+@HAVE_GTEST_TRUE@	$(top_builddir)/Misc/Clnt_tests-DHCPClient.$(OBJEXT)
 Clnt_tests_OBJECTS = $(am_Clnt_tests_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_GTEST_TRUE@Clnt_tests_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -148,8 +149,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po \
-	./$(DEPDIR)/Clnt_tests-DHCPClient.Po \
+am__depfiles_remade =  \
+	$(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po \
+	./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po \
 	./$(DEPDIR)/Clnt_tests-run_tests.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -377,6 +379,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AUTOMAKE_OPTIONS = subdir-objects
 
 # This is to workaround long long in gtest.h
 Clnt_tests_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/IfaceMgr \
@@ -455,6 +458,15 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+$(top_builddir)/Misc/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Misc
+	@: > $(top_builddir)/Misc/$(am__dirstamp)
+$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) $(top_builddir)/Misc/$(DEPDIR)
+	@: > $(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/Misc/Clnt_tests-DHCPClient.$(OBJEXT):  \
+	$(top_builddir)/Misc/$(am__dirstamp) \
+	$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
 
 Clnt_tests$(EXEEXT): $(Clnt_tests_OBJECTS) $(Clnt_tests_DEPENDENCIES) $(EXTRA_Clnt_tests_DEPENDENCIES) 
 	@rm -f Clnt_tests$(EXEEXT)
@@ -462,12 +474,13 @@ Clnt_tests$(EXEEXT): $(Clnt_tests_OBJECTS) $(Clnt_tests_DEPENDENCIES) $(EXTRA_Cl
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f $(top_builddir)/Misc/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Clnt_tests-DHCPClient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Clnt_tests-run_tests.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -477,22 +490,25 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .cc.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cc.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cc.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
@@ -525,37 +541,40 @@ Clnt_tests-ClntIfaceMgr_unittest.obj: ClntIfaceMgr_unittest.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Clnt_tests-ClntIfaceMgr_unittest.obj `if test -f 'ClntIfaceMgr_unittest.cc'; then $(CYGPATH_W) 'ClntIfaceMgr_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/ClntIfaceMgr_unittest.cc'; fi`
 
-Clnt_tests-DHCPClient.o: $(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Clnt_tests-DHCPClient.o -MD -MP -MF $(DEPDIR)/Clnt_tests-DHCPClient.Tpo -c -o Clnt_tests-DHCPClient.o `test -f '$(top_srcdir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/Clnt_tests-DHCPClient.Tpo $(DEPDIR)/Clnt_tests-DHCPClient.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPClient.cpp' object='Clnt_tests-DHCPClient.o' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/Clnt_tests-DHCPClient.o: $(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/Clnt_tests-DHCPClient.o -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Tpo -c -o $(top_builddir)/Misc/Clnt_tests-DHCPClient.o `test -f '$(top_builddir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Tpo $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPClient.cpp' object='$(top_builddir)/Misc/Clnt_tests-DHCPClient.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Clnt_tests-DHCPClient.o `test -f '$(top_srcdir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_srcdir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/Clnt_tests-DHCPClient.o `test -f '$(top_builddir)/Misc/DHCPClient.cpp' || echo '$(srcdir)/'`$(top_builddir)/Misc/DHCPClient.cpp
 
-Clnt_tests-DHCPClient.obj: $(top_srcdir)/Misc/DHCPClient.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Clnt_tests-DHCPClient.obj -MD -MP -MF $(DEPDIR)/Clnt_tests-DHCPClient.Tpo -c -o Clnt_tests-DHCPClient.obj `if test -f '$(top_srcdir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPClient.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/Clnt_tests-DHCPClient.Tpo $(DEPDIR)/Clnt_tests-DHCPClient.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/Misc/DHCPClient.cpp' object='Clnt_tests-DHCPClient.obj' libtool=no @AMDEPBACKSLASH@
+$(top_builddir)/Misc/Clnt_tests-DHCPClient.obj: $(top_builddir)/Misc/DHCPClient.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT $(top_builddir)/Misc/Clnt_tests-DHCPClient.obj -MD -MP -MF $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Tpo -c -o $(top_builddir)/Misc/Clnt_tests-DHCPClient.obj `if test -f '$(top_builddir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPClient.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Tpo $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_builddir)/Misc/DHCPClient.cpp' object='$(top_builddir)/Misc/Clnt_tests-DHCPClient.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Clnt_tests-DHCPClient.obj `if test -f '$(top_srcdir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_srcdir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/Misc/DHCPClient.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Clnt_tests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $(top_builddir)/Misc/Clnt_tests-DHCPClient.obj `if test -f '$(top_builddir)/Misc/DHCPClient.cpp'; then $(CYGPATH_W) '$(top_builddir)/Misc/DHCPClient.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/Misc/DHCPClient.cpp'; fi`
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
@@ -775,6 +794,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)" || rm -f $(top_builddir)/Misc/$(DEPDIR)/$(am__dirstamp)
+	-test -z "$(top_builddir)/Misc/$(am__dirstamp)" || rm -f $(top_builddir)/Misc/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -785,8 +806,8 @@ clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po
-	-rm -f ./$(DEPDIR)/Clnt_tests-DHCPClient.Po
+		-rm -f $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po
+	-rm -f ./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po
 	-rm -f ./$(DEPDIR)/Clnt_tests-run_tests.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -831,8 +852,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po
-	-rm -f ./$(DEPDIR)/Clnt_tests-DHCPClient.Po
+		-rm -f $(top_builddir)/Misc/$(DEPDIR)/Clnt_tests-DHCPClient.Po
+	-rm -f ./$(DEPDIR)/Clnt_tests-ClntIfaceMgr_unittest.Po
 	-rm -f ./$(DEPDIR)/Clnt_tests-run_tests.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
