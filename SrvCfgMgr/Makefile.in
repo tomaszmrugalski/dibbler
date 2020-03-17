@@ -128,7 +128,8 @@ am_libSrvCfgMgr_a_OBJECTS =  \
 	libSrvCfgMgr_a-SrvParsClassOpt.$(OBJEXT) \
 	libSrvCfgMgr_a-SrvParser.$(OBJEXT) \
 	libSrvCfgMgr_a-SrvParsGlobalOpt.$(OBJEXT) \
-	libSrvCfgMgr_a-SrvParsIfaceOpt.$(OBJEXT)
+	libSrvCfgMgr_a-SrvParsIfaceOpt.$(OBJEXT) \
+	libSrvCfgMgr_a-SrvParserContext.$(OBJEXT)
 libSrvCfgMgr_a_OBJECTS = $(am_libSrvCfgMgr_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -160,7 +161,8 @@ am__depfiles_remade = ./$(DEPDIR)/libSrvCfgMgr_a-Node.Po \
 	./$(DEPDIR)/libSrvCfgMgr_a-SrvParsClassOpt.Po \
 	./$(DEPDIR)/libSrvCfgMgr_a-SrvParsGlobalOpt.Po \
 	./$(DEPDIR)/libSrvCfgMgr_a-SrvParsIfaceOpt.Po \
-	./$(DEPDIR)/libSrvCfgMgr_a-SrvParser.Po
+	./$(DEPDIR)/libSrvCfgMgr_a-SrvParser.Po \
+	./$(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -406,7 +408,6 @@ runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -421,8 +422,17 @@ libSrvCfgMgr_a_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr \
 	-I$(top_srcdir)/SrvTransMgr -I$(top_srcdir)/SrvMessages \
 	-I$(top_srcdir)/Messages -I$(top_srcdir)/poslib \
 	-I$(top_srcdir)/poslib/poslib -I$(top_srcdir)/@PORT_SUBDIR@
-libSrvCfgMgr_a_SOURCES = NodeClientSpecific.cpp NodeClientSpecific.h NodeConstant.cpp NodeConstant.h Node.cpp Node.h NodeOperator.cpp NodeOperator.h SrvCfgAddrClass.cpp SrvCfgAddrClass.h SrvCfgClientClass.cpp SrvCfgClientClass.h SrvCfgIface.cpp SrvCfgIface.h SrvCfgMgr.cpp SrvCfgMgr.h SrvCfgOptions.cpp SrvCfgOptions.h SrvCfgPD.cpp SrvCfgPD.h SrvCfgTA.cpp SrvCfgTA.h SrvLexer.cpp SrvParsClassOpt.cpp SrvParsClassOpt.h SrvParser.cpp SrvParser.h SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h SrvParsIfaceOpt.cpp SrvParsIfaceOpt.h
-dist_noinst_DATA = SrvLexer.l SrvParser.y
+libSrvCfgMgr_a_SOURCES = NodeClientSpecific.cpp NodeClientSpecific.h \
+	NodeConstant.cpp NodeConstant.h Node.cpp Node.h \
+	NodeOperator.cpp NodeOperator.h SrvCfgAddrClass.cpp \
+	SrvCfgAddrClass.h SrvCfgClientClass.cpp SrvCfgClientClass.h \
+	SrvCfgIface.cpp SrvCfgIface.h SrvCfgMgr.cpp SrvCfgMgr.h \
+	SrvCfgOptions.cpp SrvCfgOptions.h SrvCfgPD.cpp SrvCfgPD.h \
+	SrvCfgTA.cpp SrvCfgTA.h SrvLexer.cpp SrvParsClassOpt.cpp \
+	SrvParsClassOpt.h SrvParser.cpp SrvParser.h \
+	SrvParsGlobalOpt.cpp SrvParsGlobalOpt.h SrvParsIfaceOpt.cpp \
+	SrvParsIfaceOpt.h SrvParserContext.cpp SrvParserContext.h
+dist_noinst_DATA = SrvLexer.l SrvParser.y position.hh location.hh stack.hh
 all: all-recursive
 
 .SUFFIXES:
@@ -487,6 +497,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvCfgMgr_a-SrvParsGlobalOpt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvCfgMgr_a-SrvParsIfaceOpt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvCfgMgr_a-SrvParser.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -739,6 +750,20 @@ libSrvCfgMgr_a-SrvParsIfaceOpt.obj: SrvParsIfaceOpt.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvCfgMgr_a-SrvParsIfaceOpt.obj `if test -f 'SrvParsIfaceOpt.cpp'; then $(CYGPATH_W) 'SrvParsIfaceOpt.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvParsIfaceOpt.cpp'; fi`
 
+libSrvCfgMgr_a-SrvParserContext.o: SrvParserContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvCfgMgr_a-SrvParserContext.o -MD -MP -MF $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Tpo -c -o libSrvCfgMgr_a-SrvParserContext.o `test -f 'SrvParserContext.cpp' || echo '$(srcdir)/'`SrvParserContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Tpo $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvParserContext.cpp' object='libSrvCfgMgr_a-SrvParserContext.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvCfgMgr_a-SrvParserContext.o `test -f 'SrvParserContext.cpp' || echo '$(srcdir)/'`SrvParserContext.cpp
+
+libSrvCfgMgr_a-SrvParserContext.obj: SrvParserContext.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libSrvCfgMgr_a-SrvParserContext.obj -MD -MP -MF $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Tpo -c -o libSrvCfgMgr_a-SrvParserContext.obj `if test -f 'SrvParserContext.cpp'; then $(CYGPATH_W) 'SrvParserContext.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvParserContext.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Tpo $(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='SrvParserContext.cpp' object='libSrvCfgMgr_a-SrvParserContext.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSrvCfgMgr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libSrvCfgMgr_a-SrvParserContext.obj `if test -f 'SrvParserContext.cpp'; then $(CYGPATH_W) 'SrvParserContext.cpp'; else $(CYGPATH_W) '$(srcdir)/SrvParserContext.cpp'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -959,6 +984,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParsGlobalOpt.Po
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParsIfaceOpt.Po
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParser.Po
+	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1020,6 +1046,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParsGlobalOpt.Po
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParsIfaceOpt.Po
 	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParser.Po
+	-rm -f ./$(DEPDIR)/libSrvCfgMgr_a-SrvParserContext.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1060,13 +1087,9 @@ uninstall-am:
 
 parser: SrvParser.y SrvLexer.l
 	@echo "[BISON++] $(SUBDIR)/SrvParser.y"
-	$(top_builddir)/bison++/bison++ --skeleton=$(top_builddir)/bison++/bison.cc --headerskeleton=$(top_builddir)/bison++/bison.h -v --debug --defines -d SrvParser.y -o SrvParser.cpp
+	bison -v --defines=SrvParser.h -d SrvParser.y -o SrvParser.cpp
 	@echo "[FLEX   ] $(SUBDIR)/SrvLexer.l"
-	flex -+ -i -oSrvLexer.cpp SrvLexer.l
-	@echo "[SED    ] $(SUBDIR)/SrvLexer.cpp"
-	cat SrvLexer.cpp | sed 's/extern "C" int isatty (int );/\/\/extern "C" int isatty (int ) throw ();/' > SrvLexer.cpp2
-	rm -f SrvLexer.cpp
-	mv SrvLexer.cpp2 SrvLexer.cpp
+	flex --prefix dibbler_ -o SrvLexer.cpp SrvLexer.l
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
