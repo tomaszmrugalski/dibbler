@@ -144,6 +144,9 @@
   - Balaji Punnuru <balaji_punnuru(at)cable(dot)comcast(dot)com>
     2020-02: Fixed vulnerabilities with time checking
 
+  - Francis Dupont
+    2020-03: bison fixes
+
   - Deepak Krishnan <deepak(dot)r(dot)krishnan(at)gmail(dot)com>
     2020-07: Fixed client segfault during rebinding-> expiry -> solicit transition
     2023-03: notify-script is called on lease expiration
