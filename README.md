@@ -9,9 +9,7 @@ a server, a client, a relay and requestor.
 # Project status
 
 The project is now concluded. There are no future updates expected. I have dedicated 15 years of my life
-to this project. It's time for me to move on.
-
-If you're interested in high quality open source DHCPv6 implementation,
+to this project. It's time for me to move on. If you're interested in high quality open source DHCPv6 implementation,
 please take a look at [ISC Kea](https://gitlab.isc.org/isc-projects/kea).
 
 Please contact Tomek if you're interested in joining this project as maintainer or developer.
