@@ -16,10 +16,13 @@ class SrvParserContext;
 #include "OptAddrLst.h"
 
 // Tell Flex the lexer's prototype ...
-#define YY_DECL dibbler::SrvParser::symbol_type parser6_lex (SrvParserContext& driver)
+#define YY_DECL dibbler::SrvParser::symbol_type dibbler_lex (SrvParserContext& driver)
 
 // ... and declare it for the parser's sake.
 YY_DECL;
+
+#define yylex  dibbler_lex
+
 
 class SrvParserContext
 {

@@ -18,7 +18,7 @@ using namespace std;
 #define YY_FATAL_ERROR(msg) SrvParserContext::fatal(msg)
 
 #undef yyterminate
-#define yyterminate SrvParserContext::fatal("")
+#define yyterminate() SrvParserContext::fatal("")
 
 using namespace dibbler;
 
