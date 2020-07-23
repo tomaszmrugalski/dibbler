@@ -144,5 +144,8 @@
   - Balaji Punnuru <balaji_punnuru(at)cable(dot)comcast(dot)com>
     2020-02: Fixed vulnerabilities with time checking
 
+  - Deepak Krishnan <deepak(dot)r(dot)krishnan(at)gmail(dot)com>
+    2020-07: Fixed client segfault during rebinding-> expiry -> solicit transition
+
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
