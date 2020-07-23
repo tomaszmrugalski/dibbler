@@ -23,8 +23,8 @@
 extern "C" {
 #endif
 
-int interface_auto_up;
-int interface_do_message;
+extern int interface_auto_up;
+extern int interface_do_message;
 
 typedef enum { IFSTATUS_UP, IFSTATUS_DOWN, IFSTATUS_ERR } interface_status_t;
 

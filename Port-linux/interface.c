@@ -43,6 +43,10 @@
 #include <linux/sockios.h>
 #include <linux/if_ether.h>
 
+int interface_auto_up = 0;
+int interface_do_message = 0;
+
+
 void daemon_log(int loglevel, const char *fmt,...)
 {
     char buf[255];
