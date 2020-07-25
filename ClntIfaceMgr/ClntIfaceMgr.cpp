@@ -492,6 +492,13 @@ bool TClntIfaceMgr::modifyPrefix(int iface, SPtr<TIPv6Addr> prefix, int prefixLe
         return false;
     }
 
+    if (mode == PREFIX_MODIFY_DEL) {
+        Log(Info) << "PD: Client notify script invoked as prefix " << prefix->getPlain()
+                  << "/" << (int)prefixLen << " going to be deleted." << LogEnd;
+        ClntTransMgr().notifyExpiredInfo(*params, prefix, IATYPE_PD, (int)prefixLen);
+        notifyScript(ClntCfgMgr().getScript(), "expire", *params);
+     }
+
     // get a list of interfaces that we will assign prefixes to
     TIfaceIfaceLst ifaceLst;
     vector<string> ifaceNames = ClntCfgMgr().getDownlinkPrefixIfaces();

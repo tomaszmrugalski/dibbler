@@ -246,6 +246,7 @@ void TClntTransMgr::removeExpired() {
 	    Log(Info) << "Expired address " << ptrAddr->get()->getPlain()
 		      << " from IA " << ptrIA->getIAID()
 		      << " has been removed from addrDB." << LogEnd;
+            notifyExpiredInfo(params, ptrAddr->get(), IATYPE_IA);
         }
 
 	// if there are no more addresses in this IA, declare it freed
@@ -287,6 +288,7 @@ void TClntTransMgr::removeExpired() {
 	    Log(Info) << "Expired temporary address " << ptrAddr->get()->getPlain()
 		      << " from IA " << ptrIA->getIAID()
 		      << " has been removed from addrDB." << LogEnd;
+            notifyExpiredInfo(params, ptrAddr->get(), IATYPE_TA);
         }
 
 	// if there are no more addresses in this IA, declare it freed
@@ -332,6 +334,7 @@ void TClntTransMgr::removeExpired() {
 	    Log(Info) << "Expired prefix " << ptrPrefix->get()->getPlain() << "/" << ptrPrefix->getLength()
 		      << " from IA_PD " << ptrPD->getIAID()
 		      << " has been removed from addrDB." << LogEnd;
+            notifyExpiredInfo(params, ptrPrefix->get(), IATYPE_PD, ptrPrefix->getLength());
         }
 
 	// if there are no more addresses in this IA, declare it freed
@@ -348,7 +351,8 @@ void TClntTransMgr::removeExpired() {
 	    }
 	}
     }
-
+    // Client Notify script invoked
+    ClntIfaceMgr().notifyScript(ClntCfgMgr().getScript(), "expire", params);
 }
 
 /** 
@@ -1424,6 +1428,30 @@ bool TClntTransMgr::sanitizeAddrDB() {
                                               currentIndexToName);
 }
 
+/* @brief notifyExpiredInfo() invoked when expiry occurs for addresses/prefixes.
+   This method can be modified as per the client requirements.
+*/
+void TClntTransMgr::notifyExpiredInfo(TNotifyScriptParams& params, SPtr<TIPv6Addr> exp, TIAType type, int prefixLength)
+{
+
+    switch (type) {
+        case IATYPE_IA:
+        {
+            params.addAddr(exp, 0, 0, "");
+            break;
+        }
+        case IATYPE_TA:
+        {
+            params.addAddr(exp, 0, 0, "");
+            break;
+        }
+        case IATYPE_PD:
+        {
+            params.addPrefix(exp, prefixLength, 0, 0);
+            break;
+        }
+    }
+}
 
 #ifdef MOD_REMOTE_AUTOCONF
 SPtr<TClntTransMgr::TNeighborInfo> TClntTransMgr::neighborInfoGet(SPtr<TIPv6Addr> addr) {

@@ -59,6 +59,7 @@ class TClntTransMgr
     void printAdvertiseLst();
 
     bool sanitizeAddrDB();
+    void notifyExpiredInfo(TNotifyScriptParams& params, SPtr<TIPv6Addr> exp, TIAType type, int prefixLength = 0);
 
 #ifdef MOD_REMOTE_AUTOCONF
     struct TNeighborInfo {

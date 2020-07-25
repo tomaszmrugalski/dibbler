@@ -21,6 +21,7 @@
 #include "OptAddr.h"
 #include "AddrIA.h"
 #include "Logger.h"
+#include "IfaceMgr.h"
 
 using namespace std;
 
@@ -276,6 +277,7 @@ void TClntMsgRebind::releaseIA(int IAID)
         return;
     }
 
+    TNotifyScriptParams params;
     SPtr<TAddrAddr> ptrAddr;
     ptrAddrIA->firstAddr();
     while(ptrAddr=ptrAddrIA->getAddr())
@@ -286,6 +288,9 @@ void TClntMsgRebind::releaseIA(int IAID)
 	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIfindex() << LogEnd;
 	    continue;
 	}
+        // Client Notify script invoked
+        ClntTransMgr().notifyExpiredInfo(params, ptrAddr->get(), IATYPE_IA);
+        ClntIfaceMgr().notifyScript(ClntCfgMgr().getScript(), "expire", params);
 	ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
         //and from db
         ptrAddrIA->delAddr(ptrAddr->get());
