@@ -32,13 +32,11 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid) {
     this->Prefered = pref;
     this->Valid = valid;
     this->Addr=addr;
-    this->Timestamp = (unsigned long)time(NULL);
-    struct timespec ts;
-    if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0) {
-	    //The time we are taking is with reference to boot time,
-	    //which is not changed wvwn when the NTP updates the latest time.
-	    this->Timestamp = (unsigned long)ts.tv_sec;
-    }
+
+    struct timespec ts_local;
+    clock_gettime(CLOCK_MONOTONIC, &ts_local);
+    this->Timestamp = (unsigned long)ts_local.tv_sec;
+
     this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = 128;
 
@@ -64,14 +62,10 @@ TAddrAddr::TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix) {
     this->Prefered = pref;
     this->Valid = valid;
     this->Addr=addr;
-    this->Timestamp = (unsigned long)time(NULL);
 
-    struct timespec ts;
-    if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0) {
-	    //The time we are taking is with reference to boot time,
-	    //which is not changed wvwn when the NTP updates the latest time.
-	    this->Timestamp = (unsigned long)ts.tv_sec;
-    }
+    struct timespec ts_local;
+    clock_gettime(CLOCK_MONOTONIC, &ts_local);
+    this->Timestamp = (unsigned long)ts_local.tv_sec;
 
     this->Tentative = ADDRSTATUS_UNKNOWN;
     this->Prefix = prefix;
@@ -110,14 +104,14 @@ SPtr<TIPv6Addr> TAddrAddr::get() {
 unsigned long TAddrAddr::getPrefTimeout()
 {
     unsigned long ts = Timestamp + Prefered;
-    struct timespec ts_local;
-    unsigned long x  = (unsigned long)time(NULL);
-    if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts_local) == 0) {
-	    x  = (unsigned long)ts_local.tv_sec;
-    }
     if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
         return DHCPV6_INFINITY;
     }
+
+    struct timespec ts_local;
+    clock_gettime(CLOCK_MONOTONIC, &ts_local);
+    unsigned long x = (unsigned long)ts_local.tv_sec;
+
     if (ts>x) 
         return ts-x;
     else 
@@ -134,15 +128,13 @@ unsigned long TAddrAddr::getPrefTimeout()
 unsigned long TAddrAddr::getValidTimeout()
 {
     unsigned long ts = Timestamp + Valid;
-    unsigned long x  = (unsigned long)time(NULL);
-
-    struct timespec ts_local;
-    if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts_local) == 0) {
-	    x = (unsigned long)ts_local.tv_sec;
-    }
     if (ts<Timestamp) { // (Timestamp + T1 overflowed (unsigned long) maximum value
 	return DHCPV6_INFINITY;
     }
+
+    struct timespec ts_local;
+    clock_gettime(CLOCK_MONOTONIC, &ts_local);
+    unsigned long x = (unsigned long)ts_local.tv_sec;
 
     if (ts>x) 
         return ts-x;
@@ -180,11 +172,9 @@ void TAddrAddr::setValid(unsigned long valid)
 // set timestamp
 void TAddrAddr::setTimestamp()
 {
-    this->Timestamp = (unsigned long)time(NULL);
-    struct timespec ts;
-    if (clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0) {
-	    this->Timestamp = (unsigned long)ts.tv_sec;
-    }
+    struct timespec ts_local;
+    clock_gettime(CLOCK_MONOTONIC, &ts_local);
+    this->Timestamp = (unsigned long)ts_local.tv_sec;
 }
 
 enum EAddrStatus TAddrAddr::getTentative()
