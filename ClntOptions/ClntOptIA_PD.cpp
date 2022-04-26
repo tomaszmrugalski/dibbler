@@ -55,7 +55,7 @@ TClntOptIA_PD::TClntOptIA_PD(SPtr<TClntCfgPD> cfgPD, TMsg * parent)
     SPtr<TClntCfgPrefix> cfgPrefix;
     while (cfgPrefix = cfgPD->getPrefix()) {
         SubOptions.append(
-            new TOptIAPrefix(cfgPrefix->get(), cfgPrefix->getPref(), cfgPrefix->getValid(), cfgPrefix->getLength(), 0));
+            new TOptIAPrefix(cfgPrefix->get(), cfgPrefix->getLength(), cfgPrefix->getPref(), cfgPrefix->getValid(), 0));
     }
     clearContext();
 }
