@@ -552,6 +552,7 @@ LogLevelOption
 LogModeOption
 : LOGMODE_ STRING_ {
     logger::setLogMode($2);
+    delete [] $2;
 }
 
 LogNameOption
@@ -639,6 +640,7 @@ ScriptName
 : SCRIPT_ STRING_
 {
     CfgMgr->setScript($2);
+    delete [] $2;
 }
 
 AuthAcceptMethods
@@ -1067,8 +1069,8 @@ ADDRESSList
 ;
 
 StringList
-: STRING_ { PresentStringLst.append(SPtr<string> (new string($1))); }
-| StringList ',' STRING_ { PresentStringLst.append(SPtr<string> (new string($3))); }
+: STRING_ { PresentStringLst.append(SPtr<string> (new string($1))); delete [] $1;}
+| StringList ',' STRING_ { PresentStringLst.append(SPtr<string> (new string($3))); delete [] $3; }
 
 Number
 :  HEXNUMBER_ {$$=$1;}
