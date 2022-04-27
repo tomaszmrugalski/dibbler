@@ -2062,6 +2062,7 @@ case 111:
 #line 553 "ClntParser.y"
 {
     logger::setLogMode(yyvsp[0].strval);
+    delete [] yyvsp[0].strval;
 ;
     break;}
 case 112:
@@ -2155,6 +2156,7 @@ case 121:
 #line 640 "ClntParser.y"
 {
     CfgMgr->setScript(yyvsp[0].strval);
+    delete [] yyvsp[0].strval;
 ;
     break;}
 case 122:
@@ -2609,11 +2611,11 @@ case 190:
     break;}
 case 191:
 #line 1070 "ClntParser.y"
-{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); delete [] yyvsp[0].strval;;
     break;}
 case 192:
 #line 1071 "ClntParser.y"
-{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); ;
+{ PresentStringLst.append(SPtr<string> (new string(yyvsp[0].strval))); delete [] yyvsp[0].strval;;
     break;}
 case 193:
 #line 1074 "ClntParser.y"

@@ -114,7 +114,7 @@ void * checkLinkState(void * ptr){
 	/* printf("."); */
 	sleep(1);
     }
-    /* if_list_release(head); */
+    if_list_release(head);
     /* printf("Finishing link-state change\n"); */
 
     /* pthread_exit(NULL); */
