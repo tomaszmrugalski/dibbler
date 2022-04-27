@@ -2019,6 +2019,7 @@ YY_ClntParser_PARSE_PARAM_DEF
 #line 553 "ClntParser.y"
     {
         logger::setLogMode(yyvsp[0].strval);
+        delete[] yyvsp[0].strval;
         ;
         break;
     }
@@ -2124,6 +2125,7 @@ YY_ClntParser_PARSE_PARAM_DEF
 #line 640 "ClntParser.y"
     {
         CfgMgr->setScript(yyvsp[0].strval);
+        delete[] yyvsp[0].strval;
         ;
         break;
     }
@@ -2656,6 +2658,7 @@ YY_ClntParser_PARSE_PARAM_DEF
 #line 1070 "ClntParser.y"
     {
         PresentStringLst.append(SPtr<string>(new string(yyvsp[0].strval)));
+        delete[] yyvsp[0].strval;
         ;
         break;
     }
@@ -2663,6 +2666,7 @@ YY_ClntParser_PARSE_PARAM_DEF
 #line 1071 "ClntParser.y"
     {
         PresentStringLst.append(SPtr<string>(new string(yyvsp[0].strval)));
+        delete[] yyvsp[0].strval;
         ;
         break;
     }
