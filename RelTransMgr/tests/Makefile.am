@@ -25,7 +25,7 @@ TESTS += RelTransMgr_tests
 RelTransMgr_tests_SOURCES = run_tests.cpp
 RelTransMgr_tests_SOURCES += RelTransMgr_unittest.cc
 
-RelTransMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+RelTransMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 RelTransMgr_tests_LDADD = $(GTEST_LDADD)
 RelTransMgr_tests_LDADD += $(top_builddir)/RelTransMgr/libRelTransMgr.a

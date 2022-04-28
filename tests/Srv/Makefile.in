@@ -401,7 +401,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 @HAVE_GTEST_TRUE@	assign_utils.h assign_addr_unittest.cc \
 @HAVE_GTEST_TRUE@	assign_prefix_unittest.cc options_unittest.cc \
 @HAVE_GTEST_TRUE@	relay_unittest.cc wireshark.cc
-@HAVE_GTEST_TRUE@Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@Srv_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvCfgMgr/libSrvCfgMgr.a \

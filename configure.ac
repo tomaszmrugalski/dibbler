@@ -434,7 +434,6 @@ AM_COND_IF([RESOLVCONF], [AC_DEFINE([MOD_RESOLVCONF], [1], [Support for /sbin/re
 
 ### gtests #################################################
 AX_ISC_GTEST
-GTEST_LDADD="\$(top_builddir)/tests/utils/libgtest.a -pthread"
 AC_SUBST(GTEST_LDADD)
 
 ### Link-state change detections ##########################

@@ -88,6 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@HAVE_GTEST_SOURCE_TRUE@am__append_1 = libgtest.a
 subdir = tests/utils
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_gtest.m4 \
@@ -345,7 +346,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/CfgMgr -I$(top_srcdir)/Misc \
 	-I$(top_srcdir)/poslib $(GTEST_INCLUDES) -Wno-long-long \
 	-Wno-variadic-macros
-noinst_LIBRARIES = libTestUtils.a libgtest.a
+noinst_LIBRARIES = libTestUtils.a $(am__append_1)
 libTestUtils_a_SOURCES = poslib_utils.cc poslib_utils.h
 libgtest_a_CXXFLAGS = $(GTEST_INCLUDES) $(AM_CXXFLAGS)
 nodist_libgtest_a_SOURCES = gtest-all.cc

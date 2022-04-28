@@ -18,7 +18,7 @@ Clnt_tests_CPPFLAGS += -I$(top_srcdir)/Messages
 
 # This is to workaround long long in gtest.h
 Clnt_tests_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
-
+Clnt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 info:
 	@echo "GTEST_LDADD=$(GTEST_LDADD)"
 	@echo "GTEST_LDFLAGS=$(GTEST_LDFLAGS)"

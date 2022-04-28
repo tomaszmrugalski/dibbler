@@ -12,7 +12,7 @@ CfgMgr_tests_SOURCES = run_tests.cc
 CfgMgr_tests_SOURCES += HostID_unittest.cc
 CfgMgr_tests_SOURCES += HostRange_unittest.cc
 
-CfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+CfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 CfgMgr_tests_LDADD = $(GTEST_LDADD)
 CfgMgr_tests_LDADD += $(top_builddir)/CfgMgr/libCfgMgr.a

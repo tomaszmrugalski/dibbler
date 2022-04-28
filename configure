@@ -18265,7 +18265,7 @@ $as_echo "$as_me: WARNING: Unable to locate Google Test gtest-config." >&2;}
             GTEST_FOUND="false"
             for dir in $GTEST_PATHS; do
                 if test -f "$dir/include/gtest/gtest.h"; then
-                    if ! test -f "$dir/lib/libgtests.a"; then
+                    if ! test -f "$dir/lib/libgtest.a"; then
                         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Found Google Test include but not the library in $dir." >&5
 $as_echo "$as_me: WARNING: Found Google Test include but not the library in $dir." >&2;}
                         continue
@@ -18307,7 +18307,6 @@ fi
 
 
 
-GTEST_LDADD="\$(top_builddir)/tests/utils/libgtest.a -pthread"
 
 
 ### Link-state change detections ##########################

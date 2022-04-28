@@ -355,7 +355,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/Misc -I$(top_srcdir)/CfgMgr \
 	$(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@CfgMgr_tests_SOURCES = run_tests.cc \
 @HAVE_GTEST_TRUE@	HostID_unittest.cc HostRange_unittest.cc
-@HAVE_GTEST_TRUE@CfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@CfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@CfgMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/CfgMgr/libCfgMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a

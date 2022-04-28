@@ -359,7 +359,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/IfaceMgr \
 	-Wno-variadic-macros
 @HAVE_GTEST_TRUE@DnsUpdate_tests_SOURCES = run_tests.cc \
 @HAVE_GTEST_TRUE@	DnsUpdate_unittest.cc
-@HAVE_GTEST_TRUE@DnsUpdate_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@DnsUpdate_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@DnsUpdate_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/IfaceMgr/libIfaceMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \

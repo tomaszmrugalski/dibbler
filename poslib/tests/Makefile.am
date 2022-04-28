@@ -13,7 +13,7 @@ TESTS += tsig_tests
 tsig_tests_SOURCES = run_tests.cc
 tsig_tests_SOURCES += tsig_unittest.cc
 
-tsig_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+tsig_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 tsig_tests_LDADD = $(GTEST_LDADD)
 tsig_tests_LDADD += $(top_builddir)/Misc/libMisc.a

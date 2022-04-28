@@ -372,7 +372,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/AddrMgr -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@	AddrAddr_unittest.cc AddrPrefix_unittest.cc \
 @HAVE_GTEST_TRUE@	AddrIA_unittest.cc AddrClient_unittest.cc \
 @HAVE_GTEST_TRUE@	AddrMgr_unittest.cc
-@HAVE_GTEST_TRUE@AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@AddrMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/AddrMgr/libAddrMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Misc/libMisc.a \
