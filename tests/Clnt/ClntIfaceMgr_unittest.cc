@@ -75,12 +75,20 @@ TEST(ClntIfaceMgr, calculateSubprefixFullByte) {
 // the interface-id has to be encoded on several bits of one byte and
 // remaining bits of another
 //
-// We have delegated prefix of 2001:db8:1234:c000:/50 that's going to
-// be split into 3 subprefixes:
-// 2001:db8:1234:c040::
-// 2001:db8:1234:c080::
-// 2001:db8:1234:c0c0::
-TEST(ClntIfaceMgr, calculateSubprefixMidByte) {
+// We have delegated prefix of 2001:db8:1234:c000:/50 so it means that only the
+// top 2 bits of the byte after 34 are set, in this example both bits are set to 1.
+// If we need to split this in 3 prefixes we will need an additional 2 bits to encode
+// the different values.
+// The top nibble will have the following values:
+// 1101
+// 1110
+// 1111
+// Which leads to the following prefixes:
+//
+// 2001:db8:1234:d000::
+// 2001:db8:1234:e000::
+// 2001:db8:1234:f000::
+TEST(ClntIfaceMgr, calculateSubprefixMidByteTwoBits) {
     string xmlFile = "ClntIfaceMgr.xml";
     EXPECT_NO_THROW(TClntIfaceMgr::instanceCreate(xmlFile));
 
@@ -90,19 +98,81 @@ TEST(ClntIfaceMgr, calculateSubprefixMidByte) {
 
     EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
                     .calculateSubprefix(delegated, 50, 3, 1, subprefixLen));
-    EXPECT_EQ("2001:db8:1234:c040::", string(subprefix->getPlain()));
+    EXPECT_EQ("2001:db8:1234:d000::", string(subprefix->getPlain()));
     EXPECT_EQ(64, subprefixLen);
 
     EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
                     .calculateSubprefix(delegated, 50, 3, 2, subprefixLen));
-    EXPECT_EQ("2001:db8:1234:c080::", string(subprefix->getPlain()));
+    EXPECT_EQ("2001:db8:1234:e000::", string(subprefix->getPlain()));
     EXPECT_EQ(64, subprefixLen);
 
     EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
                     .calculateSubprefix(delegated, 50, 3, 3, subprefixLen));
-    EXPECT_EQ("2001:db8:1234:c0c0::", string(subprefix->getPlain()));
+    EXPECT_EQ("2001:db8:1234:f000::", string(subprefix->getPlain()));
     EXPECT_EQ(64, subprefixLen);
 }
 
+// This test verifies that the client code splits delegated prefix
+// correctly into several subprefixes. This test verifies the more complex
+// case when the delegated prefix does not end on byte boundary (e.g. /60) and
+// the interface-id has to be encoded on several bits of one byte and
+// remaining bits of another
+//
+// We have delegated prefix of 2001:db8:1234:c000:/60 so 3 nibbles of the last word
+// are fixed to 0xc000, if we need 3 prefixes the last nibble will have the following values
+//
+// 0100
+// 1000
+// 1100
+//
+// Leading to the following Prefixes:
+// 2001:db8:1234:c004::
+// 2001:db8:1234:c008::
+// 2001:db8:1234:c00c::
+TEST(ClntIfaceMgr, calculateSubprefixMidByteSixBits) {
+    string xmlFile = "ClntIfaceMgr.xml";
+    EXPECT_NO_THROW(TClntIfaceMgr::instanceCreate(xmlFile));
+
+    int subprefixLen = 0;
+    SPtr<TIPv6Addr> delegated(new TIPv6Addr("2001:db8:1234:c000::", true));
+    SPtr<TIPv6Addr> subprefix;
+
+    EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
+                    .calculateSubprefix(delegated, 60, 3, 1, subprefixLen));
+    EXPECT_EQ("2001:db8:1234:c004::", string(subprefix->getPlain()));
+    EXPECT_EQ(64, subprefixLen);
+
+    EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
+                    .calculateSubprefix(delegated, 60, 3, 2, subprefixLen));
+    EXPECT_EQ("2001:db8:1234:c008::", string(subprefix->getPlain()));
+    EXPECT_EQ(64, subprefixLen);
+
+    EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
+                    .calculateSubprefix(delegated, 60, 3, 3, subprefixLen));
+    EXPECT_EQ("2001:db8:1234:c00c::", string(subprefix->getPlain()));
+    EXPECT_EQ(64, subprefixLen);
+
+}
+
+// This test verifies that the client code splits delegated prefix
+// correctly into several subprefixes. This test verifies the more complex
+// case when the delegated prefix does not end on byte boundary (e.g. /60) and
+// the interface-id has to be encoded on several bits of one byte and
+// remaining bits of another. We also check that we are able to encode pretty large
+// subnets
+//
+TEST(ClntIfaceMgr, calculateSubprefixLarge) {
+    string xmlFile = "ClntIfaceMgr.xml";
+    EXPECT_NO_THROW(TClntIfaceMgr::instanceCreate(xmlFile));
+
+    int subprefixLen = 0;
+    SPtr<TIPv6Addr> delegated(new TIPv6Addr("2001:db8:1234:c000::", true));
+    SPtr<TIPv6Addr> subprefix;
+
+    EXPECT_NO_THROW(subprefix = TClntIfaceMgr::instance()
+                    .calculateSubprefix(delegated, 60, 128, 127, subprefixLen));
+    EXPECT_EQ(67, subprefixLen);
+    EXPECT_EQ("2001:db8:1234:c00f:e000::", string(subprefix->getPlain()));
+}
 
 }
