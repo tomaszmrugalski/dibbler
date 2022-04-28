@@ -33,7 +33,7 @@ AddrMgr_tests_SOURCES += AddrIA_unittest.cc
 AddrMgr_tests_SOURCES += AddrClient_unittest.cc
 AddrMgr_tests_SOURCES += AddrMgr_unittest.cc
 
-AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+AddrMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 AddrMgr_tests_LDADD = $(GTEST_LDADD)
 AddrMgr_tests_LDADD += $(top_builddir)/AddrMgr/libAddrMgr.a

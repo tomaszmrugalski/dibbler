@@ -378,7 +378,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/SrvCfgMgr -I$(top_srcdir)/CfgMgr \
 	-Wno-variadic-macros
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_SOURCES = run_tests.cpp \
 @HAVE_GTEST_TRUE@	SrvCfgMgr_unittest.cc expressions_unittest.cc
-@HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@SrvCfgMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvTransMgr/libSrvTransMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/SrvCfgMgr/libSrvCfgMgr.a \

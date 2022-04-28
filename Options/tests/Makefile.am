@@ -29,7 +29,7 @@ Opt_tests_SOURCES += OptVendorClass_unittest.cc
 Opt_tests_SOURCES += OptVendorSpecInfo_unittest.cc
 Opt_tests_SOURCES += OptVendorData_unittest.cc
 
-Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 Opt_tests_LDADD = $(GTEST_LDADD)
 Opt_tests_LDADD += $(top_builddir)/Options/libOptions.a

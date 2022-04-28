@@ -31,7 +31,7 @@ Srv_tests_SOURCES += options_unittest.cc
 Srv_tests_SOURCES += relay_unittest.cc
 Srv_tests_SOURCES += wireshark.cc
 
-Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+Srv_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 Srv_tests_LDADD = $(GTEST_LDADD)
 Srv_tests_LDADD += $(top_builddir)/SrvTransMgr/libSrvTransMgr.a

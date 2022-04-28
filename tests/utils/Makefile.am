@@ -5,7 +5,10 @@ AM_CPPFLAGS += -I$(top_srcdir)/poslib
 # This is to workaround long long in gtest.h
 AM_CPPFLAGS += $(GTEST_INCLUDES) -Wno-long-long -Wno-variadic-macros
 
-noinst_LIBRARIES = libTestUtils.a libgtest.a
+noinst_LIBRARIES = libTestUtils.a
+if HAVE_GTEST_SOURCE
+noinst_LIBRARIES += libgtest.a
+endif
 
 libTestUtils_a_SOURCES = poslib_utils.cc poslib_utils.h
 

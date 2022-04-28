@@ -27,7 +27,7 @@ SrvCfgMgr_tests_SOURCES = run_tests.cpp
 SrvCfgMgr_tests_SOURCES += SrvCfgMgr_unittest.cc
 SrvCfgMgr_tests_SOURCES += expressions_unittest.cc
 
-SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+SrvCfgMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 SrvCfgMgr_tests_LDADD = $(GTEST_LDADD)
 SrvCfgMgr_tests_LDADD += $(top_builddir)/SrvTransMgr/libSrvTransMgr.a
