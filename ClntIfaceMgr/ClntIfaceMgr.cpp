@@ -657,14 +657,24 @@ SPtr<TIPv6Addr> TClntIfaceMgr::calculateSubprefix(const SPtr<TIPv6Addr> &prefix,
     // here's fun
     uint16_t existing = readUint16(buf + offset);
     uint16_t bitmask = 0xff00;
-    uint16_t infixmask = ((uint8_t)i) << 8;
-    bitmask = bitmask >> (prefixLen % 8);
-    infixmask = infixmask >> (prefixLen % 8);
+    // Here is the idea if we had only 1 bit shift, i should be left most bit (and
+    // coul have only 2 values 0 or 1) of the 16 bit integer,
+    // if we had 2 bit shift shift, i should be the second to the left
+    // and so on and so forth.
+    // The left shift value is 16 - bit_shift
+    uint16_t infixmask = ((uint8_t)i) << (16 - bit_shift);
 
-    // clear out if there is anything there, i.e. server assigned prefix
-    // with garbage in host section
+    // We also need to account for the last bits of the netmask (if the prefix is not a multiple of
+    // 8) We would need to shift right this value by prefixLen % 8 (aka the number of fixed bits in
+    // the remaining incomplete byte) and create a mask that would prevent those bits from being set
+    // / cleared
+    bitmask = bitmask >> (prefixLen % 8) | 0xff;
+    infixmask = infixmask >> (prefixLen % 8);
     existing = existing & (~bitmask);
     existing = existing | (bitmask & infixmask);
+
+    // Clean remaing bytes
+    memset(buf + offset + 1, 0, 16 - offset);
     writeUint16(buf + offset, existing);
   }
 
