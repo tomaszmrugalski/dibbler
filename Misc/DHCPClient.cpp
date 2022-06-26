@@ -159,6 +159,8 @@ void TDHCPClient::run() {
 
     if (timeout == 0) timeout = 1;
 
+    if (timeout > 30) timeout = 30;
+
     Log(Debug) << "Sleeping for " << timeout << " second(s)." << LogEnd;
     SPtr<TClntMsg> msg = ClntIfaceMgr().select(timeout);
 
