@@ -10,29 +10,28 @@
 #ifndef STATIONID_H_
 #define STATIONID_H_
 
-#include "SmartPtr.h"
-#include "IPv6Addr.h"
 #include "DUID.h"
+#include "IPv6Addr.h"
+#include "SmartPtr.h"
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class THostID
-{
-    friend std::ostream& operator<<(std::ostream& out, THostID& station);
+class THostID {
+  friend std::ostream &operator<<(std::ostream &out, THostID &station);
+
 public:
+  THostID(SPtr<TIPv6Addr> addr);
+  THostID(SPtr<TDUID> duid);
+  bool operator==(SPtr<TIPv6Addr> addr);
+  bool operator==(SPtr<TDUID> duid);
 
-    THostID(SPtr<TIPv6Addr> addr);
-    THostID(SPtr<TDUID> duid);
-    bool operator==(SPtr<TIPv6Addr> addr);
-    bool operator==(SPtr<TDUID> duid);
-
-    //THostID(const THostID& info);
-    //~THostID();
+  // THostID(const THostID& info);
+  //~THostID();
 private:
-    bool isIDAddress;
-    SPtr<TIPv6Addr> Addr;
-    SPtr<TDUID> DUID;
+  bool isIDAddress;
+  SPtr<TIPv6Addr> Addr;
+  SPtr<TDUID> DUID;
 };
 
-#endif 
+#endif

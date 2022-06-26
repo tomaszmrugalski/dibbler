@@ -13,28 +13,29 @@
 #define OPTGENERIC_H
 
 #include "DHCPConst.h"
+#include "DUID.h"
 #include "Opt.h"
-#include "DUID.h" 
 #include "SmartPtr.h"
 
-class TOptGeneric : public TOpt
-{
-  public:
-    bool operator == (const TOptGeneric &other);
+class TOptGeneric : public TOpt {
+public:
+  bool operator==(const TOptGeneric &other);
 
-    TOptGeneric(int optType, const char * data, unsigned short dataLen, TMsg* parent);
-    TOptGeneric(int optType, TMsg* parent);
-    ~TOptGeneric();
-    size_t getSize();
-    void setData(char * data, int dataLen);
-    std::string getPlain();
-    bool doDuties() { return true; }
+  TOptGeneric(int optType, const char *data, unsigned short dataLen,
+              TMsg *parent);
+  TOptGeneric(int optType, TMsg *parent);
+  ~TOptGeneric();
+  size_t getSize();
+  void setData(char *data, int dataLen);
+  std::string getPlain();
+  bool doDuties() { return true; }
 
-    char * storeSelf(char* buf);
-    virtual bool isValid() const;
-  protected:
-    char * Data;
-    int DataLen;
+  char *storeSelf(char *buf);
+  virtual bool isValid() const;
+
+protected:
+  char *Data;
+  int DataLen;
 };
 
 #endif

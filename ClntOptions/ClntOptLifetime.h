@@ -16,13 +16,12 @@
 #include "DHCPConst.h"
 #include "OptInteger.h"
 
-class TClntOptLifetime : public TOptInteger
-{
- public:
-    TClntOptLifetime(char * buf,  int n, TMsg* parent);
-    
-    TClntOptLifetime(char pref, TMsg* parent);
-    bool doDuties();
+class TClntOptLifetime : public TOptInteger {
+public:
+  TClntOptLifetime(char *buf, int n, TMsg *parent);
+
+  TClntOptLifetime(char pref, TMsg *parent);
+  bool doDuties();
 };
 
 #endif

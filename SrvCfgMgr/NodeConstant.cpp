@@ -13,31 +13,18 @@
 
 #include "NodeConstant.h"
 #include "SrvMsg.h"
-#include "SrvMsg.h"
 
 using namespace std;
 
-NodeConstant::NodeConstant()
-    :Node(NODE_CONST) {
-}
+NodeConstant::NodeConstant() : Node(NODE_CONST) {}
 
-NodeConstant::~NodeConstant() {
-}
+NodeConstant::~NodeConstant() {}
 
-NodeConstant::NodeConstant(std::string v)
-    :Node(NODE_CONST), value(v) {
-}
+NodeConstant::NodeConstant(std::string v) : Node(NODE_CONST), value(v) {}
 
+std::string NodeConstant::getStringValue() { return value; }
 
-std::string NodeConstant::getStringValue() {
-    return value;
-}
+std::string NodeConstant::exec() { return value; }
 
-std::string NodeConstant::exec() {
-    return value;
-}
-
-string NodeConstant::exec(SPtr<TSrvMsg> msg) {
-    return value;
-}
+string NodeConstant::exec(SPtr<TSrvMsg> msg) { return value; }
 #endif /* NODECONSTANT_CPP_ */

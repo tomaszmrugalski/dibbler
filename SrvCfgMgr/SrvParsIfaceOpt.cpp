@@ -9,34 +9,40 @@
  *
  */
 
-#include <climits>
 #include "SrvParsIfaceOpt.h"
-#include "OptAddr.h"
-#include "OptString.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include "OptAddr.h"
+#include "OptString.h"
+#include <climits>
 
 using namespace std;
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
-    :Preference_(SERVER_DEFAULT_PREFERENCE), RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
-     IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE), ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE),
-     Unicast_(), LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false),
-     RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(),
-     FQDNSupport_(false), FQDNMode_(0/*DNS_UPDATE_MODE_NONE*/),
-     UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN), FQDNDomain_("")
-{
-    RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
+    : Preference_(SERVER_DEFAULT_PREFERENCE),
+      RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
+      IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE),
+      ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE),
+      Unicast_(),
+      LeaseQuery_(SERVER_DEFAULT_LEASEQUERY),
+      Relay_(false),
+      RelayName_("[unknown]"),
+      RelayID_(-1),
+      RelayInterfaceID_(),
+      FQDNSupport_(false),
+      FQDNMode_(0 /*DNS_UPDATE_MODE_NONE*/),
+      UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN),
+      FQDNDomain_("") {
+  RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
 
-    // don't support leasequery unless explicitly configured to do so
+  // don't support leasequery unless explicitly configured to do so
 }
 
-TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
-}
+TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {}
 
-void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string& domain) {
-    UnknownFQDN_ = mode;
-    FQDNDomain_ = domain;
+void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string &domain) {
+  UnknownFQDN_ = mode;
+  FQDNDomain_ = domain;
 }
 
 /**
@@ -45,99 +51,63 @@ void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string& 
  *
  * @return
  */
-EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() {
-    return UnknownFQDN_;
-}
+EUnknownFQDNMode TSrvParsIfaceOpt::getUnknownFQDN() { return UnknownFQDN_; }
 
-std::string TSrvParsIfaceOpt::getFQDNDomain() {
-    return FQDNDomain_;
-}
+std::string TSrvParsIfaceOpt::getFQDNDomain() { return FQDNDomain_; }
 
-void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) {
-    LeaseQuery_ = support;
-}
+void TSrvParsIfaceOpt::setLeaseQuerySupport(bool support) { LeaseQuery_ = support; }
 
-bool TSrvParsIfaceOpt::getLeaseQuerySupport() {
-    return LeaseQuery_;
-}
+bool TSrvParsIfaceOpt::getLeaseQuerySupport() { return LeaseQuery_; }
 
 // --- unicast ---
-void TSrvParsIfaceOpt::setUnicast(SPtr<TIPv6Addr> addr) {
-    Unicast_ = addr;
-}
+void TSrvParsIfaceOpt::setUnicast(SPtr<TIPv6Addr> addr) { Unicast_ = addr; }
 
-SPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() {
-    return Unicast_;
-}
+SPtr<TIPv6Addr> TSrvParsIfaceOpt::getUnicast() { return Unicast_; }
 
 // --- iface-max-lease ---
-void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) {
-    IfaceMaxLease_ = maxLease;
-}
+void TSrvParsIfaceOpt::setIfaceMaxLease(long maxLease) { IfaceMaxLease_ = maxLease; }
 
-long TSrvParsIfaceOpt::getIfaceMaxLease() {
-    return IfaceMaxLease_;
-}
+long TSrvParsIfaceOpt::getIfaceMaxLease() { return IfaceMaxLease_; }
 
 // --- clnt max lease ---
-void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) {
-    ClntMaxLease_ = clntMaxLease;
-}
+void TSrvParsIfaceOpt::setClntMaxLease(long clntMaxLease) { ClntMaxLease_ = clntMaxLease; }
 
-long TSrvParsIfaceOpt::getClntMaxLease() {
-    return ClntMaxLease_;
-}
+long TSrvParsIfaceOpt::getClntMaxLease() { return ClntMaxLease_; }
 
 // --- preference ---
-void TSrvParsIfaceOpt::setPreference(char pref) {
-    Preference_ = pref;
-}
-char TSrvParsIfaceOpt::getPreference() {
-    return Preference_;
-}
+void TSrvParsIfaceOpt::setPreference(char pref) { Preference_ = pref; }
+char TSrvParsIfaceOpt::getPreference() { return Preference_; }
 
 // --- rapid commit ---
-void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm) {
-    RapidCommit_ = rapidComm;
-}
+void TSrvParsIfaceOpt::setRapidCommit(bool rapidComm) { RapidCommit_ = rapidComm; }
 
-bool TSrvParsIfaceOpt::getRapidCommit() {
-    return RapidCommit_;
-}
+bool TSrvParsIfaceOpt::getRapidCommit() { return RapidCommit_; }
 
 // --- relay related ---
 void TSrvParsIfaceOpt::setRelayName(std::string name) {
-    Relay_ = true;
-    RelayName_ = name;
-    RelayID_ = -1;
+  Relay_ = true;
+  RelayName_ = name;
+  RelayID_ = -1;
 }
 
 void TSrvParsIfaceOpt::setRelayID(int id) {
-    Relay_ = true;
-    RelayName_ = "[unknown]";
-    RelayID_ = id;
+  Relay_ = true;
+  RelayName_ = "[unknown]";
+  RelayID_ = id;
 }
 
 void TSrvParsIfaceOpt::setRelayInterfaceID(SPtr<TSrvOptInterfaceID> id) {
-    Relay_ = true;
-    RelayInterfaceID_ = id;
+  Relay_ = true;
+  RelayInterfaceID_ = id;
 }
 
-string TSrvParsIfaceOpt::getRelayName() {
-    return RelayName_;
-}
+string TSrvParsIfaceOpt::getRelayName() { return RelayName_; }
 
-int TSrvParsIfaceOpt::getRelayID() {
-    return RelayID_;
-}
+int TSrvParsIfaceOpt::getRelayID() { return RelayID_; }
 
-SPtr<TSrvOptInterfaceID> TSrvParsIfaceOpt::getRelayInterfaceID() {
-    return RelayInterfaceID_;
-}
+SPtr<TSrvOptInterfaceID> TSrvParsIfaceOpt::getRelayInterfaceID() { return RelayInterfaceID_; }
 
-bool TSrvParsIfaceOpt::isRelay() {
-    return Relay_;
-}
+bool TSrvParsIfaceOpt::isRelay() { return Relay_; }
 
 // --- option: DNS servers ---
 // --- option: DOMAIN ---
@@ -166,93 +136,74 @@ List(TOptVendorSpecInfo) TSrvParsIfaceOpt::getVendorSpec()
 #endif
 
 // --- option: FQDN ---
-void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
-    FQDNLst_ = *fqdn;
-    FQDNSupport_ = true;
+void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) * fqdn) {
+  FQDNLst_ = *fqdn;
+  FQDNSupport_ = true;
 }
 
-List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
-    return &this->FQDNLst_;
+List(TFQDN) * TSrvParsIfaceOpt::getFQDNLst() { return &this->FQDNLst_; }
+
+int TSrvParsIfaceOpt::getFQDNMode() { return FQDNMode_; }
+void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode) { FQDNMode_ = FQDNMode; }
+int TSrvParsIfaceOpt::getRevDNSZoneRootLength() { return RevDNSZoneRootLength_; }
+void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength) {
+  RevDNSZoneRootLength_ = revDNSZoneRootLength;
 }
 
-int TSrvParsIfaceOpt::getFQDNMode(){
-    return FQDNMode_;
-}
-void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
-    FQDNMode_ = FQDNMode;
-}
-int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
-    return RevDNSZoneRootLength_;
-}
-void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
-    RevDNSZoneRootLength_ = revDNSZoneRootLength;
-}
-
-bool TSrvParsIfaceOpt::supportFQDN() {
-    return FQDNSupport_;
-}
+bool TSrvParsIfaceOpt::supportFQDN() { return FQDNSupport_; }
 
 /// @brief adds option to the list (and merges vendor-options if possible)
 ///
-/// Adds new option to the list. However, if the option being added in vendor-option,
-/// it tries to find if there's existing vendor option with the same vendor-id. If
-/// there is, it just copies sub-options from the option being added to the option
-/// that is already defined.
+/// Adds new option to the list. However, if the option being added in
+/// vendor-option, it tries to find if there's existing vendor option with the
+/// same vendor-id. If there is, it just copies sub-options from the option
+/// being added to the option that is already defined.
 ///
 /// @param list list of options (new option will be added or merged here)
 /// @param custom new option to be added
-void TSrvParsIfaceOpt::addOption(TOptList& list, TOptPtr custom) {
+void TSrvParsIfaceOpt::addOption(TOptList &list, TOptPtr custom) {
 
-    if (custom->getOptType() == OPTION_VENDOR_OPTS) {
+  if (custom->getOptType() == OPTION_VENDOR_OPTS) {
 
-        SPtr<TOptVendorSpecInfo> newone = SPtr_cast<TOptVendorSpecInfo>(custom);
-        if (!newone) {
-            Log(Error) << "Specified vendor-option object is of incorrect type,"
-                       << " can't add option." << LogEnd;
-            return;
-        }
-        
-        for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
-        {
-            if ((*opt)->getOptType() != OPTION_VENDOR_OPTS)
-                continue;
-            SPtr<TOptVendorSpecInfo> existing = SPtr_cast<TOptVendorSpecInfo>(*opt);
-
-            if (existing->getVendor() == newone->getVendor()) {
-                newone->firstOption();
-                while (TOptPtr subopt = newone->getOption()) {
-                    existing->addOption(subopt);
-                }
-                return;
-            }
-        }
+    SPtr<TOptVendorSpecInfo> newone = SPtr_cast<TOptVendorSpecInfo>(custom);
+    if (!newone) {
+      Log(Error) << "Specified vendor-option object is of incorrect type,"
+                 << " can't add option." << LogEnd;
+      return;
     }
 
-    // This wasn't vendor-option or vendor-id didn't match, add it the usual way
-    list.push_back(custom);
+    for (TOptList::iterator opt = ExtraOpts.begin(); opt != ExtraOpts.end(); ++opt) {
+      if ((*opt)->getOptType() != OPTION_VENDOR_OPTS) continue;
+      SPtr<TOptVendorSpecInfo> existing = SPtr_cast<TOptVendorSpecInfo>(*opt);
+
+      if (existing->getVendor() == newone->getVendor()) {
+        newone->firstOption();
+        while (TOptPtr subopt = newone->getOption()) {
+          existing->addOption(subopt);
+        }
+        return;
+      }
+    }
+  }
+
+  // This wasn't vendor-option or vendor-id didn't match, add it the usual way
+  list.push_back(custom);
 }
 
 void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
 
-    addOption(ExtraOpts, custom);
+  addOption(ExtraOpts, custom);
 
-    if (always)
-        addOption(ForcedOpts, custom); // also add to forced, if requested so
+  if (always) addOption(ForcedOpts, custom);  // also add to forced, if requested so
 }
 
-const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
-    return ExtraOpts;
-}
+const TOptList &TSrvParsIfaceOpt::getExtraOptions() { return ExtraOpts; }
 
 TOptPtr TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
-    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
-    {
-        if ((*opt)->getOptType() == type)
-            return *opt;
-    }
-    return TOptPtr(); // NULL
+  for (TOptList::iterator opt = ExtraOpts.begin(); opt != ExtraOpts.end(); ++opt) {
+    if ((*opt)->getOptType() == type) return *opt;
+  }
+  return TOptPtr();  // NULL
 }
 
-const TOptList& TSrvParsIfaceOpt::getForcedOptions() {
-    return ForcedOpts;
-}
+const TOptList &TSrvParsIfaceOpt::getForcedOptions() { return ForcedOpts; }

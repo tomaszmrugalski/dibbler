@@ -1,45 +1,44 @@
-/*                                                                           
- * Dibbler - a portable DHCPv6 
- *                                                                           
- * authors: Tomasz Mrugalski <thomson@klub.com.pl>                           
- *          Marek Senderski <msend@o2.pl>                                    
+/*
+ * Dibbler - a portable DHCPv6
+ *
+ * authors: Tomasz Mrugalski <thomson@klub.com.pl>
+ *          Marek Senderski <msend@o2.pl>
  * changes: Hernan Martinez <hernan(dot)c(dot)martinez(at)gmail(dot)com>
  *
- * Released under GNU GPL v2 licence                                
+ * Released under GNU GPL v2 licence
  *
  */
 
 #ifndef _WINSERVICE_
 #define _WINSERVICE_
 
-#include <windows.h>
 #include <string>
+#include <windows.h>
 
 #define SERVICE_CONTROL_USER 128
 
 typedef enum {
-    STATUS,
-    START,
-    STOP,
-    INSTALL,
-    UNINSTALL,
-    SERVICE,
-    RUN,
-    HELP,
-    INVALID
+  STATUS,
+  START,
+  STOP,
+  INSTALL,
+  UNINSTALL,
+  SERVICE,
+  RUN,
+  HELP,
+  INVALID
 } EServiceState;
 
-class TWinService
-{
- public:
+class TWinService {
+public:
   std::string ServiceDir;
-  TWinService(const char* serviceName, const char* dispName,
-	      DWORD deviceType=SERVICE_DEMAND_START,
-	      char* dependencies=NULL, char* descr=NULL);
-  static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+  TWinService(const char *serviceName, const char *dispName,
+              DWORD deviceType = SERVICE_DEMAND_START,
+              char *dependencies = NULL, char *descr = NULL);
+  static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv);
   static void WINAPI Handler(DWORD dwOpcode);
-  void LogEvent(WORD wType, DWORD dwID, const char* pszS1 = NULL,
-		const char* pszS2 = NULL, const char* pszS3 = NULL);
+  void LogEvent(WORD wType, DWORD dwID, const char *pszS1 = NULL,
+                const char *pszS2 = NULL, const char *pszS3 = NULL);
   bool IsInstalled();
   bool IsInstalled(const char *name);
   bool Install();
@@ -52,10 +51,10 @@ class TWinService
   void showStatus();
   bool verifyPort();
   int getStatus();
-  bool isRunning(const char * name);
+  bool isRunning(const char *name);
   bool isRunning();
   bool isRunAsAdmin();
-  
+
   virtual void Run();
   virtual bool OnInit();
   virtual void OnStop();
@@ -64,24 +63,24 @@ class TWinService
   virtual void OnContinue();
   virtual void OnShutdown();
   virtual bool OnUserControl(DWORD dwOpcode);
-  
+
   ~TWinService(void);
 
   static const char ADMIN_REQUIRED_STR[];
 
- protected:
+protected:
   SERVICE_STATUS Status;
-  SERVICE_STATUS_HANDLE	hServiceStatus;
+  SERVICE_STATUS_HANDLE hServiceStatus;
   BOOL IsRunning;
-  
+
   char ServiceName[64];
   int MajorVersion;
   int MinorVersion;
   DWORD ServiceType;
   char Dependencies[64];
-  char* DisplayName;
-  char* descr;
-  static TWinService* ServicePtr;
+  char *DisplayName;
+  char *descr;
+  static TWinService *ServicePtr;
   HANDLE EventSource;
 };
 #endif

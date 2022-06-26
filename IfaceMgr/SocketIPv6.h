@@ -19,82 +19,82 @@ class TIfaceSocket;
 #include <iostream>
 #include <string>
 
-#include "Portable.h"
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
+#include "Portable.h"
 #include "SmartPtr.h"
 
 /*
  * repesents network socket
  */
 class TIfaceSocket {
-    friend std::ostream& operator<<(std::ostream& strum, TIfaceSocket &x);
- public:
-    TIfaceSocket(char * iface,int ifaceid, int port, 
-		     SPtr<TIPv6Addr> addr, bool ifaceonly, bool reuse);
-    TIfaceSocket(char * iface,int ifaceid, int port,
-		     bool ifaceonly, bool reuse);
-   
-    // ---transmission---
-    int send(char * buf,int len, SPtr<TIPv6Addr> addr,int port);
-    int recv(char * buf,SPtr<TIPv6Addr> addr);
-    
-    // ---get info---
-    inline static int getCount() { return Count; }
-    int getFD();
-    int getPort();
-    int getIfaceID();
-    SPtr<TIPv6Addr> getAddr();
-    enum EState getStatus();
+  friend std::ostream &operator<<(std::ostream &strum, TIfaceSocket &x);
 
-    // ---select() stuff---
-    // FileDescriptors Set, for use with select()
-    // (it's really messed up. fd_set is some really weird macro used
-    //  with POSIX select() function. )
-    static fd_set * getFDS();
-    inline static int getMaxFD() { return MaxFD; }
-    inline bool multicast() { return Multicast; }
+public:
+  TIfaceSocket(char *iface, int ifaceid, int port, SPtr<TIPv6Addr> addr,
+               bool ifaceonly, bool reuse);
+  TIfaceSocket(char *iface, int ifaceid, int port, bool ifaceonly, bool reuse);
 
-    ~TIfaceSocket();
- private:
-    // adds socket to this interface
-    int createSocket(char * iface, int ifaceid, SPtr<TIPv6Addr> addr, 
-		     int port, bool ifaceonly, bool reuse);
-    void printError(int error, char * iface, int ifaceid, SPtr<TIPv6Addr> addr, int port);
+  // ---transmission---
+  int send(char *buf, int len, SPtr<TIPv6Addr> addr, int port);
+  int recv(char *buf, SPtr<TIPv6Addr> addr);
 
-    // FileDescriptor
-    int FD;
+  // ---get info---
+  inline static int getCount() { return Count; }
+  int getFD();
+  int getPort();
+  int getIfaceID();
+  SPtr<TIPv6Addr> getAddr();
+  enum EState getStatus();
 
-    // bounded port
-    int Port;
+  // ---select() stuff---
+  // FileDescriptors Set, for use with select()
+  // (it's really messed up. fd_set is some really weird macro used
+  //  with POSIX select() function. )
+  static fd_set *getFDS();
+  inline static int getMaxFD() { return MaxFD; }
+  inline bool multicast() { return Multicast; }
 
-    // socket status
-    enum EState Status;
+  ~TIfaceSocket();
 
-    // error 
-    std::string Error;
+private:
+  // adds socket to this interface
+  int createSocket(char *iface, int ifaceid, SPtr<TIPv6Addr> addr, int port,
+                   bool ifaceonly, bool reuse);
+  void printError(int error, char *iface, int ifaceid, SPtr<TIPv6Addr> addr,
+                  int port);
 
-    // interface name, on which this socket has been created
-    char Iface[MAX_IFNAME_LENGTH];
+  // FileDescriptor
+  int FD;
 
-    // interface ID, on which this socket has been created
-    int  IfaceID;
+  // bounded port
+  int Port;
 
-    // bounded address 
-    SPtr<TIPv6Addr> Addr;
+  // socket status
+  enum EState Status;
 
-    // true = bounded to this interface only
-    bool IfaceOnly;
+  // error
+  std::string Error;
 
-    // true = bounded to multicast socket
-    bool Multicast;
+  // interface name, on which this socket has been created
+  char Iface[MAX_IFNAME_LENGTH];
 
-    // Static element. Class needs to know, when first object is
-    // created. It call FD_SET to zero fd_set 
-    static int Count;
-    static int MaxFD; // needed instead of FD_MAXSIZE on Macs
+  // interface ID, on which this socket has been created
+  int IfaceID;
+
+  // bounded address
+  SPtr<TIPv6Addr> Addr;
+
+  // true = bounded to this interface only
+  bool IfaceOnly;
+
+  // true = bounded to multicast socket
+  bool Multicast;
+
+  // Static element. Class needs to know, when first object is
+  // created. It call FD_SET to zero fd_set
+  static int Count;
+  static int MaxFD; // needed instead of FD_MAXSIZE on Macs
 };
 
-
 #endif
-

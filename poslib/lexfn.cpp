@@ -22,9 +22,9 @@
 
 #include "dnsmessage.h"
 #include "domainfn.h"
-#include "sysstring.h"
-#include "rr.h"
 #include "exception.h"
+#include "rr.h"
+#include "sysstring.h"
 
 #include "lexfn.h"
 
@@ -51,7 +51,8 @@ bool txt_to_bool(const char *buff) {
   throw PException(true, "Unknown boolean value %s", buff);
 }
 
-/* converts a buffer to a long numeric value, with postfix (e.g. 68K->68*1024) support */
+/* converts a buffer to a long numeric value, with postfix (e.g. 68K->68*1024)
+ * support */
 int txt_to_int_internal(const char *_buff, bool support_negative) {
   char *buff = (char *)_buff;
   int val = 0, tmpval = 0;
@@ -59,11 +60,13 @@ int txt_to_int_internal(const char *_buff, bool support_negative) {
   bool have_digit = false;
   if (*buff == '-') {
     if (!support_negative) throw PException(true, "Negative number not supported: %s", _buff);
-    neg = true; buff++;
+    neg = true;
+    buff++;
   }
   while (1) {
     if (*buff >= '0' && *buff <= '9') {
-      tmpval *= 10; tmpval += *buff - '0';
+      tmpval *= 10;
+      tmpval += *buff - '0';
       have_digit = true;
     } else {
       if (*buff == '\0') {
@@ -71,16 +74,26 @@ int txt_to_int_internal(const char *_buff, bool support_negative) {
         if (!have_digit) throw PException(true, "Incorrect numeric value %s", _buff);
         return neg ? -val : val;
       }
-      if (*buff == 'K') tmpval *= 1024;
-      else if (*buff == 'M') tmpval *= 1048576;
-      else if (*buff == 'G') tmpval *= 1073741824;
-      else if (*buff == 's');
-      else if (*buff == 'm') tmpval *= 60;
-      else if (*buff == 'h') tmpval *= 3600;
-      else if (*buff == 'd') tmpval *= 86400;
-      else if (*buff == 'w') tmpval *= 604800;
-      else if (*buff == 'y') tmpval *= 31536000;
-      else throw PException(true, "Incorrect numeric value %s", _buff);
+      if (*buff == 'K')
+        tmpval *= 1024;
+      else if (*buff == 'M')
+        tmpval *= 1048576;
+      else if (*buff == 'G')
+        tmpval *= 1073741824;
+      else if (*buff == 's')
+        ;
+      else if (*buff == 'm')
+        tmpval *= 60;
+      else if (*buff == 'h')
+        tmpval *= 3600;
+      else if (*buff == 'd')
+        tmpval *= 86400;
+      else if (*buff == 'w')
+        tmpval *= 604800;
+      else if (*buff == 'y')
+        tmpval *= 31536000;
+      else
+        throw PException(true, "Incorrect numeric value %s", _buff);
 
       val += tmpval;
       tmpval = 0;
@@ -89,28 +102,36 @@ int txt_to_int_internal(const char *_buff, bool support_negative) {
   }
 }
 
-int txt_to_negint(const char *buff) {
-  return txt_to_int_internal(buff, true);
-}
+int txt_to_negint(const char *buff) { return txt_to_int_internal(buff, true); }
 
-int txt_to_int(const char *buff) {
-  return txt_to_int_internal(buff, false);
-}
+int txt_to_int(const char *buff) { return txt_to_int_internal(buff, false); }
 
 /* converts a buffer to an 32-bit ip number */
 int txt_to_ip(unsigned char ip[4], const char *_buff, bool do_portion) {
   char *buff = (char *)_buff;
   int p = 0, tmp = 0, node = 0;
   if (strcmpi(buff, "any") == 0) {
-    ip[0] = 0; ip[1] = 0; ip[2] = 0; ip[3]=  0;
+    ip[0] = 0;
+    ip[1] = 0;
+    ip[2] = 0;
+    ip[3] = 0;
     return 4;
   } else if (strcmpi(buff, "local") == 0) {
-    ip[0] = 127; ip[1] = 0; ip[2] = 0; ip[3] = 1;
+    ip[0] = 127;
+    ip[1] = 0;
+    ip[2] = 0;
+    ip[3] = 1;
     return 4;
   } else if (strcmpi(buff, "none") == 0) {
-    ip[0] = 255; ip[1] = 255; ip[2] = 255; ip[3] = 255;
+    ip[0] = 255;
+    ip[1] = 255;
+    ip[2] = 255;
+    ip[3] = 255;
   }
-  ip[0] = 0; ip[1] = 0; ip[2] = 0; ip[3] = 0;
+  ip[0] = 0;
+  ip[1] = 0;
+  ip[2] = 0;
+  ip[3] = 0;
   while (buff[p] != '\0') {
     if (isdigit(buff[p])) {
       node *= 10;
@@ -126,11 +147,13 @@ int txt_to_ip(unsigned char ip[4], const char *_buff, bool do_portion) {
       if (buff[p] == '.') {
         if (buff[p + 1] == '.') {
           throw PException("Expecting some value after dot");
-        } else if (buff[p + 1] == '\0') break;
+        } else if (buff[p + 1] == '\0')
+          break;
         if (tmp >= 3) throw PException("More than three dots in IP number");
         ip[tmp++] = (char)node;
         node = 0;
-      } else throw PException("Unknown character in IP number");
+      } else
+        throw PException("Unknown character in IP number");
     }
     p++;
   }
@@ -139,7 +162,7 @@ int txt_to_ip(unsigned char ip[4], const char *_buff, bool do_portion) {
   return tmp;
 }
 
-char incr_mask[8] = { 0, 128, 192, 224, 240, 248, 252, 254 };
+char incr_mask[8] = {0, 128, 192, 224, 240, 248, 252, 254};
 
 void txt_to_iprange(unsigned char *iprange, const char *val) {
   char buff[128];
@@ -154,7 +177,7 @@ void txt_to_iprange(unsigned char *iprange, const char *val) {
     memset(iprange + 4, 0, 4);
     return;
   }
-  if ((ptr = strchr((char*)val, '/')) != NULL) {
+  if ((ptr = strchr((char *)val, '/')) != NULL) {
     if (strchr(ptr, '.')) {
       /* complete IP number */
       txt_to_ip(iprange, ptr + 1);
@@ -177,40 +200,48 @@ void txt_to_iprange(unsigned char *iprange, const char *val) {
 }
 
 bool iprange_matches(const unsigned char *iprange, const unsigned char *ip) {
-  for (int x = 0; x < 4; x++) if ((ip[x] ^ iprange[x+4]) & iprange[x]) return false;
+  for (int x = 0; x < 4; x++)
+    if ((ip[x] ^ iprange[x + 4]) & iprange[x]) return false;
   return true;
 }
 
 int hextoint(char val) {
   if (val >= '0' && val <= '9') {
-    return  val - '0';
+    return val - '0';
   } else if (val >= 'a' && val <= 'f') {
     return val - 'a' + 10;
   } else if (val >= 'A' && val <= 'F') {
     return val - 'A' + 10;
-  } else return -1;
+  } else
+    return -1;
 }
 
 /* converts a buffer to a 128-bit ipv6 number */
 int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion) {
   int multigroup_pos = -1;
   int pos = -1;
-  int node = 0; /* the pair we're working on */
-  int nodeval = -1; /* node value */
+  int node = 0;      /* the pair we're working on */
+  int nodeval = -1;  /* node value */
   int nodestart = 0; /* start pos of node */
   int chval;
   int x;
 
   memset(ipv6, 0, 16);
   if (strcmpi(buff, ":any") == 0) return 16;
-  if (strcmpi(buff, ":local") == 0) { ipv6[15] = 1; return 16; }
+  if (strcmpi(buff, ":local") == 0) {
+    ipv6[15] = 1;
+    return 16;
+  }
 
   while (buff[++pos] != '\0') {
     if (buff[pos] == '.') {
       /* an imbedded ipv4 */
       if (node + 2 > 8) throw PException("No room for embedded IPv4 in IPv6 address");
-      try { txt_to_ip(&ipv6[node*2], &buff[nodestart]); }
-      catch(PException p) { throw PException("Error in embedded IPv4 number: ", p); }
+      try {
+        txt_to_ip(&ipv6[node * 2], &buff[nodestart]);
+      } catch (PException p) {
+        throw PException("Error in embedded IPv4 number: ", p);
+      }
       node++;
       if (node == 8) break;
       nodeval = -1;
@@ -220,16 +251,16 @@ int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion) {
       /* write the previous node */
       if (pos) {
         if (nodeval == -1) throw PException("IPv6 address has empty node value");
-        ipv6[node*2] = nodeval / 256;
-        ipv6[node*2 + 1] = nodeval;
+        ipv6[node * 2] = nodeval / 256;
+        ipv6[node * 2 + 1] = nodeval;
       } else {
         if (buff[pos + 1] != ':') throw PException("IPv6 address should have ::");
         node--;
       }
       if (buff[pos + 1] == ':') {
         /* we're having a multigroup indicator here */
-         multigroup_pos = node + 1;
-         pos++;
+        multigroup_pos = node + 1;
+        pos++;
       }
       node++;
       if (node > 7) throw PException("IPv6 address has too much nodes");
@@ -249,16 +280,16 @@ int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion) {
   }
 
   if (nodeval != -1) {
-    ipv6[node*2] = nodeval / 256;
-    ipv6[node*2 + 1] = nodeval;
+    ipv6[node * 2] = nodeval / 256;
+    ipv6[node * 2 + 1] = nodeval;
   } else {
-    if (buff[pos - 1] == ':' && buff[pos - 2] != ':') throw PException("Expected :: in IPv6 address");
+    if (buff[pos - 1] == ':' && buff[pos - 2] != ':')
+      throw PException("Expected :: in IPv6 address");
   }
 
   if (multigroup_pos != -1) {
-    for (x = 15; x >= 14 - 2 * (node - multigroup_pos); x--)
-      ipv6[x] = ipv6[x - 2 * (7 - node)];
-    memset(&ipv6[multigroup_pos * 2], 0, 14 - (2*node));
+    for (x = 15; x >= 14 - 2 * (node - multigroup_pos); x--) ipv6[x] = ipv6[x - 2 * (7 - node)];
+    memset(&ipv6[multigroup_pos * 2], 0, 14 - (2 * node));
   } else {
     if (node < 7) throw PException("Too less nodes in IPv6 address");
   }
@@ -279,7 +310,7 @@ void txt_to_ip6range(unsigned char *iprange, const char *val) {
     memset(iprange + 16, 0, 16);
     return;
   }
-  if ((ptr = (char*)strchr(val, '/')) != NULL) {
+  if ((ptr = (char *)strchr(val, '/')) != NULL) {
     if (strchr(ptr, ':')) {
       /* complete IPv6 number */
       txt_to_ipv6(iprange, ptr + 1);
@@ -302,7 +333,8 @@ void txt_to_ip6range(unsigned char *iprange, const char *val) {
 }
 
 bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip) {
-  for (int x = 0; x < 16; x++) if ((ip[x] ^ iprange[x+16]) & iprange[x]) return false;
+  for (int x = 0; x < 16; x++)
+    if ((ip[x] ^ iprange[x + 16]) & iprange[x]) return false;
   return true;
 }
 
@@ -311,78 +343,82 @@ bool ip6range_matches(const unsigned char *iprange, const unsigned char *ip) {
 #define R_NONE 2
 #define R_ANY 3
 
-bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a) {
-    stl_list(addrrange)::iterator it = lst.begin();
-    while (it != lst.end()) {
-        if (addrrange_matches(it->range, a)) return true;
-        ++it;
-    }
-    return false;
+bool in_addrrange_list(stl_list(addrrange) & lst, _addr *a) {
+  stl_list(addrrange)::iterator it = lst.begin();
+  while (it != lst.end()) {
+    if (addrrange_matches(it->range, a)) return true;
+    ++it;
+  }
+  return false;
 }
 
 #ifdef HAVE_SLIST
-bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a) {
-    stl_slist(addrrange)::iterator it = lst.begin();
-    while (it != lst.end()) {
-        if (addrrange_matches(it->range, a)) return true;
-        ++it;
-    }
-    return false;
+bool in_addrrange_list(stl_slist(addrrange) & lst, _addr *a) {
+  stl_slist(addrrange)::iterator it = lst.begin();
+  while (it != lst.end()) {
+    if (addrrange_matches(it->range, a)) return true;
+    ++it;
+  }
+  return false;
 }
 #endif
 
 #ifdef HAVE_SLIST
-bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port) {
-    stl_slist(_addr)::iterator it = lst.begin();
-    while (it != lst.end()) {
-        if (match_port) {
-            if (addrport_matches(&*it, a)) return true;
-        } else {
-            if (address_matches(&*it, a)) return true;
-        }
-        ++it;
+bool in_addr_list(stl_slist(_addr) & lst, _addr *a, bool match_port) {
+  stl_slist(_addr)::iterator it = lst.begin();
+  while (it != lst.end()) {
+    if (match_port) {
+      if (addrport_matches(&*it, a)) return true;
+    } else {
+      if (address_matches(&*it, a)) return true;
     }
-    return false;
+    ++it;
+  }
+  return false;
 }
 #endif
 
-bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port) {
-    stl_list(_addr)::iterator it = lst.begin();
-    while (it != lst.end()) {
-        if (match_port) {
-            if (addrport_matches(&*it, a)) return true;
-        } else {
-            if (address_matches(&*it, a)) return true;
-        }
-        ++it;
+bool in_addr_list(stl_list(_addr) & lst, _addr *a, bool match_port) {
+  stl_list(_addr)::iterator it = lst.begin();
+  while (it != lst.end()) {
+    if (match_port) {
+      if (addrport_matches(&*it, a)) return true;
+    } else {
+      if (address_matches(&*it, a)) return true;
     }
-    return false;
+    ++it;
+  }
+  return false;
 }
 
 void txt_to_addrrange(unsigned char *iprange, const char *val) {
-    if (strcmpi(val, "any") == 0) {
-        iprange[0] = R_ANY;
-        return;
-    }
-    if (strcmpi(val, "none") == 0) {
-        iprange[0] = R_NONE;
-        return;
-    }
-    if (!strchr(val, ':')) {
-        iprange[0] = R_IP4;
-        txt_to_iprange(iprange + 1, val);
-    } else {
-        iprange[0] = R_IP6;
-        txt_to_ip6range(iprange + 1, val);
-    }
+  if (strcmpi(val, "any") == 0) {
+    iprange[0] = R_ANY;
+    return;
+  }
+  if (strcmpi(val, "none") == 0) {
+    iprange[0] = R_NONE;
+    return;
+  }
+  if (!strchr(val, ':')) {
+    iprange[0] = R_IP4;
+    txt_to_iprange(iprange + 1, val);
+  } else {
+    iprange[0] = R_IP6;
+    txt_to_ip6range(iprange + 1, val);
+  }
 }
 
 bool addrrange_matches(const unsigned char *iprange, _addr *a) {
   switch (iprange[0]) {
-    case R_NONE: return false;
-    case R_ANY: return true;
-    case R_IP4: return iprange_matches(iprange + 1, get_ipv4_ptr(a));
-    case R_IP6: return ip6range_matches(iprange + 1, get_ipv6_ptr(a));
+    case R_NONE:
+      return false;
+    case R_ANY:
+      return true;
+    case R_IP4:
+      return iprange_matches(iprange + 1, get_ipv4_ptr(a));
+    case R_IP6:
+      return ip6range_matches(iprange + 1, get_ipv6_ptr(a));
   }
   return false;
 }
@@ -391,24 +427,25 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a) {
    (may be a <domain-name> or a true email address) */
 
 void txt_to_email(_domain target, const char *src, _cdomain origin) {
-    unsigned char dom[DOM_LEN];
-    char *cptr;
-    
-    if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
-        /* contains a '@', so assume it's an email address */
-        if (src[0] == '@') throw PException("Incorrect email address/domain name: begins with @");
-        domfromlabel(target, src, cptr - src);
-        txt_to_dname(dom, cptr + 1);
-        domcat(target, dom);
-    } else {
-        /* common domain name */
-        txt_to_dname(target, src, origin);
-    }
+  unsigned char dom[DOM_LEN];
+  char *cptr;
+
+  if ((cptr = (char *)strchr(src, '@')) != NULL && !(cptr[0] == '@' && cptr[1] == 0)) {
+    /* contains a '@', so assume it's an email address */
+    if (src[0] == '@') throw PException("Incorrect email address/domain name: begins with @");
+    domfromlabel(target, src, cptr - src);
+    txt_to_dname(dom, cptr + 1);
+    domcat(target, dom);
+  } else {
+    /* common domain name */
+    txt_to_dname(target, src, origin);
+  }
 }
 
-/* converts a textual representation for a domain name to an rfc <domain-name> */
+/* converts a textual representation for a domain name to an rfc <domain-name>
+ */
 
-#define hexfromint(hex) (((hex) < 10) ? (hex) + '0' : ((hex) - 10) + 'a')
+#define hexfromint(hex) (((hex) < 10) ? (hex) + '0' : ((hex)-10) + 'a')
 
 void txt_to_dname(_domain target, const char *src, _cdomain origin) {
   char *ptr;
@@ -449,8 +486,8 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
         if (domlen(target) + 14 >= DOM_LEN) throw PException("IPv6 domainname doesn't fit");
         ret = txt_to_ip(tmp, src + 1, true);
         for (ttmp = ret - 1; ttmp >= 0; ttmp--) {
-          sprintf((char*)tmp + 4, "%d", tmp[ttmp]);
-          domfromlabel(target + domlen(target) - 1, (char*)tmp + 4);
+          sprintf((char *)tmp + 4, "%d", tmp[ttmp]);
+          domfromlabel(target + domlen(target) - 1, (char *)tmp + 4);
         }
         domcat(target, (_domain) "\7in-addr\4arpa");
         return;
@@ -489,25 +526,25 @@ void txt_to_dname(_domain target, const char *src, _cdomain origin) {
  * \param is_client Influences default address
  */
 void txt_to_addr(_addr *ret, const char *addr, int default_port, bool is_client) {
-    char taddr[128];
-    char *ptr = strchr((char *)addr, '#');
-    if (ptr) {
-        if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
-        memcpy(taddr, addr, (unsigned)(ptr - addr));
-        taddr[ptr-addr] = '\0';
-        txt_to_addr(ret, taddr, default_port, is_client);
-        addr_setport(ret, txt_to_int(ptr + 1));
-    } else {
-        try {
-            int x = txt_to_int(addr);
-            if (is_client)
-                getaddress(ret, "127.0.0.1", x);
-            else
-                getaddress(ret, "0.0.0.0", x);
-        } catch (PException p) {
-            getaddress(ret, addr, default_port);
-        }
+  char taddr[128];
+  char *ptr = strchr((char *)addr, '#');
+  if (ptr) {
+    if ((unsigned)(ptr - addr) > (unsigned)sizeof(taddr)) throw PException("Address too long");
+    memcpy(taddr, addr, (unsigned)(ptr - addr));
+    taddr[ptr - addr] = '\0';
+    txt_to_addr(ret, taddr, default_port, is_client);
+    addr_setport(ret, txt_to_int(ptr + 1));
+  } else {
+    try {
+      int x = txt_to_int(addr);
+      if (is_client)
+        getaddress(ret, "127.0.0.1", x);
+      else
+        getaddress(ret, "0.0.0.0", x);
+    } catch (PException p) {
+      getaddress(ret, addr, default_port);
     }
+  }
 }
 
 u_int32 poslib_degstr(char *&src, char pre, char post) {
@@ -524,7 +561,8 @@ u_int32 poslib_degstr(char *&src, char pre, char post) {
       if (strchr(tmp.c_str(), '.')) {
         if (sscanf(tmp.c_str(), "%10d.%10d", &sec, &msec) != 2)
           throw PException(true, "Malformed LOC RR: invalid angle seconds %s", tmp.c_str());
-      } else sec = txt_to_int(tmp.c_str());
+      } else
+        sec = txt_to_int(tmp.c_str());
       tmp = read_entry(src);
     }
   }
@@ -534,7 +572,9 @@ u_int32 poslib_degstr(char *&src, char pre, char post) {
     ret = 2147483648u + ret;
   else if (toupper(tmp[0]) == pre)
     ret = 2147483648u - ret;
-  else throw PException(true, "Malformed LOC RR: expected '%c' or '%c', got %s", pre, post, tmp.c_str());
+  else
+    throw PException(true, "Malformed LOC RR: expected '%c' or '%c', got %s", pre, post,
+                     tmp.c_str());
 
   return ret;
 }
@@ -543,9 +583,10 @@ unsigned char poslib_loc_precision(const char *str) {
   int x, y = 0;
   int n = 0;
   if (sscanf(str, "%4d.%6dm", &x, &y) < 1) throw PException(true, "Invalid precision: %s", str);
-  x = x*100+y;
+  x = x * 100 + y;
   while (x >= 10) {
-    x/=10; n++;
+    x /= 10;
+    n++;
   }
   return (x << 4) + n;
 }
@@ -553,7 +594,7 @@ unsigned char poslib_loc_precision(const char *str) {
 void txt_to_loc(unsigned char *res, char *&src) {
   stl_string tmp;
   u_int32 t;
-  int x,y;
+  int x, y;
 
   res[0] = 0; /* version */
 
@@ -567,7 +608,7 @@ void txt_to_loc(unsigned char *res, char *&src) {
   x = y = 0;
   tmp = read_entry(src);
   if (sscanf(tmp.c_str(), "%4d.%10dm", &x, &y) <= 0) throw PException("Invalid altitude");
-  memcpy(res + 12, uint32_buff((x*100+y)+10000000), 4);
+  memcpy(res + 12, uint32_buff((x * 100 + y) + 10000000), 4);
 
   if (src[0]) /* size */
     res[1] = poslib_loc_precision(read_entry(src).c_str());
@@ -579,14 +620,14 @@ void txt_to_loc(unsigned char *res, char *&src) {
   else
     res[2] = 0x16;
 
-   if (src[0]) /* ver */
+  if (src[0]) /* ver */
     res[3] = poslib_loc_precision(read_entry(src).c_str());
   else
     res[3] = 0x13;
 }
 
 int power10ed(unsigned char val) {
-  int exp = val%15;
+  int exp = val % 15;
   int n = 1;
   while (--exp) n *= 10;
   return n * (val >> 4);
@@ -595,35 +636,42 @@ int power10ed(unsigned char val) {
 stl_string pos_degtostring(uint32_t val, char plus, char min) {
   char buff[32];
   char mod;
-  if (val >= 2147483648u) { mod = plus; val -= 2147483648u; }
-  else { mod = min; val = 2147483648u - val; }
+  if (val >= 2147483648u) {
+    mod = plus;
+    val -= 2147483648u;
+  } else {
+    mod = min;
+    val = 2147483648u - val;
+  }
   sprintf(buff, "%d %d %.3f %c", val / 3600000, (val % 3600000) / 60000,
-                               (float)((val % 60000) / 1000), mod);
+          (float)((val % 60000) / 1000), mod);
   return buff;
 }
 
 stl_string str_degrees(uint32_t value, char pos, char neg) {
   char post;
   char buff[32];
-  if (value > 2147483648u) { post = pos; value -= 2147483648u; }
-  else { post = neg; value = 2147483648u - value; }
-  sprintf(buff, "%d %d %d.%2d %c", value/360000,(value%360000)/6000,(value%6000)/100,value%100, post);
+  if (value > 2147483648u) {
+    post = pos;
+    value -= 2147483648u;
+  } else {
+    post = neg;
+    value = 2147483648u - value;
+  }
+  sprintf(buff, "%d %d %d.%2d %c", value / 360000, (value % 360000) / 6000, (value % 6000) / 100,
+          value % 100, post);
   return buff;
 }
-
 
 stl_string str_loc(const unsigned char *locrr) {
   stl_string ret;
   char locbuff[96];
-  uint32_t size = power10ed(locrr[1]),
-           horpre = power10ed(locrr[2]),
-           verpre = power10ed(locrr[3]),
-           lati = uint32_value(locrr+4),
-           longi = uint32_value(locrr+8),
-           alti = uint32_value(locrr+12);
+  uint32_t size = power10ed(locrr[1]), horpre = power10ed(locrr[2]), verpre = power10ed(locrr[3]),
+           lati = uint32_value(locrr + 4), longi = uint32_value(locrr + 8),
+           alti = uint32_value(locrr + 12);
 
-  sprintf(locbuff, "%.2fm %.2fm %.2fm %.2fm", ((float)(alti-10000000))/100, (float)size / 100,
-                                           (float)horpre / 100, (float)verpre / 100);
+  sprintf(locbuff, "%.2fm %.2fm %.2fm %.2fm", ((float)(alti - 10000000)) / 100, (float)size / 100,
+          (float)horpre / 100, (float)verpre / 100);
 
   ret = pos_degtostring(lati, 'N', 'S') + " " + pos_degtostring(longi, 'E', 'W') + " " + locbuff;
   printf("Ret: %s\n", ret.c_str());
@@ -713,7 +761,7 @@ stl_string str_ttl(uint32_t ttl) {
   struct _factor {
     char prefix;
     uint32_t factor;
-  } factors[] = { {'y',31536000}, {'w',604800}, {'d',86400}, {'h',3600}, {'m',60}, {'s',1} };
+  } factors[] = {{'y', 31536000}, {'w', 604800}, {'d', 86400}, {'h', 3600}, {'m', 60}, {'s', 1}};
   _factor *f = &factors[0];
   int x;
   if (ttl == 0) return "0";

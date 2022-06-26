@@ -16,19 +16,18 @@
 
 #include "DHCPConst.h"
 
-class TClntParsAddrOpt
-{
- public:
-    TClntParsAddrOpt();
-    long getPref();
-    void setPref(long pref);
+class TClntParsAddrOpt {
+public:
+  TClntParsAddrOpt();
+  long getPref();
+  void setPref(long pref);
 
-    long getValid();
-    void setValid(long valid);
+  long getValid();
+  void setValid(long valid);
 
 private:
-    long Pref;
-    long Valid;
+  long Pref;
+  long Valid;
 };
 
 #endif

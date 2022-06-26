@@ -13,17 +13,16 @@
 #define RELOPTECHO_H
 
 #include "DHCPConst.h"
-#include "SmartPtr.h"
 #include "OptOptionRequest.h"
+#include "SmartPtr.h"
 
 class TRelOptEcho;
 
-class TRelOptEcho : public TOptOptionRequest 
-{
-  public:
-    TRelOptEcho(char * buf,  int n, TMsg* parent);
-    TRelOptEcho(TMsg* parent);
-    bool doDuties();
+class TRelOptEcho : public TOptOptionRequest {
+public:
+  TRelOptEcho(char *buf, int n, TMsg *parent);
+  TRelOptEcho(TMsg *parent);
+  bool doDuties();
 };
 
 #endif /* RelOptEcho */

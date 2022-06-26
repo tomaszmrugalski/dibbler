@@ -21,13 +21,12 @@
 #include "DHCPConst.h"
 #include "OptInteger.h"
 
-class TClntOptPreference : public TOptInteger
-{
-  public:
-    TClntOptPreference( char * buf,  int n, TMsg* parent);
+class TClntOptPreference : public TOptInteger {
+public:
+  TClntOptPreference(char *buf, int n, TMsg *parent);
 
-    TClntOptPreference( char pref, TMsg* parent);
-	bool doDuties();
+  TClntOptPreference(char pref, TMsg *parent);
+  bool doDuties();
 };
 
 #endif

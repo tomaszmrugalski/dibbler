@@ -21,8 +21,8 @@
 #ifndef WIN32
 #include <pthread.h>
 #endif
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 #ifdef __BORLANDC__
 #include <limits.h>
 #endif
@@ -42,8 +42,7 @@ class _random_system {
     srand(time(NULL));
 #endif
   }
-  ~_random_system() {
-  }
+  ~_random_system() {}
 } __random_system;
 
 int posrandom() {
@@ -59,7 +58,7 @@ int possr_prev = 0;
 
 int possimplerandom() {
   int t;
-  t = (possr_prev*3877 + 29573) % 139968;
+  t = (possr_prev * 3877 + 29573) % 139968;
   possr_prev = t;
   return t;
 }

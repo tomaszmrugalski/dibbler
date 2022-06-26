@@ -12,16 +12,15 @@
 #define SRVMSGRENEW_H
 #include "SrvMsg.h"
 
-class TSrvMsgRenew : public TSrvMsg
-{
- public:
-    TSrvMsgRenew(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-    
-    void doDuties();
-    unsigned long getTimeout();
-    std::string getName() const;
-    bool check();
-    ~TSrvMsgRenew();
+class TSrvMsgRenew : public TSrvMsg {
+public:
+  TSrvMsgRenew(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
+
+  void doDuties();
+  unsigned long getTimeout();
+  std::string getName() const;
+  bool check();
+  ~TSrvMsgRenew();
 };
 
 #endif /* SRVMSGRENEW_H */

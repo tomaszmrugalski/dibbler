@@ -9,74 +9,63 @@
  */
 
 #include "SrvMsgReconfigure.h"
-#include "Logger.h"
-#include "SrvOptIA_NA.h"
-#include "SrvOptTA.h"
-#include "OptStatusCode.h"
-#include "OptReconfigureMsg.h"
-#include "OptDUID.h"
-#include "Opt.h"
-#include "SrvOptIA_PD.h"
-#include "OptReconfigureMsg.h"
-#include "OptAuthentication.h"
-#include "Logger.h"
-#include "hex.h"
 #include "Key.h"
+#include "Logger.h"
+#include "Opt.h"
+#include "OptAuthentication.h"
+#include "OptDUID.h"
+#include "OptReconfigureMsg.h"
+#include "OptStatusCode.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptIA_PD.h"
+#include "SrvOptTA.h"
+#include "hex.h"
 
-TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr,
-                                       int msgType, SPtr<TDUID> clientDuid)
-    :TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0/*trans-id*/)
-{
+TSrvMsgReconfigure::TSrvMsgReconfigure(int iface, SPtr<TIPv6Addr> clientAddr, int msgType,
+                                       SPtr<TDUID> clientDuid)
+    : TSrvMsg(iface, clientAddr, RECONFIGURE_MSG, 0 /*trans-id*/) {
 
-    // include our DUID (server-id)
-    Options.push_back(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
+  // include our DUID (server-id)
+  Options.push_back(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
 
-    // include his DUID (client-id)
-    Options.push_back(new TOptDUID(OPTION_CLIENTID, clientDuid, this));
+  // include his DUID (client-id)
+  Options.push_back(new TOptDUID(OPTION_CLIENTID, clientDuid, this));
 
-    // include Reconfigure Message
-    Options.push_back(new TOptReconfigureMsg(msgType, this) );
+  // include Reconfigure Message
+  Options.push_back(new TOptReconfigureMsg(msgType, this));
 
+  SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
+  if (cli && cli->ReconfKey_.size() > 0) {
+    setAuthKey(cli->ReconfKey_);
+    Log(Debug) << "Auth: Setting reconfigure-key to "
+               << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
 
-    SPtr<TAddrClient> cli = SrvAddrMgr().getClient(clientDuid);
-    if (cli && cli->ReconfKey_.size() > 0) {
-        setAuthKey(cli->ReconfKey_);
-        Log(Debug) << "Auth: Setting reconfigure-key to "
-                   << hexToText(&cli->ReconfKey_[0], cli->ReconfKey_.size()) << LogEnd;
+    // insert authentication option
+    SPtr<TOptAuthentication> optAuth =
+        new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1, AUTH_REPLAY_NONE, this);
+    TKey tmp(17, 0);
+    tmp[0] = 2;  // see RFC3315, section 21.5.1
+    optAuth->setPayload(tmp);
 
-        // insert authentication option
-        SPtr<TOptAuthentication> optAuth = new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
-                                                                  AUTH_REPLAY_NONE, this);
-        TKey tmp(17,0);
-        tmp[0] = 2; // see RFC3315, section 21.5.1
-        optAuth->setPayload(tmp);
+    Options.push_back(SPtr_cast<TOpt>(optAuth));
 
-        Options.push_back(SPtr_cast<TOpt>(optAuth));
+  } else {
+    Log(Warning) << "Auth: No reconfigure-key specified for client. Sending"
+                 << " without key, client will likely to ignore this update." << LogEnd;
+  }
 
-    } else {
-        Log(Warning) << "Auth: No reconfigure-key specified for client. Sending"
-                     << " without key, client will likely to ignore this update." << LogEnd;
-    }
-
-    send();
-    return;
+  send();
+  return;
 }
 
 bool TSrvMsgReconfigure::check() {
-    // this should never happen
-    return true;
+  // this should never happen
+  return true;
 }
 
-TSrvMsgReconfigure::~TSrvMsgReconfigure() {
-}
+TSrvMsgReconfigure::~TSrvMsgReconfigure() {}
 
-unsigned long TSrvMsgReconfigure::getTimeout() {
-    return 0;
-}
-void TSrvMsgReconfigure::doDuties() {
-    IsDone = true;
-}
+unsigned long TSrvMsgReconfigure::getTimeout() { return 0; }
+void TSrvMsgReconfigure::doDuties() { IsDone = true; }
 
-std::string TSrvMsgReconfigure::getName() const {
-    return "RECONFIGURE";
-}
+std::string TSrvMsgReconfigure::getName() const { return "RECONFIGURE"; }

@@ -17,39 +17,39 @@ class TRelCfgIface;
 #include <iostream>
 #include <string>
 
-class TRelCfgIface
-{
-    friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
+class TRelCfgIface {
+  friend std::ostream &operator<<(std::ostream &out, TRelCfgIface &iface);
+
 public:
-    TRelCfgIface(const std::string& ifaceName);
-    TRelCfgIface(int ifaceNr);
-    virtual ~TRelCfgIface();
+  TRelCfgIface(const std::string &ifaceName);
+  TRelCfgIface(int ifaceNr);
+  virtual ~TRelCfgIface();
 
-    void setName(std::string ifaceName);
-    void setID(int ifaceID);
-    int	getID();
-    std::string getName();
-    std::string getFullName();
+  void setName(std::string ifaceName);
+  void setID(int ifaceID);
+  int getID();
+  std::string getName();
+  std::string getFullName();
 
-    SPtr<TIPv6Addr> getServerUnicast();
-    SPtr<TIPv6Addr> getClientUnicast();
-    bool getServerMulticast();
-    bool getClientMulticast();
+  SPtr<TIPv6Addr> getServerUnicast();
+  SPtr<TIPv6Addr> getClientUnicast();
+  bool getServerMulticast();
+  bool getClientMulticast();
 
-    void setOptions(SPtr<TRelParsGlobalOpt> opt);
-    
-    unsigned char getPreference();
-    int getInterfaceID();
-    
+  void setOptions(SPtr<TRelParsGlobalOpt> opt);
+
+  unsigned char getPreference();
+  int getInterfaceID();
+
 private:
-    std::string Name_;
-    int	ID_;
-    int InterfaceID_; // value of interface-id option (optional)
+  std::string Name_;
+  int ID_;
+  int InterfaceID_; // value of interface-id option (optional)
 
-    SPtr<TIPv6Addr> ClientUnicast_;
-    SPtr<TIPv6Addr> ServerUnicast_;
-    bool ClientMulticast_;
-    bool ServerMulticast_;
+  SPtr<TIPv6Addr> ClientUnicast_;
+  SPtr<TIPv6Addr> ServerUnicast_;
+  bool ClientMulticast_;
+  bool ServerMulticast_;
 };
 
 #endif /* RELCFGIFACE_H */

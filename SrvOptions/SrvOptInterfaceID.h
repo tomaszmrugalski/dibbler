@@ -12,16 +12,13 @@
 #define SRVOPTIONINTERFACEID_H
 #include "OptGeneric.h"
 
-class TSrvOptInterfaceID : public TOptGeneric
-{
+class TSrvOptInterfaceID : public TOptGeneric {
 
-  public:
-    bool operator==(const TSrvOptInterfaceID &other) const;
-    TSrvOptInterfaceID(int id, TMsg * parent);
-    TSrvOptInterfaceID(const char * buf,  int n, TMsg* parent);
-    bool doDuties();
+public:
+  bool operator==(const TSrvOptInterfaceID &other) const;
+  TSrvOptInterfaceID(int id, TMsg *parent);
+  TSrvOptInterfaceID(const char *buf, int n, TMsg *parent);
+  bool doDuties();
 };
-
-
 
 #endif /* OPTIONINTERFACEID_H */

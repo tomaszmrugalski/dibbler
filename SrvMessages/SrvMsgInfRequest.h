@@ -11,23 +11,22 @@
 #ifndef SRVINFREQUEST_H
 #define SRVINFREQUEST_H
 
+#include "IPv6Addr.h"
 #include "SmartPtr.h"
 #include "SrvMsg.h"
-#include "IPv6Addr.h"
 
-class TSrvMsgInfRequest : public TSrvMsg
-{
-  public:
-    TSrvMsgInfRequest(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-    void doDuties();
-    bool check();
-    unsigned long getTimeout();
-    std::string getName() const;
-    ~TSrvMsgInfRequest();
-  private:
-    SPtr<TSrvAddrMgr> AddrMgr;
-    List(TMsg) BackupSrvLst;
+class TSrvMsgInfRequest : public TSrvMsg {
+public:
+  TSrvMsgInfRequest(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
+  void doDuties();
+  bool check();
+  unsigned long getTimeout();
+  std::string getName() const;
+  ~TSrvMsgInfRequest();
+
+private:
+  SPtr<TSrvAddrMgr> AddrMgr;
+  List(TMsg) BackupSrvLst;
 };
-
 
 #endif /* SRVMSGINFREQUEST_H */

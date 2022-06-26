@@ -10,13 +10,13 @@
 #if !defined(__cplusplus)
 
 /* _Bool builtin type is included in GCC */
-/* ISO C Standard: 5.2.5 An object declared as 
-type _Bool is large enough to store 
+/* ISO C Standard: 5.2.5 An object declared as
+type _Bool is large enough to store
 the values 0 and 1. */
 /* We choose 8 bit to match C++ */
 /* It must also promote to integer */
 #ifndef WIN32
-typedef uint8_t _Bool; 
+typedef uint8_t _Bool;
 #endif
 
 /* ISO C Standard: 7.16 Boolean type */

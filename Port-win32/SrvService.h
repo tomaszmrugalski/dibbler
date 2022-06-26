@@ -10,26 +10,26 @@
 #ifndef SRVSERVICE_H
 #define SRVSERVICE_H
 
-#include <windows.h>
-#include <stdio.h>
-#include "winservice.h"
 #include "DHCPServer.h"
+#include "winservice.h"
+#include <stdio.h>
+#include <windows.h>
 
 class TSrvService;
 extern TSrvService StaticService;
 
-class TSrvService : public TWinService
-{
+class TSrvService : public TWinService {
 public:
-	TSrvService(void);
-	void Run();
-    void OnStop();
-    EServiceState ParseStandardArgs(int argc,char* argv[]);
-	void setState(EServiceState status);
-    static TSrvService * getHandle() { return &StaticService; }
-	~TSrvService(void);
+  TSrvService(void);
+  void Run();
+  void OnStop();
+  EServiceState ParseStandardArgs(int argc, char *argv[]);
+  void setState(EServiceState status);
+  static TSrvService *getHandle() { return &StaticService; }
+  ~TSrvService(void);
+
 private:
-	EServiceState status;
+  EServiceState status;
 };
 
 #endif

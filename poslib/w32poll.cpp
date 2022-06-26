@@ -49,7 +49,7 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout) {
   int ret = 0;
   unsigned int x;
   /* convert to msecs */
-  struct timeval tv = { timeout / 1000, (timeout % 1000) * 1000 };
+  struct timeval tv = {timeout / 1000, (timeout % 1000) * 1000};
   bool have_inerr = false;
   bool have_out = false;
 
@@ -82,7 +82,8 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout) {
   }
   if (have_out || !have_inerr) {
     // ..twice
-    tv.tv_sec = 0; tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
     select(FD_SETSIZE - 1, NULL, &set_out, NULL, &tv);
   }
 
@@ -94,7 +95,8 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout) {
     if (FD_ISSET(ufds[x].fd, &set_err)) {
       ufds[x].revents |= POLLERR;
       /* check for hup */
-      u_long arg = 0; socklen_t arglen = sizeof(arg);
+      u_long arg = 0;
+      socklen_t arglen = sizeof(arg);
       if (!getsockopt(ufds[x].fd, SOL_SOCKET, SO_ERROR, (char *)&arg, &arglen) && arg != 0) {
         switch (arg) {
           case COMPAT_ECONNRESET:
@@ -115,4 +117,3 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout) {
 }
 
 #endif
-

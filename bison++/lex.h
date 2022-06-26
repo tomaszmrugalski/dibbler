@@ -17,36 +17,35 @@ You should have received a copy of the GNU General Public License
 along with Bison; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-
-#define	ENDFILE		0
-#define	IDENTIFIER	1
-#define	COMMA		2
-#define COLON		3
-#define	SEMICOLON	4
-#define	BAR		5
-#define LEFT_CURLY	6
-#define TWO_PERCENTS	7
-#define PERCENT_LEFT_CURLY	8
-#define	TOKEN		9
-#define	NTERM		10
-#define GUARD	       11
-#define	TYPE	       12
-#define	UNION	       13
-#define START	       14
-#define LEFT	       15
-#define RIGHT	       16
-#define NONASSOC       17
-#define PREC	       18
+#define ENDFILE 0
+#define IDENTIFIER 1
+#define COMMA 2
+#define COLON 3
+#define SEMICOLON 4
+#define BAR 5
+#define LEFT_CURLY 6
+#define TWO_PERCENTS 7
+#define PERCENT_LEFT_CURLY 8
+#define TOKEN 9
+#define NTERM 10
+#define GUARD 11
+#define TYPE 12
+#define UNION 13
+#define START 14
+#define LEFT 15
+#define RIGHT 16
+#define NONASSOC 17
+#define PREC 18
 #define SEMANTIC_PARSER 19
-#define PURE_PARSER    20
-#define TYPENAME       21
-#define NUMBER	       22
-#define EXPECT	       23
+#define PURE_PARSER 20
+#define TYPENAME 21
+#define NUMBER 22
+#define EXPECT 23
 
-#define PERCENT_LEFT_CURLY_HEADER	       24
-#define PARSER_NAME	       25
-#define DEFINE_SYM	       26
+#define PERCENT_LEFT_CURLY_HEADER 24
+#define PARSER_NAME 25
+#define DEFINE_SYM 26
 
-#define	ILLEGAL	       27
+#define ILLEGAL 27
 
-#define	MAXTOKEN	1024
+#define MAXTOKEN 1024

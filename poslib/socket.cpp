@@ -18,8 +18,8 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "syssocket.h"
 #include "socket.h"
+#include "syssocket.h"
 #include "sysstring.h"
 
 #include "exception.h"
@@ -34,21 +34,20 @@
 bool posclient_quitflag = false;
 
 int struct_pf(_addr *addr) {
-    if (addr->s_family == AF_INET) 
-	return PF_INET;
-    else  if (addr->s_family == AF_INET6) 
-	return PF_INET6;
-    return -1;
+  if (addr->s_family == AF_INET)
+    return PF_INET;
+  else if (addr->s_family == AF_INET6)
+    return PF_INET6;
+  return -1;
 }
 
 int struct_len(_addr *addr) {
-    if (addr->s_family == AF_INET) 
-	return sizeof(sockaddr_in);
-    else if (addr->s_family == AF_INET6) 
-	return sizeof(sockaddr_in6);
-    return -1;
+  if (addr->s_family == AF_INET)
+    return sizeof(sockaddr_in);
+  else if (addr->s_family == AF_INET6)
+    return sizeof(sockaddr_in6);
+  return -1;
 }
-
 
 #ifdef _WIN32
 
@@ -58,113 +57,106 @@ class __init_socklib {
  public:
   __init_socklib() {
     WSADATA info;
-      WSAStartup(MAKEWORD(2, 2), &info);
+    WSAStartup(MAKEWORD(2, 2), &info);
   }
 
-  ~__init_socklib() {
-    WSACleanup();
-  }
+  ~__init_socklib() { WSACleanup(); }
 } __static_init_socklib;
 
 #endif
 
 void setnonblock(int sockid) {
 #ifdef _WIN32
-    long int val = 1;
-    u_long req = FIONBIO;
-    ioctlsocket(sockid, val, &req);
+  long int val = 1;
+  u_long req = FIONBIO;
+  ioctlsocket(sockid, val, &req);
 #else
-    if (fcntl(sockid, F_SETFL, O_NONBLOCK) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not set socket to non-blocking"); 
-    }
+  if (fcntl(sockid, F_SETFL, O_NONBLOCK) < 0) {
+    closesocket(sockid);
+    throw PException("Could not set socket to non-blocking");
+  }
 #endif
 }
 
-int udpcreateserver(_addr* socketaddr) {
-    int sockid;
-    int one = 1;
-    
-    if ((sockid = socket(struct_pf(socketaddr), SOCK_DGRAM, IPPROTO_UDP)) < 0) 
-	throw PException("Could not create UDP socket!");
-    if (bind(sockid, (sockaddr *)(socketaddr), struct_len(socketaddr)) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not bind to socket!"); 
-    }
-    
-    setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
-    setnonblock(sockid);
-    
-    return sockid;
+int udpcreateserver(_addr *socketaddr) {
+  int sockid;
+  int one = 1;
+
+  if ((sockid = socket(struct_pf(socketaddr), SOCK_DGRAM, IPPROTO_UDP)) < 0)
+    throw PException("Could not create UDP socket!");
+  if (bind(sockid, (sockaddr *)(socketaddr), struct_len(socketaddr)) < 0) {
+    closesocket(sockid);
+    throw PException("Could not bind to socket!");
+  }
+
+  setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
+  setnonblock(sockid);
+
+  return sockid;
 }
 
-void udpclose(int sockid) {
-    closesocket(sockid);
-}
+void udpclose(int sockid) { closesocket(sockid); }
 
 int udpread(int sockid, const char *buff, int len, _addr *addr) {
-    socklen_t addr_size = sizeof(_addr);
-    int ret = recvfrom(sockid, (char*)buff, len, 0, (sockaddr *) addr, &addr_size);
-    if (ret <= 0) 
-	throw PException("Could not receive data from UDP socket");
-    return ret;
+  socklen_t addr_size = sizeof(_addr);
+  int ret = recvfrom(sockid, (char *)buff, len, 0, (sockaddr *)addr, &addr_size);
+  if (ret <= 0) throw PException("Could not receive data from UDP socket");
+  return ret;
 }
 
 void udpsend(int sockid, const char *buff, int len, _addr *addr) {
-    if (sendto(sockid, (char*)buff, len, 0, (sockaddr *)addr, struct_len(addr)) < 0)
-	throw PException(true, "Could not send UDP packet: sock %d, err %d", sockid, errno);
+  if (sendto(sockid, (char *)buff, len, 0, (sockaddr *)addr, struct_len(addr)) < 0)
+    throw PException(true, "Could not send UDP packet: sock %d, err %d", sockid, errno);
 }
 
 int tcpcreateserver(_addr *socketaddr) {
-    int sockid;
-    int one = 1;
-    
-    if ((sockid = socket(struct_pf(socketaddr), SOCK_STREAM, IPPROTO_TCP)) < 0) 
-	throw PException("Could not create TCP socket");
-    if (bind(sockid, (sockaddr *)socketaddr, struct_len(socketaddr)) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not bind TCP socket"); 
-    }
-    setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
-    setnonblock(sockid);
-    if (listen(sockid, 5) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not listen to TCP socket"); 
-    }
+  int sockid;
+  int one = 1;
 
-    return sockid;
+  if ((sockid = socket(struct_pf(socketaddr), SOCK_STREAM, IPPROTO_TCP)) < 0)
+    throw PException("Could not create TCP socket");
+  if (bind(sockid, (sockaddr *)socketaddr, struct_len(socketaddr)) < 0) {
+    closesocket(sockid);
+    throw PException("Could not bind TCP socket");
+  }
+  setsockopt(sockid, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
+  setnonblock(sockid);
+  if (listen(sockid, 5) < 0) {
+    closesocket(sockid);
+    throw PException("Could not listen to TCP socket");
+  }
+
+  return sockid;
 }
 
 int tcpopen(_addr *addr) {
-    int sockid;
-    if ((sockid = socket(struct_pf(addr), SOCK_STREAM, IPPROTO_TCP)) < 0)
-	throw PException("Could not create TCP socket");
-    if (connect(sockid, (sockaddr *)addr, struct_len(addr)) < 0) { 
-	closesocket(sockid);
-        std::string txt = addr_to_string(addr, false);
-	throw PException(true, "Could not connect TCP socket to dst addr=%s", txt.c_str());
-    }
-    return sockid;
+  int sockid;
+  if ((sockid = socket(struct_pf(addr), SOCK_STREAM, IPPROTO_TCP)) < 0)
+    throw PException("Could not create TCP socket");
+  if (connect(sockid, (sockaddr *)addr, struct_len(addr)) < 0) {
+    closesocket(sockid);
+    std::string txt = addr_to_string(addr, false);
+    throw PException(true, "Could not connect TCP socket to dst addr=%s", txt.c_str());
+  }
+  return sockid;
 }
 
 int tcpopen_from(_addr *to, _addr *source) {
-    int sockid;
-    if ((sockid = socket(struct_pf(to), SOCK_STREAM, IPPROTO_TCP)) < 0) 
-	throw PException("Could not create TCP socket");
-    if (bind(sockid, (sockaddr *)source, struct_len(source)) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not bind TCP socket"); 
-    }
-    if (connect(sockid, (sockaddr *)to, struct_len(to)) < 0) { 
-	closesocket(sockid); 
-	throw PException("Could not connect TCP socket"); 
-    }
-    return sockid;
+  int sockid;
+  if ((sockid = socket(struct_pf(to), SOCK_STREAM, IPPROTO_TCP)) < 0)
+    throw PException("Could not create TCP socket");
+  if (bind(sockid, (sockaddr *)source, struct_len(source)) < 0) {
+    closesocket(sockid);
+    throw PException("Could not bind TCP socket");
+  }
+  if (connect(sockid, (sockaddr *)to, struct_len(to)) < 0) {
+    closesocket(sockid);
+    throw PException("Could not connect TCP socket");
+  }
+  return sockid;
 }
 
-void tcpclose(int socket) {
-    closesocket(socket);
-}
+void tcpclose(int socket) { closesocket(socket); }
 
 int tcpaccept(int socket, _addr *askaddr) {
   _addr querier;
@@ -182,7 +174,7 @@ int tcpsend(int socket, const char *buff, int bufflen) {
 }
 
 int tcpread(int socket, const char *buff, int bufflen) {
-  int ret = recv(socket, (char*)buff, bufflen, 0);
+  int ret = recv(socket, (char *)buff, bufflen, 0);
   if (ret < 0) {
     if (errno == EAGAIN) return 0;
     throw PException(true, "Could not read TCP message");
@@ -232,7 +224,7 @@ void tcpreadall(int sockid, const char *buff, int len, int maxtime) {
       set.wait(x);
       if (set.isdata(0) || posclient_quitflag) break;
     }
-//    set.check();
+    //    set.check();
     if (!set.isdata(0)) {
       throw PException("Could not read TCP message: no data");
     }
@@ -251,7 +243,10 @@ bool tcpisopen(int sockid) {
   set.check();
   if (!set.isdata(0)) return true;
   char buff[1];
-  if (recv(sockid, buff, 1, MSG_PEEK) <= 0) return false; else return true;
+  if (recv(sockid, buff, 1, MSG_PEEK) <= 0)
+    return false;
+  else
+    return true;
 }
 
 /* address functions */
@@ -277,7 +272,7 @@ void getaddress_ip6(_addr *res, const unsigned char *ipv6_data, int port) {
 }
 
 void getaddress(_addr *res, const char *ip, int port) {
-  char *ptr = strchr((char*)ip, ':');
+  char *ptr = strchr((char *)ip, ':');
 
   if (ptr) {
     /* ipv6 */
@@ -300,12 +295,8 @@ void getaddress(_addr *res, const char *ip, int port) {
   txt_to_ip((unsigned char *)&((sockaddr_in *)res)->sin_addr, ip);
 }
 
-void addr_setport(_addr *addr, int port) {
-  ((sockaddr_in *)addr)->sin_port = htons(port);
-}
-int addr_getport(_addr *addr) {
-  return ntohs(((sockaddr_in *)addr)->sin_port);
-}
+void addr_setport(_addr *addr, int port) { ((sockaddr_in *)addr)->sin_port = htons(port); }
+int addr_getport(_addr *addr) { return ntohs(((sockaddr_in *)addr)->sin_port); }
 
 bool address_lookup(_addr *res, const char *name, int port) {
   struct hostent *ent;
@@ -329,14 +320,14 @@ bool address_lookup(_addr *res, const char *name, int port) {
   return true;
 }
 
-
 bool address_matches(_addr *addr1, _addr *addr2) {
   if (addr1->s_family != addr2->s_family) return false;
 
   if (addr1->s_family == AF_INET)
     return (memcmp(&((sockaddr_in *)addr1)->sin_addr, &((sockaddr_in *)addr2)->sin_addr, 4) == 0);
   else if (addr1->s_family == AF_INET6)
-    return (memcmp(&((sockaddr_in6 *)addr1)->sin6_addr, &((sockaddr_in6 *)addr2)->sin6_addr, 16) == 0);
+    return (memcmp(&((sockaddr_in6 *)addr1)->sin6_addr, &((sockaddr_in6 *)addr2)->sin6_addr, 16) ==
+            0);
   return false;
 }
 
@@ -350,21 +341,15 @@ bool addrport_matches(_addr *addr1, _addr *addr2) {
   return false;
 }
 
-bool sock_is_ipv6(_addr *a) {
-  return (a->s_family == AF_INET6);
-}
+bool sock_is_ipv6(_addr *a) { return (a->s_family == AF_INET6); }
 
 bool addr_is_ipv6(_addr *a) { return sock_is_ipv6(a); }
 
-bool sock_is_ipv4(_addr *a) {
-  return (a->s_family == AF_INET);
-}
+bool sock_is_ipv4(_addr *a) { return (a->s_family == AF_INET); }
 
 bool addr_is_ipv4(_addr *a) { return sock_is_ipv4(a); }
 
-unsigned char *get_ipv4_ptr(_addr *a) {
-  return (unsigned char *)&((sockaddr_in *)a)->sin_addr;
-}
+unsigned char *get_ipv4_ptr(_addr *a) { return (unsigned char *)&((sockaddr_in *)a)->sin_addr; }
 
 bool addr_is_any(_addr *addr) {
   unsigned char *ptr = get_ipv4_ptr(addr);
@@ -376,9 +361,7 @@ bool addr_is_none(_addr *addr) {
   return (ptr[0] == 255 && ptr[1] == 255 && ptr[2] == 255 && ptr[3] == 255);
 }
 
-unsigned char *get_ipv6_ptr(_addr *a) {
-  return (unsigned char *)&((sockaddr_in6 *)a)->sin6_addr;
-}
+unsigned char *get_ipv6_ptr(_addr *a) { return (unsigned char *)&((sockaddr_in6 *)a)->sin6_addr; }
 
 stl_string addr_to_string(const _addr *addr, bool include_port) {
   unsigned char *caddr;
@@ -389,18 +372,17 @@ stl_string addr_to_string(const _addr *addr, bool include_port) {
     caddr = (unsigned char *)&((sockaddr_in *)addr)->sin_addr;
     sprintf(msg, "%d.%d.%d.%d", caddr[0], caddr[1], caddr[2], caddr[3]);
     if (include_port)
-      sprintf(msg + strlen(msg),"#%d", ntohs(((sockaddr_in *)addr)->sin_port) & 32767);
+      sprintf(msg + strlen(msg), "#%d", ntohs(((sockaddr_in *)addr)->sin_port) & 32767);
     return stl_string(msg);
   }
   if (addr->s_family == AF_INET6) {
     /* IPv6 */
     caddr = (unsigned char *)&((sockaddr_in6 *)addr)->sin6_addr;
-    sprintf(msg, "%x:%x:%x:%x:%x:%x:%x:%x",
-            caddr[0]*256+ caddr[1], caddr[2]*256+ caddr[3], caddr[4]*256+ caddr[5],
-            caddr[6]*256+ caddr[7], caddr[8]*256+ caddr[9], caddr[10]*256+ caddr[11],
-            caddr[12]*256+ caddr[13], caddr[14]*256+ caddr[15]);
+    sprintf(msg, "%x:%x:%x:%x:%x:%x:%x:%x", caddr[0] * 256 + caddr[1], caddr[2] * 256 + caddr[3],
+            caddr[4] * 256 + caddr[5], caddr[6] * 256 + caddr[7], caddr[8] * 256 + caddr[9],
+            caddr[10] * 256 + caddr[11], caddr[12] * 256 + caddr[13], caddr[14] * 256 + caddr[15]);
     if (include_port)
-      sprintf(msg + strlen(msg), "#%d",ntohs(((sockaddr_in6 *)addr)->sin6_port) & 32767);
+      sprintf(msg + strlen(msg), "#%d", ntohs(((sockaddr_in6 *)addr)->sin6_port) & 32767);
     return stl_string(msg);
   }
   sprintf(msg, "<unknown socket family %d>", addr->s_family);
@@ -412,9 +394,7 @@ smallset_t::smallset_t() {
   items = NULL;
 }
 
-smallset_t::~smallset_t() {
-  destroy();
-}
+smallset_t::~smallset_t() { destroy(); }
 
 void smallset_t::init(int size) {
   if (nitems) destroy();
@@ -422,9 +402,7 @@ void smallset_t::init(int size) {
   items = (pollfd *)malloc(size * sizeof(pollfd));
 }
 
-void smallset_t::set(int ix, int socket) {
-  items[ix].fd = socket;
-}
+void smallset_t::set(int ix, int socket) { items[ix].fd = socket; }
 
 void smallset_t::destroy() {
   free(items);
@@ -432,22 +410,20 @@ void smallset_t::destroy() {
   nitems = 0;
 }
 
-void smallset_t::check() {
-  wait(0);
-}
+void smallset_t::check() { wait(0); }
 
 void smallset_t::runpoll(int msecs) {
   int ret;
   while (1) {
-	  ret = poll(items, nitems, (msecs >= 1000) ? 1000 : msecs);
-	  if (ret < 0 && errno != EINTR) {
+    ret = poll(items, nitems, (msecs >= 1000) ? 1000 : msecs);
+    if (ret < 0 && errno != EINTR) {
       throw PException(true, "Error during poll: %d->%d", ret, errno);
     }
     if (ret > 0) return;
     if (posclient_quitflag) return;
     if (msecs <= 1000) return;
     msecs -= 1000;
-//    if (msecs == 0) return;
+    //    if (msecs == 0) return;
   }
 }
 
@@ -461,7 +437,6 @@ void smallset_t::wait(int msecs) {
   runpoll(msecs);
 }
 
-
 void smallset_t::waitwrite(int msecs) {
   int x;
   if (msecs < 0) msecs = 0;
@@ -472,30 +447,23 @@ void smallset_t::waitwrite(int msecs) {
   runpoll(msecs);
 }
 
+bool smallset_t::canwrite(int ix) { return (items[ix].revents & POLLOUT); }
 
-bool smallset_t::canwrite(int ix) {
-  return (items[ix].revents & POLLOUT);
-}
+bool smallset_t::isdata(int ix) { return (items[ix].revents & POLLIN); }
 
-bool smallset_t::isdata(int ix) {
-  return (items[ix].revents & POLLIN);
-}
+bool smallset_t::iserror(int ix) { return (items[ix].revents & POLLERR); }
 
-bool smallset_t::iserror(int ix) {
-  return (items[ix].revents & POLLERR);
-}
-
-bool smallset_t::ishup(int ix) {
-  return (items[ix].revents & POLLHUP);
-}
+bool smallset_t::ishup(int ix) { return (items[ix].revents & POLLHUP); }
 
 int getprotocolbyname(const char *name) {
   struct protoent *protocol;
   try {
     int t = txt_to_int(name);
     return t;
-  } catch (PException p) { }
-  if ((protocol = getprotobyname(name)) == NULL) throw PException(true, "Unknown protocol %s", name);
+  } catch (PException p) {
+  }
+  if ((protocol = getprotobyname(name)) == NULL)
+    throw PException(true, "Unknown protocol %s", name);
   return protocol->p_proto;
 }
 
@@ -504,7 +472,9 @@ int getserviceportbyname(const char *name) {
   try {
     int t = txt_to_int(name);
     return t;
-  } catch (PException p) { }
-  if ((service = getservbyname(name, NULL)) == NULL) throw PException(true, "Unknown service %s", name);
+  } catch (PException p) {
+  }
+  if ((service = getservbyname(name, NULL)) == NULL)
+    throw PException(true, "Unknown service %s", name);
   return ntohs(service->s_port);
 }

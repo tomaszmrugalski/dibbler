@@ -11,24 +11,24 @@
 #ifndef RELMSGRELAYFORW_H
 #define RELMSGRELAYFORW_H
 
-#include "RelMsg.h"
 #include "IPv6Addr.h"
+#include "RelMsg.h"
 
 #define MIN_RELAYFORW_LEN 34
 
-class TRelMsgRelayForw: public TRelMsg {
+class TRelMsgRelayForw : public TRelMsg {
 
- public:
-    TRelMsgRelayForw(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
-    std::string getName() const;
-    bool check();
+public:
+  TRelMsgRelayForw(int iface, SPtr<TIPv6Addr> addr, char *data, int dataLen);
+  std::string getName() const;
+  bool check();
 
-    int storeSelf(char * buffer);
-    int getSize();
+  int storeSelf(char *buffer);
+  int getSize();
 
- private:
-    SPtr<TIPv6Addr> PeerAddr;
-    SPtr<TIPv6Addr> LinkAddr;
+private:
+  SPtr<TIPv6Addr> PeerAddr;
+  SPtr<TIPv6Addr> LinkAddr;
 };
 
 #endif

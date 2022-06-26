@@ -13,17 +13,14 @@
 #define SRVOPTADDRPARAMS_H
 #include "OptInteger.h"
 
-class TSrvOptAddrParams : public TOptInteger
-{
-  public:
-    TSrvOptAddrParams(int prefix, int bitfield, TMsg * parent);
-    TSrvOptAddrParams(char * buf,  int n, TMsg* parent);
+class TSrvOptAddrParams : public TOptInteger {
+public:
+  TSrvOptAddrParams(int prefix, int bitfield, TMsg *parent);
+  TSrvOptAddrParams(char *buf, int n, TMsg *parent);
 
-    int getPrefix();
-    int getBitfield();
-    bool doDuties();
+  int getPrefix();
+  int getBitfield();
+  bool doDuties();
 };
 
-
-
-#endif 
+#endif

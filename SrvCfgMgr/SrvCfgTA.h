@@ -12,65 +12,67 @@ class TSrcCfgTA;
 #ifndef SRVCONFTA_H
 #define SRVCONFTA_H
 
-#include <string>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <string>
 
+#include "DHCPConst.h"
+#include "DUID.h"
+#include "IPv6Addr.h"
+#include "SmartPtr.h"
 #include "SrvAddrMgr.h"
 #include "SrvParsGlobalOpt.h"
-#include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "IPv6Addr.h"
-#include "DUID.h"
 
-class TSrvCfgTA
-{
-    friend std::ostream& operator<<(std::ostream& out, TSrvCfgTA& iface);
- public:
-    TSrvCfgTA();
+class TSrvCfgTA {
+  friend std::ostream &operator<<(std::ostream &out, TSrvCfgTA &iface);
 
-    //Is client with this DUID and IP address supported?
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
-    //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
+public:
+  TSrvCfgTA();
 
-    unsigned long countAddrInPool();
-    SPtr<TIPv6Addr> getRandomAddr();
-    bool addrInPool(SPtr<TIPv6Addr> addr);
+  // Is client with this DUID and IP address supported?
+  bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
+  // Is client with this DUID and IP address prefered? (is in accept-only?)
+  bool clntPrefered(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
 
-    unsigned long getPref();
-    unsigned long getValid();
-    unsigned long getClassMaxLease();
-    unsigned long getID();
+  unsigned long countAddrInPool();
+  SPtr<TIPv6Addr> getRandomAddr();
+  bool addrInPool(SPtr<TIPv6Addr> addr);
 
-    unsigned long getAssignedCount();
-    long incrAssigned(int count=1);
-    long decrAssigned(int count=1);
+  unsigned long getPref();
+  unsigned long getValid();
+  unsigned long getClassMaxLease();
+  unsigned long getID();
 
-    void setOptions(SPtr<TSrvParsGlobalOpt> opt);
-    virtual ~TSrvCfgTA();
+  unsigned long getAssignedCount();
+  long incrAssigned(int count = 1);
+  long decrAssigned(int count = 1);
 
-    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
- private:
-    unsigned long Pref;
-    unsigned long Valid;
+  void setOptions(SPtr<TSrvParsGlobalOpt> opt);
+  virtual ~TSrvCfgTA();
 
-    unsigned long ID; // this is not IAID, just internal ID counter
-    static unsigned long staticID;
+  void mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst);
+  bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr,
+                     SPtr<TSrvMsg> msg);
 
-    TContainer<SPtr<THostRange> > RejedClnt;
-    TContainer<SPtr<THostRange> > AcceptClnt;
-    SPtr<THostRange> Pool;
-    unsigned long ClassMaxLease;
-    unsigned long AddrsAssigned;
-    unsigned long AddrsCount;
+private:
+  unsigned long Pref;
+  unsigned long Valid;
 
-    List(std::string) allowLst;
-    List(std::string) denyLst;
+  unsigned long ID; // this is not IAID, just internal ID counter
+  static unsigned long staticID;
 
-    List(TSrvCfgClientClass) allowClientClassLst;
-    List(TSrvCfgClientClass) denyClientClassLst;
+  TContainer<SPtr<THostRange>> RejedClnt;
+  TContainer<SPtr<THostRange>> AcceptClnt;
+  SPtr<THostRange> Pool;
+  unsigned long ClassMaxLease;
+  unsigned long AddrsAssigned;
+  unsigned long AddrsCount;
+
+  List(std::string) allowLst;
+  List(std::string) denyLst;
+
+  List(TSrvCfgClientClass) allowClientClassLst;
+  List(TSrvCfgClientClass) denyClientClassLst;
 };
 
 #endif

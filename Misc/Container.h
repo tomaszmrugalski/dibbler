@@ -14,110 +14,91 @@
 #include <list>
 #include <stdlib.h>
 
-#define List(x) TContainer< SPtr< x > >
+#define List(x) TContainer<SPtr<x>>
 
-template <class TYP>
-class TContainer{
+template <class TYP> class TContainer {
 public:
-    TContainer();
-    ~TContainer() {
-        lista.clear();
+  TContainer();
+  ~TContainer() { lista.clear(); }
+
+  TContainer(const TContainer &old);
+
+  void append(const TYP &foo) { lista.push_back(foo); }
+
+  size_t count() const { return lista.size(); }
+
+  bool empty() const { return lista.empty(); }
+
+  void first();
+
+  void delFirst() {
+    lista.pop_front();
+    first();
+  }
+
+  void del() {
+    it--;
+    lista.erase(it);
+    first();
+  }
+
+  void clear();
+
+  TYP get() {
+    if (it != lista.end()) {
+      return *it++;
+    } else {
+      return TYP();
     }
+  }
 
-    TContainer(const TContainer& old);
-
-    void append(const TYP &foo) {
-        lista.push_back(foo);
+  TYP getLast() {
+    if (lista.empty()) {
+      return TYP();
+    } else {
+      return lista.back();
     }
+  }
 
-    size_t count() const {
-        return lista.size();
+  TYP getFirst() {
+    if (lista.empty()) {
+      return TYP();
+    } else {
+      return lista.front();
     }
+  }
 
-    bool empty() const {
-        return lista.empty();
-    }
+  void delLast() {
+    lista.pop_back();
+    first();
+  }
 
-    void first();
+  /// @brief returns underlying STL container
+  ///
+  /// @return const reference to the STL container
+  const std::list<TYP> &getSTL() const { return (lista); }
 
-    void delFirst() {
-        lista.pop_front();
-        first();
-    }
+  std::list<TYP> &getSTL() { return (lista); }
 
-    void del() {
-        it--;
-        lista.erase(it);
-        first();
-    }
-
-    void clear();
-
-    TYP	get() {
-        if (it != lista.end()) {
-            return *it++;
-        } else {
-            return TYP();
-        }
-    }
-
-    TYP getLast() {
-        if (lista.empty()) {
-            return TYP();
-        } else {
-            return lista.back();
-        }
-    }
-
-    TYP getFirst() {
-        if (lista.empty()) {
-            return TYP();
-        } else {
-            return lista.front();
-        }
-    }
-
-    void delLast() {
-        lista.pop_back();
-        first();
-    }
-
-    /// @brief returns underlying STL container
-    ///
-    /// @return const reference to the STL container
-    const std::list<TYP>& getSTL() const {
-        return (lista);
-    }
-
-    std::list<TYP>& getSTL() {
-        return (lista);
-    }
 private:
-    std::list<TYP> lista;
-    typename std::list<TYP>::iterator it;
+  std::list<TYP> lista;
+  typename std::list<TYP>::iterator it;
 };
 
-template <class TYP>
-TContainer<TYP>::TContainer() {
+template <class TYP> TContainer<TYP>::TContainer() {}
+
+template <class TYP> void TContainer<TYP>::clear() { lista.clear(); }
+
+template <class TYP> void TContainer<TYP>::first() {
+  it = lista.begin();
+  return;
 }
 
-template <class TYP>
-void TContainer<TYP>::clear() {
-    lista.clear();
+template <class TYP> TContainer<TYP>::TContainer(const TContainer &old) {
+  for (typename std::list<TYP>::const_iterator elem = old.lista.begin();
+       elem != old.lista.end(); ++elem) {
+    lista.push_back(*elem);
+  }
 }
-
-template <class TYP>
-void TContainer<TYP>::first() {
-    it=lista.begin();
-    return;
-}
-
-template <class TYP>
-TContainer<TYP>::TContainer(const TContainer& old) {
-    for (typename std::list<TYP>::const_iterator elem = old.lista.begin(); elem != old.lista.end(); ++elem) {
-        lista.push_back(*elem);
-    }
-}
-
 
 #endif

@@ -32,9 +32,9 @@
 #include <stdio.h>
 
 #ifndef HAVE_GETTIMEOFDAY
-#include <sys/types.h>
 #include <sys/timeb.h>
-//typedef int timezone;
+#include <sys/types.h>
+// typedef int timezone;
 void gettimeofday(timeval *a, int *b) {
   struct timeb _gettimeofday_tmp;
   ftime(&_gettimeofday_tmp);
@@ -53,39 +53,29 @@ postime_t::postime_t(int msecs) {
   msec = msecs % 1000;
 }
 
-bool postime_t::operator==(const postime_t& tm) {
-  return (sec == tm.sec && msec == tm.msec);
+bool postime_t::operator==(const postime_t &tm) { return (sec == tm.sec && msec == tm.msec); }
+
+bool postime_t::operator<=(const postime_t &tm) {
+  return (sec < tm.sec || (sec == tm.sec && msec <= tm.msec));
 }
 
-bool postime_t::operator<=(const postime_t& tm) {
-  return (sec < tm.sec ||
-          (sec == tm.sec && msec <= tm.msec));
+bool postime_t::operator<(const postime_t &tm) {
+  return (sec < tm.sec || (sec == tm.sec && msec < tm.msec));
 }
 
-bool postime_t::operator<(const postime_t& tm) {
-  return (sec < tm.sec ||
-          (sec == tm.sec && msec < tm.msec));
+bool postime_t::operator>=(const postime_t &tm) {
+  return (sec > tm.sec || (sec == tm.sec && msec >= tm.msec));
 }
 
-bool postime_t::operator>=(const postime_t& tm) {
-  return (sec > tm.sec ||
-          (sec == tm.sec && msec >= tm.msec));
+bool postime_t::operator>(const postime_t &tm) {
+  return (sec > tm.sec || (sec == tm.sec && msec > tm.msec));
 }
 
-bool postime_t::operator>(const postime_t& tm) {
-  return (sec > tm.sec ||
-          (sec == tm.sec && msec > tm.msec));
+bool postime_t::operator>(const timespec &tm) {
+  return (sec > tm.tv_sec || (sec == tm.tv_sec && msec > (tm.tv_nsec / 1000000)));
 }
 
-bool postime_t::operator>(const timespec& tm) {
-  return (sec > tm.tv_sec ||
-          (sec == tm.tv_sec && msec > (tm.tv_nsec / 1000000)));
-}
-
-int postime_t::after(const postime_t &tm) {
-  return (sec - tm.sec) * 1000 + (msec - tm.msec);
-}
-
+int postime_t::after(const postime_t &tm) { return (sec - tm.sec) * 1000 + (msec - tm.msec); }
 
 postime_t postime_t::operator+(int msecs) {
   postime_t ret = postime_t();
@@ -95,17 +85,16 @@ postime_t postime_t::operator+(int msecs) {
   return ret;
 }
 
-postime_t& postime_t::operator+=(int msecs) {
+postime_t &postime_t::operator+=(int msecs) {
   long x = msec + msecs;
   msec = x % 1000;
   sec = sec + x / 1000;
   return *this;
 }
 
-
 postime_t postime_t::operator-(const postime_t &tm) {
   postime_t res = postime_t();
-  
+
   long x = msec - tm.msec;
   res.msec = x % 1000;
   res.sec += sec - tm.sec + x / 1000;
@@ -116,11 +105,11 @@ postime_t postime_t::operator-(const postime_t &tm) {
 postime_t postime_t::operator+(const postime_t &tm) {
   postime_t res = postime_t();
   long x;
-  
+
   x = msec + tm.msec;
   res.msec = x % 1000;
   res.sec = sec + tm.sec + x / 1000;
-  
+
   return res;
 }
 
@@ -134,7 +123,7 @@ postime_t &postime_t::operator+=(const postime_t &tm) {
   return *this;
 }
 
-postime_t& postime_t::operator=(const postime_t &tm) {
+postime_t &postime_t::operator=(const postime_t &tm) {
   sec = tm.sec;
   msec = tm.msec;
   return *this;
@@ -147,10 +136,9 @@ postime_t getcurtime() {
   gettimeofday(&tmp, NULL);
   res.sec = tmp.tv_sec;
   res.msec = tmp.tv_usec / 1000;
-  
+
   return res;
 }
-
 
 timespec postimespec(int timeout) {
   timespec end;

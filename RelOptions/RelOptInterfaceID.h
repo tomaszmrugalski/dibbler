@@ -14,12 +14,11 @@
 #define RELOPTIONINTERFACEID_H
 #include "OptInteger.h"
 
-class TRelOptInterfaceID : public TOptInteger
-{
-  public:
-    TRelOptInterfaceID(char * data, int dataLen, TMsg* parent);
-    TRelOptInterfaceID(int interfaceID, TMsg* parent);
-    bool doDuties();
+class TRelOptInterfaceID : public TOptInteger {
+public:
+  TRelOptInterfaceID(char *data, int dataLen, TMsg *parent);
+  TRelOptInterfaceID(int interfaceID, TMsg *parent);
+  bool doDuties();
 };
 
 #endif /* RELOPTIONINTERFACEID_H */

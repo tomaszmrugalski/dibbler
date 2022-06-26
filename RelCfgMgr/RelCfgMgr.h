@@ -20,72 +20,71 @@
 
 #define RelCfgMgr() (TRelCfgMgr::instance())
 
-class TRelCfgMgr : public TCfgMgr
-{
-public:  
-    friend std::ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
-    virtual ~TRelCfgMgr();
+class TRelCfgMgr : public TCfgMgr {
+public:
+  friend std::ostream &operator<<(std::ostream &strum, TRelCfgMgr &x);
+  virtual ~TRelCfgMgr();
 
-    static void instanceCreate(const std::string& cfgFile, const std::string& xmlFile);
-    static TRelCfgMgr& instance();
+  static void instanceCreate(const std::string &cfgFile,
+                             const std::string &xmlFile);
+  static TRelCfgMgr &instance();
 
-    bool parseConfigFile(const std::string& cfgFile);
+  bool parseConfigFile(const std::string &cfgFile);
 
-    //Interfaces access methods
-    void firstIface();
-    SPtr<TRelCfgIface> getIface();
-    SPtr<TRelCfgIface> getIfaceByID(int iface);
-    SPtr<TRelCfgIface> getIfaceByInterfaceID(int iface);
-    long countIface();
-    void addIface(SPtr<TRelCfgIface> iface);
+  // Interfaces access methods
+  void firstIface();
+  SPtr<TRelCfgIface> getIface();
+  SPtr<TRelCfgIface> getIfaceByID(int iface);
+  SPtr<TRelCfgIface> getIfaceByInterfaceID(int iface);
+  long countIface();
+  void addIface(SPtr<TRelCfgIface> iface);
 
-    void dump();
+  void dump();
 
-    bool isDone();
+  bool isDone();
 
-    bool setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt);
+  bool setupGlobalOpts(SPtr<TRelParsGlobalOpt> opt);
 
-    // configuration parameters
-    std::string getWorkdir();
-    bool guessMode();
-    ERelIfaceIdOrder getInterfaceIDOrder();
+  // configuration parameters
+  std::string getWorkdir();
+  bool guessMode();
+  ERelIfaceIdOrder getInterfaceIDOrder();
 
-    SPtr<TOptVendorData> getRemoteID();
-    SPtr<TRelOptEcho>     getEcho();
+  SPtr<TOptVendorData> getRemoteID();
+  SPtr<TRelOptEcho> getEcho();
 
-    void setRelayID(SPtr<TOpt> relayID);
-    SPtr<TOpt> getRelayID();
+  void setRelayID(SPtr<TOpt> relayID);
+  SPtr<TOpt> getRelayID();
 
-    void setClientLinkLayerAddress(bool enabled);
-    bool getClientLinkLayerAddress();
+  void setClientLinkLayerAddress(bool enabled);
+  bool getClientLinkLayerAddress();
 
 protected:
-    static TRelCfgMgr * Instance;
-    TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
+  static TRelCfgMgr *Instance;
+  TRelCfgMgr(const std::string &cfgFile, const std::string &xmlFile);
 
 private:
+  std::string XmlFile;
 
-    std::string XmlFile;
+  static int NextRelayID;
 
-    static int NextRelayID;
+  bool IsDone;
+  bool validateConfig();
+  bool validateIface(SPtr<TRelCfgIface> ptrIface);
+  List(TRelCfgIface) IfaceLst;
 
-    bool IsDone;
-    bool validateConfig();
-    bool validateIface(SPtr<TRelCfgIface> ptrIface);
-    List(TRelCfgIface) IfaceLst;
+  bool matchParsedSystemInterfaces(List(TRelCfgIface) * lst);
 
-    bool matchParsedSystemInterfaces(List(TRelCfgIface) * lst);
+  // global options
+  std::string Workdir;
+  bool GuessMode;
+  ERelIfaceIdOrder InterfaceIDOrder;
 
-    // global options
-    std::string Workdir;
-    bool GuessMode;
-    ERelIfaceIdOrder InterfaceIDOrder;
+  SPtr<TOptVendorData> RemoteID;
+  SPtr<TRelOptEcho> Echo;
+  SPtr<TOpt> RelayID_;
 
-    SPtr<TOptVendorData> RemoteID;
-    SPtr<TRelOptEcho> Echo;
-    SPtr<TOpt> RelayID_;
-
-    bool ClientLinkLayerAddress_;
+  bool ClientLinkLayerAddress_;
 };
 
 #endif /* RELCONFMGR_H */

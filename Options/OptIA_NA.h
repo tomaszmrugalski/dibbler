@@ -14,19 +14,17 @@ class TOptIA_NA;
 
 #include "OptIA.h"
 
-class TOptIA_NA : public TOptIA
-{
-  public:
-    TOptIA_NA(long IAID, long t1, long t2, TMsg* parent);
-    TOptIA_NA(char* &buf, int &bufsize, TMsg* parent);
-    size_t getSize();
+class TOptIA_NA : public TOptIA {
+public:
+  TOptIA_NA(long IAID, long t1, long t2, TMsg *parent);
+  TOptIA_NA(char *&buf, int &bufsize, TMsg *parent);
+  size_t getSize();
 
-    unsigned long getMaxValid();
-    int countAddrs();
+  unsigned long getMaxValid();
+  int countAddrs();
 
-    char * storeSelf( char* buf);
-    bool isValid() const;
+  char *storeSelf(char *buf);
+  bool isValid() const;
 };
-
 
 #endif /*  */

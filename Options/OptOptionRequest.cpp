@@ -8,132 +8,111 @@
  *
  */
 
-#include <string.h>
-#include "Portable.h"
 #include "OptOptionRequest.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "Portable.h"
+#include <string.h>
 
-TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg* parent)
-    :TOpt(code, parent)
-{
-    Valid = true;
+TOptOptionRequest::TOptOptionRequest(uint16_t code, TMsg *parent) : TOpt(code, parent) {
+  Valid = true;
+  Options = NULL;
+  OptCnt = 0;
+}
+
+int TOptOptionRequest::getReqOpt(int optNr) {
+  if ((!OptCnt) || (optNr > OptCnt)) {
+    return 0;
+  }
+  return Options[optNr];
+}
+
+size_t TOptOptionRequest::getSize() {
+  if (!OptCnt) return 0;
+  int mySize = 4 + (OptCnt << 1);
+  return mySize + getSubOptSize();
+}
+
+char *TOptOptionRequest::storeSelf(char *buf) {
+  if (!OptCnt) return buf;
+  buf = writeUint16(buf, OptType);
+  buf = writeUint16(buf, getSize() - 4);
+  int i = 0;
+  while (i < OptCnt) {
+    buf = writeUint16(buf, Options[i]);
+    i++;
+  }
+  return buf;
+}
+
+TOptOptionRequest::TOptOptionRequest(uint16_t code, const char *buf, size_t bufSize, TMsg *parent)
+    : TOpt(code, parent) {
+  Valid = false;
+  if (bufSize % 2) {
+    Log(Error) << "OPTION REQUEST option malformed: odd number of bytes (" << bufSize << ")."
+               << LogEnd;
     Options = NULL;
     OptCnt = 0;
+    return;
+  }
+  int totalOpts = bufSize / 2;
+  Options = new unsigned short[totalOpts];  // allocate memory for all options
+
+  for (int i = 0; i < totalOpts; i++) {
+    Options[i] = readUint16(buf + i * 2);
+  }
+  OptCnt = totalOpts;
+  Valid = true;
 }
 
-int  TOptOptionRequest::getReqOpt(int optNr) {
-    if ( (!OptCnt) || (optNr>OptCnt) ) {
-        return 0;
-    }
-    return Options[optNr];
+void TOptOptionRequest::addOption(unsigned short optNr) {
+  // Is option already included
+  if (isOption(optNr)) return;  // if it is no need to include once more
+  // store for a while old options
+  unsigned short *oldOptions = Options;
+  // assign memort for additional option
+  Options = new unsigned short[++OptCnt];
+  // If there were options before
+  if (oldOptions) {
+    // copy them to new memory
+    memcpy(Options, oldOptions, (OptCnt - 1) * sizeof(short));
+    // now they can be deleted
+    delete[] oldOptions;
+  }
+  // and add new option
+  Options[OptCnt - 1] = optNr;
 }
 
-size_t TOptOptionRequest::getSize()
-{
-    if (!OptCnt)
-        return 0;
-    int mySize = 4+(OptCnt<<1);
-    return mySize+getSubOptSize();
+void TOptOptionRequest::delOption(unsigned short optNr) {
+  // find option if any
+  if (!OptCnt) return;
+  int optIdx = 0;
+  while ((optIdx < OptCnt) && (Options[optIdx] != optNr)) optIdx++;
+  // if there is no such a option
+  if (optIdx >= OptCnt) return;
+  memcpy(Options + optIdx, Options + optIdx + 1, (OptCnt - optIdx - 1) << 1);
+  OptCnt--;
 }
 
-char * TOptOptionRequest::storeSelf( char* buf)
-{
-    if (!OptCnt)
-        return buf;
-    buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize()-4);
-    int i=0;
-    while(i<OptCnt)
-    {
-        buf = writeUint16(buf, Options[i]);
-        i++;
-    }
-    return buf;
+bool TOptOptionRequest::isOption(unsigned short optNr) {
+  for (int i = 0; i < OptCnt; i++)
+    if (Options[i] == optNr) return true;
+  return false;
 }
 
-TOptOptionRequest::TOptOptionRequest(uint16_t code, const char * buf, size_t bufSize, TMsg* parent)
-    :TOpt(code, parent)
-{
-    Valid = false;
-    if (bufSize%2) {
-        Log(Error) << "OPTION REQUEST option malformed: odd number of bytes ("
-                   << bufSize << ")." << LogEnd;
-        Options = NULL;
-        OptCnt  = 0;
-        return;
-    }
-    int totalOpts = bufSize/2;
-    Options = new unsigned short[totalOpts]; // allocate memory for all options
-
-    for (int i = 0; i < totalOpts; i++) {
-        Options[i] = readUint16(buf + i*2);
-    }
-    OptCnt = totalOpts;
-    Valid = true;
-}
-
-void TOptOptionRequest::addOption(unsigned short optNr)
-{
-    //Is option already included
-    if (isOption(optNr))
-        return; //if it is no need to include once more
-    //store for a while old options
-    unsigned short *oldOptions = Options;
-    //assign memort for additional option
-    Options = new unsigned short[++OptCnt];
-    //If there were options before
-    if (oldOptions)
-    {
-        //copy them to new memory
-        memcpy(Options,oldOptions,(OptCnt-1)*sizeof(short));
-        //now they can be deleted
-        delete [] oldOptions;
-    }
-    //and add new option
-    Options[OptCnt-1]=optNr;
-}
-
-void TOptOptionRequest::delOption(unsigned short optNr)
-{
-    //find option if any
-    if (!OptCnt) return;
-    int optIdx=0;
-    while((optIdx<OptCnt)&&(Options[optIdx]!=optNr))
-        optIdx++;
-    //if there is no such a option
-    if (optIdx>=OptCnt) return;
-    memcpy(Options+optIdx,Options+optIdx+1,(OptCnt-optIdx-1)<<1);
-    OptCnt--;
-}
-
-bool TOptOptionRequest::isOption(unsigned short optNr)
-{
-    for(int i=0;i<OptCnt;i++)
-        if (Options[i]==optNr)
-            return true;
-    return false;
-}
-
-int TOptOptionRequest::count() {
-    return this->OptCnt;
-}
+int TOptOptionRequest::count() { return this->OptCnt; }
 
 void TOptOptionRequest::clearOptions() {
-    if (this->OptCnt) {
-        delete [] this->Options;
-    }
-    OptCnt = 0;
+  if (this->OptCnt) {
+    delete[] this->Options;
+  }
+  OptCnt = 0;
 }
 
-TOptOptionRequest::~TOptOptionRequest()
-{
-    if (Options) {
-        delete [] Options;
-    }
+TOptOptionRequest::~TOptOptionRequest() {
+  if (Options) {
+    delete[] Options;
+  }
 }
 
-std::string TOptOptionRequest::getPlain() {
-    return "ORO";
-}
-
+std::string TOptOptionRequest::getPlain() { return "ORO"; }

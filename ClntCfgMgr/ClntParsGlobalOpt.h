@@ -15,44 +15,42 @@ class TClntParsGlobalOpt;
 #include "ClntParsIfaceOpt.h"
 #include "DHCPConst.h"
 
-class TClntParsGlobalOpt : public TClntParsIfaceOpt
-{
+class TClntParsGlobalOpt : public TClntParsIfaceOpt {
 public:
-    TClntParsGlobalOpt();
-    ~TClntParsGlobalOpt();
+  TClntParsGlobalOpt();
+  ~TClntParsGlobalOpt();
 
-    void setWorkDir(const std::string& dir);
-    std::string getWorkDir();
-    void setOnLinkPrefixLength(int len);
-    int getOnLinkPrefixLength();
-    void setAnonInfRequest(bool anonymous);
-    bool getAnonInfRequest();
-    void setInsistMode(bool insist);
-    bool getInsistMode();
-    void setInactiveMode(bool flex);
-    bool getInactiveMode();
+  void setWorkDir(const std::string &dir);
+  std::string getWorkDir();
+  void setOnLinkPrefixLength(int len);
+  int getOnLinkPrefixLength();
+  void setAnonInfRequest(bool anonymous);
+  bool getAnonInfRequest();
+  void setInsistMode(bool insist);
+  bool getInsistMode();
+  void setInactiveMode(bool flex);
+  bool getInactiveMode();
 
-    void setExperimental();
-    bool getExperimental();
+  void setExperimental();
+  bool getExperimental();
 
-    void setFQDNFlagS(bool s);
-    bool getFQDNFlagS();
+  void setFQDNFlagS(bool s);
+  bool getFQDNFlagS();
 
-    void setConfirm(bool conf);
-    bool getConfirm();
-
+  void setConfirm(bool conf);
+  bool getConfirm();
 
 private:
-    std::string WorkDir;
-    int PrefixLength;
-    bool   AnonInfRequest;
-    bool   InactiveMode;
-    bool   InsistMode;
-    bool UseConfirm;
+  std::string WorkDir;
+  int PrefixLength;
+  bool AnonInfRequest;
+  bool InactiveMode;
+  bool InsistMode;
+  bool UseConfirm;
 
-    bool FQDNFlagS;
+  bool FQDNFlagS;
 
-    bool Experimental;
+  bool Experimental;
 };
 
 #endif

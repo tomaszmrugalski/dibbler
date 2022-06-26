@@ -9,23 +9,22 @@
 #ifndef ADDRPREFIX_H
 #define ADDRPREFIX_H
 
-#include <iostream>
-#include "IPv6Addr.h"
 #include "AddrAddr.h"
-#include "SmartPtr.h"
 #include "DHCPConst.h"
+#include "IPv6Addr.h"
+#include "SmartPtr.h"
+#include <iostream>
 
-class TAddrPrefix: public TAddrAddr
-{
-    friend std::ostream & operator<<(std::ostream & strum,TAddrPrefix &x);
-  public:
+class TAddrPrefix : public TAddrAddr {
+  friend std::ostream &operator<<(std::ostream &strum, TAddrPrefix &x);
 
-    TAddrPrefix(SPtr<TIPv6Addr> addr, long pref, long valid, int length);
+public:
+  TAddrPrefix(SPtr<TIPv6Addr> addr, long pref, long valid, int length);
 
-    // return address in packed format (char[16])
-    int getLength();
+  // return address in packed format (char[16])
+  int getLength();
 
-  private:
-    int Length;
+private:
+  int Length;
 };
 #endif

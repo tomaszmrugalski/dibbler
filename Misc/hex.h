@@ -16,10 +16,10 @@
 
 std::vector<uint8_t> textToHex(std::string buf);
 
-std::string hexToText(const uint8_t* buf, size_t buf_len, bool add_colons = false,
-                       bool add_0x = false);
+std::string hexToText(const uint8_t *buf, size_t buf_len,
+                      bool add_colons = false, bool add_0x = false);
 
-std::string hexToText(const std::vector<uint8_t>& vector, bool add_colons = false,
-                      bool add_0x = false);
+std::string hexToText(const std::vector<uint8_t> &vector,
+                      bool add_colons = false, bool add_0x = false);
 
 #endif

@@ -8,56 +8,35 @@
  *
  */
 
-#include "DHCPDefaults.h"
 #include "RelParsIfaceOpt.h"
+#include "DHCPDefaults.h"
 
 TRelParsIfaceOpt::TRelParsIfaceOpt(void)
-    :ClientUnicast_(), ServerUnicast_(),
-     ClientMulticast_(false), ServerMulticast_(false),
-     InterfaceID_(-1) {
-}
+    : ClientUnicast_(),
+      ServerUnicast_(),
+      ClientMulticast_(false),
+      ServerMulticast_(false),
+      InterfaceID_(-1) {}
 
-TRelParsIfaceOpt::~TRelParsIfaceOpt(void) {
-}
+TRelParsIfaceOpt::~TRelParsIfaceOpt(void) {}
 
 // --- unicast ---
-void TRelParsIfaceOpt::setServerUnicast(SPtr<TIPv6Addr> addr) {
-    ServerUnicast_ = addr;
-}
+void TRelParsIfaceOpt::setServerUnicast(SPtr<TIPv6Addr> addr) { ServerUnicast_ = addr; }
 
-SPtr<TIPv6Addr> TRelParsIfaceOpt::getServerUnicast() {
-    return ServerUnicast_;
-}
+SPtr<TIPv6Addr> TRelParsIfaceOpt::getServerUnicast() { return ServerUnicast_; }
 
-void TRelParsIfaceOpt::setClientUnicast(SPtr<TIPv6Addr> addr) {
-    ClientUnicast_ = addr;
-}
+void TRelParsIfaceOpt::setClientUnicast(SPtr<TIPv6Addr> addr) { ClientUnicast_ = addr; }
 
-SPtr<TIPv6Addr> TRelParsIfaceOpt::getClientUnicast() {
-    return ClientUnicast_;
-}
+SPtr<TIPv6Addr> TRelParsIfaceOpt::getClientUnicast() { return ClientUnicast_; }
 
+void TRelParsIfaceOpt::setClientMulticast(bool multi) { ClientMulticast_ = multi; }
 
-void TRelParsIfaceOpt::setClientMulticast(bool multi) {
-    ClientMulticast_ = multi;
-}
+bool TRelParsIfaceOpt::getClientMulticast() { return ClientMulticast_; }
 
-bool TRelParsIfaceOpt::getClientMulticast() {
-    return ClientMulticast_;
-}
+void TRelParsIfaceOpt::setServerMulticast(bool multi) { ServerMulticast_ = multi; }
 
-void TRelParsIfaceOpt::setServerMulticast(bool multi) {
-    ServerMulticast_ = multi;
-}
+bool TRelParsIfaceOpt::getServerMulticast() { return ServerMulticast_; }
 
-bool TRelParsIfaceOpt::getServerMulticast() {
-    return ServerMulticast_;
-}
+void TRelParsIfaceOpt::setInterfaceID(int id) { InterfaceID_ = id; }
 
-void TRelParsIfaceOpt::setInterfaceID(int id) {
-    InterfaceID_ = id;
-}
-
-int TRelParsIfaceOpt::getInterfaceID() {
-    return InterfaceID_;
-}
+int TRelParsIfaceOpt::getInterfaceID() { return InterfaceID_; }

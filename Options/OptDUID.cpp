@@ -8,52 +8,39 @@
  *
  */
 
-#include <stdlib.h>
-#include "Portable.h"
-#include "DHCPConst.h"
 #include "OptDUID.h"
+#include "DHCPConst.h"
+#include "Portable.h"
+#include <stdlib.h>
 
-TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
-    :TOpt(type, parent)
-{
-    DUID=duid;
-}
+TOptDUID::TOptDUID(int type, SPtr<TDUID> duid, TMsg *parent) : TOpt(type, parent) { DUID = duid; }
 
 size_t TOptDUID::getSize() {
-    if (DUID)
-	return DUID->getLen() + 4;
-    return 4;
+  if (DUID) return DUID->getLen() + 4;
+  return 4;
 }
 
-char * TOptDUID::storeSelf( char* buf)
-{
-    buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, DUID->getLen());
-    return this->DUID->storeSelf(buf);
+char *TOptDUID::storeSelf(char *buf) {
+  buf = writeUint16(buf, OptType);
+  buf = writeUint16(buf, DUID->getLen());
+  return this->DUID->storeSelf(buf);
 }
 
-TOptDUID::TOptDUID(int type, const char* buf, int bufsize, TMsg* parent)
-    :TOpt(type, parent)
-{
-    this->DUID = new TDUID(buf,bufsize);
+TOptDUID::TOptDUID(int type, const char *buf, int bufsize, TMsg *parent) : TOpt(type, parent) {
+  this->DUID = new TDUID(buf, bufsize);
 }
 
-SPtr<TDUID> TOptDUID::getDUID() const
-{
-    return DUID;
-}
+SPtr<TDUID> TOptDUID::getDUID() const { return DUID; }
 
-bool TOptDUID::isValid() const
-{
-    if (this->getDUID()->getLen()>2) 
-        return true;
-    return false;
+bool TOptDUID::isValid() const {
+  if (this->getDUID()->getLen() > 2) return true;
+  return false;
 }
 
 std::string TOptDUID::getPlain() {
-    if (DUID) {
-        return DUID->getPlain();
-    } else {
-        return std::string("");
-    }
+  if (DUID) {
+    return DUID->getPlain();
+  } else {
+    return std::string("");
+  }
 }

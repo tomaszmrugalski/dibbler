@@ -2,7 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Tomasz Mrugalski <thomson@klub.com.pl>
- * 
+ *
  * released under GNU GPL v2 only licence
  *
  */
@@ -17,62 +17,58 @@ class TSrvOptLQClientLink;
 #define SRVOPTLQ_H
 
 #include "DHCPConst.h"
-#include "SmartPtr.h"
 #include "DUID.h"
 #include "IPv6Addr.h"
 #include "Opt.h"
-#include "OptInteger.h"
 #include "OptGeneric.h"
+#include "OptInteger.h"
+#include "SmartPtr.h"
 
+class TSrvOptLQ : public TOpt {
+public:
+  TSrvOptLQ(char *buf, int bufsize, TMsg *parent);
+  bool doDuties();
+  ELeaseQueryType getQueryType();
+  size_t getSize();
+  char *storeSelf(char *buf);
+  SPtr<TIPv6Addr> getLinkAddr();
 
-class TSrvOptLQ : public TOpt
-{
-  public:
-    TSrvOptLQ(char * buf, int bufsize, TMsg* parent);    
-    bool doDuties();
-    ELeaseQueryType getQueryType();
-    size_t getSize();
-    char * storeSelf(char* buf);
-    SPtr<TIPv6Addr> getLinkAddr();
- private:
-    ELeaseQueryType QueryType;
-    SPtr<TDUID> Duid;
-    SPtr<TIPv6Addr> Addr;
+private:
+  ELeaseQueryType QueryType;
+  SPtr<TDUID> Duid;
+  SPtr<TIPv6Addr> Addr;
 
-    bool IsValid;
+  bool IsValid;
 };
 
-class TSrvOptLQClientData : public TOpt
-{
+class TSrvOptLQClientData : public TOpt {
 public:
-    size_t getSize();
-    char* storeSelf(char*);
-    bool doDuties();
+  size_t getSize();
+  char *storeSelf(char *);
+  bool doDuties();
 
-    TSrvOptLQClientData(TMsg * parent);
-    // only suboptions
+  TSrvOptLQClientData(TMsg *parent);
+  // only suboptions
 };
 
-class TSrvOptLQClientTime : public TOptInteger
-{
+class TSrvOptLQClientTime : public TOptInteger {
 public:
-    TSrvOptLQClientTime(unsigned int value, TMsg* parent);
-    bool doDuties();
+  TSrvOptLQClientTime(unsigned int value, TMsg *parent);
+  bool doDuties();
 };
 
 // not supported
-class TSrvOptLQRelayData : public TOptGeneric
-{
+class TSrvOptLQRelayData : public TOptGeneric {
 public:
-    TSrvOptLQRelayData(SPtr<TIPv6Addr> addr, TMsg* parent);
+  TSrvOptLQRelayData(SPtr<TIPv6Addr> addr, TMsg *parent);
 };
 
-class TSrvOptLQClientLink : public TOpt
-{
+class TSrvOptLQClientLink : public TOpt {
 public:
-    TSrvOptLQClientLink(List(TIPv6Addr) AddrLst, TMsg * parent);
+  TSrvOptLQClientLink(List(TIPv6Addr) AddrLst, TMsg *parent);
+
 private:
-    List(TIPv6Addr) LinkAddrLst;
+  List(TIPv6Addr) LinkAddrLst;
 };
 
 #endif

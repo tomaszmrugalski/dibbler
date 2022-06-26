@@ -30,7 +30,6 @@
 #include <time.h>
 #endif
 
-
 /*! \file poslib/postime.h
  * \brief Posadis time functions
  *
@@ -46,170 +45,168 @@
  * manipulate times in an inituive way.
  */
 class postime_t {
-  public:
+public:
+  /*!
+   * \brief postime_t constructor
+   *
+   * This constructor sets the number of seconds and the number of
+   * milliseconds to zero.
+   */
+  postime_t();
 
-    /*!
-     * \brief postime_t constructor
-     *
-     * This constructor sets the number of seconds and the number of
-     * milliseconds to zero.
-     */
-    postime_t();
+  /*!
+   * \brief constructor with a number of milliseconds
+   *
+   * This constructor takes a number of milliseconds. If this number is
+   * greater than 1000, the number is split in a number of seconds and
+   * a number of milliseconds. This function is mainly useful for offsets.
+   * \param msecs Number of milliseconds
+   * \sa postime_t()
+   */
+  postime_t(int msecs);
 
-    /*!
-     * \brief constructor with a number of milliseconds
-     *
-     * This constructor takes a number of milliseconds. If this number is
-     * greater than 1000, the number is split in a number of seconds and
-     * a number of milliseconds. This function is mainly useful for offsets.
-     * \param msecs Number of milliseconds
-     * \sa postime_t()
-     */
-    postime_t(int msecs);
+  /*!
+   * \brief time assignment
+   *
+   * This assignment operator copies the given time to the current time.
+   * \param t The time to assign
+   * \return The assigned time
+   */
+  postime_t &operator=(const postime_t &t);
 
-    /*!
-     * \brief time assignment
-     *
-     * This assignment operator copies the given time to the current time.
-     * \param t The time to assign
-     * \return The assigned time
-     */
-    postime_t& operator=(const postime_t &t);
+  /*!
+   * \brief number of seconds
+   *
+   * This is the number of seconds of the time. For absolute times, this
+   * is the number of seconds since the UNIX epoch as returned by the
+   * gettimeofday() function.
+   */
+  long sec;
 
-    /*!
-     * \brief number of seconds
-     *
-     * This is the number of seconds of the time. For absolute times, this
-     * is the number of seconds since the UNIX epoch as returned by the
-     * gettimeofday() function.
-     */
-    long sec;
+  /*!
+   * \brief number of milliseconds
+   *
+   * This is the number of milliseconds. This value can range from 0 to
+   * 999. If you assign a value greater than 999 to this, results are
+   * undefined.
+   */
+  long msec;
 
-    /*!
-     * \brief number of milliseconds
-     *
-     * This is the number of milliseconds. This value can range from 0 to
-     * 999. If you assign a value greater than 999 to this, results are
-     * undefined.
-     */
-    long msec;
+  /*!
+   * \brief equality check
+   *
+   * This operator checks whether two times are equal, that is, both the
+   * number of seconds and the number of milliseconds are the same
+   * \param t The time to compare with
+   */
+  bool operator==(const postime_t &t);
 
-    /*!
-     * \brief equality check
-     *
-     * This operator checks whether two times are equal, that is, both the
-     * number of seconds and the number of milliseconds are the same
-     * \param t The time to compare with
-     */
-    bool operator==(const postime_t &t);
+  /*!
+   * \brief less than or equal
+   *
+   * This operator checks whether this time is before or the same as the
+   * argument, t.
+   * \param t The time to compare with
+   */
+  bool operator<=(const postime_t &t);
 
-    /*!
-     * \brief less than or equal
-     *
-     * This operator checks whether this time is before or the same as the
-     * argument, t.
-     * \param t The time to compare with
-     */
-    bool operator<=(const postime_t &t);
+  /*!
+   * \brief less than
+   *
+   * This operator checks whether this time is before the argument, t.
+   * \param t The time to compare with
+   */
+  bool operator<(const postime_t &t);
 
-    /*!
-     * \brief less than
-     *
-     * This operator checks whether this time is before the argument, t.
-     * \param t The time to compare with
-     */
-    bool operator<(const postime_t &t);
+  /*!
+   * \brief greater than or equal
 
-    /*!
-     * \brief greater than or equal
+   *
+   * This operator checks whether this time is after or the same as the
+   * argument, t.
+   * \param t The time to compare with
+   */
+  bool operator>=(const postime_t &t);
 
-     *
-     * This operator checks whether this time is after or the same as the
-     * argument, t.
-     * \param t The time to compare with
-     */
-    bool operator>=(const postime_t &t);
+  /*!
 
-    /*!
+   * \brief greater than
+   *
+   * This operator checks whether the time is after the argument, t.
+   * \param t The time to compare with
+   */
+  bool operator>(const postime_t &t);
 
-     * \brief greater than
-     *
-     * This operator checks whether the time is after the argument, t.
-     * \param t The time to compare with
-     */
-    bool operator>(const postime_t &t);
+  /*!
+   * \brief greater than timespec
+   *
+   * This operator checks whether the time is after the argument, t.
+   * t is a timespec, as returned by the postimespec() function, and as
+   * required by pthread_cond_timedwait function.
+   * \param t The time to compare with
+   * \sa postimespec()
+   */
+  bool operator>(const timespec &t);
 
-    /*!
-     * \brief greater than timespec
-     *
-     * This operator checks whether the time is after the argument, t.
-     * t is a timespec, as returned by the postimespec() function, and as
-     * required by pthread_cond_timedwait function.
-     * \param t The time to compare with
-     * \sa postimespec()
-     */
-    bool operator>(const timespec &t);
+  /*!
+   * \brief Number of milliseconds after t
+   *
+   * This function returns the amount of time between this time and the time
+   * specified by t. If this time is after t, this value is positive, if
+   * this time is before t, the return value is negative.
+   * \param t The time to compare with
+   * \return The number of milliseconds the time is after t
+   */
+  int after(const postime_t &t);
 
+  /*!
+   * \brief time substraction
+   *
+   * This function substracts t from the given time and returns the result.
+   * \param t The time to substract
+   * \return The result of the substraction
+   */
+  postime_t operator-(const postime_t &t);
 
-    /*!
-     * \brief Number of milliseconds after t
-     *
-     * This function returns the amount of time between this time and the time
-     * specified by t. If this time is after t, this value is positive, if
-     * this time is before t, the return value is negative.
-     * \param t The time to compare with
-     * \return The number of milliseconds the time is after t
-     */
-    int after(const postime_t &t);
+  /*!
+   * \brief time addition
+   *
+   * This function adds t to the given time and returns the result. This is
+   * probably only useful if at least one of the given times is an offset.
+   * \param t The time to add
+   * \return The result of the addition
+   */
+  postime_t operator+(const postime_t &t);
 
-    /*!
-     * \brief time substraction
-     *
-     * This function substracts t from the given time and returns the result.
-     * \param t The time to substract
-     * \return The result of the substraction
-     */
-    postime_t operator-(const postime_t &t);
+  /*!
+   * \brief time millisecond addition
+   *
+   * This function adds the given amount of milliseconds to the time and
+   * returns the result.
+   * \param t The number of milliseconds to add
+   * \return The result of the addition
+   */
+  postime_t operator+(int t);
 
-    /*!
-     * \brief time addition
-     *
-     * This function adds t to the given time and returns the result. This is
-     * probably only useful if at least one of the given times is an offset.
-     * \param t The time to add
-     * \return The result of the addition
-     */
-    postime_t operator+(const postime_t &t);
+  /*!
+   * \brief time addition
+   *
+   * This function adds t to the given time and returns the result. This is
+   * probably only useful if at least one of the given times is an offset.
+   * \param t The time to add
+   * \return This
+   */
+  postime_t &operator+=(const postime_t &t);
 
-    /*!
-     * \brief time millisecond addition
-     *
-     * This function adds the given amount of milliseconds to the time and
-     * returns the result.
-     * \param t The number of milliseconds to add
-     * \return The result of the addition
-     */
-    postime_t operator+(int t);
-
-    /*!
-     * \brief time addition
-     *
-     * This function adds t to the given time and returns the result. This is
-     * probably only useful if at least one of the given times is an offset.
-     * \param t The time to add
-     * \return This
-     */
-    postime_t& operator+=(const postime_t &t);
-
-    /*!
-     * \brief time millisecond addition
-     *
-     * This function adds the given amount of milliseconds to the time and
-     * returns the result.
-     * \param t The number of milliseconds to add
-     * \return This
-     */
-    postime_t& operator+=(int t);
+  /*!
+   * \brief time millisecond addition
+   *
+   * This function adds the given amount of milliseconds to the time and
+   * returns the result.
+   * \param t The number of milliseconds to add
+   * \return This
+   */
+  postime_t &operator+=(int t);
 };
 
 /*!

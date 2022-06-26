@@ -10,25 +10,19 @@
 
 #ifndef NODE_H_
 #define NODE_H_
-#include <iostream>
 #include "SmartPtr.h"
+#include <iostream>
 
 class TSrvMsg;
-class Node
-{
+class Node {
 public:
-    enum NodeType
-    {
-	NODE_OPERATOR        = 1,
-	NODE_CONST           = 2,
-	NODE_CLIENT_SPECIFIC = 3
-    };
+  enum NodeType { NODE_OPERATOR = 1, NODE_CONST = 2, NODE_CLIENT_SPECIFIC = 3 };
 
-    Node(NodeType type);
-    virtual ~Node();
-    virtual std::string exec(SPtr<TSrvMsg> msg) = 0;
+  Node(NodeType type);
+  virtual ~Node();
+  virtual std::string exec(SPtr<TSrvMsg> msg) = 0;
 
-    NodeType Type;
+  NodeType Type;
 };
 
 #endif /* NODE_H_ */

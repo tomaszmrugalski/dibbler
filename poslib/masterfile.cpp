@@ -18,12 +18,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
 #include "masterfile.h"
 #include "exception.h"
-#include "rr.h"
 #include "lexfn.h"
+#include "rr.h"
 #include "sysstring.h"
+#include <cstdio>
 #include <sys/stat.h>
 
 #ifdef WIN32
@@ -41,9 +41,9 @@ stl_string rrdata_convertdoms(rr_type *rr, domainname znroot, domainname origin,
     tmp = read_entry(ptr);
     if (*cptr == 'd' || *cptr == 'm') {
       /* domain name */
-      if (!(*cptr == 'm' && strchr(tmp.c_str(), '@')) &&
-          tmp[tmp.size() - 1] != '.') {
-        /* domain name is relative to a non-root origin. convert it to a root origin */
+      if (!(*cptr == 'm' && strchr(tmp.c_str(), '@')) && tmp[tmp.size() - 1] != '.') {
+        /* domain name is relative to a non-root origin. convert it to a root
+         * origin */
         tmpd = domainname(tmp.c_str(), origin);
         if (ret.size()) ret += " ";
         ret += tmpd.torelstring(znroot);
@@ -58,41 +58,49 @@ stl_string rrdata_convertdoms(rr_type *rr, domainname znroot, domainname origin,
   return ret;
 }
 
-
 domainname guess_zone_name(const char *file) {
   const char *ptr = file + strlen(file) - 1;
   char tmp[256];
   int t;
 
   while (ptr >= file) {
-    if (*ptr == pathdelim) { ptr++; break; }
+    if (*ptr == pathdelim) {
+      ptr++;
+      break;
+    }
     ptr--;
   }
 
   t = strlen(ptr);
-  if (tolower(ptr[0]) == 'd' &&
-      tolower(ptr[1]) == 'b' &&
-      ptr[2] == '.') {
+  if (tolower(ptr[0]) == 'd' && tolower(ptr[1]) == 'b' && ptr[2] == '.') {
     return ptr + 3;
-  } else if (t >= 4 && (strncmpi(ptr + t - 4, ".prm", 4) == 0 || strncmpi(ptr + t - 4, ".dns", 4) == 0)) {
+  } else if (t >= 4 &&
+             (strncmpi(ptr + t - 4, ".prm", 4) == 0 || strncmpi(ptr + t - 4, ".dns", 4) == 0)) {
     if (strlen(ptr) - 4 >= 256) throw PException("File name too long!");
     memcpy(tmp, ptr, t - 4);
     tmp[t - 4] = '\0';
-    return domainname((char*)tmp);
-  } else return ptr;
+    return domainname((char *)tmp);
+  } else
+    return ptr;
 }
 
 bool file_exists(const char *file) {
   struct stat st;
-  if (stat(file, &st) == 0) return true; else return false;
+  if (stat(file, &st) == 0)
+    return true;
+  else
+    return false;
 }
 
 FILE *try_fopen_r(const char *file) {
   struct stat st;
 
-  if (stat(file, &st) != 0) return NULL;
-  else if (!S_ISREG(st.st_mode)) return NULL;
-  else return fopen(file, "r");
+  if (stat(file, &st) != 0)
+    return NULL;
+  else if (!S_ISREG(st.st_mode))
+    return NULL;
+  else
+    return fopen(file, "r");
 }
 
 FILE *try_fopen(const char *file, const char *mode) {
@@ -104,42 +112,44 @@ FILE *try_fopen(const char *file, const char *mode) {
   return fopen(file, mode);
 }
 
-void read_master_file(const char *file, domainname &znroot, void *userdat,
-                      error_callback err, rr_callback rr_cb, rr_literal_callback rrl_cb,
-                      comment_callback comm_cb, int flags) {
-  bool has_znroot = !(flags&POSLIB_MF_AUTOPROBE), has_soa = false;
+void read_master_file(const char *file, domainname &znroot, void *userdat, error_callback err,
+                      rr_callback rr_cb, rr_literal_callback rrl_cb, comment_callback comm_cb,
+                      int flags) {
+  bool has_znroot = !(flags & POSLIB_MF_AUTOPROBE), has_soa = false;
   char buff[1024];
   char *ptr, *p2;
   int c;
-  bool ttl_given = false; stl_string ttl = "3600";
+  bool ttl_given = false;
+  stl_string ttl = "3600";
   domainname origin, nam;
   int linenum = 1, linenum2;
   stl_string str, tmp, t2, t3, nm;
   DnsRR rr;
   rr_type *type = NULL;
-  
+
   FILE *f = try_fopen_r(file);
   if (!f) throw PException(true, "Could not open %s", file);
-  
+
   c = fgetc(f);
   if (c != EOF) ungetc(c, f);
-		
-	if (has_znroot) origin = znroot;
+
+  if (has_znroot) origin = znroot;
 
   try {
   begin:
     while (!feof(f)) {
-      /* since the poslib functions will filter out comments, let's do them ourselves */
+      /* since the poslib functions will filter out comments, let's do them
+       * ourselves */
       if (comm_cb) {
         c = fgetc(f);
         if (c == ';') {
-            if (!fgets(buff, 1024, f)) {
-                break;
-            }
-	    ptr = buff + strlen(buff) - 1;
-	    while (ptr >= buff && (*ptr == '\n' || *ptr == '\r')) *ptr = '\0';
-	    comm_cb(userdat, buff);
-	    continue;
+          if (!fgets(buff, 1024, f)) {
+            break;
+          }
+          ptr = buff + strlen(buff) - 1;
+          while (ptr >= buff && (*ptr == '\n' || *ptr == '\r')) *ptr = '\0';
+          comm_cb(userdat, buff);
+          continue;
         }
         ungetc(c, f);
       }
@@ -167,29 +177,31 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
             znroot = origin;
             has_znroot = true;
           }
-        } else err(userdat, file, linenum2,
-                   PException(true, "Unknown directive %s", buff).message);
+        } else
+          err(userdat, file, linenum2, PException(true, "Unknown directive %s", buff).message);
         continue;
       }
 
       if (!has_znroot) {
         znroot = guess_zone_name(file);
-        origin =  znroot;
+        origin = znroot;
         has_znroot = true;
       }
 
       if (buff[0] != ' ' && buff[0] != '\t') {
         nam = domainname(read_entry(ptr).c_str(), origin);
       } else if (!has_soa) {
-        err(userdat, file, linenum2, "First record in zone should have a domain name! Using origin instead.");
+        err(userdat, file, linenum2,
+            "First record in zone should have a domain name! Using origin "
+            "instead.");
         nam = origin;
       }
 
       /* can be class or ttl or rrtype */
       while (1) {
         str = read_entry(ptr);
-        if (str == "IN" || str == "HS" || str == "CH" || str == "HS" ||
-            str == "in" || str == "hs" || str == "ch" || str == "hs") {
+        if (str == "IN" || str == "HS" || str == "CH" || str == "HS" || str == "in" ||
+            str == "hs" || str == "ch" || str == "hs") {
           /* class */
           continue;
         } else if ((type = rrtype_getinfo(str.c_str())) != NULL) {
@@ -199,7 +211,8 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
             txt_to_int(str.c_str());
             ttl_given = true;
           } catch (PException p) {
-            err(userdat, file, linenum2, PException(true, "Invalid TTL/RR type %s!", str.c_str()).message);
+            err(userdat, file, linenum2,
+                PException(true, "Invalid TTL/RR type %s!", str.c_str()).message);
             goto begin;
           }
           ttl = str.c_str();
@@ -209,7 +222,9 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
       if (!has_soa) {
         if (type->type != DNS_TYPE_SOA) {
           if (!(flags & POSLIB_MF_NOSOA)) {
-            err(userdat, file, linenum2, "First record was no SOA record; using default SOA record instead.");
+            err(userdat, file, linenum2,
+                "First record was no SOA record; using default SOA record "
+                "instead.");
             if (rr_cb) {
               rr.NAME = znroot;
               rr.TYPE = DNS_TYPE_SOA;
@@ -219,8 +234,7 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
               rr.RDATA = (unsigned char *)memdup(tmp.c_str(), tmp.size());
               rr_cb(userdat, &rr);
             }
-            if (rrl_cb)
-              rrl_cb(userdat, "@", "1h", "SOA", "ns1 hostmaster 1 2h 1h 1d 2h", znroot);
+            if (rrl_cb) rrl_cb(userdat, "@", "1h", "SOA", "ns1 hostmaster 1 2h 1h 1d 2h", znroot);
           } else if (!ttl_given) {
             err(userdat, file, linenum2, "First record should have TTL value; using 1h for now.");
             ttl = "3600";
@@ -229,8 +243,12 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
         } else {
           if (!ttl_given) {
             p2 = ptr;
-            read_entry(p2); read_entry(p2); read_entry(p2);
-            read_entry(p2); read_entry(p2); read_entry(p2);
+            read_entry(p2);
+            read_entry(p2);
+            read_entry(p2);
+            read_entry(p2);
+            read_entry(p2);
+            read_entry(p2);
             t3 = read_entry(p2);
             if (strlen(t3.c_str()) < 32) ttl = t3;
           }
@@ -242,7 +260,10 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
       }
 
       if (!(nam >= znroot)) {
-        err(userdat, file, linenum2, PException(true, "Ignoring domain name %s outside of zone %s!", nam.tocstr(), znroot.tocstr()).message);
+        err(userdat, file, linenum2,
+            PException(true, "Ignoring domain name %s outside of zone %s!", nam.tocstr(),
+                       znroot.tocstr())
+                .message);
         continue;
       }
 

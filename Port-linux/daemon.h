@@ -19,17 +19,17 @@
 #define SIGINT 2
 #endif
 
-int start(const char * pidfile, const char * workdir);
-int stop(const char * pidfile);
+int start(const char *pidfile, const char *workdir);
+int stop(const char *pidfile);
 
-int init(const char * pidfile, const char * workdir);
-pid_t getPID(char * pidfile);
+int init(const char *pidfile, const char *workdir);
+pid_t getPID(char *pidfile);
 int getServerPID();
 int getClientPID();
 int getRelayPID();
-int die(const char * pidfile);
+int die(const char *pidfile);
 
-void logStart(const char * note, const char * logname, const char * logfile);
+void logStart(const char *note, const char *logname, const char *logfile);
 void logEnd();
 
 #endif

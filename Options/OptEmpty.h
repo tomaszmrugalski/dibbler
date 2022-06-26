@@ -13,14 +13,13 @@
 #include "DHCPConst.h"
 #include "Opt.h"
 
-class TOptEmpty : public TOpt
-{
+class TOptEmpty : public TOpt {
 public:
-    TOptEmpty(int code, TMsg* parent);
-    TOptEmpty(int code, const char * buf,  int n, TMsg* parent);
-    size_t getSize();
-    char * storeSelf(char* buf);
-    bool doDuties() { return false; }
+  TOptEmpty(int code, TMsg *parent);
+  TOptEmpty(int code, const char *buf, int n, TMsg *parent);
+  size_t getSize();
+  char *storeSelf(char *buf);
+  bool doDuties() { return false; }
 };
 
-#endif 
+#endif

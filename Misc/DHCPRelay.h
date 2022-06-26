@@ -14,19 +14,18 @@
 #include <iostream>
 #include <string>
 
-class TDHCPRelay
-{
-  public:
-    TDHCPRelay(const std::string& config);
-    void run();
-    void stop();
-    bool isDone();
-    bool checkPrivileges();
-    void setWorkdir(std::string workdir);
-    ~TDHCPRelay();
+class TDHCPRelay {
+public:
+  TDHCPRelay(const std::string &config);
+  void run();
+  void stop();
+  bool isDone();
+  bool checkPrivileges();
+  void setWorkdir(std::string workdir);
+  ~TDHCPRelay();
 
-  private:
-    bool IsDone;
+private:
+  bool IsDone;
 };
 
 #endif

@@ -14,22 +14,21 @@ class TRelMsg;
 
 #include "Msg.h"
 
-class TRelMsg : public TMsg
-{
+class TRelMsg : public TMsg {
 public:
-    TRelMsg(int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen);
-    virtual bool check() = 0;
-    void setDestination(int ifindex, SPtr<TIPv6Addr> dest);
-    int getDestIface();
-    SPtr<TIPv6Addr> getDestAddr();
-    void decodeOpts(char * data, int dataLen);
-    int getHopCount();
+  TRelMsg(int iface, SPtr<TIPv6Addr> addr, char *data, int dataLen);
+  virtual bool check() = 0;
+  void setDestination(int ifindex, SPtr<TIPv6Addr> dest);
+  int getDestIface();
+  SPtr<TIPv6Addr> getDestAddr();
+  void decodeOpts(char *data, int dataLen);
+  int getHopCount();
 
- protected:
-    int DestIface;
-    SPtr<TIPv6Addr> DestAddr;
+protected:
+  int DestIface;
+  SPtr<TIPv6Addr> DestAddr;
 
-    int HopCount; // mormal messages =0, RELAY_FORW, RELAY_REPL = (0..32)
+  int HopCount; // mormal messages =0, RELAY_FORW, RELAY_REPL = (0..32)
 };
 
 #endif

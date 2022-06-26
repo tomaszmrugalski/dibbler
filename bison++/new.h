@@ -17,15 +17,14 @@ You should have received a copy of the GNU General Public License
 along with Bison; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-
-#define	NEW(t)		((t *) xmalloc((unsigned) sizeof(t)))
-#define	NEW2(n, t)	((t *) xmalloc((unsigned) ((n) * sizeof(t))))
+#define NEW(t) ((t *)xmalloc((unsigned)sizeof(t)))
+#define NEW2(n, t) ((t *)xmalloc((unsigned)((n) * sizeof(t))))
 
 #ifdef __STDC__
-#define	FREE(x)		(x ? (void) free((char *) (x)) : (void)0)
+#define FREE(x) (x ? (void)free((char *)(x)) : (void)0)
 #else
-#define FREE(x) 	((x) != 0 && (free ((char *) (x)), 0))
+#define FREE(x) ((x) != 0 && (free((char *)(x)), 0))
 #endif
 
-extern	char *xmalloc(unsigned);
-extern	char *xrealloc(char*,unsigned);
+extern char *xmalloc(unsigned);
+extern char *xrealloc(char *, unsigned);

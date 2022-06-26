@@ -2,7 +2,8 @@
 #define __NETTLE_TYPES_H 1
 #ifndef _GENERATED_STDINT_H
 #define _GENERATED_STDINT_H " "
-/* generated using gnu compiler gcc.exe (GCC) 3.2.3 (mingw special 20030504-1) */
+/* generated using gnu compiler gcc.exe (GCC) 3.2.3 (mingw special 20030504-1)
+ */
 #define _STDINT_HAVE_STDINT_H 1
 
 /* ................... shortcircuit part ........................... */
@@ -53,8 +54,8 @@
 #undef _STDINT_NEED_INT_MODEL_T
 #endif
 
-#ifdef  _STDINT_CHAR_MODEL
-#if     _STDINT_CHAR_MODEL+0 == 122 || _STDINT_CHAR_MODEL+0 == 124
+#ifdef _STDINT_CHAR_MODEL
+#if _STDINT_CHAR_MODEL + 0 == 122 || _STDINT_CHAR_MODEL + 0 == 124
 #ifndef _STDINT_BYTE_MODEL
 #define _STDINT_BYTE_MODEL 12
 #endif
@@ -76,14 +77,13 @@
 #endif
 #endif
 
-
 /* .................... definition part ............................ */
 
 /* some system headers have good uint64_t */
 #ifndef _HAVE_UINT64_T
-#if     defined _STDINT_HAVE_UINT64_T  || defined HAVE_UINT64_T
+#if defined _STDINT_HAVE_UINT64_T || defined HAVE_UINT64_T
 #define _HAVE_UINT64_T
-#elif   defined _STDINT_HAVE_U_INT64_T || defined HAVE_U_INT64_T
+#elif defined _STDINT_HAVE_U_INT64_T || defined HAVE_U_INT64_T
 #define _HAVE_UINT64_T
 typedef u_int64_t uint64_t;
 #endif
@@ -115,7 +115,7 @@ typedef unsigned long long uint64_t;
 typedef long int64_t;
 typedef unsigned long uint64_t;
 #endif
-  /* compiler/cpu type to define int64_t */
+/* compiler/cpu type to define int64_t */
 #endif
 #endif
 #endif
@@ -137,65 +137,64 @@ typedef u_int32_t uint32_t;
 /* there a few 32-bit-only dsp-systems that we guard with BYTE_MODEL 8-} */
 /* (btw, those nibble-addressable systems are way off, or so we assume) */
 
-
 #if defined _STDINT_BYTE_MODEL
-#if _STDINT_LONG_MODEL+0 == 242
+#if _STDINT_LONG_MODEL + 0 == 242
 /* 2:4:2 =  IP16 = a normal 16-bit system                */
-typedef unsigned char   uint8_t;
-typedef unsigned short  uint16_t;
-typedef unsigned long   uint32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned long uint32_t;
 #ifndef __int8_t_defined
 #define __int8_t_defined
-typedef          char    int8_t;
-typedef          short   int16_t;
-typedef          long    int32_t;
+typedef char int8_t;
+typedef short int16_t;
+typedef long int32_t;
 #endif
-#elif _STDINT_LONG_MODEL+0 == 244 || _STDINT_LONG_MODEL == 444
+#elif _STDINT_LONG_MODEL + 0 == 244 || _STDINT_LONG_MODEL == 444
 /* 2:4:4 =  LP32 = a 32-bit system derived from a 16-bit */
 /* 4:4:4 = ILP32 = a normal 32-bit system                */
-typedef unsigned char   uint8_t;
-typedef unsigned short  uint16_t;
-typedef unsigned int    uint32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 #ifndef __int8_t_defined
 #define __int8_t_defined
-typedef          char    int8_t;
-typedef          short   int16_t;
-typedef          int     int32_t;
+typedef char int8_t;
+typedef short int16_t;
+typedef int int32_t;
 #endif
-#elif _STDINT_LONG_MODEL+0 == 484 || _STDINT_LONG_MODEL+0 == 488
+#elif _STDINT_LONG_MODEL + 0 == 484 || _STDINT_LONG_MODEL + 0 == 488
 /* 4:8:4 =  IP32 = a 32-bit system prepared for 64-bit    */
 /* 4:8:8 =  LP64 = a normal 64-bit system                 */
-typedef unsigned char   uint8_t;
-typedef unsigned short  uint16_t;
-typedef unsigned int    uint32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 #ifndef __int8_t_defined
 #define __int8_t_defined
-typedef          char    int8_t;
-typedef          short   int16_t;
-typedef          int     int32_t;
+typedef char int8_t;
+typedef short int16_t;
+typedef int int32_t;
 #endif
 /* this system has a "long" of 64bit */
 #ifndef _HAVE_UINT64_T
 #define _HAVE_UINT64_T
-typedef unsigned long   uint64_t;
-typedef          long    int64_t;
+typedef unsigned long uint64_t;
+typedef long int64_t;
 #endif
-#elif _STDINT_LONG_MODEL+0 == 448
+#elif _STDINT_LONG_MODEL + 0 == 448
 /*      LLP64   a 64-bit system derived from a 32-bit system */
-typedef unsigned char   uint8_t;
-typedef unsigned short  uint16_t;
-typedef unsigned int    uint32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 #ifndef __int8_t_defined
 #define __int8_t_defined
-typedef          char    int8_t;
-typedef          short   int16_t;
-typedef          int     int32_t;
+typedef char int8_t;
+typedef short int16_t;
+typedef int int32_t;
 #endif
 /* assuming the system has a "long long" */
 #ifndef _HAVE_UINT64_T
 #define _HAVE_UINT64_T
 typedef unsigned long long uint64_t;
-typedef          long long  int64_t;
+typedef long long int64_t;
 #endif
 #else
 #define _STDINT_NO_INT32_T
@@ -216,45 +215,45 @@ typedef          long long  int64_t;
  */
 
 #if defined _STDINT_NEED_INT_LEAST_T
-typedef  int8_t    int_least8_t;
-typedef  int16_t   int_least16_t;
-typedef  int32_t   int_least32_t;
+typedef int8_t int_least8_t;
+typedef int16_t int_least16_t;
+typedef int32_t int_least32_t;
 #ifdef _HAVE_UINT64_T
-typedef  int64_t   int_least64_t;
+typedef int64_t int_least64_t;
 #endif
 
-typedef uint8_t   uint_least8_t;
-typedef uint16_t  uint_least16_t;
-typedef uint32_t  uint_least32_t;
+typedef uint8_t uint_least8_t;
+typedef uint16_t uint_least16_t;
+typedef uint32_t uint_least32_t;
 #ifdef _HAVE_UINT64_T
-typedef uint64_t  uint_least64_t;
+typedef uint64_t uint_least64_t;
 #endif
-  /* least types */
+/* least types */
 #endif
 
 #if defined _STDINT_NEED_INT_FAST_T
-typedef  int8_t    int_fast8_t;
-typedef  int       int_fast16_t;
-typedef  int32_t   int_fast32_t;
+typedef int8_t int_fast8_t;
+typedef int int_fast16_t;
+typedef int32_t int_fast32_t;
 #ifdef _HAVE_UINT64_T
-typedef  int64_t   int_fast64_t;
+typedef int64_t int_fast64_t;
 #endif
 
-typedef uint8_t   uint_fast8_t;
-typedef unsigned  uint_fast16_t;
-typedef uint32_t  uint_fast32_t;
+typedef uint8_t uint_fast8_t;
+typedef unsigned uint_fast16_t;
+typedef uint32_t uint_fast32_t;
 #ifdef _HAVE_UINT64_T
-typedef uint64_t  uint_fast64_t;
+typedef uint64_t uint_fast64_t;
 #endif
-  /* fast types */
+/* fast types */
 #endif
 
 #ifdef _STDINT_NEED_INTMAX_T
 #ifdef _HAVE_UINT64_T
-typedef  int64_t       intmax_t;
-typedef uint64_t      uintmax_t;
+typedef int64_t intmax_t;
+typedef uint64_t uintmax_t;
 #else
-typedef          long  intmax_t;
+typedef long intmax_t;
 typedef unsigned long uintmax_t;
 #endif
 #endif
@@ -263,24 +262,25 @@ typedef unsigned long uintmax_t;
 #ifndef __intptr_t_defined
 #define __intptr_t_defined
 /* we encourage using "long" to store pointer values, never use "int" ! */
-#if   _STDINT_LONG_MODEL+0 == 242 || _STDINT_LONG_MODEL+0 == 484
-typedef  unsinged int   uintptr_t;
-typedef           int    intptr_t;
-#elif _STDINT_LONG_MODEL+0 == 244 || _STDINT_LONG_MODEL+0 == 444
-typedef  unsigned long  uintptr_t;
-typedef           long   intptr_t;
-#elif _STDINT_LONG_MODEL+0 == 448 && defined _HAVE_UINT64_T
-typedef        uint64_t uintptr_t;
-typedef         int64_t  intptr_t;
-#else /* matches typical system types ILP32 and LP64 - but not IP16 or LLP64 */
-typedef  unsigned long  uintptr_t;
-typedef           long   intptr_t;
+#if _STDINT_LONG_MODEL + 0 == 242 || _STDINT_LONG_MODEL + 0 == 484
+typedef unsinged int uintptr_t;
+typedef int intptr_t;
+#elif _STDINT_LONG_MODEL + 0 == 244 || _STDINT_LONG_MODEL + 0 == 444
+typedef unsigned long uintptr_t;
+typedef long intptr_t;
+#elif _STDINT_LONG_MODEL + 0 == 448 && defined _HAVE_UINT64_T
+typedef uint64_t uintptr_t;
+typedef int64_t intptr_t;
+#else /* matches typical system types ILP32 and LP64 - but not IP16 or LLP64   \
+       */
+typedef unsigned long uintptr_t;
+typedef long intptr_t;
 #endif
 #endif
 #endif
 
-  /* shortcircuit*/
+/* shortcircuit*/
 #endif
-  /* once */
+/* once */
 #endif
 #endif

@@ -13,14 +13,12 @@
 #include "RelOptInterfaceID.h"
 #include "DHCPConst.h"
 
-TRelOptInterfaceID::TRelOptInterfaceID(char * data, int dataLen, TMsg* parent)
-    :TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, data, dataLen, parent) {
-}
+TRelOptInterfaceID::TRelOptInterfaceID(char *data, int dataLen, TMsg *parent)
+    : TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, data, dataLen,
+                  parent) {}
 
-TRelOptInterfaceID::TRelOptInterfaceID(int interfaceID, TMsg* parent)
-    :TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, interfaceID, parent) {
-}
+TRelOptInterfaceID::TRelOptInterfaceID(int interfaceID, TMsg *parent)
+    : TOptInteger(OPTION_INTERFACE_ID, 4 /** @todo: Support length other than 4 */, interfaceID,
+                  parent) {}
 
-bool TRelOptInterfaceID::doDuties() {
-    return true;
-}
+bool TRelOptInterfaceID::doDuties() { return true; }

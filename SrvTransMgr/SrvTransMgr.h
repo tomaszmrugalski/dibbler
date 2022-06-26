@@ -12,43 +12,43 @@
 #ifndef SRVTRANSMGR_H
 #define SRVTRANSMGR_H
 
-#include <string>
-#include <vector>
-#include "SmartPtr.h"
 #include "Container.h"
 #include "Opt.h"
-#include "SrvMsg.h"
-#include "SrvIfaceMgr.h"
-#include "SrvCfgIface.h"
+#include "SmartPtr.h"
 #include "SrvAddrMgr.h"
+#include "SrvCfgIface.h"
+#include "SrvIfaceMgr.h"
+#include "SrvMsg.h"
+#include <string>
+#include <vector>
 
 #define SrvTransMgr() (TSrvTransMgr::instance())
 
-class TSrvTransMgr
-{
-    friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
-  public:
-    static void instanceCreate(const std::string& config, int port);
-    static TSrvTransMgr &instance();
+class TSrvTransMgr {
+  friend std::ostream &operator<<(std::ostream &strum, TSrvTransMgr &x);
 
-    bool openSocket(SPtr<TSrvCfgIface> confIface, int port);
+public:
+  static void instanceCreate(const std::string &config, int port);
+  static TSrvTransMgr &instance();
 
-    long getTimeout();
-    void relayMsg(SPtr<TSrvMsg> msg);
+  bool openSocket(SPtr<TSrvCfgIface> confIface, int port);
 
-    /// @brief Checks whether message was sent to unicast when it was forbidden
-    ///
-    /// Client is allowed to send data to unicast only if the server is
-    /// configured with server-unicast option. Otherwise it will send
-    /// back message with only status-code=UseMulticast, client-id and server-id
-    /// @return true (accept message) or false (drop it)
-    bool unicastCheck(SPtr<TSrvMsg> msg);
+  long getTimeout();
+  void relayMsg(SPtr<TSrvMsg> msg);
 
-    void doDuties();
-    void dump();
+  /// @brief Checks whether message was sent to unicast when it was forbidden
+  ///
+  /// Client is allowed to send data to unicast only if the server is
+  /// configured with server-unicast option. Otherwise it will send
+  /// back message with only status-code=UseMulticast, client-id and server-id
+  /// @return true (accept message) or false (drop it)
+  bool unicastCheck(SPtr<TSrvMsg> msg);
 
-    bool isDone();
-    void shutdown();
+  void doDuties();
+  void dump();
+
+  bool isDone();
+  void shutdown();
 
 #if 0
     SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, 
@@ -56,46 +56,44 @@ class TSrvTransMgr
     void removeFQDN(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
 #endif
 
-    bool sanitizeAddrDB();
+  bool sanitizeAddrDB();
 
-    void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
-                       std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
-                       std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
+  void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo> &addrLst,
+                     std::vector<TSrvAddrMgr::TExpiredInfo> &tempAddrLst,
+                     std::vector<TSrvAddrMgr::TExpiredInfo> &prefixLst);
 
-    void notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
-                          TIAType type);
+  void notifyExpireInfo(TNotifyScriptParams &params,
+                        const TSrvAddrMgr::TExpiredInfo &exp, TIAType type);
 
-    char * getCtrlAddr();
-    int    getCtrlIface();
+  char *getCtrlAddr();
+  int getCtrlIface();
 
-    int checkReconfigures();
+  int checkReconfigures();
 
-    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
-                         int msgType, SPtr<TDUID> ptrDUID);
+  bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface, int msgType,
+                       SPtr<TDUID> ptrDUID);
 
-    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+  bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD);
 
-    /// @brief sends specified packet
-    ///
-    /// @param msg message to be sent
-    virtual void sendPacket(SPtr<TSrvMsg> msg);
+  /// @brief sends specified packet
+  ///
+  /// @param msg message to be sent
+  virtual void sendPacket(SPtr<TSrvMsg> msg);
 
-    // not private, as we need to instantiate derived SrvTransMgr in tests
-  protected:
-    TSrvTransMgr(std::string xmlFile, int port);
-    virtual ~TSrvTransMgr();
+  // not private, as we need to instantiate derived SrvTransMgr in tests
+protected:
+  TSrvTransMgr(std::string xmlFile, int port);
+  virtual ~TSrvTransMgr();
 
-    std::string XmlFile;
-    bool IsDone;
+  std::string XmlFile;
+  bool IsDone;
 
-    int ctrlIface;
-    char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
+  int ctrlIface;
+  char ctrlAddr[48]; // @todo: WTF is that? It should be TIPv6Addr
 
-    static TSrvTransMgr * Instance;
+  static TSrvTransMgr *Instance;
 
-    int port_;
+  int port_;
 };
-
-
 
 #endif

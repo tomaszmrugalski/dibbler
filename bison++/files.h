@@ -17,25 +17,28 @@ You should have received a copy of the GNU General Public License
 along with Bison; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-
-
 /* These two should be pathnames for opening the sample parser files.
    When bison is installed, they should be absolute pathnames.
    XPFILE1 and XPFILE2 normally come from the Makefile.  */
 
-#define PFILE	XPFILE		/* Simple parser */
-#define PFILE1	XPFILE1		/* Semantic parser */
+#define PFILE XPFILE   /* Simple parser */
+#define PFILE1 XPFILE1 /* Semantic parser */
 
-extern FILE *finput;   /* read grammar specifications */
-extern FILE *foutput;  /* optionally output messages describing the actions taken */
+extern FILE *finput; /* read grammar specifications */
+extern FILE
+    *foutput; /* optionally output messages describing the actions taken */
 extern FILE *fdefines; /* optionally output #define's for token numbers. */
 extern FILE *ftable;   /* output the tables and the parser */
-extern FILE *fattrs;   /* if semantic parser, output a .h file that defines YYSTYPE */
-		       /* and also contains all the %{ ... %} definitions.  */
-extern FILE *fguard;   /* if semantic parser, output yyguard, containing all the guard code */
-extern FILE *faction;  /* output all the action code; precise form depends on which parser */
-extern FILE *fparser;  /* read the parser to copy into ftable */
-extern FILE *fbisoncomp; /* outputs YY_USE_CLASS defs (i.e bison or bison++ output*/
+extern FILE
+    *fattrs; /* if semantic parser, output a .h file that defines YYSTYPE */
+             /* and also contains all the %{ ... %} definitions.  */
+extern FILE *fguard;  /* if semantic parser, output yyguard, containing all the
+                         guard code */
+extern FILE *faction; /* output all the action code; precise form depends on
+                         which parser */
+extern FILE *fparser; /* read the parser to copy into ftable */
+extern FILE
+    *fbisoncomp; /* outputs YY_USE_CLASS defs (i.e bison or bison++ output*/
 
 /* File name specified with -o for the output file, or 0 if no -o.  */
 extern char *spec_outfile;
@@ -54,13 +57,13 @@ extern char *guardfile;
 extern char *actfile;
 
 /* AC addings */
-#define HFILE	XHFILE		/*  header Skeleton */
+#define HFILE XHFILE      /*  header Skeleton */
 extern char *hskelfile;   /* -H option : parser file name */
 extern char *cparserfile; /* -S option header skeleton filename */
-extern FILE *fhskel;      
+extern FILE *fhskel;
 extern char *parser_name;
 extern int parser_defined;
 extern int yylsp_needed;
-char *quoted_filename(char*); /* quote filename, especially on DOS */
+char *quoted_filename(char *); /* quote filename, especially on DOS */
 
 /* AC added end*/

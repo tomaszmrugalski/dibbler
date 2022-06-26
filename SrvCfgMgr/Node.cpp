@@ -21,14 +21,8 @@
 #include "Node.h"
 #include "SrvMsg.h"
 
-Node::Node(NodeType type)
-{
-    Type = type;
-}
+Node::Node(NodeType type) { Type = type; }
 
-Node::~Node()
-{
-}
+Node::~Node() {}
 
 #endif /* NODE_H_ */
-

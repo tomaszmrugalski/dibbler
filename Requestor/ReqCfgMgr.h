@@ -12,15 +12,15 @@
 #define REQCFGMGR_H
 
 typedef struct {
-    // global parameters
-    char * iface;
-    int timeout;
-    
-    char * dstaddr;
+  // global parameters
+  char *iface;
+  int timeout;
 
-    // message specific parameters
-    char * addr;
-    char * duid;
+  char *dstaddr;
+
+  // message specific parameters
+  char *addr;
+  char *duid;
 } ReqCfgMgr;
 
 #endif

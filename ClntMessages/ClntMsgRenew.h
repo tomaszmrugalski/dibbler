@@ -15,20 +15,19 @@
 #include "ClntMsg.h"
 #include "ClntOptIA_NA.h"
 
-class TClntMsgRenew : public TClntMsg
-{
-  public:
-    TClntMsgRenew(List(TAddrIA) IALst, List(TAddrIA) PDLst);
+class TClntMsgRenew : public TClntMsg {
+public:
+  TClntMsgRenew(List(TAddrIA) IALst, List(TAddrIA) PDLst);
 
-    void answer(SPtr<TClntMsg> Rep);
-    void doDuties();
-    bool check();
-    std::string getName() const;
-    ~TClntMsgRenew();
-    void updateIA(SPtr <TClntOptIA_NA> ptrOptIA);
-    void releaseIA(long IAID);
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  bool check();
+  std::string getName() const;
+  ~TClntMsgRenew();
+  void updateIA(SPtr<TClntOptIA_NA> ptrOptIA);
+  void releaseIA(long IAID);
 
- private:
+private:
 };
 
-#endif 
+#endif

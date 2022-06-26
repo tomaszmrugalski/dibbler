@@ -10,119 +10,120 @@
 
 #ifndef CLNTTRANSMGR_H
 #define CLNTTRANSMGR_H
-#include <string>
+#include "AddrIA.h"
 #include "ClntCfgIface.h"
+#include "ClntMsg.h"
+#include "IPv6Addr.h"
 #include "Opt.h"
 #include "OptAddrLst.h"
-#include "IPv6Addr.h"
-#include "AddrIA.h"
-#include "ClntMsg.h"
+#include <string>
 
 #define ClntTransMgr() (TClntTransMgr::instance())
 
-class TClntTransMgr
-{
- private:
-  TClntTransMgr(const std::string& config);
+class TClntTransMgr {
+private:
+  TClntTransMgr(const std::string &config);
 
-  public:
-    static void instanceCreate(const std::string& config);
-    static TClntTransMgr &instance();
-    ~TClntTransMgr();
-    void doDuties();
-    void relayMsg(SPtr<TClntMsg> msg);
-    unsigned long getTimeout();
-    void stop();
-    void sendRequest(TOptList requestOptions, int iface);
-    void sendInfRequest(TOptList requestOptions, int iface);
-    void sendRebind(TOptList ptrIA, int iface);
-    void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
-    bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
-    void handleReconfigure(SPtr<TClntMsg> reconfMsg);
-    void sendRenew();
+public:
+  static void instanceCreate(const std::string &config);
+  static TClntTransMgr &instance();
+  ~TClntTransMgr();
+  void doDuties();
+  void relayMsg(SPtr<TClntMsg> msg);
+  unsigned long getTimeout();
+  void stop();
+  void sendRequest(TOptList requestOptions, int iface);
+  void sendInfRequest(TOptList requestOptions, int iface);
+  void sendRebind(TOptList ptrIA, int iface);
+  void sendRelease(List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
+  bool handleResponse(SPtr<TClntMsg> question, SPtr<TClntMsg> answer);
+  void handleReconfigure(SPtr<TClntMsg> reconfMsg);
+  void sendRenew();
 
-    void shutdown();
-    bool isDone();
+  void shutdown();
+  bool isDone();
 
-    char * getCtrlAddr();
-    int    getCtrlIface();
+  char *getCtrlAddr();
+  int getCtrlIface();
 
-    // Backup server list management
-    void addAdvertise(SPtr<TClntMsg> advertise); // adds ADVERTISE to the list
-    void firstAdvertise();
-    SPtr<TClntMsg> getAdvertise();
-    SPtr<TOpt> getAdvertiseDUID(); // returns server DUID of the best advertise on the list
-    void sortAdvertise(); // sorts advertise messages
-    void delFirstAdvertise(); // deletes first advertise
-    int getMaxPreference();
-    int getAdvertiseLstCount();
-    void printAdvertiseLst();
+  // Backup server list management
+  void addAdvertise(SPtr<TClntMsg> advertise); // adds ADVERTISE to the list
+  void firstAdvertise();
+  SPtr<TClntMsg> getAdvertise();
+  SPtr<TOpt>
+  getAdvertiseDUID();   // returns server DUID of the best advertise on the list
+  void sortAdvertise(); // sorts advertise messages
+  void delFirstAdvertise(); // deletes first advertise
+  int getMaxPreference();
+  int getAdvertiseLstCount();
+  void printAdvertiseLst();
 
-    bool sanitizeAddrDB();
+  bool sanitizeAddrDB();
 
 #ifdef MOD_REMOTE_AUTOCONF
-    struct TNeighborInfo {
-	typedef enum {
-	    NeighborInfoState_Added,   // just added (waiting to be sent)
-	    NeighborInfoState_Sent,    // sent, awaiting remote reply
-	    NeighborInfoState_Received // remote reply received
-	} NeighborInfoState;
-      SPtr<TIPv6Addr> srvAddr;
-      int ifindex;
-      int transid;
-      SPtr<TDUID> srvDuid;
-      SPtr<TClntMsg> reply;
-      SPtr<TIPv6Addr> rcvdAddr;
-      NeighborInfoState state;
+  struct TNeighborInfo {
+    typedef enum {
+      NeighborInfoState_Added,   // just added (waiting to be sent)
+      NeighborInfoState_Sent,    // sent, awaiting remote reply
+      NeighborInfoState_Received // remote reply received
+    } NeighborInfoState;
+    SPtr<TIPv6Addr> srvAddr;
+    int ifindex;
+    int transid;
+    SPtr<TDUID> srvDuid;
+    SPtr<TClntMsg> reply;
+    SPtr<TIPv6Addr> rcvdAddr;
+    NeighborInfoState state;
     TNeighborInfo(SPtr<TIPv6Addr> addr)
-	: srvAddr(addr), ifindex(0), transid(0), 
-	  srvDuid(0), reply(0), rcvdAddr(0), state(NeighborInfoState_Added) { }
-    };
-    typedef std::list< SPtr<TNeighborInfo> > TNeighborInfoLst;
-    TNeighborInfoLst Neighbors;
+        : srvAddr(addr), ifindex(0), transid(0), srvDuid(0), reply(0),
+          rcvdAddr(0), state(NeighborInfoState_Added) {}
+  };
+  typedef std::list<SPtr<TNeighborInfo>> TNeighborInfoLst;
+  TNeighborInfoLst Neighbors;
 
-    SPtr<TNeighborInfo> neighborInfoGet(SPtr<TIPv6Addr> addr);
-    SPtr<TNeighborInfo> neighborInfoGet(int transid);
+  SPtr<TNeighborInfo> neighborInfoGet(SPtr<TIPv6Addr> addr);
+  SPtr<TNeighborInfo> neighborInfoGet(int transid);
 
-    SPtr<TNeighborInfo> neighborAdd(int ifindex, SPtr<TIPv6Addr> addr);
+  SPtr<TNeighborInfo> neighborAdd(int ifindex, SPtr<TIPv6Addr> addr);
 
-    bool checkRemoteSolicits();
-    bool updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors);
-    bool sendRemoteSolicit(SPtr<TNeighborInfo> neighbor);
-    bool processRemoteReply(SPtr<TClntMsg> reply);
+  bool checkRemoteSolicits();
+  bool updateNeighbors(int ifindex, SPtr<TOptAddrLst> neighbors);
+  bool sendRemoteSolicit(SPtr<TNeighborInfo> neighbor);
+  bool processRemoteReply(SPtr<TClntMsg> reply);
 #endif
-    
- protected:
-    void removeExpired();
-    void checkDecline();
-    void checkConfirm();
-    void checkDB();
-    void checkRenew();
-    void checkRequest();
-    void checkSolicit();
-    void checkInfRequest();
 
-  private:
-    bool openLoopbackSocket();
-    bool openSockets(SPtr<TClntCfgIface> iface);
-    bool populateAddrMgr(SPtr<TClntCfgIface> iface);
+protected:
+  void removeExpired();
+  void checkDecline();
+  void checkConfirm();
+  void checkDB();
+  void checkRenew();
+  void checkRequest();
+  void checkSolicit();
+  void checkInfRequest();
 
-    void sortAdvertiseLst();
-    void printLst(List(TClntMsg) lst);
+private:
+  bool openLoopbackSocket();
+  bool openSockets(SPtr<TClntCfgIface> iface);
+  bool populateAddrMgr(SPtr<TClntCfgIface> iface);
 
-    List(TClntMsg) Transactions;
-    bool IsDone;         // isDone = true - client operation is finished
-    bool Shutdown;       // is shutdown in progress?
+  void sortAdvertiseLst();
+  void printLst(List(TClntMsg) lst);
 
-    bool BindReuse; // Bug #56. Shall we allow running client and server on the same machine?
+  List(TClntMsg) Transactions;
+  bool IsDone;   // isDone = true - client operation is finished
+  bool Shutdown; // is shutdown in progress?
 
-    int CtrlIface_;
-    char CtrlAddr_[48];
+  bool BindReuse; // Bug #56. Shall we allow running client and server on the
+                  // same machine?
 
-    List(TClntMsg) AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
+  int CtrlIface_;
+  char CtrlAddr_[48];
 
-    static TClntTransMgr * Instance;
+  List(TClntMsg)
+      AdvertiseLst; // list of backup servers (i.e. not used ADVERTISE messages)
+
+  static TClntTransMgr *Instance;
 };
 
 #endif
-

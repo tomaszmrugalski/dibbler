@@ -9,29 +9,22 @@
  * $Id: SrvMsgRebind.cpp,v 1.6 2008-08-29 00:07:35 thomson Exp $
  *
  */
-#include "SmartPtr.h"
-#include "SrvMsg.h"
 #include "SrvMsgRebind.h"
 #include "AddrClient.h"
+#include "SmartPtr.h"
+#include "SrvMsg.h"
 
-TSrvMsgRebind::TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface, addr,buf,bufSize) {
-}
+TSrvMsgRebind::TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize)
+    : TSrvMsg(iface, addr, buf, bufSize) {}
 
-void TSrvMsgRebind::doDuties() {
-}
+void TSrvMsgRebind::doDuties() {}
 
-unsigned long TSrvMsgRebind::getTimeout() {
-    return 0;
-}
+unsigned long TSrvMsgRebind::getTimeout() { return 0; }
 
 bool TSrvMsgRebind::check() {
-    return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
+  return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
 }
 
-std::string TSrvMsgRebind::getName() const {
-    return "REBIND";
-}
+std::string TSrvMsgRebind::getName() const { return "REBIND"; }
 
-TSrvMsgRebind::~TSrvMsgRebind() {
-}
+TSrvMsgRebind::~TSrvMsgRebind() {}

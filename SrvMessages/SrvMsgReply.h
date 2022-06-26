@@ -14,48 +14,46 @@ class TSrvMsgReply;
 #include "SrvMsg.h"
 #include "SrvMsgConfirm.h"
 #include "SrvMsgDecline.h"
-#include "SrvMsgRequest.h"
-#include "SrvMsgReply.h"
-#include "SrvMsgRebind.h"
-#include "SrvMsgRenew.h"
-#include "SrvMsgRelease.h"
-#include "SrvMsgSolicit.h"
 #include "SrvMsgInfRequest.h"
+#include "SrvMsgRebind.h"
+#include "SrvMsgRelease.h"
+#include "SrvMsgRenew.h"
+#include "SrvMsgReply.h"
+#include "SrvMsgRequest.h"
+#include "SrvMsgSolicit.h"
 #include "SrvOptIAAddress.h"
 
 #include "OptDUID.h"
 
-class TSrvMsgReply : public TSrvMsg
-{
-  public:
-    TSrvMsgReply(SPtr<TSrvMsgConfirm> question);
-    TSrvMsgReply(SPtr<TSrvMsgDecline> question);	
-    TSrvMsgReply(SPtr<TSrvMsgRebind> question);	
-    TSrvMsgReply(SPtr<TSrvMsgRelease> question);	
-    TSrvMsgReply(SPtr<TSrvMsgRenew> question);	
-    TSrvMsgReply(SPtr<TSrvMsgRequest> question);
-    TSrvMsgReply(SPtr<TSrvMsgSolicit> question);
-    TSrvMsgReply(SPtr<TSrvMsgInfRequest> question);
-    TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList& options);
+class TSrvMsgReply : public TSrvMsg {
+public:
+  TSrvMsgReply(SPtr<TSrvMsgConfirm> question);
+  TSrvMsgReply(SPtr<TSrvMsgDecline> question);
+  TSrvMsgReply(SPtr<TSrvMsgRebind> question);
+  TSrvMsgReply(SPtr<TSrvMsgRelease> question);
+  TSrvMsgReply(SPtr<TSrvMsgRenew> question);
+  TSrvMsgReply(SPtr<TSrvMsgRequest> question);
+  TSrvMsgReply(SPtr<TSrvMsgSolicit> question);
+  TSrvMsgReply(SPtr<TSrvMsgInfRequest> question);
+  TSrvMsgReply(SPtr<TSrvMsg> msg, TOptList &options);
 
-    void doDuties();
-    unsigned long getTimeout();
-    bool check();
-    std::string getName() const;
-    
-    ~TSrvMsgReply();
+  void doDuties();
+  unsigned long getTimeout();
+  bool check();
+  std::string getName() const;
+
+  ~TSrvMsgReply();
+
 private:
-
-    bool handleSolicitOptions(TOptList& options);
-    bool handleRequestOptions(TOptList& options);
-    bool handleRenewOptions(TOptList& options);
-    bool handleRebindOptions(TOptList& options);
-    bool handleReleaseOptions(TOptList& options);
-    bool handleDeclineOptions(TOptList& options);
-    bool handleConfirmOptions(TOptList& options);
-    bool handleInfRequestOptions(TOptList& options);
-    EAddrStatus confirmAddress(TIAType type, SPtr<TIPv6Addr> addr);
+  bool handleSolicitOptions(TOptList &options);
+  bool handleRequestOptions(TOptList &options);
+  bool handleRenewOptions(TOptList &options);
+  bool handleRebindOptions(TOptList &options);
+  bool handleReleaseOptions(TOptList &options);
+  bool handleDeclineOptions(TOptList &options);
+  bool handleConfirmOptions(TOptList &options);
+  bool handleInfRequestOptions(TOptList &options);
+  EAddrStatus confirmAddress(TIAType type, SPtr<TIPv6Addr> addr);
 };
-
 
 #endif /* SRVMSGREPLY_H */

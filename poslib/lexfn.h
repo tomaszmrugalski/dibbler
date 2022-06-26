@@ -27,10 +27,10 @@
  * Functions for converting free-form text to various types of data.
  */
 
-#include "types.h"
+#include "dnsdefs.h"
 #include "socket.h"
 #include "sysstl.h"
-#include "dnsdefs.h"
+#include "types.h"
 
 /**
  * \brief convert text to boolean
@@ -117,8 +117,8 @@ bool iprange_matches(const unsigned char *iprange, const unsigned char *ip);
  * \param do_portion If true, also accepts portions such as dead:beef:*
  * \return The number of nodes of the address (16 for a complete one)
  */
-int txt_to_ipv6(unsigned char ipv6[16], const char *buff, bool do_portion = false);
-
+int txt_to_ipv6(unsigned char ipv6[16], const char *buff,
+                bool do_portion = false);
 
 /**
  * \brief Size of an IPv6 range buffer
@@ -177,7 +177,10 @@ bool addrrange_matches(const unsigned char *iprange, _addr *a);
 /**
  * \brief Address range class
  */
-class addrrange { public: unsigned char range[sz_addrrange]; };
+class addrrange {
+public:
+  unsigned char range[sz_addrrange];
+};
 
 /**
  * \brief looks item up in match list
@@ -188,7 +191,7 @@ class addrrange { public: unsigned char range[sz_addrrange]; };
  * \param a Address to check
  * \return true if the address matches one of the items in the list
  */
-bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a);
+bool in_addrrange_list(stl_list(addrrange) & lst, _addr *a);
 
 #ifdef HAVE_SLIST
 /**
@@ -200,7 +203,7 @@ bool in_addrrange_list(stl_list(addrrange) &lst, _addr *a);
  * \param a Address to check
  * \return true if the address matches one of the items in the list
  */
-bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a);
+bool in_addrrange_list(stl_slist(addrrange) & lst, _addr *a);
 #endif
 
 /**
@@ -213,7 +216,7 @@ bool in_addrrange_list(stl_slist(addrrange) &lst, _addr *a);
  * \param match_port Whether the port should also match
  * \return true if the address matches one of the items in the list
  */
-bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port = false);
+bool in_addr_list(stl_list(_addr) & lst, _addr *a, bool match_port = false);
 
 #ifdef HAVE_SLIST
 /**
@@ -226,7 +229,7 @@ bool in_addr_list(stl_list(_addr) &lst, _addr *a, bool match_port = false);
  * \param match_port Whether the port should also match
  * \return true if the address matches one of the items in the list
  */
-bool in_addr_list(stl_slist(_addr) &lst, _addr *a, bool match_port = false);
+bool in_addr_list(stl_slist(_addr) & lst, _addr *a, bool match_port = false);
 #endif
 
 /**
@@ -277,14 +280,22 @@ void txt_to_loc(unsigned char *res, char *&src);
  */
 uint16_t txt_to_qclass(const char *str, bool allow_q = true);
 
-stl_string str_type(u_int16 type); /**< Returns string representation for the RR type. */
-stl_string str_qtype(u_int16 qtype); /**< Returns string representation for the QTYPE. */
-stl_string str_class(u_int16 ctype); /**< Returns string representation for the RR CLASS. */
-stl_string str_qclass(u_int16 qctype); /**< Returns string representation for the QCLASS. */
-stl_string str_opcode(u_int16 opcode); /**< Returns string representation for the OPCODE. */
-stl_string str_rcode(int rcode); /**< Returns string representation for the RCODE. */
-stl_string str_ttl(uint32_t ttl); /**< Returns string representation for the ttl (e.g. 2h1m) */
-stl_string str_loc(const unsigned char *rr); /**< Returns string representation for a LOC RR */
+stl_string
+str_type(u_int16 type); /**< Returns string representation for the RR type. */
+stl_string
+str_qtype(u_int16 qtype); /**< Returns string representation for the QTYPE. */
+stl_string str_class(
+    u_int16 ctype); /**< Returns string representation for the RR CLASS. */
+stl_string str_qclass(
+    u_int16 qctype); /**< Returns string representation for the QCLASS. */
+stl_string str_opcode(
+    u_int16 opcode); /**< Returns string representation for the OPCODE. */
+stl_string
+str_rcode(int rcode); /**< Returns string representation for the RCODE. */
+stl_string str_ttl(
+    uint32_t ttl); /**< Returns string representation for the ttl (e.g. 2h1m) */
+stl_string str_loc(
+    const unsigned char *rr); /**< Returns string representation for a LOC RR */
 stl_string intstring(u_int16 x); /**< Converts int to string */
 
 #endif /* __POSLIB_LEXFN_H */

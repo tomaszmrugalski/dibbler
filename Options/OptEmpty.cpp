@@ -7,27 +7,22 @@
  * released under GNU GPL v2 licence
  *
  */
-#include <stdlib.h>
-#include "Portable.h"
 #include "OptEmpty.h"
+#include "Portable.h"
+#include <stdlib.h>
 
-TOptEmpty::TOptEmpty(int code, const char * buf,  int n, TMsg* parent)
-    :TOpt(code, parent) {
-    if (n) {
-	Valid = false;
-    }
+TOptEmpty::TOptEmpty(int code, const char *buf, int n, TMsg *parent) : TOpt(code, parent) {
+  if (n) {
+    Valid = false;
+  }
 }
 
-TOptEmpty::TOptEmpty(int code, TMsg* parent)
-    :TOpt(code, parent) {
-}
+TOptEmpty::TOptEmpty(int code, TMsg *parent) : TOpt(code, parent) {}
 
-size_t TOptEmpty::getSize() {
-    return 4;
-}
+size_t TOptEmpty::getSize() { return 4; }
 
- char * TOptEmpty::storeSelf( char* buf) {
-    buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize()-4);
-    return buf;
+char *TOptEmpty::storeSelf(char *buf) {
+  buf = writeUint16(buf, OptType);
+  buf = writeUint16(buf, getSize() - 4);
+  return buf;
 }

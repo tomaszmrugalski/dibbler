@@ -11,31 +11,18 @@
  * $Log: not supported by cvs2svn $
  */
 
-#include <limits.h>
 #include "ClntParsAddrOpt.h"
+#include <limits.h>
 
-TClntParsAddrOpt::TClntParsAddrOpt()
-{
-    Pref=UINT_MAX;
-    Valid=UINT_MAX;
+TClntParsAddrOpt::TClntParsAddrOpt() {
+  Pref = UINT_MAX;
+  Valid = UINT_MAX;
 }
 
-long TClntParsAddrOpt::getPref()
-{
-    return Pref;
-}
+long TClntParsAddrOpt::getPref() { return Pref; }
 
-void TClntParsAddrOpt::setPref(long pref)
-{
-    this->Pref=pref;
-}
+void TClntParsAddrOpt::setPref(long pref) { this->Pref = pref; }
 
-long TClntParsAddrOpt::getValid()
-{
-    return Valid;
-}
+long TClntParsAddrOpt::getValid() { return Valid; }
 
-void TClntParsAddrOpt::setValid(long valid)
-{
-    Valid=valid;
-}
+void TClntParsAddrOpt::setValid(long valid) { Valid = valid; }

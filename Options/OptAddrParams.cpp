@@ -10,23 +10,11 @@
 #include "OptAddrParams.h"
 #include "DHCPConst.h"
 
-TOptAddrParams::TOptAddrParams(const char * buf, size_t len, TMsg* parent)
-    :TOptInteger(OPTION_ADDRPARAMS, 2, buf, len, parent)
-{
+TOptAddrParams::TOptAddrParams(const char *buf, size_t len, TMsg *parent)
+    : TOptInteger(OPTION_ADDRPARAMS, 2, buf, len, parent) {}
 
-}
+int TOptAddrParams::getPrefix() { return (Value >> 8) & 0xff; }
 
-int TOptAddrParams::getPrefix()
-{
-    return (Value >> 8) & 0xff;
-}
+int TOptAddrParams::getBitfield() { return Value & 0xff; }
 
-int TOptAddrParams::getBitfield()
-{
-    return Value & 0xff;
-}
-
-bool TOptAddrParams::doDuties()
-{
-    return true;
-}
+bool TOptAddrParams::doDuties() { return true; }

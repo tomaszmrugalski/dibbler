@@ -8,39 +8,39 @@
  *
  */
 
-#include <sstream>
 #include "ClntMsgReconfigure.h"
-#include "OptInteger.h"
-#include "OptDUID.h"
-#include "OptReconfigureMsg.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "OptDUID.h"
+#include "OptInteger.h"
+#include "OptReconfigureMsg.h"
+#include <sstream>
 
 /*
  * creates buffer based on buffer
  */
-TClntMsgReconfigure::TClntMsgReconfigure(int iface, SPtr<TIPv6Addr> addr,
-                                     char* buf, int buflen)
-    :TClntMsg(iface,addr,buf,buflen) {
-}
+TClntMsgReconfigure::TClntMsgReconfigure(int iface, SPtr<TIPv6Addr> addr, char *buf, int buflen)
+    : TClntMsg(iface, addr, buf, buflen) {}
 
 bool TClntMsgReconfigure::check() {
-    /// @todo: check if reconfigure-message option is received, if not, drop the message
-    SPtr<TOpt> reconfMsg = getOption(OPTION_RECONF_MSG);
-    if (!reconfMsg) {
-        Log(Warning) << "Received Reconfigure message without mandatory reconfigure-message option. Dropped." << LogEnd;
-        return false;
-    }
-    if (TransID != 0) {
-        Log(Warning) << "Received Reconfigure message with non-zero transaction-id (" << TransID << "). Dropped" << LogEnd;
-        return false;
-    }
+  /// @todo: check if reconfigure-message option is received, if not, drop the
+  /// message
+  SPtr<TOpt> reconfMsg = getOption(OPTION_RECONF_MSG);
+  if (!reconfMsg) {
+    Log(Warning) << "Received Reconfigure message without mandatory "
+                    "reconfigure-message option. Dropped."
+                 << LogEnd;
+    return false;
+  }
+  if (TransID != 0) {
+    Log(Warning) << "Received Reconfigure message with non-zero transaction-id (" << TransID
+                 << "). Dropped" << LogEnd;
+    return false;
+  }
 
-    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */ );
+  return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */);
 }
 
-void TClntMsgReconfigure::doDuties() {
-}
+void TClntMsgReconfigure::doDuties() {}
 
-TClntMsgReconfigure::~TClntMsgReconfigure() {
-}
+TClntMsgReconfigure::~TClntMsgReconfigure() {}

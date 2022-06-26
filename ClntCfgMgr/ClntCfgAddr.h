@@ -12,31 +12,31 @@ class TClntCfgAddr;
 #ifndef CLNTCFGADDR_H
 #define CLNTCFGADDR_H
 
-#include "DHCPConst.h"
 #include "ClntParsGlobalOpt.h"
-#include "SmartPtr.h"
+#include "DHCPConst.h"
 #include "IPv6Addr.h"
-#include <iostream>
+#include "SmartPtr.h"
 #include <iomanip>
+#include <iostream>
 
+class TClntCfgAddr {
+  friend std::ostream &operator<<(std::ostream &out, TClntCfgAddr &group);
 
-class TClntCfgAddr
-{
-    friend std::ostream& operator<<(std::ostream& out, TClntCfgAddr& group);
- public:
-    TClntCfgAddr();
-    TClntCfgAddr(SPtr<TIPv6Addr> addr);
-    TClntCfgAddr(SPtr<TIPv6Addr> addr,long valid,long pref);
-    ~TClntCfgAddr();
+public:
+  TClntCfgAddr();
+  TClntCfgAddr(SPtr<TIPv6Addr> addr);
+  TClntCfgAddr(SPtr<TIPv6Addr> addr, long valid, long pref);
+  ~TClntCfgAddr();
 
-    SPtr<TIPv6Addr> get();
-    unsigned long getValid();
-    unsigned long getPref();
-    void setOptions(SPtr<TClntParsGlobalOpt> opt);
- private:
-    SPtr<TIPv6Addr> Addr;
-    unsigned long Valid;
-    unsigned long Pref;
+  SPtr<TIPv6Addr> get();
+  unsigned long getValid();
+  unsigned long getPref();
+  void setOptions(SPtr<TClntParsGlobalOpt> opt);
+
+private:
+  SPtr<TIPv6Addr> Addr;
+  unsigned long Valid;
+  unsigned long Pref;
 };
 
 #endif
