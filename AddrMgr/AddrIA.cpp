@@ -252,7 +252,7 @@ unsigned long TAddrIA::getT2Timeout() {
   if (clock_gettime(CLOCK_MONOTONIC_RAW, &clockts) == 0) {
     // The time we are taking is with reference to boot time,
     // which is not changed wvwn when the NTP updates the latest time.
-    ts = (unsigned long)clockts.tv_sec;
+    x = (unsigned long)clockts.tv_sec;
   }
   this->setTimestamp(ts);
   if (ts > x)
