@@ -18,25 +18,22 @@
 #ifndef CLNTOPTFQDN_H
 #define CLNTOPTFQDN_H
 
-#include "OptFQDN.h"
-#include "DUID.h"
-#include "SmartPtr.h"
 #include "ClntIfaceMgr.h"
-
+#include "DUID.h"
+#include "OptFQDN.h"
+#include "SmartPtr.h"
 
 // void *updateDNS(void *IfaceMgr);
 
-class TClntOptFQDN : public TOptFQDN
-{
- public:
-    TClntOptFQDN(const std::string& fqdn, TMsg* parent);
-    TClntOptFQDN(char *buf, int bufsize, TMsg* parent);
-    bool doDuties();
-    void setSrvDuid(SPtr<TDUID> duid);
+class TClntOptFQDN : public TOptFQDN {
+public:
+  TClntOptFQDN(const std::string &fqdn, TMsg *parent);
+  TClntOptFQDN(char *buf, int bufsize, TMsg *parent);
+  bool doDuties();
+  void setSrvDuid(SPtr<TDUID> duid);
+
 private:
-    SPtr<TDUID> SrvDUID;
+  SPtr<TDUID> SrvDUID;
 };
-
-
 
 #endif

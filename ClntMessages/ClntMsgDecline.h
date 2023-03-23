@@ -13,18 +13,18 @@ class TClntMsgDecline;
 #define CLNTMSGDECLINE_H
 #include "ClntMsg.h"
 
-class TClntMsgDecline : public TClntMsg
-{
-  public:
+class TClntMsgDecline : public TClntMsg {
+public:
   TClntMsgDecline(int iface, SPtr<TIPv6Addr> addr, List(TAddrIA) IALst);
-  
-    bool  check();
-    
-    void  answer(SPtr<TClntMsg> Rep);
-    void  doDuties();
-    std::string getName() const;
-    ~TClntMsgDecline();
- private:
+
+  bool check();
+
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  std::string getName() const;
+  ~TClntMsgDecline();
+
+private:
 };
 
 #endif

@@ -1,23 +1,22 @@
 
-#include <wchar.h>
 #include "Portable.h"
-
+#include <wchar.h>
 
 int main() {
 
-    char dev[] = "eth0";
-    char prefix[] = "2000::";
-    int  len = 64;
-    int result;
+  char dev[] = "eth0";
+  char prefix[] = "2000::";
+  int len = 64;
+  int result;
 
-    domain_add("eth0", 4, "example.com");
-    domain_add("eth0", 4, "klub.com.pl");
+  domain_add("eth0", 4, "example.com");
+  domain_add("eth0", 4, "klub.com.pl");
 
-    getwchar();
+  getwchar();
 
-    domain_del("eth0", 4, "example.com");
-    getwchar();
-    domain_del("eth0", 4, "klub.com.pl");
+  domain_del("eth0", 4, "example.com");
+  getwchar();
+  domain_del("eth0", 4, "klub.com.pl");
 
 #if 0
     lowlevelInit();
@@ -35,5 +34,5 @@ int main() {
     lowlevelExit();
 #endif
 
-    return 0;
+  return 0;
 }

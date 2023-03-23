@@ -11,10 +11,7 @@
 
 #include "RelOptGeneric.h"
 
-TRelOptGeneric::TRelOptGeneric(int type, char* buf, int bufsize, TMsg* parent) 
-    :TOptGeneric(type, buf, bufsize, parent){
-}
+TRelOptGeneric::TRelOptGeneric(int type, char *buf, int bufsize, TMsg *parent)
+    : TOptGeneric(type, buf, bufsize, parent) {}
 
-bool TRelOptGeneric::doDuties() {
-    return true;
-}
+bool TRelOptGeneric::doDuties() { return true; }

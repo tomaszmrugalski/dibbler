@@ -10,43 +10,46 @@ class TSrvOptTA;
 #ifndef SRVOPTTA_H
 #define SRVOPTTA_H
 
-#include "OptTA.h"
-#include "SrvOptIAAddress.h"
-#include "SmartPtr.h"
-#include "DUID.h"
-#include "SrvCfgMgr.h"
-#include "SrvAddrMgr.h"
 #include "Container.h"
+#include "DUID.h"
 #include "IPv6Addr.h"
+#include "OptTA.h"
+#include "SmartPtr.h"
+#include "SrvAddrMgr.h"
+#include "SrvCfgMgr.h"
+#include "SrvOptIAAddress.h"
 
-class TSrvOptTA : public TOptTA
-{
-  public:
-/* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and REQUEST */
-    TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg, int msgType, TMsg* parent);
-    TSrvOptTA(char * buf, int bufsize, TMsg* parent);
-    TSrvOptTA(int iaid, TMsg* parent);
-    TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg* parent);
-    /// @todo: Why 4 construstors?
-    void releaseAllAddrs(bool quiet);
+class TSrvOptTA : public TOptTA {
+public:
+  /* Constructor used in answers to: SOLICIT, SOLICIT (with RAPID_COMMIT) and
+   * REQUEST */
+  TSrvOptTA(SPtr<TSrvOptTA> queryOpt, SPtr<TSrvMsg> clientMsg, int msgType,
+            TMsg *parent);
+  TSrvOptTA(char *buf, int bufsize, TMsg *parent);
+  TSrvOptTA(int iaid, TMsg *parent);
+  TSrvOptTA(int iaid, int statusCode, std::string txt, TMsg *parent);
+  /// @todo: Why 4 construstors?
+  void releaseAllAddrs(bool quiet);
 
-    bool doDuties();
- private:
-    SPtr<TIPv6Addr>   ClntAddr;
-    SPtr<TDUID>       ClntDuid;
+  bool doDuties();
 
-    /// @todo: replace with Parent->getIface();
-    int Iface;
-    
-    SPtr<TSrvOptIAAddress> assignAddr(SPtr<TSrvMsg> clientMsg);
-    void solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
-    void request(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
-    void release(SPtr<TSrvOptTA> queryOpt);
-    void confirm(SPtr<TSrvOptTA> queryOpt);
+private:
+  SPtr<TIPv6Addr> ClntAddr;
+  SPtr<TDUID> ClntDuid;
 
-    void solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt, bool solicit);
+  /// @todo: replace with Parent->getIface();
+  int Iface;
 
-    int OrgMessage; // original message, which we are responding to 
+  SPtr<TSrvOptIAAddress> assignAddr(SPtr<TSrvMsg> clientMsg);
+  void solicit(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
+  void request(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt);
+  void release(SPtr<TSrvOptTA> queryOpt);
+  void confirm(SPtr<TSrvOptTA> queryOpt);
+
+  void solicitRequest(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptTA> queryOpt,
+                      bool solicit);
+
+  int OrgMessage; // original message, which we are responding to
 };
 
 #endif

@@ -13,41 +13,41 @@
 #include "ClntCfgPrefix.h"
 #include "ClntParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class TClntCfgPD
-{
-    friend std::ostream& operator<<(std::ostream& out, TClntCfgPD& group);
- public:
-    long getIAID();
-    void setIAID(long iaid);
+class TClntCfgPD {
+  friend std::ostream &operator<<(std::ostream &out, TClntCfgPD &group);
 
-    unsigned long getT1();
-    unsigned long getT2();
-    char getPrefixLength();
+public:
+  long getIAID();
+  void setIAID(long iaid);
 
-    void setOptions(SPtr<TClntParsGlobalOpt> opt);
+  unsigned long getT1();
+  unsigned long getT2();
+  char getPrefixLength();
 
-    void firstPrefix();
-    SPtr<TClntCfgPrefix> getPrefix();
-    long countPrefixes();
-    void addPrefix(SPtr<TClntCfgPrefix> addr);
+  void setOptions(SPtr<TClntParsGlobalOpt> opt);
 
-    TClntCfgPD();
-    TClntCfgPD(SPtr<TClntCfgPD> right, long iAID);
+  void firstPrefix();
+  SPtr<TClntCfgPrefix> getPrefix();
+  long countPrefixes();
+  void addPrefix(SPtr<TClntCfgPrefix> addr);
 
-    void setState(enum EState state);
-    enum EState getState();
+  TClntCfgPD();
+  TClntCfgPD(SPtr<TClntCfgPD> right, long iAID);
 
-  private:
-    List(TClntCfgPrefix) ClntCfgPrefixLst_;
-    unsigned long IAID_;
-    unsigned long T1_;
-    unsigned long T2_;
-    char PrefixLength_;
+  void setState(enum EState state);
+  enum EState getState();
 
-    EState State_;
+private:
+  List(TClntCfgPrefix) ClntCfgPrefixLst_;
+  unsigned long IAID_;
+  unsigned long T1_;
+  unsigned long T2_;
+  char PrefixLength_;
+
+  EState State_;
 };
 
 #endif

@@ -18,10 +18,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "dnsmessage.h"
 #include "domainfn.h"
-#include "lexfn.h"
+#include "dnsmessage.h"
 #include "exception.h"
+#include "lexfn.h"
 #include "sysstl.h"
 #include "sysstring.h"
 
@@ -36,16 +36,14 @@ void *memdup(const void *src, int len) {
 int dom_comprlen(message_buff &buff, int ix) {
   int len = 0;
   unsigned char x;
-  unsigned char *ptr = buff.msg + ix,
-                *end = buff.msg + buff.len;
-  
+  unsigned char *ptr = buff.msg + ix, *end = buff.msg + buff.len;
+
   while (true) {
     if (ptr >= end) throw PException("Domain name exceeds message borders");
-    
-    if (*ptr == 0)
-      /* we're at the end! */
+
+    if (*ptr == 0) /* we're at the end! */
       return len + 1;
-    
+
     if ((*ptr & 192) == 192) {
       if (ptr + 1 >= end) throw PException("Compression offset exceeds message borders");
       return len + 2;
@@ -89,7 +87,7 @@ _domain dom_uncompress(message_buff &buff, int ix) {
     ptr += *ptr + 1;
   }
 
-//  return domdup(dbuff);
+  //  return domdup(dbuff);
 }
 
 dom_compr_info::dom_compr_info(_cdomain _dom, int _ix, int _nl, int _nul) {
@@ -100,7 +98,7 @@ dom_compr_info::dom_compr_info(_cdomain _dom, int _ix, int _nl, int _nul) {
 }
 
 int dom_partiallength(_cdomain _dom, int n) {
-  _domain dom = (_domain) _dom;
+  _domain dom = (_domain)_dom;
   int len = 0;
   while (--n >= 0) {
     len += *dom + 1;
@@ -109,12 +107,12 @@ int dom_partiallength(_cdomain _dom, int n) {
   return len;
 }
 
-void dom_write(stl_string &ret, _cdomain dom, stl_slist(dom_compr_info) *comprinfo) {
+void dom_write(stl_string &ret, _cdomain dom, stl_slist(dom_compr_info) * comprinfo) {
   if (!comprinfo) {
     ret.append((char *)dom, domlen(dom));
     return;
   }
-  
+
   stl_slist(dom_compr_info)::iterator it = comprinfo->begin(), best = comprinfo->end();
   int nlabels = dom_nlabels(dom) - 1, x;
   int ix = ret.size();
@@ -137,8 +135,10 @@ void dom_write(stl_string &ret, _cdomain dom, stl_slist(dom_compr_info) *comprin
   } else {
     unsigned char val;
     ret.append((char *)dom, dom_partiallength(dom, nlabels - best->nl));
-    val = (best->ix / 256) | 192; ret.append((char *)&val, 1);
-    val = best->ix; ret.append((char*)&val, 1);
+    val = (best->ix / 256) | 192;
+    ret.append((char *)&val, 1);
+    val = best->ix;
+    ret.append((char *)&val, 1);
     x = nlabels - best->nl; /* number of stored labels */
   }
 
@@ -157,7 +157,7 @@ _domain domfrom(_cdomain dom, int ix) {
     dom += *dom + 1;
     ix--;
   }
-  return (_domain) dom;
+  return (_domain)dom;
 }
 
 bool domisparent(_cdomain parent, _cdomain child) {
@@ -177,13 +177,11 @@ int domlen(_cdomain dom) {
   return len;
 }
 
-_domain domdup(_cdomain dom) {
-  return (_domain) memdup(dom, domlen(dom));
-}
+_domain domdup(_cdomain dom) { return (_domain)memdup(dom, domlen(dom)); }
 
 bool domlcmp(_cdomain dom1, _cdomain dom2) {
-  _domain a = (_domain) dom1;
-  _domain b = (_domain) dom2;
+  _domain a = (_domain)dom1;
+  _domain b = (_domain)dom2;
   if (*a != *b) return false;
   for (int t = 1; t <= *a; t++)
     if (tolower(a[t]) != tolower(b[t])) return false;
@@ -208,11 +206,9 @@ bool domcmp(_cdomain _dom1, _cdomain _dom2) {
   return true;
 }
 
-domainname::domainname() {
-  domain = (unsigned char *)strdup("");
-}
+domainname::domainname() { domain = (unsigned char *)strdup(""); }
 
-domainname::domainname(const char *string, const domainname& origin) {
+domainname::domainname(const char *string, const domainname &origin) {
   unsigned char tmp[DOM_LEN];
 
   txt_to_email(tmp, string, origin.domain);
@@ -226,24 +222,15 @@ domainname::domainname(const char *string, _cdomain origin) {
   domain = domdup(tmp);
 }
 
-domainname::domainname(message_buff &buff, int ix) {
-  domain = dom_uncompress(buff, ix);
-}
+domainname::domainname(message_buff &buff, int ix) { domain = dom_uncompress(buff, ix); }
 
+domainname::domainname(bool val, const unsigned char *dom) { domain = domdup(dom); }
 
-domainname::domainname(bool val, const unsigned char* dom) {
-  domain = domdup(dom);
-}
+domainname::domainname(const domainname &nam) { domain = domdup(nam.domain); }
 
-domainname::domainname(const domainname& nam) {
-  domain = domdup(nam.domain);
-}
+domainname::~domainname() { free(domain); }
 
-domainname::~domainname() {
-  free(domain);
-}
-
-domainname& domainname::operator=(const domainname& nam) {
+domainname &domainname::operator=(const domainname &nam) {
   if (this != &nam) {
     if (domain) free(domain);
     domain = domdup(nam.domain);
@@ -252,52 +239,44 @@ domainname& domainname::operator=(const domainname& nam) {
 }
 
 // cppcheck-suppress operatorEqToSelf
-domainname& domainname::operator=(const char *buff) {
+domainname &domainname::operator=(const char *buff) {
   unsigned char tmp[DOM_LEN];
 
   if (domain) {
     free(domain);
     domain = NULL;
   }
-  
+
   txt_to_dname(tmp, buff, (unsigned char *)"");
   domain = domdup(tmp);
   return *this;
 }
 
+bool domainname::operator==(const domainname &nam) const { return domcmp(domain, nam.domain); }
 
-bool domainname::operator==(const domainname& nam) const {
-  return domcmp(domain, nam.domain);
-}
+bool domainname::operator!=(const domainname &nam) const { return !domcmp(domain, nam.domain); }
 
-bool domainname::operator!=(const domainname& nam) const {
-  return !domcmp(domain, nam.domain);
-}
-
-domainname& domainname::operator+=(const domainname& nam) {
-  int lenres = domlen(domain),
-      lensrc = domlen(nam.domain);
+domainname &domainname::operator+=(const domainname &nam) {
+  int lenres = domlen(domain), lensrc = domlen(nam.domain);
 
   if (lenres + lensrc - 1 > DOM_LEN) throw PException("Domain name too long");
-  unsigned char * tmp = (unsigned char *)realloc(domain, lenres + lensrc - 1);
+  unsigned char *tmp = (unsigned char *)realloc(domain, lenres + lensrc - 1);
   if (tmp != NULL) {
-      domain = tmp;
+    domain = tmp;
   }
   memcpy(domain + lenres - 1, nam.domain, lensrc);
   return *this;
 }
 
-domainname& domainname::operator+(const domainname& nam) {
+domainname &domainname::operator+(const domainname &nam) {
   domainname *ret = new domainname(*this);
   ret->operator+=(nam);
   return *ret;
 }
 
-bool domainname::operator>=(const domainname& dom) const {
-  return domisparent(dom.domain, domain);
-}
+bool domainname::operator>=(const domainname &dom) const { return domisparent(dom.domain, domain); }
 
-bool domainname::operator>(const domainname& dom) const {
+bool domainname::operator>(const domainname &dom) const {
   return !domcmp(dom.domain, domain) && domisparent(dom.domain, domain);
 }
 
@@ -306,21 +285,13 @@ _domain domainname::c_str() const {
   return domain;
 }
 
-int domainname::len() const {
-  return domlen(domain);
-}
+int domainname::len() const { return domlen(domain); }
 
-stl_string domainname::tostring() const {
-  return dom_tostring(domain);
-}
+stl_string domainname::tostring() const { return dom_tostring(domain); }
 
-int domainname::nlabels() const {
-  return dom_nlabels(domain);
-}
+int domainname::nlabels() const { return dom_nlabels(domain); }
 
-stl_string domainname::label(int ix) const {
-  return dom_label(domain, ix);
-}
+stl_string domainname::label(int ix) const { return dom_label(domain, ix); }
 
 domainname domainname::from(int ix) const {
   stl_string ret;
@@ -346,39 +317,34 @@ stl_string domainname::torelstring(const domainname &root) const {
     stl_string str = to(nlabels() - root.nlabels()).tostring();
     str.resize(str.size() - 1);
     return str;
-  } else return tostring();
+  } else
+    return tostring();
 }
 
-stl_string domainname::canonical () const {
+stl_string domainname::canonical() const {
   unsigned char val[DOM_LEN];
-  int len = domlen (domain);
-  memcpy (val, domain, len);
+  int len = domlen(domain);
+  memcpy(val, domain, len);
   unsigned char *lenlabel = val;
   for (int t = 0; t < len; t++) {
     if (val + t == lenlabel)
       lenlabel += *lenlabel + 1;
     else
-      val[t] = tolower (val[t]);
+      val[t] = tolower(val[t]);
   }
-  return std::string ((char*)val, len);
+  return std::string((char *)val, len);
 }
 
-
-int domainname::ncommon(const domainname &dom) const {
-  return domncommon(domain, dom.domain);
-}
+int domainname::ncommon(const domainname &dom) const { return domncommon(domain, dom.domain); }
 
 void domcat(_domain res, _cdomain src) {
-  int lenres = domlen(res),
-      lensrc = domlen(src);
+  int lenres = domlen(res), lensrc = domlen(src);
   if (lenres + lensrc - 1 > DOM_LEN) throw PException("Domain name too long");
   memcpy(res + lenres - 1, src, lensrc);
 }
 
-void domcpy(_domain res, _cdomain src) {
-  memcpy(res, src, domlen(src));
-}
- 
+void domcpy(_domain res, _cdomain src) { memcpy(res, src, domlen(src)); }
+
 void domfromlabel(_domain dom, const char *label, int len) {
   if (len == -1) len = strlen(label);
   if (len > DOMLABEL_LEN) throw PException(true, "Domain name label %s too long", label);
@@ -404,7 +370,7 @@ stl_string dom_label(_cdomain dom, int label) {
     label--;
   }
 
-  ret.append((char*)dom + 1, (int)*dom);
+  ret.append((char *)dom + 1, (int)*dom);
   return ret;
 }
 
@@ -415,7 +381,7 @@ _domain dom_plabel(_cdomain dom, int label) {
     if (*ret == 0) throw PException("Label not in domain name");
     ret += *ret + 1;
   }
-  return (_domain) ret;
+  return (_domain)ret;
 }
 
 stl_string dom_tostring(_cdomain dom) {
@@ -424,7 +390,7 @@ stl_string dom_tostring(_cdomain dom) {
   stl_string x;
 
   while (*dom != '\0') {
-    x.append((char*)dom + 1, (int)*dom);
+    x.append((char *)dom + 1, (int)*dom);
     x.append(".");
 
     dom += *dom + 1;
@@ -434,8 +400,7 @@ stl_string dom_tostring(_cdomain dom) {
 }
 
 int domncommon(_cdomain _dom1, _cdomain _dom2) {
-  _domain dom1 = (_domain)_dom1,
-          dom2 = (_domain)_dom2;
+  _domain dom1 = (_domain)_dom1, dom2 = (_domain)_dom2;
 
   int a = dom_nlabels(dom1), b = dom_nlabels(dom2);
   if (a > b)
@@ -445,7 +410,10 @@ int domncommon(_cdomain _dom1, _cdomain _dom2) {
 
   int x = 0;
   while (*dom1) {
-    if (domlcmp(dom1, dom2)) x++; else x = 0;
+    if (domlcmp(dom1, dom2))
+      x++;
+    else
+      x = 0;
     dom1 += *dom1 + 1;
     dom2 += *dom2 + 1;
   }
@@ -453,12 +421,17 @@ int domncommon(_cdomain _dom1, _cdomain _dom2) {
 }
 
 int domccmp(_cdomain _dom1, _cdomain _dom2) {
-  _domain dom1 = (_domain)_dom1,
-          dom2 = (_domain)_dom2;
+  _domain dom1 = (_domain)_dom1, dom2 = (_domain)_dom2;
 
   int x = domncommon(dom1, dom2), y = dom_nlabels(dom1), z = dom_nlabels(dom2);
-  if (x == y - 1) { if (x == z - 1) return 0; else return -1; }
-  else if (x == z - 1) { return 1; } else {
+  if (x == y - 1) {
+    if (x == z - 1)
+      return 0;
+    else
+      return -1;
+  } else if (x == z - 1) {
+    return 1;
+  } else {
     /* check the last label */
     return strcmpi(dom_label(dom1, y - x - 2).c_str(), dom_label(dom2, z - x - 2).c_str());
   }

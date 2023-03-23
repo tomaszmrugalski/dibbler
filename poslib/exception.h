@@ -38,7 +38,7 @@
  * combination of a message and an other exception.
  */
 class PException {
- public:
+public:
   /*!
    * \brief default constructor
    *
@@ -51,8 +51,8 @@ class PException {
    * This destructor makes a copy of another PException.
    * \param p The PException to copy
    */
-  PException(const PException& p);
-  
+  PException(const PException &p);
+
   /*!
    * \brief constructor with message
    *
@@ -110,7 +110,7 @@ class PException {
    * \param p The PException to copy
    * \return This exception object
    */
-  PException& operator=(const PException& p);
+  PException &operator=(const PException &p);
   /*!
    * \brief the exception error message
    *

@@ -6,5 +6,4 @@ int rtnl_rtntype_a2n(int *id, char *arg);
 
 int get_rt_realms(__u32 *realms, char *arg);
 
-
 #endif /* __RTM_MAP_H__ */

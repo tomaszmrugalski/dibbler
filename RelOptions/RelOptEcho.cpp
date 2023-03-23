@@ -7,20 +7,12 @@
  *
  */
 
-#include "SmartPtr.h"
 #include "RelOptEcho.h"
+#include "SmartPtr.h"
 
-TRelOptEcho::TRelOptEcho( char * buf,  int n, TMsg* parent)
-    :TOptOptionRequest(OPTION_ERO, buf, n, parent)
-{
-}
+TRelOptEcho::TRelOptEcho(char *buf, int n, TMsg *parent)
+    : TOptOptionRequest(OPTION_ERO, buf, n, parent) {}
 
-TRelOptEcho::TRelOptEcho(TMsg* parent)
-    :TOptOptionRequest(OPTION_ERO, parent)
-{
-}
+TRelOptEcho::TRelOptEcho(TMsg *parent) : TOptOptionRequest(OPTION_ERO, parent) {}
 
-bool TRelOptEcho::doDuties()
-{
-    return true;
-}
+bool TRelOptEcho::doDuties() { return true; }

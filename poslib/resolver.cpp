@@ -20,11 +20,11 @@
 
 #include "dibbler-config.h"
 
-#include "socket.h"
 #include "exception.h"
+#include "postime.h"
 #include "random.h"
 #include "resolver.h"
-#include "postime.h"
+#include "socket.h"
 
 #include <stdio.h>
 
@@ -43,41 +43,34 @@ pos_resolver::pos_resolver() {
   n_udp_tries = 1;
   udp_tries = (int *)malloc(3 * sizeof(int));
   udp_tries[0] = 1000;
-  udp_tries[1] = 3000; // ignored for now
-  udp_tries[2] = 6000; // ignored for now
+  udp_tries[1] = 3000;  // ignored for now
+  udp_tries[2] = 6000;  // ignored for now
   tcp_timeout = 1000;
 }
 
-pos_resolver::~pos_resolver() {
-  free(udp_tries);
-}
+pos_resolver::~pos_resolver() { free(udp_tries); }
 
 /* tcp queries */
 
-int pos_resolver::tcpconnect(_addr *res) {
-  return tcpopen(res);
-}
+int pos_resolver::tcpconnect(_addr *res) { return tcpopen(res); }
 
-void pos_resolver::tcpdisconnect(int sockid) {
-  tcpclose(sockid);
-}
+void pos_resolver::tcpdisconnect(int sockid) { tcpclose(sockid); }
 
-void pos_resolver::tcpquery(DnsMessage *q, DnsMessage*& a, int sockid) {
+void pos_resolver::tcpquery(DnsMessage *q, DnsMessage *&a, int sockid) {
   q->ID = posrandom();
   tcpsendmessage(q, sockid);
-  if (!a)
-      a = q->initialize_answer ();
-  
+  if (!a) a = q->initialize_answer();
+
   try {
     tcpwaitanswer(a, sockid);
   } catch (PException p) {
-      if (a) {
-          delete a;
-          a = NULL;
-      }
+    if (a) {
+      delete a;
+      a = NULL;
+    }
     throw p;
   }
-    
+
   if (a->ID != q->ID) {
     delete a;
     a = NULL;
@@ -91,58 +84,57 @@ void pos_resolver::tcpsendmessage(DnsMessage *msg, int sockid) {
   if (buff.len > 65536) return;
   len[0] = buff.len / 256;
   len[1] = buff.len;
-  tcpsendall(sockid, (char*)len, 2, tcp_timeout / 4);
-  tcpsendall(sockid, (char*)buff.msg, buff.len, tcp_timeout / 4);
+  tcpsendall(sockid, (char *)len, 2, tcp_timeout / 4);
+  tcpsendall(sockid, (char *)buff.msg, buff.len, tcp_timeout / 4);
 }
 
-void pos_resolver::tcpwaitanswer(DnsMessage*& ans, int sockid) {
+void pos_resolver::tcpwaitanswer(DnsMessage *&ans, int sockid) {
   unsigned char len_b[2];
   unsigned char *msg = NULL;
   int len;
   postime_t end = getcurtime() + tcp_timeout;
 
   try {
-    tcpreadall(sockid, (char*)len_b, 2, end.after(getcurtime()));
+    tcpreadall(sockid, (char *)len_b, 2, end.after(getcurtime()));
     len = len_b[0] * 256 + len_b[1];
     msg = new unsigned char[len];
-    tcpreadall(sockid, (char*)msg, len, end.after(getcurtime()));
+    tcpreadall(sockid, (char *)msg, len, end.after(getcurtime()));
     ans = new DnsMessage();
     ans->read_from_data(msg, len);
-  } catch(PException p) {
+  } catch (PException p) {
     if (msg) {
-	delete [] msg;
-	msg = NULL;
+      delete[] msg;
+      msg = NULL;
     }
     if (ans) {
-	delete ans;
-	ans = NULL;
+      delete ans;
+      ans = NULL;
     }
 
     throw p;
   }
   if (msg) {
-      delete [] msg;
-      msg = NULL;
+    delete[] msg;
+    msg = NULL;
   }
 }
 
 /* stand-alone client resolver */
 
-pos_cliresolver::pos_cliresolver() :
-    pos_resolver(), is_tcp(false) {
+pos_cliresolver::pos_cliresolver() : pos_resolver(), is_tcp(false) {
   sockid = -1;
   quit_flag = false;
 #ifndef _WIN32
-   if (pipe(clipipes) != 0) {
-       throw PException("Failed to create pipe.");
-   }
+  if (pipe(clipipes) != 0) {
+    throw PException("Failed to create pipe.");
+  }
 #endif
 }
 
 pos_cliresolver::~pos_cliresolver() {
 #ifndef _WIN32
-    close(clipipes[0]);
-    close(clipipes[1]);
+  close(clipipes[0]);
+  close(clipipes[1]);
 #endif
 }
 
@@ -150,10 +142,10 @@ void pos_cliresolver::stop() {
   quit_flag = true;
   if (sockid > 0) {
 #ifdef _WIN32
-    if (is_tcp) 
-	tcpclose(sockid); 
-    else 
-	udpclose(sockid);
+    if (is_tcp)
+      tcpclose(sockid);
+    else
+      udpclose(sockid);
     sockid = -1;
 #else
     if (write(clipipes[1], "x", 1) == -1) {
@@ -172,70 +164,70 @@ void pos_cliresolver::clrstop() {
   set.set(0, clipipes[0]);
   set.check();
   while (set.isdata(0)) {
-      if (read(clipipes[0], &buff, 1) == -1) {
-          throw PException("Client pipe read failed");
-      }
+    if (read(clipipes[0], &buff, 1) == -1) {
+      throw PException("Client pipe read failed");
+    }
     set.check();
   }
 #endif
 }
 
-void pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags) {
+void pos_cliresolver::query(DnsMessage *q, DnsMessage *&a, _addr *server, int flags) {
   stl_slist(_addr) servers;
   servers.push_front(*server);
   query(q, a, servers, flags);
 }
 
-
-_addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags) {
+_addr pos_cliresolver::query(DnsMessage *q, DnsMessage *&a, stl_slist(_addr) & servers, int flags) {
   int x = -1;
   stl_slist(_addr)::iterator server, sbegin;
   stl_slist(WaitAnswerData) waitdata;
   stl_slist(WaitAnswerData)::iterator it;
   int ipv4sock = 0;
   int ipv6sock = 0;
-  unsigned char addr[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  unsigned char addr[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   _addr tmp;
 
   clrstop();
 
   if (servers.empty()) throw PException("Empty servers list for query");
-  
+
   int z = posrandom() % servers.size();
   sbegin = servers.begin();
-  while (z) { z--; ++sbegin; }
+  while (z) {
+    z--;
+    ++sbegin;
+  }
 
   while (++x < n_udp_tries) {
     server = sbegin;
     do {
       try {
         /* register and assign a new query ID */
-          if (!q->ID)
-              q->ID = posrandom();
+        if (!q->ID) q->ID = posrandom();
         if (sock_is_ipv6(&*server)) {
           if (!ipv6sock) {
             getaddress_ip6(&tmp, addr, 0);
             ipv6sock = udpcreateserver(&tmp);
           }
           sockid = ipv6sock;
-        } else
-          if (sock_is_ipv4(&*server)) {
+        } else if (sock_is_ipv4(&*server)) {
           if (!ipv4sock) {
             getaddress_ip4(&tmp, addr, 0);
             ipv4sock = udpcreateserver(&tmp);
           }
           sockid = ipv4sock;
-        } else throw PException("Unknown address family");
+        } else
+          throw PException("Unknown address family");
         sendmessage(q, &*server, sockid);
         waitdata.push_front(WaitAnswerData(q->ID, *server));
-        if (a)
-            delete a;
-        a = q->initialize_answer ();
+        if (a) delete a;
+        a = q->initialize_answer();
         if (waitanswer(a, waitdata, udp_tries[x], it, sockid)) {
           /* answer received */
           if (a->TC && flags == Q_DFL) {
             delete a;
-            a = q->initialize_answer ();
+            a = q->initialize_answer();
             /* retry using TCP */
             sockid = 0;
             try {
@@ -246,39 +238,39 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
               throw PException("Failed to retry using TCP: ", p);
             }
             tcpdisconnect(sockid);
-          } else if (a->RCODE == RCODE_SRVFAIL ||
-                     a->RCODE == RCODE_REFUSED ||
+          } else if (a->RCODE == RCODE_SRVFAIL || a->RCODE == RCODE_REFUSED ||
                      a->RCODE == RCODE_NOTIMP) {
             stl_slist(_addr)::iterator tmpit = server;
             ++tmpit;
-            if (tmpit == servers.end())
-                tmpit = servers.begin();
+            if (tmpit == servers.end()) tmpit = servers.begin();
             if (tmpit != sbegin) throw PException("Answer has error RCODE");
           }
           if (ipv6sock) {
-              udpclose(ipv6sock);
-              ipv6sock = 0;
-          }
-          if (ipv4sock) {
-              udpclose(ipv4sock);
-              ipv4sock = 0;
-          }
-          return it->from;
-        } else if (quit_flag) throw PException("Interrupted");
-      } catch(PException p) {
-        if (a) {
-            delete a;
-            a = NULL;
-        }
-        if (ipv6sock) {
             udpclose(ipv6sock);
             ipv6sock = 0;
-        }
-        if (ipv4sock) {
+          }
+          if (ipv4sock) {
             udpclose(ipv4sock);
             ipv4sock = 0;
+          }
+          return it->from;
+        } else if (quit_flag)
+          throw PException("Interrupted");
+      } catch (PException p) {
+        if (a) {
+          delete a;
+          a = NULL;
         }
-        stl_slist(_addr)::iterator s2 = server; ++s2;
+        if (ipv6sock) {
+          udpclose(ipv6sock);
+          ipv6sock = 0;
+        }
+        if (ipv4sock) {
+          udpclose(ipv4sock);
+          ipv4sock = 0;
+        }
+        stl_slist(_addr)::iterator s2 = server;
+        ++s2;
         if (s2 == servers.end()) s2 = servers.begin();
         if (s2 == sbegin) throw PException("Resolving failed: ", p);
       }
@@ -287,22 +279,23 @@ _addr pos_cliresolver::query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &se
     } while (server != sbegin);
   }
   if (ipv6sock) {
-      udpclose(ipv6sock);
-      ipv6sock = 0;
+    udpclose(ipv6sock);
+    ipv6sock = 0;
   }
   if (ipv4sock) {
-      udpclose(ipv4sock);
-      ipv4sock = 0;
+    udpclose(ipv4sock);
+    ipv4sock = 0;
   }
   throw PException("No server could be reached!");
 }
 
 void pos_cliresolver::sendmessage(DnsMessage *msg, _addr *res, int sockid) {
   message_buff buff = msg->compile(UDP_MSG_SIZE);
-  udpsend(sockid, (char*)buff.msg, buff.len, res);
+  udpsend(sockid, (char *)buff.msg, buff.len, res);
 }
 
-bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& wit, int sockid) {
+bool pos_cliresolver::waitanswer(DnsMessage *&ans, stl_slist(WaitAnswerData) & wait, int timeout,
+                                 stl_slist(WaitAnswerData)::iterator &wit, int sockid) {
   /* client implementation */
   _addr src;
   smallset_t set;
@@ -322,14 +315,14 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
     if (set.isdata(1)) {
       char data;
       if (read(clipipes[0], &data, 1) == -1) {
-          throw PException("Socket read failed");
+        throw PException("Socket read failed");
       }
     }
 #endif
 
     if (!set.iserror(0) && !set.ishup(0) && set.isdata(0)) {
       unsigned char msg[UDP_MSG_SIZE];
-      int len = udpread(sockid, (char*)msg, sizeof(msg), &src);
+      int len = udpread(sockid, (char *)msg, sizeof(msg), &src);
 
       wit = wait.begin();
       while (wit != wait.end()) {
@@ -337,7 +330,7 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
           try {
             ans->read_from_data(msg, len);
           } catch (PException p) {
-            if (len >= 12 && (msg[2]&2)) {
+            if (len >= 12 && (msg[2] & 2)) {
               /* message was truncated */
               delete ans;
               ans = new DnsMessage();
@@ -352,7 +345,8 @@ bool pos_cliresolver::waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wa
       }
       /* the answer was not from someone we wanted */
       throw PException("Got answer from unexpected server!");
-    } else return false;
+    } else
+      return false;
   }
-//  return false;
+  //  return false;
 }

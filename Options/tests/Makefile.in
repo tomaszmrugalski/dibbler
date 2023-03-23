@@ -394,7 +394,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/Options -I$(top_srcdir)/Misc \
 @HAVE_GTEST_TRUE@	OptVendorClass_unittest.cc \
 @HAVE_GTEST_TRUE@	OptVendorSpecInfo_unittest.cc \
 @HAVE_GTEST_TRUE@	OptVendorData_unittest.cc
-@HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@Opt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@Opt_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Options/libOptions.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/Messages/libMessages.a \

@@ -2,7 +2,7 @@
 #define __UTILS_H__ 1
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE 1
+#define _GNU_SOURCE 1
 #endif
 
 #include <asm/types.h>
@@ -21,37 +21,45 @@ extern int show_raw;
 extern int resolve_hosts;
 extern int oneline;
 extern int timestamp;
-extern char * _SL_;
+extern char *_SL_;
 
 #ifndef IPPROTO_ESP
-#define IPPROTO_ESP	50
+#define IPPROTO_ESP 50
 #endif
 #ifndef IPPROTO_AH
-#define IPPROTO_AH	51
+#define IPPROTO_AH 51
 #endif
 #ifndef IPPROTO_COMP
-#define IPPROTO_COMP	108
+#define IPPROTO_COMP 108
 #endif
 #ifndef IPSEC_PROTO_ANY
-#define IPSEC_PROTO_ANY	255
+#define IPSEC_PROTO_ANY 255
 #endif
 
 #define SPRINT_BSIZE 64
-#define SPRINT_BUF(x)	char x[SPRINT_BSIZE]
+#define SPRINT_BUF(x) char x[SPRINT_BSIZE]
 
 extern void incomplete_command(void) __attribute__((noreturn));
 
-#define NEXT_ARG() do { argv++; if (--argc <= 0) incomplete_command(); } while(0)
+#define NEXT_ARG()                                                             \
+  do {                                                                         \
+    argv++;                                                                    \
+    if (--argc <= 0)                                                           \
+      incomplete_command();                                                    \
+  } while (0)
 #define NEXT_ARG_OK() (argc - 1 > 0)
-#define PREV_ARG() do { argv--; argc++; } while(0)
+#define PREV_ARG()                                                             \
+  do {                                                                         \
+    argv--;                                                                    \
+    argc++;                                                                    \
+  } while (0)
 
-typedef struct
-{
-	__u8 family;
-	__u8 bytelen;
-	__s16 bitlen;
-	__u32 flags;
-	__u32 data[4];
+typedef struct {
+  __u8 family;
+  __u8 bytelen;
+  __s16 bitlen;
+  __u32 flags;
+  __u32 data[4];
 } inet_prefix;
 
 #define PREFIXLEN_SPECIFIED 1
@@ -61,17 +69,16 @@ typedef struct
 #define AF_DECnet 12
 #endif
 
-struct dn_naddr 
-{
-        unsigned short          a_len;
-        unsigned char a_addr[DN_MAXADDL];
+struct dn_naddr {
+  unsigned short a_len;
+  unsigned char a_addr[DN_MAXADDL];
 };
 
 #define IPX_NODE_LEN 6
 
 struct ipx_addr {
-	u_int32_t ipx_net;
-	u_int8_t  ipx_node[IPX_NODE_LEN];
+  u_int32_t ipx_net;
+  u_int8_t ipx_node[IPX_NODE_LEN];
 };
 
 extern __u32 get_addr32(const char *name);
@@ -91,20 +98,21 @@ extern int get_s16(__s16 *val, const char *arg, int base);
 extern int get_u8(__u8 *val, const char *arg, int base);
 extern int get_s8(__s8 *val, const char *arg, int base);
 
-extern char* hexstring_n2a(const __u8 *str, int len, char *buf, int blen);
-extern __u8* hexstring_a2n(const char *str, __u8 *buf, int blen);
+extern char *hexstring_n2a(const __u8 *str, int len, char *buf, int blen);
+extern __u8 *hexstring_a2n(const char *str, __u8 *buf, int blen);
 
-extern const char *format_host(int af, int len, const void *addr, 
-			       char *buf, int buflen);
-extern const char *rt_addr_n2a(int af, int len, const void *addr, 
-			       char *buf, int buflen);
+extern const char *format_host(int af, int len, const void *addr, char *buf,
+                               int buflen);
+extern const char *rt_addr_n2a(int af, int len, const void *addr, char *buf,
+                               int buflen);
 
 void missarg(const char *) __attribute__((noreturn));
 void invarg(const char *, const char *) __attribute__((noreturn));
 void duparg(const char *, const char *) __attribute__((noreturn));
 void duparg2(const char *, const char *) __attribute__((noreturn));
 int matches(const char *arg, const char *pattern);
-extern int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits);
+extern int inet_addr_match(const inet_prefix *a, const inet_prefix *b,
+                           int bits);
 
 const char *dnet_ntop(int af, const void *addr, char *str, size_t len);
 int dnet_pton(int af, const char *src, void *addr);
@@ -114,18 +122,12 @@ int ipx_pton(int af, const char *src, void *addr);
 
 extern int __iproute2_hz_internal;
 
-static __inline__ int get_hz(void)
-{
-    return 1000;
-}
+static __inline__ int get_hz(void) { return 1000; }
 
 extern int __iproute2_user_hz_internal;
 extern int __get_user_hz(void);
 
-static __inline__ int get_user_hz(void)
-{
-    return 1000;
-}
+static __inline__ int get_user_hz(void) { return 1000; }
 
 int print_timestamp(FILE *fp);
 

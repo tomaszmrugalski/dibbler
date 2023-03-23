@@ -8,8 +8,8 @@
 
 // For signal handling
 //#include <unistd.h>
-#include <stdlib.h>
 #include <signal.h>
+#include <stdlib.h>
 
 DnsMessage *my_handle_query(pending_query *query);
 
@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
       txt_to_addr(&a, argv[1] + 1);
     } else {
       txt_to_addr(&a, "any");
-//      printf("Usage: server @interface\n");
-//      return 1;
+      //      printf("Usage: server @interface\n");
+      //      return 1;
     }
 
     /* bring up posadis */

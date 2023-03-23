@@ -24,24 +24,18 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-PException::PException() {
-  message = strdup("");
-}
+PException::PException() { message = strdup(""); }
 
-PException::PException(const char *_message) {
-  message = strdup(_message);
-}
+PException::PException(const char *_message) { message = strdup(_message); }
 
 PException::PException(const char *_message, const PException &p) {
   size_t len = strlen(_message) + strlen(p.message) + 1;
-  message = (char*) malloc(len);
+  message = (char *)malloc(len);
   strncpy(message, _message, len - 1);
   strncat(message, p.message, len - 1);
 }
 
-PException::PException(const PException& p) {
-  message = strdup(p.message);
-}
+PException::PException(const PException &p) { message = strdup(p.message); }
 
 PException::PException(bool formatted, const char *_message, ...) {
   va_list list;
@@ -54,10 +48,13 @@ PException::PException(bool formatted, const char *_message, ...) {
   message = strdup(buff);
 }
 
-PException& PException::operator=(const PException& p) {
+PException &PException::operator=(const PException &p) {
   if (this != &p) {
     free(message);
-    if (p.message) message = strdup(p.message); else message = NULL;
+    if (p.message)
+      message = strdup(p.message);
+    else
+      message = NULL;
   }
   return *this;
 }

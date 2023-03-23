@@ -10,32 +10,16 @@
  */
 #include "ReqOpt.h"
 
-TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent)
-  :TOptIAAddress(addr, 0x33333333, 0x88888888, parent)
-{
-}
+TReqOptAddr::TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg *parent)
+    : TOptIAAddress(addr, 0x33333333, 0x88888888, parent) {}
 
-bool TReqOptAddr::doDuties()
-{
-    return true;
-}
+bool TReqOptAddr::doDuties() { return true; }
 
-TReqOptDUID::TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent)
-    :TOptDUID(type, duid, parent)
-{
-}
+TReqOptDUID::TReqOptDUID(int type, SPtr<TDUID> duid, TMsg *parent) : TOptDUID(type, duid, parent) {}
 
-bool TReqOptDUID::doDuties()
-{
-    return true;
-}
+bool TReqOptDUID::doDuties() { return true; }
 
-TReqOptGeneric::TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent)
-    :TOptGeneric(optType, data, dataLen, parent)
-{
-}
+TReqOptGeneric::TReqOptGeneric(int optType, char *data, int dataLen, TMsg *parent)
+    : TOptGeneric(optType, data, dataLen, parent) {}
 
-bool TReqOptGeneric::doDuties()
-{
-    return true;
-}
+bool TReqOptGeneric::doDuties() { return true; }

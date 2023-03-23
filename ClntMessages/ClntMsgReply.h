@@ -14,17 +14,16 @@ class TClntMsgReply;
 #define CLNTMSGREPLY_H
 #include "ClntMsg.h"
 
-class TClntMsgReply : public TClntMsg
-{
-  public:
-    TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
+class TClntMsgReply : public TClntMsg {
+public:
+  TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
 
-    SPtr<TIPv6Addr> getFirstAddr();
-    void answer(SPtr<TClntMsg> Rep);
-    void doDuties();
-    bool check();
-    std::string getName() const;
-    ~TClntMsgReply();
+  SPtr<TIPv6Addr> getFirstAddr();
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  bool check();
+  std::string getName() const;
+  ~TClntMsgReply();
 };
 
 #endif /* CLNTMSGREPLY_H */

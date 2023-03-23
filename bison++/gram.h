@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with Bison; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-
 /* representation of the grammar rules:
 
 ntokens is the number of tokens, and nvars is the number of variables
@@ -65,10 +64,8 @@ assigned.
 
 Associativities are recorded similarly in rassoc and sassoc.  */
 
-
-#define	ISTOKEN(s)	((s) < ntokens)
-#define	ISVAR(s)	((s) >= ntokens)
-
+#define ISTOKEN(s) ((s) < ntokens)
+#define ISVAR(s) ((s) >= ntokens)
 
 extern int nitems;
 extern int nrules;
@@ -84,10 +81,9 @@ extern short *rprecsym;
 extern short *sprec;
 extern short *rassoc;
 extern short *sassoc;
-extern short *rline;		/* Source line number of each rule */
+extern short *rline; /* Source line number of each rule */
 
 extern int start_symbol;
-
 
 /* associativity values in elements of rassoc, sassoc.  */
 
@@ -111,12 +107,11 @@ simplified parser is used.  */
 
 extern int semantic_parser;
 
-/* pure_parser is nonzero if should generate a parser that is all pure and reentrant. */
+/* pure_parser is nonzero if should generate a parser that is all pure and
+ * reentrant. */
 
 extern int pure_parser;
 
 /* error_token_number is the token number of the error token.  */
 
 extern int error_token_number;
-
-

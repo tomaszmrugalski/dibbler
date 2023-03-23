@@ -14,29 +14,27 @@ class TClntIfaceMgr;
 
 #ifndef CLNTMSGSOLICIT_H
 #define CLNTMSGSOLICIT_H
-#include "ClntMsg.h"
-#include "ClntCfgMgr.h"
 #include "ClntCfgIA.h"
+#include "ClntCfgMgr.h"
+#include "ClntMsg.h"
 
-class TClntMsgSolicit : public TClntMsg
-{
+class TClntMsgSolicit : public TClntMsg {
 public:
-  TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr,
-                  List(TClntCfgIA) iaLst, SPtr<TClntCfgTA> ta,
-                  List(TClntCfgPD) pdLst, bool rapid=false,
-		  bool remoteAutoconf = false);
+  TClntMsgSolicit(int iface, SPtr<TIPv6Addr> addr, List(TClntCfgIA) iaLst,
+                  SPtr<TClntCfgTA> ta, List(TClntCfgPD) pdLst,
+                  bool rapid = false, bool remoteAutoconf = false);
 
-    void answer(SPtr<TClntMsg> msg);
+  void answer(SPtr<TClntMsg> msg);
 
-    void doDuties();
-    bool shallRejectAnswer(SPtr<TClntMsg> msg);
-    void sortAnswers();
-    std::string getName() const;
-    bool check();
-    ~TClntMsgSolicit();
+  void doDuties();
+  bool shallRejectAnswer(SPtr<TClntMsg> msg);
+  void sortAnswers();
+  std::string getName() const;
+  bool check();
+  ~TClntMsgSolicit();
 
- private:
-    // method returns max. preference value of received ADVERTISE messages
-    int getMaxPreference();
+private:
+  // method returns max. preference value of received ADVERTISE messages
+  int getMaxPreference();
 };
-#endif 
+#endif

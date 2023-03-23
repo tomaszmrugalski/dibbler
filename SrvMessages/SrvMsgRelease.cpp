@@ -11,25 +11,17 @@
 #include "SrvMsgRelease.h"
 #include "AddrClient.h"
 
-TSrvMsgRelease::TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface, addr, buf, bufSize)
-{
-}
+TSrvMsgRelease::TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize)
+    : TSrvMsg(iface, addr, buf, bufSize) {}
 
-void TSrvMsgRelease::doDuties() {
-}
+void TSrvMsgRelease::doDuties() {}
 
-unsigned long TSrvMsgRelease::getTimeout() {
-    return 0;
-}
+unsigned long TSrvMsgRelease::getTimeout() { return 0; }
 
 bool TSrvMsgRelease::check() {
-    return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
+  return TSrvMsg::check(true /* ClientID required */, true /* ServerID required */);
 }
 
-std::string TSrvMsgRelease::getName() const {
-    return "RELEASE";
-}
+std::string TSrvMsgRelease::getName() const { return "RELEASE"; }
 
-TSrvMsgRelease::~TSrvMsgRelease() {
-}
+TSrvMsgRelease::~TSrvMsgRelease() {}

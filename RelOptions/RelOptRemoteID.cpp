@@ -10,16 +10,10 @@
 #include "RelOptRemoteID.h"
 #include "DHCPConst.h"
 
-TRelOptRemoteID::TRelOptRemoteID( char * buf,  int n, TMsg* parent)
-    :TOptVendorData(OPTION_REMOTE_ID, buf,n, parent)
-{
-}
+TRelOptRemoteID::TRelOptRemoteID(char *buf, int n, TMsg *parent)
+    : TOptVendorData(OPTION_REMOTE_ID, buf, n, parent) {}
 
-TRelOptRemoteID::TRelOptRemoteID(int enterprise, char * data, int dataLen, TMsg* parent)
-    :TOptVendorData(OPTION_REMOTE_ID, enterprise, data, dataLen, parent)
-{
-}
+TRelOptRemoteID::TRelOptRemoteID(int enterprise, char *data, int dataLen, TMsg *parent)
+    : TOptVendorData(OPTION_REMOTE_ID, enterprise, data, dataLen, parent) {}
 
-bool TRelOptRemoteID::doDuties() {
-    return true;
-}
+bool TRelOptRemoteID::doDuties() { return true; }

@@ -10,28 +10,21 @@
  *
  */
 
-#include "SmartPtr.h"
-#include "AddrClient.h"
 #include "SrvMsgConfirm.h"
+#include "AddrClient.h"
+#include "SmartPtr.h"
 
-TSrvMsgConfirm::TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface, addr,buf,bufSize) {
-}
+TSrvMsgConfirm::TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize)
+    : TSrvMsg(iface, addr, buf, bufSize) {}
 
-void TSrvMsgConfirm::doDuties() {
-}
+void TSrvMsgConfirm::doDuties() {}
 
-unsigned long TSrvMsgConfirm::getTimeout() {
-    return 0;
-}
+unsigned long TSrvMsgConfirm::getTimeout() { return 0; }
 
 bool TSrvMsgConfirm::check() {
-    return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
+  return TSrvMsg::check(true /* ClientID required */, false /* ServerID not allowed */);
 }
 
-TSrvMsgConfirm::~TSrvMsgConfirm() {
-}
+TSrvMsgConfirm::~TSrvMsgConfirm() {}
 
-std::string TSrvMsgConfirm::getName() const {
-    return "CONFIRM";
-}
+std::string TSrvMsgConfirm::getName() const { return "CONFIRM"; }

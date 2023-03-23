@@ -12,16 +12,15 @@
 #define SRVMSGREBIND_H
 #include "SrvMsg.h"
 
-class TSrvMsgRebind : public TSrvMsg
-{
-  public:
-    TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-    
-    void doDuties();
-    std::string getName() const;
-    unsigned long getTimeout();
-    bool check();
-    ~TSrvMsgRebind();
+class TSrvMsgRebind : public TSrvMsg {
+public:
+  TSrvMsgRebind(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
+
+  void doDuties();
+  std::string getName() const;
+  unsigned long getTimeout();
+  bool check();
+  ~TSrvMsgRebind();
 };
 
 #endif /* SRVMSGREBIND_H */

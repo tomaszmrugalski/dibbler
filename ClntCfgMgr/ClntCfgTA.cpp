@@ -9,35 +9,27 @@
  */
 
 #include "ClntCfgTA.h"
-#include <iostream>
-#include <iomanip>
 #include "Logger.h"
+#include <iomanip>
+#include <iostream>
 using namespace std;
 
 TClntCfgTA::TClntCfgTA() {
-    static unsigned long lastIAID = 1;
-    this->iaid = lastIAID++;
-    this->State = STATE_NOTCONFIGURED;
+  static unsigned long lastIAID = 1;
+  this->iaid = lastIAID++;
+  this->State = STATE_NOTCONFIGURED;
 }
 
-void TClntCfgTA::setState(enum EState state) {
-    this->State = state;
-}
+void TClntCfgTA::setState(enum EState state) { this->State = state; }
 
-enum EState TClntCfgTA::getState() {
-    return this->State;
-}
+enum EState TClntCfgTA::getState() { return this->State; }
 
-unsigned long TClntCfgTA::getIAID() {
-    return this->iaid;
-}
+unsigned long TClntCfgTA::getIAID() { return this->iaid; }
 
-void TClntCfgTA::setIAID(unsigned long iaid) {
-    this->iaid=iaid;
-}
+void TClntCfgTA::setIAID(unsigned long iaid) { this->iaid = iaid; }
 
-ostream& operator<<(ostream& out,TClntCfgTA& ta)
-{
-    out << "    <ta iaid=\"" << ta.iaid << "\" state=\"" << StateToString(ta.State) << "\" />" << std::endl;
-    return out;
+ostream &operator<<(ostream &out, TClntCfgTA &ta) {
+  out << "    <ta iaid=\"" << ta.iaid << "\" state=\"" << StateToString(ta.State) << "\" />"
+      << std::endl;
+  return out;
 }

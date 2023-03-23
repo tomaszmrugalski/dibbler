@@ -134,6 +134,9 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+Clnt_tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(Clnt_tests_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -391,6 +394,7 @@ Clnt_tests_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/IfaceMgr \
 	-I$(top_srcdir)/ClntTransMgr -I$(top_srcdir)/ClntMessages \
 	-I$(top_srcdir)/Messages $(GTEST_INCLUDES) -Wno-long-long \
 	-Wno-variadic-macros $(am__append_2)
+Clnt_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 # ///Clnt_tests_SOURCES = $(top_srcdir)/@PORT_SUBDIR@/dibbler-client.cpp
 @HAVE_GTEST_TRUE@Clnt_tests_SOURCES = run_tests.cc \
@@ -470,7 +474,7 @@ $(top_builddir)/Misc/Clnt_tests-DHCPClient.$(OBJEXT):  \
 
 Clnt_tests$(EXEEXT): $(Clnt_tests_OBJECTS) $(Clnt_tests_DEPENDENCIES) $(EXTRA_Clnt_tests_DEPENDENCIES) 
 	@rm -f Clnt_tests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(Clnt_tests_OBJECTS) $(Clnt_tests_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(Clnt_tests_LINK) $(Clnt_tests_OBJECTS) $(Clnt_tests_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -890,7 +894,6 @@ uninstall-am:
 	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
-
 
 info:
 	@echo "GTEST_LDADD=$(GTEST_LDADD)"

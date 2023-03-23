@@ -12,9 +12,9 @@ class TIfaceMgr;
 #ifndef IFACEMGR_H
 #define IFACEMGR_H
 
-#include "SmartPtr.h"
 #include "Container.h"
 #include "ScriptParams.h"
+#include "SmartPtr.h"
 
 #include "Iface.h"
 
@@ -22,43 +22,44 @@ class TMsg;
 class TOpt;
 
 class TIfaceMgr {
-  public:
-    friend std::ostream & operator <<(std::ostream & strum, TIfaceMgr &x);
+public:
+  friend std::ostream &operator<<(std::ostream &strum, TIfaceMgr &x);
 
-    TIfaceMgr(const std::string& xmlFile, bool getIfaces);
+  TIfaceMgr(const std::string &xmlFile, bool getIfaces);
 
-    // ---Iface related---
-    void firstIface();
-    SPtr<TIfaceIface> getIface();
-    SPtr<TIfaceIface> getIfaceByName(const std::string& name);
-    SPtr<TIfaceIface> getIfaceByID(int id);
-    virtual SPtr<TIfaceIface> getIfaceBySocket(int fd);
-    int countIface();
+  // ---Iface related---
+  void firstIface();
+  SPtr<TIfaceIface> getIface();
+  SPtr<TIfaceIface> getIfaceByName(const std::string &name);
+  SPtr<TIfaceIface> getIfaceByID(int id);
+  virtual SPtr<TIfaceIface> getIfaceBySocket(int fd);
+  int countIface();
 
-    // ---other---
-    int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer,
-               SPtr<TIPv6Addr> myaddr);
-    std::string printMac(char * mac, int macLen);
-    void dump();
-    bool isDone();
+  // ---other---
+  int select(unsigned long time, char *buf, int &bufsize, SPtr<TIPv6Addr> peer,
+             SPtr<TIPv6Addr> myaddr);
+  std::string printMac(char *mac, int macLen);
+  void dump();
+  bool isDone();
 
-    virtual void notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
-                               SPtr<TMsg> answer);
-    virtual void notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
-                               SPtr<TMsg> answer, TNotifyScriptParams& params);
-    virtual void notifyScript(const std::string& scriptName, std::string action,
-                              TNotifyScriptParams& params);
+  virtual void notifyScripts(const std::string &scriptName, SPtr<TMsg> question,
+                             SPtr<TMsg> answer);
+  virtual void notifyScripts(const std::string &scriptName, SPtr<TMsg> question,
+                             SPtr<TMsg> answer, TNotifyScriptParams &params);
+  virtual void notifyScript(const std::string &scriptName, std::string action,
+                            TNotifyScriptParams &params);
 
-    virtual void closeSockets();
+  virtual void closeSockets();
 
-    virtual ~TIfaceMgr();
+  virtual ~TIfaceMgr();
 
- protected:
-    virtual void optionToEnv(TNotifyScriptParams& params, SPtr<TOpt> opt, std::string txtPrefix );
+protected:
+  virtual void optionToEnv(TNotifyScriptParams &params, SPtr<TOpt> opt,
+                           std::string txtPrefix);
 
-    std::string XmlFile;
-    List(TIfaceIface) IfaceLst; //Interface list
-    bool IsDone;
+  std::string XmlFile;
+  List(TIfaceIface) IfaceLst; // Interface list
+  bool IsDone;
 };
 
 #endif

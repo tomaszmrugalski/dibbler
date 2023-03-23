@@ -28,47 +28,50 @@
  * messages.
  */
 
-
 #include "dnsmessage.h"
 
 /*!
  * \brief Verify TSIG signature
  *
- * Using the original TSIG record and the sign key #DnsMessage::sign_key, verify whether
- * the DNS message is correctly signed; if not, an exception will be thrown
- * and the check_tsig's error will be set to indicate the error that occured
- * when checking the DNS message.
+ * Using the original TSIG record and the sign key #DnsMessage::sign_key, verify
+ * whether the DNS message is correctly signed; if not, an exception will be
+ * thrown and the check_tsig's error will be set to indicate the error that
+ * occured when checking the DNS message.
  *
  * If use_orig_mac is set, the MAC from the original message will be included
  * in the check MAC, as dictated by RFC 2845, section 4.2. The original TSIG
  * record's MAC will be updated to match the answer's MAC.
  * The message length this function takes, is the message length without
- * the TSIG record included in the message, as returned by #DnsMessage::read_from_data.
+ * the TSIG record included in the message, as returned by
+ * #DnsMessage::read_from_data.
  *
  * \param check_tsig    TSIG record to check against
  * \param message_tsig  TSIG record from the message
  * \param key           Key to use
  * \param message       Binary representation of message to check
  */
-void verify_signature (DnsRR *check_tsig, DnsRR *message_tsig, stl_string key, message_buff message);
-  
-stl_string calc_mac (DnsRR &tsig_rr, message_buff message, stl_string sign_key, message_buff *extra = NULL);
+void verify_signature(DnsRR *check_tsig, DnsRR *message_tsig, stl_string key,
+                      message_buff message);
+
+stl_string calc_mac(DnsRR &tsig_rr, message_buff message, stl_string sign_key,
+                    message_buff *extra = NULL);
 /**< Calculate message MAC */
 
-stl_string base64_decode (const char *str); /**< Base64-decode strings */
-    
+stl_string base64_decode(const char *str); /**< Base64-decode strings */
+
 /*!
  * \brief create sparse TSIG record
  *
- * Creates a TSIG RR with suitable values for use as #DnsMessage::tsig_rr in checking and
- * signing of DNS messages.
+ * Creates a TSIG RR with suitable values for use as #DnsMessage::tsig_rr in
+ * checking and signing of DNS messages.
  *
  * \param   keyname         Name of the key
- * \param   fudge           Permitted time difference between signing and checking
- * \param   sign_algorithm  Algorithm used to sign the message (currently, only the default is supported)
- * \return  The TSIG record
+ * \param   fudge           Permitted time difference between signing and
+ * checking \param   sign_algorithm  Algorithm used to sign the message
+ * (currently, only the default is supported) \return  The TSIG record
  */
-DnsRR *tsig_record (domainname keyname, uint16_t fudge = 600, domainname sign_algorithm = "HMAC-MD5.SIG-ALG.REG.INT");
+DnsRR *tsig_record(domainname keyname, uint16_t fudge = 600,
+                   domainname sign_algorithm = "HMAC-MD5.SIG-ALG.REG.INT");
 
 /*!
  * \brief get sign parameters from key string
@@ -76,7 +79,8 @@ DnsRR *tsig_record (domainname keyname, uint16_t fudge = 600, domainname sign_al
  * Sets the TSIG signing parameters from a key string; see the other
  * #tsig_from_string for syntax.
  */
-void tsig_from_string (DnsRR*& tsig_rr, stl_string& sign_key, const char* keystring);
+void tsig_from_string(DnsRR *&tsig_rr, stl_string &sign_key,
+                      const char *keystring);
 
 /*!
  * \brief set message sign parameters from key string
@@ -89,8 +93,8 @@ void tsig_from_string (DnsRR*& tsig_rr, stl_string& sign_key, const char* keystr
  * \param message The message to set TSIG parameters of
  * \param keystring The key string
  */
-void tsig_from_string (DnsMessage *message, const char *keystring);
+void tsig_from_string(DnsMessage *message, const char *keystring);
 
-void print_buff (int size, const unsigned char* buff);
+void print_buff(int size, const unsigned char *buff);
 
 #endif /* __POSLIB_DNSSEC_SIGN_H */

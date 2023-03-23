@@ -18,22 +18,22 @@
 #ifndef OPTSERVERUNICAST_H
 #define OPTSERVERUNICAST_H
 
+#include "IPv6Addr.h"
 #include "Opt.h"
 #include "SmartPtr.h"
-#include "IPv6Addr.h"
 
-class TOptAddr : public TOpt
-{
- public:
-    TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent);
-    TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
-    size_t getSize();
-    char * storeSelf( char* buf);
-    SPtr<TIPv6Addr> getAddr();
-    virtual bool doDuties() { return true; } // does nothing on its own
-    std::string getPlain();
- protected:
-    SPtr<TIPv6Addr> Addr;
+class TOptAddr : public TOpt {
+public:
+  TOptAddr(int type, const char *buf, unsigned short len, TMsg *parent);
+  TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg *parent);
+  size_t getSize();
+  char *storeSelf(char *buf);
+  SPtr<TIPv6Addr> getAddr();
+  virtual bool doDuties() { return true; } // does nothing on its own
+  std::string getPlain();
+
+protected:
+  SPtr<TIPv6Addr> Addr;
 };
 
 #endif

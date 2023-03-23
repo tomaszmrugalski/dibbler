@@ -19,26 +19,29 @@ bool verbose = false;
 
 void print_help() {
   printf(
-    "dnstimeago - check timespan of last visit of a domain name\n"
-    "\n"
-    "Usage:\n"
-    "  dnstimeago [@server] [options] querydom1 [qtype1] [querydom2 [qtype2]]...\n"
-    "Options can be one or more of the following:\n"
-    "     -h, --help                Show usage information\n"
-    "     -r, --version             Show version info\n"
-    "     -v, --verbose             Give more detailed info on what happens\n"
-    "     -a, --alternate <server>  Use alternate server to get glue from\n"
-    "\n"
-    "Copyright (C) Meilof Veeningen, 2003-2004. Freely distributable under the terms\n"
-    "and conditions of the GNU General Public License. Part of the Poslib DNS\n"
-    "library: http://www.posadis.org/poslib/\n");
+      "dnstimeago - check timespan of last visit of a domain name\n"
+      "\n"
+      "Usage:\n"
+      "  dnstimeago [@server] [options] querydom1 [qtype1] [querydom2 "
+      "[qtype2]]...\n"
+      "Options can be one or more of the following:\n"
+      "     -h, --help                Show usage information\n"
+      "     -r, --version             Show version info\n"
+      "     -v, --verbose             Give more detailed info on what happens\n"
+      "     -a, --alternate <server>  Use alternate server to get glue from\n"
+      "\n"
+      "Copyright (C) Meilof Veeningen, 2003-2004. Freely distributable under "
+      "the terms\n"
+      "and conditions of the GNU General Public License. Part of the Poslib "
+      "DNS\n"
+      "library: http://www.posadis.org/poslib/\n");
 }
 
 void print_version() {
   printf(
-    "dnstimeago - check timespan of last visit of a domain name\n"
-    "\n"
-    "Version:    " __DATE__ "\n");
+      "dnstimeago - check timespan of last visit of a domain name\n"
+      "\n"
+      "Version:    " __DATE__ "\n");
 }
 
 uint32_t soa_ttl(DnsMessage *a) {
@@ -50,7 +53,7 @@ uint32_t soa_ttl(DnsMessage *a) {
   return 0;
 }
 
-void find_servers(DnsMessage *a, domainname &dom, stl_slist(_addr)& lst) {
+void find_servers(DnsMessage *a, domainname &dom, stl_slist(_addr) & lst) {
   _addr ad;
   stl_list(DnsRR)::iterator it = a->additional.begin();
   while (it != a->additional.end()) {
@@ -67,7 +70,7 @@ void find_servers(DnsMessage *a, domainname &dom, stl_slist(_addr)& lst) {
   }
 }
 
-void extract_servers(DnsMessage *a, stl_slist(domainname)& norrdoms, stl_slist(_addr)& lst) {
+void extract_servers(DnsMessage *a, stl_slist(domainname) & norrdoms, stl_slist(_addr) & lst) {
   stl_list(DnsRR)::iterator it = a->authority.begin();
   domainname dom;
   int t;
@@ -76,13 +79,15 @@ void extract_servers(DnsMessage *a, stl_slist(domainname)& norrdoms, stl_slist(_
       dom = domainname(true, it->RDATA);
       t = lst.size();
       find_servers(a, dom, lst);
-      if (t == lst.size()) { norrdoms.push_front(dom); }
+      if (t == lst.size()) {
+        norrdoms.push_front(dom);
+      }
     }
     it++;
   }
 }
 
-void find_addresses(_addr &srv, domainname dom, stl_slist(_addr)& lst) {
+void find_addresses(_addr &srv, domainname dom, stl_slist(_addr) & lst) {
   DnsMessage *q = NULL, *a = NULL;
   pos_cliresolver res;
   stl_list(a_record) aalist;
@@ -153,7 +158,7 @@ int main(int argc, char **argv) {
       item.qtype = DNS_TYPE_A;
 
       if (x + 1 < argc) {
-        type = rrtype_getinfo(argv[x+1]);
+        type = rrtype_getinfo(argv[x + 1]);
         if (type) {
           item.qtype = type->type;
           x++;
@@ -175,7 +180,8 @@ int main(int argc, char **argv) {
       /* send query */
       q = create_query(it->qname, it->qtype, false);
       printf("-> %s\n", it->qname.tocstr());
-      if (verbose) printf("Sending query [%s,%s]\n", it->qname.tocstr(), str_qtype(it->qtype).c_str());
+      if (verbose)
+        printf("Sending query [%s,%s]\n", it->qname.tocstr(), str_qtype(it->qtype).c_str());
       res.query(q, a, &server);
       if (verbose) printf("Answer received.\n");
       /* find ttl of answer */
@@ -192,26 +198,29 @@ int main(int argc, char **argv) {
       } else if (a->answers.size() == 0) {
         rttl = soa_ttl(a);
         if (rttl) {
-          printf("Server %-30s said: NODATA, ttl=%s\n", addr_to_string(&server).c_str(), str_ttl(rttl).c_str());
+          printf("Server %-30s said: NODATA, ttl=%s\n", addr_to_string(&server).c_str(),
+                 str_ttl(rttl).c_str());
         } else {
           printf("Server %-30s said: domain not in cache\n", addr_to_string(&server).c_str());
         }
       } else if (a->answers.begin()->TYPE == DNS_TYPE_CNAME) {
         printf("Server %-30s said: CNAME, points to %s\n", addr_to_string(&server).c_str(),
-          domainname(true, a->answers.begin()->RDATA).tocstr());
+               domainname(true, a->answers.begin()->RDATA).tocstr());
       } else if (a->answers.begin()->TYPE != it->qtype || a->answers.begin()->NAME != it->qname) {
         throw PException("Answer didn't answer query!");
       } else {
         /* an answer! */
         rttl = a->answers.begin()->TTL;
-        printf("Server %-30s answered: ttl=%s\n", addr_to_string(&server).c_str(), str_ttl(rttl).c_str());
+        printf("Server %-30s answered: ttl=%s\n", addr_to_string(&server).c_str(),
+               str_ttl(rttl).c_str());
 
         if (alternate_given) {
           if (verbose) printf("Querying alternate server for glue\n");
           q->RD = true;
           res.query(q, a2, &alternate);
           if (verbose) printf("Finished querying alternate server\n");
-        } else a2 = a;
+        } else
+          a2 = a;
 
         servers.clear();
         extract_servers(a2, domz, servers);
@@ -219,19 +228,23 @@ int main(int argc, char **argv) {
           if (domz.begin() == domz.end()) throw PException("No NS list in answer!");
           find_addresses(server, *domz.begin(), servers);
         }
-        if (servers.begin() == servers.end()) throw PException("Couldn't find nameservers to query!");
+        if (servers.begin() == servers.end())
+          throw PException("Couldn't find nameservers to query!");
 
         /* now, query real server */
-        delete a; a = NULL;
+        delete a;
+        a = NULL;
         res.query(q, a, servers);
         if (a->RCODE == RCODE_NOERROR) {
           if (a->answers.size()) {
             if (a->answers.begin()->TYPE == DNS_TYPE_CNAME) {
               printf("Server %-30s answered: CNAME\n", addr_to_string(&*servers.begin()).c_str());
             } else {
-              printf("Server %-30s answered: ttl=%s\n", addr_to_string(&*servers.begin()).c_str(), str_ttl(a->answers.begin()->TTL).c_str());
+              printf("Server %-30s answered: ttl=%s\n", addr_to_string(&*servers.begin()).c_str(),
+                     str_ttl(a->answers.begin()->TTL).c_str());
               if (a->answers.begin()->TTL > rttl) {
-                printf("The domain %s was probably visited less than %s ago.\n", it->qname.tocstr(), str_ttl(a->answers.begin()->TTL - rttl).c_str());
+                printf("The domain %s was probably visited less than %s ago.\n", it->qname.tocstr(),
+                       str_ttl(a->answers.begin()->TTL - rttl).c_str());
               } else {
                 printf("The %s server reduced their TTL value.\n", it->qname.tocstr());
               }
@@ -240,17 +253,21 @@ int main(int argc, char **argv) {
             printf("Server %-30s answered: NODATA\n", addr_to_string(&*servers.begin()).c_str());
           }
         } else {
-          printf("Server %-30s answered: error %s\n", addr_to_string(&*servers.begin()).c_str(), str_rcode(a->RCODE).c_str());
+          printf("Server %-30s answered: error %s\n", addr_to_string(&*servers.begin()).c_str(),
+                 str_rcode(a->RCODE).c_str());
         }
       }
     } catch (PException p) {
       printf("*** query failed: %s\n", p.message);
     }
-    if (q) { delete q; q = NULL; }
+    if (q) {
+      delete q;
+      q = NULL;
+    }
     if (a) delete a;
     if (a2 && a != a2) delete a2;
     a = a2 = NULL;
     printf("\n");
     it++;
-  }    
+  }
 }

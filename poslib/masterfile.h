@@ -21,9 +21,9 @@
 #ifndef __POSLIB_MASTERFILE_H
 #define __POSLIB_MASTERFILE_H
 
-#include <stdio.h>
 #include "dnsmessage.h"
 #include "domainfn.h"
+#include <stdio.h>
 
 /*! \file poslib/masterfile.h
  * \brief Master file reading routines
@@ -45,7 +45,8 @@
  * \param linenum Current line number
  * \param message The error message
  */
-typedef void(*error_callback)(void *user_dat, const char *fname, int linenum, const char *message);
+typedef void (*error_callback)(void *user_dat, const char *fname, int linenum,
+                               const char *message);
 
 /*!
  * \brief literal RR callback function
@@ -64,8 +65,10 @@ typedef void(*error_callback)(void *user_dat, const char *fname, int linenum, co
  * \param type The RR type
  * \param rrdata The RR data
  * \param origin The zone root
- */ 
-typedef void(*rr_literal_callback)(void *user_dat, const char *dom, const char *ttl, const char *type, const char *rrdata, domainname origin);
+ */
+typedef void (*rr_literal_callback)(void *user_dat, const char *dom,
+                                    const char *ttl, const char *type,
+                                    const char *rrdata, domainname origin);
 
 /*!
  * \brief compiled RR callback function
@@ -75,7 +78,7 @@ typedef void(*rr_literal_callback)(void *user_dat, const char *dom, const char *
  * \param user_dat User data supplied to #read_master_file
  * \param rr The RR
  */
-typedef void(*rr_callback)(void *user_dat, DnsRR *rr);
+typedef void (*rr_callback)(void *user_dat, DnsRR *rr);
 
 /*!
  * \brief comment callback function
@@ -86,10 +89,11 @@ typedef void(*rr_callback)(void *user_dat, DnsRR *rr);
  * \param user_dat User data supplied to #read_master_file
  * \param comment The comment (with the initial ';' chomped off)
  */
-typedef void(*comment_callback)(void *user_dat, const char *comment);
+typedef void (*comment_callback)(void *user_dat, const char *comment);
 
-#define POSLIB_MF_AUTOPROBE 1 /**< ignore given znroot and guess from file name */
-#define POSLIB_MF_NOSOA     2 /**< Do not require SOA record */
+#define POSLIB_MF_AUTOPROBE                                                    \
+  1                       /**< ignore given znroot and guess from file name */
+#define POSLIB_MF_NOSOA 2 /**< Do not require SOA record */
 
 /*!
  * \brief read master files
@@ -110,8 +114,9 @@ typedef void(*comment_callback)(void *user_dat, const char *comment);
  * \param flags One of POSLIB_MF_AUTOPROBE, POSLIB_MF_NOSOA
  */
 void read_master_file(const char *file, domainname &znroot, void *userdat,
-                      error_callback err, rr_callback rr_cb, rr_literal_callback rrl_cb,
-                      comment_callback comm_cb, int flags);
+                      error_callback err, rr_callback rr_cb,
+                      rr_literal_callback rrl_cb, comment_callback comm_cb,
+                      int flags);
 
 /*!
  * \brief guess zone name from file name
@@ -121,7 +126,7 @@ void read_master_file(const char *file, domainname &znroot, void *userdat,
  * zone. Supported are the 'db.' prefix and the '.prm' postfix.
  * \param file file name
  * \return Guess for zone name
- */ 
+ */
 domainname guess_zone_name(const char *file);
 
 /*!

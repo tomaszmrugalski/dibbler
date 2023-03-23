@@ -15,18 +15,20 @@
 
 #include "Opt.h"
 
-class TOptString : public TOpt
-{
- public:
-    TOptString(int type, std::string str, TMsg* parent);
-    TOptString(int type, const char *buf, unsigned short len, TMsg* parent);
-    char * storeSelf( char* buf);
-    size_t getSize();
-    std::string getString();
-    virtual bool doDuties() { return true; } // do nothing, actual code in ClntOpt* classes
-    std::string getPlain() { return Str; }
- protected:
-    std::string Str;
+class TOptString : public TOpt {
+public:
+  TOptString(int type, std::string str, TMsg *parent);
+  TOptString(int type, const char *buf, unsigned short len, TMsg *parent);
+  char *storeSelf(char *buf);
+  size_t getSize();
+  std::string getString();
+  virtual bool doDuties() {
+    return true;
+  } // do nothing, actual code in ClntOpt* classes
+  std::string getPlain() { return Str; }
+
+protected:
+  std::string Str;
 };
 
 #endif

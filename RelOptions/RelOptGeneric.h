@@ -15,12 +15,10 @@
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 
-class TRelOptGeneric : public TOptGeneric
-{
- public:
-    TRelOptGeneric(int type, char* buf, int bufsize, TMsg* parent);
-    bool doDuties();
-
+class TRelOptGeneric : public TOptGeneric {
+public:
+  TRelOptGeneric(int type, char *buf, int bufsize, TMsg *parent);
+  bool doDuties();
 };
 
 #endif /* RELOPTGENERIC_H */

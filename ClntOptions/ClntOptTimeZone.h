@@ -18,18 +18,18 @@
 #ifndef CLNTOPTTIMEZONE_H
 #define CLNTOPTTIMEZONE_H
 
-#include "OptString.h"
 #include "DUID.h"
+#include "OptString.h"
 
-class TClntOptTimeZone : public TOptString
-{
- public:
-    TClntOptTimeZone(const std::string& domain, TMsg* parent);
-    TClntOptTimeZone(char *buf, int bufsize, TMsg* parent);
-    bool doDuties();
-    void setSrvDuid(SPtr<TDUID> duid);
-    bool isValid() const;
- private:
-    SPtr<TDUID> SrvDUID;
+class TClntOptTimeZone : public TOptString {
+public:
+  TClntOptTimeZone(const std::string &domain, TMsg *parent);
+  TClntOptTimeZone(char *buf, int bufsize, TMsg *parent);
+  bool doDuties();
+  void setSrvDuid(SPtr<TDUID> duid);
+  bool isValid() const;
+
+private:
+  SPtr<TDUID> SrvDUID;
 };
 #endif

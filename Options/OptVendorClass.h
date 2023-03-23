@@ -12,14 +12,14 @@
 #include "OptUserClass.h"
 #include <stdint.h>
 
-class TOptVendorClass : public TOptUserClass
-{
- public:
-    uint32_t Enterprise_id_;
+class TOptVendorClass : public TOptUserClass {
+public:
+  uint32_t Enterprise_id_;
 
-    TOptVendorClass(uint16_t type, const char* buf, unsigned short buf_len, TMsg* parent);
-    size_t getSize();
-    char * storeSelf( char* buf);
+  TOptVendorClass(uint16_t type, const char *buf, unsigned short buf_len,
+                  TMsg *parent);
+  size_t getSize();
+  char *storeSelf(char *buf);
 };
 
 #endif /* USERCLASS_H */

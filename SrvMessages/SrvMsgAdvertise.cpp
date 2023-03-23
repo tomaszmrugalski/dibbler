@@ -11,71 +11,61 @@
 
 #include "SrvMsgAdvertise.h"
 #include "Logger.h"
-#include "OptOptionRequest.h"
 #include "OptDUID.h"
-#include "SrvOptIA_NA.h"
-#include "SrvOptTA.h"
+#include "OptOptionRequest.h"
 #include "OptStatusCode.h"
 #include "SrvOptFQDN.h"
+#include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
+#include "SrvOptTA.h"
 #include "SrvTransMgr.h"
-#include "Logger.h"
 
 using namespace std;
 
 TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
-    :TSrvMsg(solicit->getIface(),solicit->getRemoteAddr(), ADVERTISE_MSG,
-             solicit->getTransID())
-{
-    getORO(SPtr_cast<TMsg>(solicit));
-    copyClientID(SPtr_cast<TMsg>(solicit));
-    copyRelayInfo(solicit);
-    copyAAASPI(solicit);
-    copyRemoteID(solicit);
+    : TSrvMsg(solicit->getIface(), solicit->getRemoteAddr(), ADVERTISE_MSG, solicit->getTransID()) {
+  getORO(SPtr_cast<TMsg>(solicit));
+  copyClientID(SPtr_cast<TMsg>(solicit));
+  copyRelayInfo(solicit);
+  copyAAASPI(solicit);
+  copyRemoteID(solicit);
 
-    if (!handleSolicitOptions(solicit)) {
-        IsDone = true;
-        return;
-    }
-    IsDone = false;
+  if (!handleSolicitOptions(solicit)) {
+    IsDone = true;
+    return;
+  }
+  IsDone = false;
 }
 
 bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
 
-    processOptions(solicit, true); // quietly
+  processOptions(solicit, true);  // quietly
 
-    // append serverID, preference and possibly unicast
-    appendMandatoryOptions(ORO);
+  // append serverID, preference and possibly unicast
+  appendMandatoryOptions(ORO);
 
-    //if client requested parameters and policy doesn't forbid from answering
-    appendRequestedOptions(ClientDUID, PeerAddr_, Iface, ORO);
+  // if client requested parameters and policy doesn't forbid from answering
+  appendRequestedOptions(ClientDUID, PeerAddr_, Iface, ORO);
 
-    appendStatusCode();
+  appendStatusCode();
 
-    // this is ADVERTISE only, so we need to release assigned addresses
-    releaseAll(true); // release it quietly
+  // this is ADVERTISE only, so we need to release assigned addresses
+  releaseAll(true);  // release it quietly
 
-    appendAuthenticationOption(ClientDUID);
+  appendAuthenticationOption(ClientDUID);
 
-    MRT_ = 0;
-    return true;
+  MRT_ = 0;
+  return true;
 }
 
 bool TSrvMsgAdvertise::check() {
-    // this should never happen
-    return true;
+  // this should never happen
+  return true;
 }
 
-TSrvMsgAdvertise::~TSrvMsgAdvertise() {
-}
+TSrvMsgAdvertise::~TSrvMsgAdvertise() {}
 
-unsigned long TSrvMsgAdvertise::getTimeout() {
-    return 0;
-}
-void TSrvMsgAdvertise::doDuties() {
-    IsDone = true;
-}
+unsigned long TSrvMsgAdvertise::getTimeout() { return 0; }
+void TSrvMsgAdvertise::doDuties() { IsDone = true; }
 
-std::string TSrvMsgAdvertise::getName() const{
-    return "ADVERTISE";
-}
+std::string TSrvMsgAdvertise::getName() const { return "ADVERTISE"; }

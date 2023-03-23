@@ -71,3 +71,9 @@ client-CfgMgr.xml
 client-IfaceMgr.xml
 dibbler-*-win32.exe
 .vs
+.deps
+.dirstamp
+doc/version.tex
+include/stamp-h1
+libtool
+

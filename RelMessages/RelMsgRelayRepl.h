@@ -16,17 +16,17 @@ class TRelMsgRelayRepl;
 
 #define MIN_RELAYREPL_LEN 34
 
-class TRelMsgRelayRepl: public TRelMsg {
- public:
-    TRelMsgRelayRepl(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
-    int getSize();
-    int storeSelf(char * buffer);
-    std::string getName() const;
-    bool check();
+class TRelMsgRelayRepl : public TRelMsg {
+public:
+  TRelMsgRelayRepl(int iface, SPtr<TIPv6Addr> addr, char *data, int dataLen);
+  int getSize();
+  int storeSelf(char *buffer);
+  std::string getName() const;
+  bool check();
 
- private:
-    SPtr<TIPv6Addr> PeerAddr;
-    SPtr<TIPv6Addr> LinkAddr;
+private:
+  SPtr<TIPv6Addr> PeerAddr;
+  SPtr<TIPv6Addr> LinkAddr;
 };
 
 #endif

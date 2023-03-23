@@ -6,8 +6,8 @@
 #include "poslib.h"
 
 namespace test {
-    void hexToBin(const std::string& hex, message_buff &dst);
-    bool cmpBuffers(const message_buff& a, const message_buff&b);
-}
+void hexToBin(const std::string &hex, message_buff &dst);
+bool cmpBuffers(const message_buff &a, const message_buff &b);
+} // namespace test
 
 #endif

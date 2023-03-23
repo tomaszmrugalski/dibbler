@@ -10,8 +10,9 @@
  *
  * $Log: not supported by cvs2svn $
  * Revision 1.4  2004-10-27 22:07:56  thomson
- * Signed/unsigned issues fixed, Lifetime option implemented, INFORMATION-REQUEST
- * message is now sent properly. Valid lifetime granted by server fixed.
+ * Signed/unsigned issues fixed, Lifetime option implemented,
+ * INFORMATION-REQUEST message is now sent properly. Valid lifetime granted by
+ * server fixed.
  *
  * Revision 1.3  2004/09/07 22:02:34  thomson
  * pref/valid/IAID is not unsigned, RAPID-COMMIT now works ok.
@@ -23,18 +24,18 @@
 #ifndef SRVOPTIAADDRESS_H
 #define SRVOPTIAADDRESS_H
 
-#include "SmartPtr.h"
 #include "Container.h"
 #include "OptIAAddress.h"
+#include "SmartPtr.h"
 
 class TSrvOptIAAddress : public TOptIAAddress {
- public:
-    TSrvOptIAAddress( char * addr, int n, TMsg* parent);
-    
-    TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
-		     unsigned long valid, TMsg* parent);
+public:
+  TSrvOptIAAddress(char *addr, int n, TMsg *parent);
 
-    bool doDuties();
+  TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
+                   unsigned long valid, TMsg *parent);
+
+  bool doDuties();
 };
 
 #endif

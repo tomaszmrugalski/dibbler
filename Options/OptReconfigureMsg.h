@@ -13,18 +13,18 @@
 #include "DHCPConst.h"
 #include "Opt.h"
 
-class TOptReconfigureMsg : public TOpt
-{
-  public:
-    TOptReconfigureMsg(int msgType, TMsg* parent);
-    TOptReconfigureMsg(char *buf, int bufsize, TMsg* parent);
-    size_t getSize();
+class TOptReconfigureMsg : public TOpt {
+public:
+  TOptReconfigureMsg(int msgType, TMsg *parent);
+  TOptReconfigureMsg(char *buf, int bufsize, TMsg *parent);
+  size_t getSize();
 
-    char* storeSelf(char* buf);
-    bool doDuties() { return true; }
-    bool isValid() const;
-  protected:
-    uint8_t MsgType_;
+  char *storeSelf(char *buf);
+  bool doDuties() { return true; }
+  bool isValid() const;
+
+protected:
+  uint8_t MsgType_;
 };
 
 #endif

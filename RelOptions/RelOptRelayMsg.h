@@ -17,11 +17,10 @@
 #include "DHCPConst.h"
 #include "OptGeneric.h"
 
-class TRelOptRelayMsg : public TOptGeneric
-{
-  public:
-    TRelOptRelayMsg(char* buf, int bufsize, TMsg* parent);
-    bool doDuties();
+class TRelOptRelayMsg : public TOptGeneric {
+public:
+  TRelOptRelayMsg(char *buf, int bufsize, TMsg *parent);
+  bool doDuties();
 };
 
 #endif /* RELOPTGENERIC_H */

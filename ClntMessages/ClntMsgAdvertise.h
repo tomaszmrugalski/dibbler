@@ -15,22 +15,20 @@
 
 #include "ClntMsg.h"
 
-class TClntMsgAdvertise : public TClntMsg
-{
-  public:
-    /* TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr); */
-    
-    TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, 
-                      char* buf, int bufSize);
-    
-    // returns preference value (default value is 0)
-    int getPreference();
-    bool check();
-    void answer(SPtr<TClntMsg> Rep);
-    void doDuties();
-    std::string getName() const;
-    std::string getInfo();
-    ~TClntMsgAdvertise();
+class TClntMsgAdvertise : public TClntMsg {
+public:
+  /* TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr); */
+
+  TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
+
+  // returns preference value (default value is 0)
+  int getPreference();
+  bool check();
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  std::string getName() const;
+  std::string getInfo();
+  ~TClntMsgAdvertise();
 };
 
-#endif 
+#endif

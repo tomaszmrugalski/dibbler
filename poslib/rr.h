@@ -38,13 +38,13 @@
  * information.
  */
 enum _rr_flags {
- R_NONE = 0,          /**< No RR flags */
- R_ASP = 1,           /**< Do additional section processing for domain names
-                           in this Resource Record */
- R_COMPRESS = 2,      /**< Compress domain names in this RR in outgoing DNS
-                           messages */
- R_ASPCOMPRESS = 3    /**< Do both additional section processing and
-                           domain name compression */
+  R_NONE = 0,       /**< No RR flags */
+  R_ASP = 1,        /**< Do additional section processing for domain names
+                         in this Resource Record */
+  R_COMPRESS = 2,   /**< Compress domain names in this RR in outgoing DNS
+                         messages */
+  R_ASPCOMPRESS = 3 /**< Do both additional section processing and
+                         domain name compression */
 };
 
 /*!
@@ -70,7 +70,7 @@ struct rr_type {
    * directly in DNS messages to identify the RR type.
    */
   u_int16 type;
-  
+
   /*!
    * \brief list of properties for the RR type
    *
@@ -80,8 +80,8 @@ struct rr_type {
    * \p i for a ip number
    * \p s for a short number (16-bit unsigned)
    * \p l for a long number (32-bit unsigned)
-	 * \p t for a ttl value (32-bit unsigned; same as l, but different string
-	 *      representation
+   * \p t for a ttl value (32-bit unsigned; same as l, but different string
+   *      representation
    * \p c for a chararacter string
    * \p h for multiple character strings
    * \p n for a NULL RR
@@ -122,7 +122,7 @@ extern const int n_rr_types;
  * \sa rr_type
  */
 extern const rr_type rr_types[];
-  
+
 /* low-level RR information */
 
 /*!
@@ -162,7 +162,7 @@ char *rrtype_getname(u_int16 type);
  * This function tries to return the QTYPE code for a given string, that can
  * either be a RR, "any", "ixfr", "axfr", "maila" or "mailb", or a numeric
  * value.
- * \param name 
+ * \param name
  * \param allow_qtype If set to false (default true), only allow common types
  * \return The 16-bit QTYPE value for the given string
  */
@@ -205,7 +205,8 @@ bool is_common_rr(uint16_t rrtype);
  * \param ix Index in the buffer the RR begins
  * \param len Length the RR takes in the buffer
  */
-void rr_read(u_int16 RRTYPE, unsigned char*& RDATA, uint16_t &RDLEN, message_buff &buff, int ix, int len);
+void rr_read(u_int16 RRTYPE, unsigned char *&RDATA, uint16_t &RDLEN,
+             message_buff &buff, int ix, int len);
 
 /*!
  * \brief write a Resource Record to a DNS message
@@ -216,9 +217,11 @@ void rr_read(u_int16 RRTYPE, unsigned char*& RDATA, uint16_t &RDLEN, message_buf
  * \param RDATA Pointer to the RR data
  * \param RDLEN Length of the RR data
  * \param dnsmessage The message to write to
- * \param comprinfo List of compressed domain names in DNS message, or NULL for no compression
+ * \param comprinfo List of compressed domain names in DNS message, or NULL for
+ * no compression
  */
-void rr_write(u_int16 RRTYPE, unsigned char *RDATA, uint16_t RDLEN, stl_string &dnsmessage, stl_slist(dom_compr_info) *comprinfo);
+void rr_write(u_int16 RRTYPE, unsigned char *RDATA, uint16_t RDLEN,
+              stl_string &dnsmessage, stl_slist(dom_compr_info) * comprinfo);
 
 /*!
  * \brief convert a binary RR to string
@@ -231,18 +234,20 @@ void rr_write(u_int16 RRTYPE, unsigned char *RDATA, uint16_t RDLEN, stl_string &
  * \return A string describing the RR
  * \sa rr_fromstring()
  */
-stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENGTH);
+stl_string rr_tostring(u_int16 RRTYPE, const unsigned char *RDATA,
+                       int RDLENGTH);
 
 /*!
  * \brief Convert RR property to strings
- * 
+ *
  * Converts a RR property as in rr_type.property, to string.
  * \param type     Property type (see rr_type.property)
  * \param RDATA    RR data
  * \param RDLENGTH Lenth of rest of RR
  * \param zone     Zone to make domains relative to
  */
-stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDLENGTH, domainname& zone);
+stl_string rr_property_to_string(char type, const unsigned char *&RDATA,
+                                 int RDLENGTH, domainname &zone);
 
 /*!
  * \brief convert a binary RR to string
@@ -252,11 +257,11 @@ stl_string rr_property_to_string(char type, const unsigned char*& RDATA, int RDL
  * \param RRTYPE The RR type
  * \param RDATA The binary RR data
  * \param RDLENGTH Length of the binary RR data
- * \param zone If given, domain names in the RR will be relative to that zone where possible.
- * \return A string describing the RR
- * \sa rr_fromstring()
+ * \param zone If given, domain names in the RR will be relative to that zone
+ * where possible. \return A string describing the RR \sa rr_fromstring()
  */
-stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENGTH, domainname zone);
+stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA,
+                          int RDLENGTH, domainname zone);
 
 /*!
  * \brief convert a string to binary RR data
@@ -276,7 +281,8 @@ stl_string rr_torelstring(u_int16 RRTYPE, const unsigned char *RDATA, int RDLENG
  * \return Binary data describing the RR
  * \sa rr_tostring()
  */
-stl_string rr_fromstring(u_int16 rrtype, const char *data, _domain origin = (unsigned char*)"");
+stl_string rr_fromstring(u_int16 rrtype, const char *data,
+                         _domain origin = (unsigned char *)"");
 
 /*!
  * \brief convert a string to binary RR data
@@ -360,21 +366,24 @@ u_int48 rr_getuint48(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
  *
  * For details, see rr_getdomain().  Data is dynamically allocated.
  */
-unsigned char *rr_getip4(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+unsigned char *rr_getip4(const unsigned char *RDATA, u_int16 RRTYPE,
+                         int ix = 0);
 
 /*!
  * \brief read an IPv6 address from RR data
  *
  * For details, see rr_getdomain(). Data is dynamically allocated.
  */
-unsigned char *rr_getip6(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+unsigned char *rr_getip6(const unsigned char *RDATA, u_int16 RRTYPE,
+                         int ix = 0);
 
 /*!
  * \brief return pointer to start of data in RR
  *
  * For details, see rr_getdomain().
  */
-unsigned char *rr_getdata(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0);
+unsigned char *rr_getdata(const unsigned char *RDATA, u_int16 RRTYPE,
+                          int ix = 0);
 
 /*!
  * \brief read next item in a space-delimited string
@@ -384,12 +393,12 @@ unsigned char *rr_getdata(const unsigned char *RDATA, u_int16 RRTYPE, int ix = 0
  * on the way. Quotes, unless escaped by a backslash, will not be included
  * in the resulting string. Note that currently the maximum length of an
  * entry is 256 bytes.
- * 
+ *
  * \param data Pointer to string (gets updated)
  * \return The next entry in the string
  * \sa read_line
  */
-stl_string read_entry(char*& data);
+stl_string read_entry(char *&data);
 
 /*!
  * \brief read line from master/configuration file
@@ -408,7 +417,8 @@ stl_string read_entry(char*& data);
  * of the next (non-read) line. To prevent this, another pointer is given which
  * is at the beginning of the function set to the current, accurate, line
  * number. For this, a right value of the first pointer is required, though.
- * Note that linenum should be initially set to 1 before the first read_line call.
+ * Note that linenum should be initially set to 1 before the first read_line
+ * call.
  *
  * \param buff Buffer to place the results in
  * \param f The file to read from

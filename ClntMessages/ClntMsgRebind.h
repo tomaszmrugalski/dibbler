@@ -16,27 +16,24 @@ class TClntMsgRebind;
 
 #include "ClntMsg.h"
 #include "ClntOptIA_NA.h"
-#include "OptDUID.h"
 #include "OptAddr.h"
+#include "OptDUID.h"
 
-class TClntMsgRebind : public TClntMsg
-{
-  public:
-    TClntMsgRebind(TOptList ptrOpts, int iface);
-    
-    void answer(SPtr<TClntMsg> Rep);
-    void doDuties();
-    bool check();
-    std::string getName() const;
-    ~TClntMsgRebind();
- private:
-    void updateIA(SPtr<TClntOptIA_NA> ptrOptIA,
-		  SPtr<TOptDUID> optSrvDUID, 
-		  SPtr<TOptAddr> optUnicast);
-    void releaseIA(int IAID);
-    void releasePD(int IAID);
+class TClntMsgRebind : public TClntMsg {
+public:
+  TClntMsgRebind(TOptList ptrOpts, int iface);
 
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  bool check();
+  std::string getName() const;
+  ~TClntMsgRebind();
 
+private:
+  void updateIA(SPtr<TClntOptIA_NA> ptrOptIA, SPtr<TOptDUID> optSrvDUID,
+                SPtr<TOptAddr> optUnicast);
+  void releaseIA(int IAID);
+  void releasePD(int IAID);
 };
 
 #endif /* REBIND_H_HEADER_INCLUDED_C1126D16 */

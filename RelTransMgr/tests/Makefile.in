@@ -369,7 +369,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/RelTransMgr -I$(top_srcdir)/Options \
 	-Wno-long-long -Wno-variadic-macros
 @HAVE_GTEST_TRUE@RelTransMgr_tests_SOURCES = run_tests.cpp \
 @HAVE_GTEST_TRUE@	RelTransMgr_unittest.cc
-@HAVE_GTEST_TRUE@RelTransMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+@HAVE_GTEST_TRUE@RelTransMgr_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 @HAVE_GTEST_TRUE@RelTransMgr_tests_LDADD = $(GTEST_LDADD) \
 @HAVE_GTEST_TRUE@	$(top_builddir)/RelTransMgr/libRelTransMgr.a \
 @HAVE_GTEST_TRUE@	$(top_builddir)/RelIfaceMgr/libRelIfaceMgr.a \

@@ -15,44 +15,43 @@ class TClntCfgIA;
 #include "ClntCfgAddr.h"
 #include "ClntParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class TClntCfgIA
-{
-    friend std::ostream& operator<<(std::ostream& out, TClntCfgIA& group);
- public:
-    long getIAID();
-    void setIAID(long iaid);
+class TClntCfgIA {
+  friend std::ostream &operator<<(std::ostream &out, TClntCfgIA &group);
 
-    unsigned long getT1();
-    unsigned long getT2();
+public:
+  long getIAID();
+  void setIAID(long iaid);
 
-    void setOptions(SPtr<TClntParsGlobalOpt> opt);
+  unsigned long getT1();
+  unsigned long getT2();
 
-    void firstAddr();
-    SPtr<TClntCfgAddr> getAddr();
-    long countAddr();
-    void addAddr(SPtr<TClntCfgAddr> addr);
+  void setOptions(SPtr<TClntParsGlobalOpt> opt);
 
-    TClntCfgIA();
-    TClntCfgIA(SPtr<TClntCfgIA> right, long iAID);
+  void firstAddr();
+  SPtr<TClntCfgAddr> getAddr();
+  long countAddr();
+  void addAddr(SPtr<TClntCfgAddr> addr);
 
-    void reset();
-    void setState(enum EState state);
-    enum EState getState();
-    bool getAddrParams();
+  TClntCfgIA();
+  TClntCfgIA(SPtr<TClntCfgIA> right, long iAID);
 
-  private:
-    unsigned long IAID;
-    unsigned long T1;
-    unsigned long T2;
-    EState State;
-    List(TClntCfgAddr) ClntCfgAddrLst;
-    static long newID();
+  void reset();
+  void setState(enum EState state);
+  enum EState getState();
+  bool getAddrParams();
 
-    bool AddrParams;     /// experimental address parameters feature
+private:
+  unsigned long IAID;
+  unsigned long T1;
+  unsigned long T2;
+  EState State;
+  List(TClntCfgAddr) ClntCfgAddrLst;
+  static long newID();
+
+  bool AddrParams; /// experimental address parameters feature
 };
 
-#endif 
-
+#endif

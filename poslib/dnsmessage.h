@@ -25,11 +25,11 @@ class DnsRR;
 
 class message_buff;
 
-#include <time.h>
 #include "dnsdefs.h"
-#include "types.h"
-#include "sysstl.h"
 #include "domainfn.h"
+#include "sysstl.h"
+#include "types.h"
+#include <time.h>
 
 /* when constructed with the message and length, the data is regarded static
    and not cleaned up on destruction */
@@ -51,7 +51,7 @@ class message_buff;
  * destruction.
  */
 class message_buff {
- public:
+public:
   /*!
    * \brief static constructor
    *
@@ -72,7 +72,7 @@ class message_buff {
    * will be dynamically copied.
    * \param buff The buffer to copy
    */
-  message_buff(const message_buff& buff);
+  message_buff(const message_buff &buff);
   /*!
    * \brief dynamic constructor
    *
@@ -95,13 +95,13 @@ class message_buff {
    * message_buff(const messagebuf &buff).
    * \param buff Message buffer to copy
    */
-  message_buff& operator=(const message_buff& buff);
+  message_buff &operator=(const message_buff &buff);
   /*!
    * \brief whether the message is static
    *
    * This determines whether the msg field is static - that is, whether it
-   * should be freed by the message_buffer ( \p false ) or not. The default value
-   * of this depends on the used constructor.
+   * should be freed by the message_buffer ( \p false ) or not. The default
+   * value of this depends on the used constructor.
    */
   bool is_static;
   /*!
@@ -125,7 +125,7 @@ class message_buff {
  * of a DNS message.
  */
 class DnsQuestion {
- public:
+public:
   /*!
    * \brief constructor
    *
@@ -138,14 +138,14 @@ class DnsQuestion {
    * This constructor copies the given question.
    * \param q Question to copy
    */
-  DnsQuestion(const DnsQuestion& q);
+  DnsQuestion(const DnsQuestion &q);
   /*!
    * \brief assignment
    *
    * This is the assignment operator. It works in the same way as the copy
    * constructor.
    */
-  DnsQuestion& operator=(const DnsQuestion& q);
+  DnsQuestion &operator=(const DnsQuestion &q);
 
   /**
    * @brief constructor
@@ -200,7 +200,7 @@ class DnsQuestion {
  * well as some general information on the RR itself, such as its TTL.
  */
 class DnsRR {
- public:
+public:
   /*!
    * \brief constructor
    *
@@ -211,7 +211,7 @@ class DnsRR {
   /*!
    * \brief comparator
    */
-  bool operator==(const DnsRR& other);
+  bool operator==(const DnsRR &other);
 
   /*!
    * \brief sort comparison function
@@ -223,11 +223,11 @@ class DnsRR {
    * \param other Other RR
    * \return Result of the comparison
    */
-  int compareTo(const DnsRR& other) const;
-  bool operator<(const DnsRR& rr) const;
-  bool operator<=(const DnsRR& rr) const;
-  bool operator>(const DnsRR& rr) const;
-  bool operator>=(const DnsRR& rr) const;
+  int compareTo(const DnsRR &other) const;
+  bool operator<(const DnsRR &rr) const;
+  bool operator<=(const DnsRR &rr) const;
+  bool operator>(const DnsRR &rr) const;
+  bool operator>=(const DnsRR &rr) const;
 
   /*!
    * \brief constructor taking some fields
@@ -253,7 +253,8 @@ class DnsRR {
    * \param RDLENGTH Length of RR data
    * \param RDATA RR data (this is copied into the RR)
    */
-  DnsRR(domainname NAME, u_int16 TYPE, u_int16 CLASS, u_int32 TTL, uint16_t RDLENGTH, const unsigned char *RDATA);
+  DnsRR(domainname NAME, u_int16 TYPE, u_int16 CLASS, u_int32 TTL,
+        uint16_t RDLENGTH, const unsigned char *RDATA);
 
   /*!
    * \brief copy constructor
@@ -262,7 +263,7 @@ class DnsRR {
    * copy of the RRs #RDATA field.
    * \param rr Resource Record to copy
    */
-  DnsRR(const DnsRR& rr);
+  DnsRR(const DnsRR &rr);
 
   /*!
    * \brief assignment operator
@@ -270,7 +271,7 @@ class DnsRR {
    * The assignment operator works the same as the copy constructor.
    * \param rr Resource Record to copy
    */
-  DnsRR& operator=(const DnsRR& rr);
+  DnsRR &operator=(const DnsRR &rr);
 
   /*!
    * \brief destructor
@@ -294,7 +295,7 @@ class DnsRR {
    * #DNS_TYPE_A or #DNS_TYPE_MX (or the value of the rr_type.type field).
    */
   u_int16 TYPE;
-  
+
   /*!
    * \brief class
    *
@@ -327,7 +328,6 @@ class DnsRR {
    */
   unsigned char *RDATA;
 
-
   // RDLENGTH copy of data before TSIG_RR is signed
   uint16_t presign_RDLENGTH;
 
@@ -343,7 +343,7 @@ class DnsRR {
  * messages, and to create a binary DNS message from the structure.
  */
 class DnsMessage {
- public:
+public:
   /*!
    * \brief constructor
    *
@@ -460,9 +460,9 @@ class DnsMessage {
   /*!
    * \brief authority section
    *
-   * This section contains pointers to authoritative sources for the information.
-   * Most nameservers put the nameserver list for the domain names in the
-   * section here.
+   * This section contains pointers to authoritative sources for the
+   * information. Most nameservers put the nameserver list for the domain names
+   * in the section here.
    */
   stl_list(DnsRR) authority;
 
@@ -508,12 +508,15 @@ class DnsMessage {
    */
   message_buff compile(int maxlen);
 
-  static void write_rr(DnsRR &rr, stl_string &message, stl_slist(dom_compr_info) *comprinfo,
-  int flags = 0);
-  void write_section(stl_list(DnsRR)& section, int lenpos, stl_string& message, stl_slist(dom_compr_info) &comprinfo, int maxlen, bool is_additional = false);
-  void read_section(stl_list(DnsRR)& section, int count, message_buff &buff, int &pos, unsigned int *tsig_pos = NULL);
+  static void write_rr(DnsRR &rr, stl_string &message,
+                       stl_slist(dom_compr_info) * comprinfo, int flags = 0);
+  void write_section(stl_list(DnsRR) & section, int lenpos, stl_string &message,
+                     stl_slist(dom_compr_info) & comprinfo, int maxlen,
+                     bool is_additional = false);
+  void read_section(stl_list(DnsRR) & section, int count, message_buff &buff,
+                    int &pos, unsigned int *tsig_pos = NULL);
   static DnsRR read_rr(message_buff &buff, int &pos, int flags = 0);
-  
+
   /**
    * \brief TSIG record for message
    *
@@ -533,14 +536,14 @@ class DnsMessage {
 
   /// optional tsig_rr signing time (if set to 0, time(NULL) will be used
   time_t tsig_rr_signtime;
-  
+
   /**
    * \brief TSIG key for message
    *
    * Key to use when signing or verifying a signed message; see #tsig_rr.
    */
-  stl_string sign_key;  
-  
+  stl_string sign_key;
+
   /**
    * \brief create answer message
    * TODO: rename?
@@ -566,15 +569,16 @@ unsigned char *uint48_buff(u_int48 val);
 /// This message is dynamically allocated, so you'll have to delete it yourself.
 ///
 /// @param qname Domain name to query. See DnsQuestion::QNAME.
-/// @param qtype Type of RR to query. See DnsQuestion::QTYPE for more information.
+/// @param qtype Type of RR to query. See DnsQuestion::QTYPE for more
+/// information.
 ///             Defaults to \p DNS_TYPE_A .
 /// @param rd whether we want the server to do recursion. See DnsMessage::RD.
 ///          Defaults to \p true .
 /// @param qclass The class to query in. See DnsQuestion::QCLASS. Defaults to
 ///              \p CLASS_IN .
 /// @return DNS message containing the query.
-DnsMessage *create_query(domainname qname, uint16_t qtype = DNS_TYPE_A, bool rd = true, 
-                         uint16_t qclass = CLASS_IN);
+DnsMessage *create_query(domainname qname, uint16_t qtype = DNS_TYPE_A,
+                         bool rd = true, uint16_t qclass = CLASS_IN);
 
 /*!
  * \brief ipv4 address
@@ -583,7 +587,7 @@ DnsMessage *create_query(domainname qname, uint16_t qtype = DNS_TYPE_A, bool rd 
  */
 class a_record {
 public:
-    char address[4];    /// The four-byte IPv4 address.
+  char address[4]; /// The four-byte IPv4 address.
 };
 
 /// Gets the first address in the answer to an address query.
@@ -599,14 +603,15 @@ stl_list(a_record) get_a_records(DnsMessage *a, bool fail_if_none = false);
  */
 class aaaa_record {
 public:
-    char address[16];   /// The sixteen-byte IPv6 address.
+  char address[16]; /// The sixteen-byte IPv6 address.
 };
 
 /// Gets the first IPv6 address in the answer to an IPv6 address query.
 aaaa_record get_aaaa_record(DnsMessage *a);
 
 /// Gets a list of addresses in the answer to an IPv6 address query.
-stl_list(aaaa_record) get_aaaa_records(DnsMessage *a, bool fail_if_none = false);
+stl_list(aaaa_record)
+    get_aaaa_records(DnsMessage *a, bool fail_if_none = false);
 
 /**
  * @brief mx record
@@ -614,7 +619,7 @@ stl_list(aaaa_record) get_aaaa_records(DnsMessage *a, bool fail_if_none = false)
  * Class representing an Mail eXchanger (MX) record.
  */
 class mx_record {
- public:
+public:
   uint16_t preference; /**< Prefence value: the lower, the better. */
   domainname server;   /**< Domain name for the mail server. */
 };
@@ -639,30 +644,32 @@ stl_list(domainname) get_ptr_records(DnsMessage *a, bool fail_if_none = false);
 
 /// Structure for RR data returned by get_records
 class rrdat {
- public:
+public:
   rrdat(uint16_t, uint16_t, unsigned char *); //! constructor
   uint16_t type;                              //! rr type
   uint16_t len;                               //! rdata length
   unsigned char *msg;                         //! rdata
 };
 
-/// Gets a list of all RRs in the answer section answering the DNS query. May follow CNAMEs.
+/// Gets a list of all RRs in the answer section answering the DNS query. May
+/// follow CNAMEs.
 /// @param a
 /// @param fail_if_none
 /// @param follow_cname
 /// @param followed_cnames
-/// @return 
-stl_list(rrdat) get_records(DnsMessage *a, bool fail_if_none = false, bool follow_cname = true, 
+/// @return
+stl_list(rrdat) get_records(DnsMessage *a, bool fail_if_none = false,
+                            bool follow_cname = true,
                             stl_list(domainname) *followed_cnames = NULL);
 
 /// Enumeration of different possible answer types
-enum  _answer_type {
-  A_ERROR,      //! Error
-  A_CNAME,      //! Alias
-  A_NXDOMAIN,   //! Domain doesn't exist
-  A_ANSWER,     //! Answer
-  A_REFERRAL,   //! Referral to other server
-  A_NODATA      //! No such data
+enum _answer_type {
+  A_ERROR,    //! Error
+  A_CNAME,    //! Alias
+  A_NXDOMAIN, //! Domain doesn't exist
+  A_ANSWER,   //! Answer
+  A_REFERRAL, //! Referral to other server
+  A_NODATA    //! No such data
 };
 
 /// @brief Returns the answer type of an answer message for a given query
@@ -672,7 +679,8 @@ enum  _answer_type {
 /// @param qtype
 ///
 /// @return answer type
-_answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtype);
+_answer_type check_answer_type(DnsMessage *msg, domainname &qname,
+                               uint16_t qtype);
 
 /// @brief Returns true if the given RRset is present in the DNS message section
 ///
@@ -681,6 +689,7 @@ _answer_type check_answer_type(DnsMessage *msg, domainname &qname, uint16_t qtyp
 /// @param type type of query
 ///
 /// @return true, if requested domainname exists, false otherwise
-bool has_rrset(stl_list(DnsRR) &rrlist, domainname &name, uint16_t type = QTYPE_ANY);
+bool has_rrset(stl_list(DnsRR) & rrlist, domainname &name,
+               uint16_t type = QTYPE_ANY);
 
 #endif /* __POSLIB_DNSMESSAGE_H */

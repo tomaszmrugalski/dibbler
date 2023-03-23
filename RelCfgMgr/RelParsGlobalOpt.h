@@ -10,45 +10,44 @@
 
 #ifndef TRELPARSGLOBALOPT_H_
 #define TRELPARSGLOBALOPT_H_
-#include "RelParsIfaceOpt.h"
 #include "OptVendorData.h"
 #include "RelOptEcho.h"
+#include "RelParsIfaceOpt.h"
 #include "SmartPtr.h"
 #include <string>
 
 typedef enum {
-    REL_IFACE_ID_ORDER_BEFORE,
-    REL_IFACE_ID_ORDER_AFTER,
-    REL_IFACE_ID_ORDER_NONE
+  REL_IFACE_ID_ORDER_BEFORE,
+  REL_IFACE_ID_ORDER_AFTER,
+  REL_IFACE_ID_ORDER_NONE
 } ERelIfaceIdOrder;
 
-class TRelParsGlobalOpt : public TRelParsIfaceOpt
-{
- public:
-    TRelParsGlobalOpt(void);
-    ~TRelParsGlobalOpt(void);
-    
-    std::string getWorkDir();
-    void setWorkDir(std::string dir);
+class TRelParsGlobalOpt : public TRelParsIfaceOpt {
+public:
+  TRelParsGlobalOpt(void);
+  ~TRelParsGlobalOpt(void);
 
-    void setGuessMode(bool guess);
-    bool getGuessMode();
+  std::string getWorkDir();
+  void setWorkDir(std::string dir);
 
-    void setInterfaceIDOrder(ERelIfaceIdOrder order);
-    ERelIfaceIdOrder getInterfaceIDOrder();
+  void setGuessMode(bool guess);
+  bool getGuessMode();
 
-    void setRemoteID(SPtr<TOptVendorData> remoteID);
-    SPtr<TOptVendorData> getRemoteID();
+  void setInterfaceIDOrder(ERelIfaceIdOrder order);
+  ERelIfaceIdOrder getInterfaceIDOrder();
 
-    void setEcho(SPtr<TRelOptEcho> echo);
-    SPtr<TRelOptEcho> getEcho();
+  void setRemoteID(SPtr<TOptVendorData> remoteID);
+  SPtr<TOptVendorData> getRemoteID();
+
+  void setEcho(SPtr<TRelOptEcho> echo);
+  SPtr<TRelOptEcho> getEcho();
 
 private:
-    std::string WorkDir_;
-    bool GuessMode_;
+  std::string WorkDir_;
+  bool GuessMode_;
 
-    ERelIfaceIdOrder InterfaceIDOrder_;
-    SPtr<TOptVendorData> RemoteID_;
-    SPtr<TRelOptEcho> Echo_;
+  ERelIfaceIdOrder InterfaceIDOrder_;
+  SPtr<TOptVendorData> RemoteID_;
+  SPtr<TRelOptEcho> Echo_;
 };
 #endif

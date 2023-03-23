@@ -14,7 +14,7 @@ TESTS += DnsUpdate_tests
 DnsUpdate_tests_SOURCES = run_tests.cc
 DnsUpdate_tests_SOURCES += DnsUpdate_unittest.cc
 
-DnsUpdate_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+DnsUpdate_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 DnsUpdate_tests_LDADD = $(GTEST_LDADD)
 DnsUpdate_tests_LDADD += $(top_builddir)/IfaceMgr/libIfaceMgr.a

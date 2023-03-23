@@ -8,21 +8,13 @@
  *
  */
 
-#include "DHCPConst.h"
 #include "ClntOptPreference.h"
+#include "DHCPConst.h"
 
-TClntOptPreference::TClntOptPreference( char * buf,  int n, TMsg* parent)
-  :TOptInteger(OPTION_PREFERENCE, 1, buf,n, parent)
-{
+TClntOptPreference::TClntOptPreference(char *buf, int n, TMsg *parent)
+    : TOptInteger(OPTION_PREFERENCE, 1, buf, n, parent) {}
 
-}
+TClntOptPreference::TClntOptPreference(char pref, TMsg *parent)
+    : TOptInteger(OPTION_PREFERENCE, 1, pref, parent) {}
 
-TClntOptPreference::TClntOptPreference( char pref, TMsg* parent)
-  :TOptInteger(OPTION_PREFERENCE, 1, pref, parent)
-{
-}
-
-bool TClntOptPreference::doDuties()
-{
-    return true;
-}
+bool TClntOptPreference::doDuties() { return true; }

@@ -14,15 +14,14 @@ class TSrvMsgRelease;
 
 #include "SrvMsg.h"
 
-class TSrvMsgRelease : public TSrvMsg
-{
-  public:
-    TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-	
-    void doDuties();
-    unsigned long getTimeout();
-    bool check();
-    std::string getName() const;
-    ~TSrvMsgRelease();
+class TSrvMsgRelease : public TSrvMsg {
+public:
+  TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char *buf, int bufSize);
+
+  void doDuties();
+  unsigned long getTimeout();
+  bool check();
+  std::string getName() const;
+  ~TSrvMsgRelease();
 };
 #endif /* SRVMSGRELEASE_H */

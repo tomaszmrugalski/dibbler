@@ -9,51 +9,43 @@
  *
  */
 
-#include "Logger.h"
 #include "SrvCfgOptions.h"
+#include "Logger.h"
 
 using namespace std;
 
-TSrvCfgOptions::TSrvCfgOptions() {
-    SetDefaults();
-}
+TSrvCfgOptions::TSrvCfgOptions() { SetDefaults(); }
 
 TSrvCfgOptions::TSrvCfgOptions(SPtr<TDUID> duid) {
-    SetDefaults();
-    Duid = duid;
+  SetDefaults();
+  Duid = duid;
 }
 
 TSrvCfgOptions::TSrvCfgOptions(SPtr<TOptVendorData> remoteID) {
-    SetDefaults();
-    RemoteID = remoteID;
+  SetDefaults();
+  RemoteID = remoteID;
 }
 
 TSrvCfgOptions::TSrvCfgOptions(SPtr<TIPv6Addr> clntaddr) {
-    SetDefaults();
-    ClntAddr = clntaddr;
+  SetDefaults();
+  ClntAddr = clntaddr;
 }
 
-SPtr<TDUID> TSrvCfgOptions::getDuid() const {
-    return Duid;
-}
+SPtr<TDUID> TSrvCfgOptions::getDuid() const { return Duid; }
 
-SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() const {
-    return RemoteID;
-}
+SPtr<TOptVendorData> TSrvCfgOptions::getRemoteID() const { return RemoteID; }
 
-SPtr<TIPv6Addr> TSrvCfgOptions::getClntAddr() const {
-    return ClntAddr;
-}
+SPtr<TIPv6Addr> TSrvCfgOptions::getClntAddr() const { return ClntAddr; }
 
 void TSrvCfgOptions::SetDefaults() {
-    this->VendorSpecSupport       = false;
+  this->VendorSpecSupport = false;
 
-    Duid.reset();
-    RemoteID.reset();
-    ClntAddr.reset();
+  Duid.reset();
+  RemoteID.reset();
+  ClntAddr.reset();
 
-    ExtraOpts_.clear();
-    ForcedOpts_.clear();
+  ExtraOpts_.clear();
+  ForcedOpts_.clear();
 }
 
 // --------------------------------------------------------------------
@@ -78,72 +70,58 @@ bool TSrvCfgOptions::supportVendorSpec() {
 
 List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
 
-    SPtr<TOpt> opt;
-    SPtr<TOptVendorSpecInfo> x;
-    List(TOptVendorSpecInfo) returnList;
-    returnList.clear();
+  SPtr<TOpt> opt;
+  SPtr<TOptVendorSpecInfo> x;
+  List(TOptVendorSpecInfo) returnList;
+  returnList.clear();
 
-    for (TOptList::iterator opt = ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
-    {
-        if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS) {
-            continue;
-        }
-        x = SPtr_cast<TOptVendorSpecInfo>(*opt);
-        if (!x) {
-            continue;
-        }
-        if (!vendor || x->getVendor() == vendor)
-        {
-            // enterprise number not specified => return all
-            returnList.append(x);
-        }
+  for (TOptList::iterator opt = ExtraOpts_.begin(); opt != ExtraOpts_.end(); ++opt) {
+    if ((*opt)->getOptType() != OPTION_VENDOR_OPTS) {
+      continue;
     }
+    x = SPtr_cast<TOptVendorSpecInfo>(*opt);
+    if (!x) {
+      continue;
+    }
+    if (!vendor || x->getVendor() == vendor) {
+      // enterprise number not specified => return all
+      returnList.append(x);
+    }
+  }
 
-    return returnList;
+  return returnList;
 }
 
-void TSrvCfgOptions::setAddr(SPtr<TIPv6Addr> addr) {
-    Addr = addr;
-}
+void TSrvCfgOptions::setAddr(SPtr<TIPv6Addr> addr) { Addr = addr; }
 
-SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() const {
-    return Addr;
-}
+SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() const { return Addr; }
 
 void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
-    Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
-               << custom->getOptType() << " generic option (length="
-               << custom->getSize() << ")." << LogEnd;
+  Log(Debug) << "Setting " << (always ? "mandatory " : "request-only ") << custom->getOptType()
+             << " generic option (length=" << custom->getSize() << ")." << LogEnd;
 
-    ExtraOpts_.push_back(custom); // allways add to extra options
+  ExtraOpts_.push_back(custom);  // allways add to extra options
 
-    if (always)
-        ForcedOpts_.push_back(custom); // also add to forced, if requested so
+  if (always) ForcedOpts_.push_back(custom);  // also add to forced, if requested so
 }
 
-const TOptList& TSrvCfgOptions::getExtraOptions() {
-    return ExtraOpts_;
-}
+const TOptList &TSrvCfgOptions::getExtraOptions() { return ExtraOpts_; }
 
 TOptPtr TSrvCfgOptions::getExtraOption(uint16_t type) {
-    for (TOptList::iterator opt=ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
-    {
-        if ((*opt)->getOptType() == type)
-            return *opt;
-    }
-    return TOptPtr(); // NULL
+  for (TOptList::iterator opt = ExtraOpts_.begin(); opt != ExtraOpts_.end(); ++opt) {
+    if ((*opt)->getOptType() == type) return *opt;
+  }
+  return TOptPtr();  // NULL
 }
 
-const TOptList& TSrvCfgOptions::getForcedOptions() {
-    return ForcedOpts_;
-}
+const TOptList &TSrvCfgOptions::getForcedOptions() { return ForcedOpts_; }
 
 bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
 
-    addExtraOptions(opt->getExtraOptions());
-    addForcedOptions(opt->getForcedOptions());
+  addExtraOptions(opt->getExtraOptions());
+  addForcedOptions(opt->getForcedOptions());
 
-    return true;
+  return true;
 }
 
 /// @brief Copies a list of extra options.
@@ -153,9 +131,9 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
 /// asks for them or not).
 ///
 /// @param extra list of options to be copied
-void TSrvCfgOptions::addExtraOptions(const TOptList& extra) {
-    for (TOptList::const_iterator opt = extra.begin(); opt != extra.end(); ++opt)
-        ExtraOpts_.push_back(*opt);
+void TSrvCfgOptions::addExtraOptions(const TOptList &extra) {
+  for (TOptList::const_iterator opt = extra.begin(); opt != extra.end(); ++opt)
+    ExtraOpts_.push_back(*opt);
 }
 
 /// @brief Copies a list of forced options.
@@ -164,46 +142,46 @@ void TSrvCfgOptions::addExtraOptions(const TOptList& extra) {
 /// are sent to a client, regardless if client requested them or not.
 ///
 /// @param forced list of forced options to be copied
-void TSrvCfgOptions::addForcedOptions(const TOptList& forced) {
-    for (TOptList::const_iterator opt = forced.begin(); opt != forced.end(); ++opt)
-        ForcedOpts_.push_back(*opt);
+void TSrvCfgOptions::addForcedOptions(const TOptList &forced) {
+  for (TOptList::const_iterator opt = forced.begin(); opt != forced.end(); ++opt)
+    ForcedOpts_.push_back(*opt);
 }
 
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
-ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
+ostream &operator<<(ostream &out, TSrvCfgOptions &iface) {
 
-    SPtr<TIPv6Addr> addr;
-    SPtr<string> str;
+  SPtr<TIPv6Addr> addr;
+  SPtr<string> str;
 
-    out << "    <client>" << endl;
-    if (iface.Duid)
-        out << "      " << *iface.Duid;
-    else
-        out << "      <!-- <duid/> -->" << endl;
-    if (iface.RemoteID)
-        out << "      <RemoteID enterprise=\"" << iface.RemoteID->getVendor() << "\" length=\""
-            << iface.RemoteID->getVendorDataLen() << "\">" << iface.RemoteID->getVendorDataPlain() << "</RemoteID>" << endl;
-    else
-        out << "      <!-- <RemoteID/> -->" << endl;
+  out << "    <client>" << endl;
+  if (iface.Duid)
+    out << "      " << *iface.Duid;
+  else
+    out << "      <!-- <duid/> -->" << endl;
+  if (iface.RemoteID)
+    out << "      <RemoteID enterprise=\"" << iface.RemoteID->getVendor() << "\" length=\""
+        << iface.RemoteID->getVendorDataLen() << "\">" << iface.RemoteID->getVendorDataPlain()
+        << "</RemoteID>" << endl;
+  else
+    out << "      <!-- <RemoteID/> -->" << endl;
 
-    out << "      <!-- paramteres start here -->" << endl;
+  out << "      <!-- paramteres start here -->" << endl;
 
-    if (iface.Addr) {
-        out << "      <addr>" << iface.Addr->getPlain() << "</addr>" << endl;
-    } else {
-        out << "      <!-- <addr/> -->" << endl;
-    }
+  if (iface.Addr) {
+    out << "      <addr>" << iface.Addr->getPlain() << "</addr>" << endl;
+  } else {
+    out << "      <!-- <addr/> -->" << endl;
+  }
 
-    // option: DNS-SERVERS
-    // option: DOMAINS
-    // NTP-SERVERS
-    // option: TIMEZONE
-    // option: SIP-SERVERS
-    // option: SIP-DOMAINS
-    // option: LIFETIME
-
+  // option: DNS-SERVERS
+  // option: DOMAINS
+  // NTP-SERVERS
+  // option: TIMEZONE
+  // option: SIP-SERVERS
+  // option: SIP-DOMAINS
+  // option: LIFETIME
 
 #if 0
     // option: VENDOR-SPEC
@@ -220,7 +198,7 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     }
 #endif
 
-    out << "    </client>" << endl;
+  out << "    </client>" << endl;
 
-    return out;
+  return out;
 }

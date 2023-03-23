@@ -10,102 +10,91 @@
  *
  */
 
-#include <sstream>
 #include <cstdlib>
-#include <vector>
+#include <sstream>
 #include <stdio.h>
+#include <vector>
 #ifndef WIN32
-#include <sys/socket.h>
 #include <net/if.h>
+#include <sys/socket.h>
 #endif
+#include "AddrClient.h"
+#include "DNSUpdate.h"
+#include "IPv6Addr.h"
+#include "Iface.h"
+#include "Logger.h"
+#include "Msg.h"
+#include "OptGeneric.h"
+#include "OptIAAddress.h"
+#include "OptIAPrefix.h"
+#include "OptOptionRequest.h"
+#include "OptVendorData.h"
 #include "Portable.h"
 #include "SmartPtr.h"
 #include "SrvIfaceMgr.h"
-#include "Msg.h"
 #include "SrvMsg.h"
-#include "Logger.h"
-#include "SrvMsgSolicit.h"
-#include "SrvMsgRequest.h"
 #include "SrvMsgConfirm.h"
-#include "SrvMsgRenew.h"
-#include "SrvMsgRebind.h"
-#include "SrvMsgRelease.h"
 #include "SrvMsgDecline.h"
 #include "SrvMsgInfRequest.h"
 #include "SrvMsgLeaseQuery.h"
+#include "SrvMsgRebind.h"
+#include "SrvMsgRelease.h"
+#include "SrvMsgRenew.h"
+#include "SrvMsgRequest.h"
+#include "SrvMsgSolicit.h"
 #include "SrvOptInterfaceID.h"
-#include "IPv6Addr.h"
-#include "AddrClient.h"
-#include "Iface.h"
-#include "OptOptionRequest.h"
-#include "OptGeneric.h"
-#include "OptVendorData.h"
-#include "OptIAAddress.h"
-#include "OptIAPrefix.h"
-#include "DNSUpdate.h"
 
 using namespace std;
 
-TSrvIfaceMgr * TSrvIfaceMgr::Instance = 0;
-
+TSrvIfaceMgr *TSrvIfaceMgr::Instance = 0;
 
 /*
  * constructor.
  */
-TSrvIfaceMgr::TSrvIfaceMgr(const std::string& xmlFile)
-    : TIfaceMgr(xmlFile, false) {
+TSrvIfaceMgr::TSrvIfaceMgr(const std::string &xmlFile) : TIfaceMgr(xmlFile, false) {
 
-    struct iface * ptr;
-    struct iface * ifaceList;
+  struct iface *ptr;
+  struct iface *ifaceList;
 
-    this->XmlFile = xmlFile;
+  this->XmlFile = xmlFile;
 
-    // get interface list
-    ifaceList = if_list_get(); // external (C coded) function
-    ptr = ifaceList;
+  // get interface list
+  ifaceList = if_list_get();  // external (C coded) function
+  ptr = ifaceList;
 
-    if  (!ifaceList) {
-        IsDone = true;
-        Log(Crit) << "Unable to read info interfaces. Make sure "
-                  << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
-                  << " and you have IPv6 support enabled." << LogEnd;
-        return;
-    }
+  if (!ifaceList) {
+    IsDone = true;
+    Log(Crit) << "Unable to read info interfaces. Make sure "
+              << "you are using proper port (i.e. win32 on WindowsXP or 2003)"
+              << " and you have IPv6 support enabled." << LogEnd;
+    return;
+  }
 
-    while (ptr!=NULL) {
-        Log(Notice) << "Detected iface " << ptr->name << "/" << ptr->id
-                 // << ", flags=" << ptr->flags
-                    << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
+  while (ptr != NULL) {
+    Log(Notice) << "Detected iface " << ptr->name << "/"
+                << ptr->id
+                // << ", flags=" << ptr->flags
+                << ", MAC=" << this->printMac(ptr->mac, ptr->maclen) << "." << LogEnd;
 
-        SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name,ptr->id,
-                                                ptr->flags,
-                                                ptr->mac,
-                                                ptr->maclen,
-                                                ptr->linkaddr,
-                                                ptr->linkaddrcount,
-                                                ptr->globaladdr,
-                                                ptr->globaladdrcount,
-                                                ptr->hardwareType));
-        this->IfaceLst.append(iface);
-        ptr = ptr->next;
-    }
-    if_list_release(ifaceList); // allocated in pure C, and so release it there
+    SPtr<TIfaceIface> iface(new TIfaceIface(ptr->name, ptr->id, ptr->flags, ptr->mac, ptr->maclen,
+                                            ptr->linkaddr, ptr->linkaddrcount, ptr->globaladdr,
+                                            ptr->globaladdrcount, ptr->hardwareType));
+    this->IfaceLst.append(iface);
+    ptr = ptr->next;
+  }
+  if_list_release(ifaceList);  // allocated in pure C, and so release it there
 
-    dump();
+  dump();
 }
 
-TSrvIfaceMgr::~TSrvIfaceMgr() {
-    Log(Debug) << "SrvIfaceMgr cleanup." << LogEnd;
-}
+TSrvIfaceMgr::~TSrvIfaceMgr() { Log(Debug) << "SrvIfaceMgr cleanup." << LogEnd; }
 
-void TSrvIfaceMgr::dump()
-{
-    std::ofstream xmlDump;
-    xmlDump.open( this->XmlFile.c_str() );
-    xmlDump << *this;
-    xmlDump.close();
+void TSrvIfaceMgr::dump() {
+  std::ofstream xmlDump;
+  xmlDump.open(this->XmlFile.c_str());
+  xmlDump << *this;
+  xmlDump.close();
 }
-
 
 /**
  * sends data to client. Uses unicast address as source
@@ -116,50 +105,48 @@ void TSrvIfaceMgr::dump()
  * @param port  destination UDP port
  * @return true if message was send successfully
  */
-bool TSrvIfaceMgr::send(int iface, char *msg, int size,
-                        SPtr<TIPv6Addr> addr, int port) {
-    // find this interface
-    SPtr<TIfaceIface> ptrIface;
-    ptrIface = this->getIfaceByID(iface);
-    if (!ptrIface) {
-            Log(Error)  << "Send failed: No such interface id=" << iface << LogEnd;
-            return false;
-    }
+bool TSrvIfaceMgr::send(int iface, char *msg, int size, SPtr<TIPv6Addr> addr, int port) {
+  // find this interface
+  SPtr<TIfaceIface> ptrIface;
+  ptrIface = this->getIfaceByID(iface);
+  if (!ptrIface) {
+    Log(Error) << "Send failed: No such interface id=" << iface << LogEnd;
+    return false;
+  }
 
-    // find this socket
-    SPtr<TIfaceSocket> sock;
-    SPtr<TIfaceSocket> backup;
-    ptrIface->firstSocket();
-    while (sock = ptrIface->getSocket()) {
-        if (sock->multicast())
-            continue; // don't send anything via multicast sockets
-        if (!backup) {
-            backup = sock;
-        }
-        if (!addr->linkLocal() && sock->getAddr()->linkLocal())
-            continue; // we need socket bound to global address if dst is global addr
-        if (addr->linkLocal() && !sock->getAddr()->linkLocal())
-            continue; // lets' not use global address as source is dst is link-local
-        break;
+  // find this socket
+  SPtr<TIfaceSocket> sock;
+  SPtr<TIfaceSocket> backup;
+  ptrIface->firstSocket();
+  while (sock = ptrIface->getSocket()) {
+    if (sock->multicast()) continue;  // don't send anything via multicast sockets
+    if (!backup) {
+      backup = sock;
     }
-    if (!sock && !backup) {
-        Log(Error) << "Send failed: interface " << ptrIface->getFullName()
-                   << " has no suitable open sockets." << LogEnd;
-        return false;
-    }
-    if (!sock) {
-        Log(Warning) << "No preferred socket found for transmission to "
-                     << addr->getPlain() << " on interface " << ptrIface->getFullName()
-                     << ". Using backup socket " << backup->getFD() << LogEnd;
-        sock = backup;
-    }
+    if (!addr->linkLocal() && sock->getAddr()->linkLocal())
+      continue;  // we need socket bound to global address if dst is global addr
+    if (addr->linkLocal() && !sock->getAddr()->linkLocal())
+      continue;  // lets' not use global address as source is dst is link-local
+    break;
+  }
+  if (!sock && !backup) {
+    Log(Error) << "Send failed: interface " << ptrIface->getFullName()
+               << " has no suitable open sockets." << LogEnd;
+    return false;
+  }
+  if (!sock) {
+    Log(Warning) << "No preferred socket found for transmission to " << addr->getPlain()
+                 << " on interface " << ptrIface->getFullName() << ". Using backup socket "
+                 << backup->getFD() << LogEnd;
+    sock = backup;
+  }
 
-    // send it!
-    if (sock->send(msg,size,addr,port) == 0) {
-        return true; // all ok
-    } else {
-        return false;
-    }
+  // send it!
+  if (sock->send(msg, size, addr, port) == 0) {
+    return true;  // all ok
+  } else {
+    return false;
+  }
 }
 
 /// @brief tries to receive a packet
@@ -169,16 +156,17 @@ bool TSrvIfaceMgr::send(int iface, char *msg, int size,
 ///
 /// @param timeout select() timeout in seconds
 /// @param buf pointer to reception buffer
-/// @param bufsize reference to buffer size (will be updated to received packet size
+/// @param bufsize reference to buffer size (will be updated to received packet
+/// size
 ///        if reception is successful)
 /// @param peer address of the pkt sender
 /// @param myaddr address the packet was received on
 ///
 /// @return socket descriptor (or negative values for errors)
 ///
-int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
-                          SPtr<TIPv6Addr> peer, SPtr<TIPv6Addr> myaddr) {
-    return TIfaceMgr::select(timeout, buf, bufsize, peer, myaddr);
+int TSrvIfaceMgr::receive(unsigned long timeout, char *buf, int &bufsize, SPtr<TIPv6Addr> peer,
+                          SPtr<TIPv6Addr> myaddr) {
+  return TIfaceMgr::select(timeout, buf, bufsize, peer, myaddr);
 }
 
 // @brief reads messages from all interfaces
@@ -188,53 +176,53 @@ int TSrvIfaceMgr::receive(unsigned long timeout, char* buf, int& bufsize,
 // @return message object (or NULL)
 SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
 
-    // static buffer speeds things up. We use maximum size for UDP (almost 64k)
-    // to be on the safe side. Otherwise someone could send us a fragmented
-    // huge UDP packet and we would be in for a surprise. :)
-    const int maxBufsize = 0xffff - 20 - 8;
-    int bufsize=maxBufsize;
-    static char buf[maxBufsize];
+  // static buffer speeds things up. We use maximum size for UDP (almost 64k)
+  // to be on the safe side. Otherwise someone could send us a fragmented
+  // huge UDP packet and we would be in for a surprise. :)
+  const int maxBufsize = 0xffff - 20 - 8;
+  int bufsize = maxBufsize;
+  static char buf[maxBufsize];
 
-    SPtr<TIPv6Addr> peer(new TIPv6Addr());
-    SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
-    int sockid;
+  SPtr<TIPv6Addr> peer(new TIPv6Addr());
+  SPtr<TIPv6Addr> myaddr(new TIPv6Addr());
+  int sockid;
 
-    // read data
-    sockid = receive(timeout, buf, bufsize, peer, myaddr);
-    if (sockid < 0) {
-        return SPtr<TSrvMsg>(); // NULL
+  // read data
+  sockid = receive(timeout, buf, bufsize, peer, myaddr);
+  if (sockid < 0) {
+    return SPtr<TSrvMsg>();  // NULL
+  }
+
+  SPtr<TSrvMsg> ptr;
+
+  if (bufsize < 4) {
+    if (bufsize == 1 && buf[0] == CONTROL_MSG) {
+      Log(Debug) << "Control message received." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
     }
+    Log(Warning) << "Received message is too short (" << bufsize
+                 << ") bytes, at least 4 are required." << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
 
-    SPtr<TSrvMsg> ptr;
+  // check message type
+  int msgtype = buf[0];
 
-    if (bufsize<4) {
-        if (bufsize == 1 && buf[0] == CONTROL_MSG) {
-            Log(Debug) << "Control message received." << LogEnd;
-            return SPtr<TSrvMsg>(); // NULL
-        }
-        Log(Warning) << "Received message is too short (" << bufsize
-                     << ") bytes, at least 4 are required." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+  SPtr<TIfaceIface> ptrIface;
 
-    // check message type
-    int msgtype = buf[0];
+  // get interface
+  ptrIface = getIfaceBySocket(sockid);
+  if (!ptrIface) {
+    Log(Error) << "Unable to find interface for socket id=" << sockid << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
 
-    SPtr<TIfaceIface> ptrIface;
+  Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
+             << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
+             << ")." << LogEnd;
 
-    // get interface
-    ptrIface = getIfaceBySocket(sockid);
-    if (!ptrIface) {
-        Log(Error) << "Unable to find interface for socket id=" << sockid << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
-
-    Log(Debug) << "Received " << bufsize << " bytes on interface " << ptrIface->getName() << "/"
-               << ptrIface->getID() << " (socket=" << sockid << ", addr=" << *peer << "."
-               << ")." << LogEnd;
-
-    // create specific message object
-    switch (msgtype) {
+  // create specific message object
+  switch (msgtype) {
     case SOLICIT_MSG:
     case REQUEST_MSG:
     case CONFIRM_MSG:
@@ -243,74 +231,70 @@ SPtr<TSrvMsg> TSrvIfaceMgr::select(unsigned long timeout) {
     case RELEASE_MSG:
     case DECLINE_MSG:
     case INFORMATION_REQUEST_MSG:
-    case LEASEQUERY_MSG:  {
-            ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
-            break;
+    case LEASEQUERY_MSG: {
+      ptr = decodeMsg(ptrIface->getID(), peer, buf, bufsize);
+      break;
     }
     case RELAY_FORW_MSG: {
-        ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
-        break;
+      ptr = decodeRelayForw(ptrIface, peer, buf, bufsize);
+      break;
     }
     case ADVERTISE_MSG:
     case REPLY_MSG:
     case RECONFIGURE_MSG:
     case RELAY_REPL_MSG:
     case LEASEQUERY_REPLY_MSG:
-        Log(Warning) << "Illegal message type " << msgtype << " received."
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
+      Log(Warning) << "Illegal message type " << msgtype << " received." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
     default:
-        Log(Warning) << "Message type " << msgtype << " not supported. Ignoring."
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+      Log(Warning) << "Message type " << msgtype << " not supported. Ignoring." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
+  }
 
-    if (!ptr)
-        return SPtr<TSrvMsg>(); // NULL
+  if (!ptr) return SPtr<TSrvMsg>();  // NULL
 
-    ptr->setLocalAddr(myaddr);
+  ptr->setLocalAddr(myaddr);
 
 #ifndef MOD_DISABLE_AUTH
-    if (!ptr->validateReplayDetection()) {
-        Log(Warning) << "Auth: message replay detection failed, message dropped"
-                     << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+  if (!ptr->validateReplayDetection()) {
+    Log(Warning) << "Auth: message replay detection failed, message dropped" << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
 
-    bool authOk = ptr->validateAuthInfo(buf, bufsize,
-                                        SrvCfgMgr().getAuthProtocol(),
-                                        SrvCfgMgr().getAuthDigests());
+  bool authOk = ptr->validateAuthInfo(buf, bufsize, SrvCfgMgr().getAuthProtocol(),
+                                      SrvCfgMgr().getAuthDigests());
 
-    if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
-        Log(Warning) << "Auth: authorization is mandatory, but incoming message"
-                     << " does not include AUTH option. Message dropped." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+  if (SrvCfgMgr().getAuthDropUnauthenticated() && !ptr->getSPI()) {
+    Log(Warning) << "Auth: authorization is mandatory, but incoming message"
+                 << " does not include AUTH option. Message dropped." << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
 
-    if (SrvCfgMgr().getAuthDropUnauthenticated() && !authOk) {
-        Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
-                     << " Message dropped." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+  if (SrvCfgMgr().getAuthDropUnauthenticated() && !authOk) {
+    Log(Warning) << "Auth: Received packet failed validation, which is mandatory."
+                 << " Message dropped." << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
 #endif
 
-    /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
+  /// @todo: Implement support for draft-ietf-dhc-link-layer-address-opt
 
-    char mac[20]; // maximum mac address for Infiniband is 20 bytes
-    int mac_len = sizeof(mac);
+  char mac[20];  // maximum mac address for Infiniband is 20 bytes
+  int mac_len = sizeof(mac);
 
-    if (get_mac_from_ipv6(ptrIface->getName(), ptrIface->getID(),
-                          peer->getPlain(), mac, &mac_len) == 0) {
-        /// @todo: Store MAC address in the message, so it could be logged later or added
-        ///        to the database
+  if (get_mac_from_ipv6(ptrIface->getName(), ptrIface->getID(), peer->getPlain(), mac, &mac_len) ==
+      0) {
+    /// @todo: Store MAC address in the message, so it could be logged later or
+    /// added
+    ///        to the database
 
-        TDUID tmp(mac, mac_len); // packed
-        Log(Debug) << "Received message from IPv6 address " << peer->getPlain()
-                   << ", mac=" << tmp.getPlain()
-                   << " on interface " << ptrIface->getFullName() << LogEnd;
-    }
+    TDUID tmp(mac, mac_len);  // packed
+    Log(Debug) << "Received message from IPv6 address " << peer->getPlain()
+               << ", mac=" << tmp.getPlain() << " on interface " << ptrIface->getFullName()
+               << LogEnd;
+  }
 
-    return ptr;
+  return ptr;
 }
 
 #if 0
@@ -355,104 +339,98 @@ bool TSrvIfaceMgr::setupRelay(std::string name, int ifindex, int underIfindex,
 }
 #endif
 
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
-                                            SPtr<TIPv6Addr> peer,
-                                            char * buf, int bufsize) {
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface, SPtr<TIPv6Addr> peer,
+                                            char *buf, int bufsize) {
 
-    SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
-    SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
-    int hopTbl[HOP_COUNT_LIMIT];
-    TOptList echoListTbl[HOP_COUNT_LIMIT];
-    int relays=0; // number of nested RELAY_FORW messages
-    SPtr<TOptVendorData> remoteID;
-    SPtr<TOptOptionRequest> echo;
-    SPtr<TOpt> gen;
-    int ifindex = -1;
+  SPtr<TIPv6Addr> linkAddrTbl[HOP_COUNT_LIMIT];
+  SPtr<TIPv6Addr> peerAddrTbl[HOP_COUNT_LIMIT];
+  int hopTbl[HOP_COUNT_LIMIT];
+  TOptList echoListTbl[HOP_COUNT_LIMIT];
+  int relays = 0;  // number of nested RELAY_FORW messages
+  SPtr<TOptVendorData> remoteID;
+  SPtr<TOptOptionRequest> echo;
+  SPtr<TOpt> gen;
+  int ifindex = -1;
 
-    char * relay_buf = buf;
-    int relay_bufsize = bufsize;
+  char *relay_buf = buf;
+  int relay_bufsize = bufsize;
 
-    for (int j=0;j<HOP_COUNT_LIMIT; j++)
-        echoListTbl[j].clear();
+  for (int j = 0; j < HOP_COUNT_LIMIT; j++) echoListTbl[j].clear();
 
-    string how_found = "";
+  string how_found = "";
 
+  while (bufsize > 0 && buf[0] == RELAY_FORW_MSG) {
+    /* decode RELAY_FORW message */
+    if (bufsize < 34) {
+      Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
+    }
 
-    while (bufsize>0 && buf[0]==RELAY_FORW_MSG) {
-        /* decode RELAY_FORW message */
-        if (bufsize < 34) {
-            Log(Warning) << "Truncated RELAY_FORW message received." << LogEnd;
-            return SPtr<TSrvMsg>(); // NULL
-        }
+    SPtr<TSrvOptInterfaceID> ptrIfaceID;
 
-        SPtr<TSrvOptInterfaceID> ptrIfaceID;
+    how_found = "";
 
-	how_found = "";
+    char type = buf[0];
+    if (type != RELAY_FORW_MSG) return SPtr<TSrvMsg>();  // NULL
+    int hopCount = buf[1];
+    int optRelayCnt = 0;
+    int optIfaceIDCnt = 0;
 
-        char type = buf[0];
-        if (type!=RELAY_FORW_MSG)
-            return SPtr<TSrvMsg>(); // NULL
-        int hopCount = buf[1];
-        int optRelayCnt = 0;
-        int optIfaceIDCnt = 0;
+    SPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf + 2, false);
+    SPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf + 18, false);
+    buf += 34;
+    bufsize -= 34;
 
-        SPtr<TIPv6Addr> linkAddr = new TIPv6Addr(buf+2,false);
-        SPtr<TIPv6Addr> peerAddr = new TIPv6Addr(buf+18, false);
-        buf+=34;
-        bufsize-=34;
+    // options: only INTERFACE-ID and RELAY_MSG are allowed
+    while (bufsize >= 4) {
+      unsigned short code = readUint16(buf);
+      buf += sizeof(uint16_t);
+      bufsize -= sizeof(uint16_t);
+      int len = readUint16(buf);
+      buf += sizeof(uint16_t);
+      bufsize -= sizeof(uint16_t);
 
-        // options: only INTERFACE-ID and RELAY_MSG are allowed
-        while (bufsize>=4) {
-            unsigned short code = readUint16(buf);
-            buf += sizeof(uint16_t);
-            bufsize -= sizeof(uint16_t);
-            int len = readUint16(buf);
-            buf += sizeof(uint16_t);
-            bufsize -= sizeof(uint16_t);
+      gen.reset();
 
-            gen.reset();
+      if (len > bufsize) {
+        Log(Warning) << "Truncated option " << code << ": " << bufsize
+                     << " bytes remaining, but length is " << len << "." << LogEnd;
+        return SPtr<TSrvMsg>();  // NULL
+      }
 
-            if (len > bufsize) {
-                Log(Warning) << "Truncated option " << code << ": " << bufsize
-                             << " bytes remaining, but length is " << len
-                             << "." << LogEnd;
-                return SPtr<TSrvMsg>(); // NULL
-            }
-
-            switch (code) {
-            case OPTION_INTERFACE_ID:
-                if (bufsize < 1) {
-                    Log(Warning) << "Truncated INTERFACE_ID option (length: " << bufsize
-                                 << ") in RELAY_FORW message. Message dropped." << LogEnd;
-                    return SPtr<TSrvMsg>(); // NULL
-                }
-                ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
-                gen = SPtr_cast<TOpt>(ptrIfaceID);
-                optIfaceIDCnt++;
-                break;
-            case OPTION_RELAY_MSG:
-                relay_buf = buf;
-                relay_bufsize = len;
-                optRelayCnt++;
-                break;
-            case OPTION_REMOTE_ID:
-                remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
-                gen = SPtr_cast<TOpt>(remoteID);
-                break;
-            case OPTION_ERO:
-                Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
-                gen.reset(new TOptOptionRequest(OPTION_ERO, buf, len, 0));
-                break;
-            default:
-                gen.reset(new TOptGeneric(code, buf, len, 0));
-
-            }
-            if (gen) {
-                echoListTbl[relays].push_back(gen);
-            }
-            buf     += len;
-            bufsize -= len;
-        }
+      switch (code) {
+        case OPTION_INTERFACE_ID:
+          if (bufsize < 1) {
+            Log(Warning) << "Truncated INTERFACE_ID option (length: " << bufsize
+                         << ") in RELAY_FORW message. Message dropped." << LogEnd;
+            return SPtr<TSrvMsg>();  // NULL
+          }
+          ptrIfaceID = new TSrvOptInterfaceID(buf, len, 0);
+          gen = SPtr_cast<TOpt>(ptrIfaceID);
+          optIfaceIDCnt++;
+          break;
+        case OPTION_RELAY_MSG:
+          relay_buf = buf;
+          relay_bufsize = len;
+          optRelayCnt++;
+          break;
+        case OPTION_REMOTE_ID:
+          remoteID = new TOptVendorData(OPTION_REMOTE_ID, buf, len, 0);
+          gen = SPtr_cast<TOpt>(remoteID);
+          break;
+        case OPTION_ERO:
+          Log(Debug) << "Echo Request received in RELAY_FORW." << LogEnd;
+          gen.reset(new TOptOptionRequest(OPTION_ERO, buf, len, 0));
+          break;
+        default:
+          gen.reset(new TOptGeneric(code, buf, len, 0));
+      }
+      if (gen) {
+        echoListTbl[relays].push_back(gen);
+      }
+      buf += len;
+      bufsize -= len;
+    }
 
 #if 0
         // remember options to be echoed
@@ -475,142 +453,139 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeRelayForw(SPtr<TIfaceIface> physicalIface,
         }
 #endif
 
-        // remember those links
-        linkAddrTbl[relays] = linkAddr;
-        peerAddrTbl[relays] = peerAddr;
-        hopTbl[relays] = hopCount;
-        relays++;
+    // remember those links
+    linkAddrTbl[relays] = linkAddr;
+    peerAddrTbl[relays] = peerAddr;
+    hopTbl[relays] = hopCount;
+    relays++;
 
-        if (relays> HOP_COUNT_LIMIT) {
-            Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT
-                       << " times. Message dropped." << LogEnd;
-            return SPtr<TSrvMsg>(); // NULL
-        }
-
-        if (optRelayCnt!=1) {
-            Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was "
-                       << "expected. Message dropped." << LogEnd;
-            return SPtr<TSrvMsg>(); // NULL
-        }
-        if (optIfaceIDCnt>1) {
-            Log(Error) << "More than one (" << optIfaceIDCnt
-                       << ") interface-ID options received, but exactly 1 was expected. "
-                       << "Message dropped." << LogEnd;
-            return SPtr<TSrvMsg>(); // NULL
-        }
-
-        Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
-                  << ", peer=" << peerAddr->getPlain();
-
-	// --- selectSubnet() starts here ---
-
-        bool guessMode = SrvCfgMgr().guessMode();
-
-        // First try to find a relay based on the interface-id option
-        if (ptrIfaceID) {
-            Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
-            ifindex = SrvCfgMgr().getRelayByInterfaceID(ptrIfaceID);
-            if (ifindex == -1) {
-		Log(Debug) << "Unable to find relay interface with interfaceID="
-			   << ptrIfaceID->getPlain() << " defined on the "
-			   << physicalIface->getFullName() << " interface." << LogEnd;
-            } else {
-		how_found = "using interface-id=" + ptrIfaceID->getPlain();
-	    }
-        } else {
-            Log(Cont) << ", no interface-id option." << LogEnd;
-	}
-
-        // then try to find a relay based on the link address
-        if (ifindex == -1) {
-            ifindex = SrvCfgMgr().getRelayByLinkAddr(linkAddr);
-	    if (ifindex == -1) {
-                Log(Info) << "Unable to find relay interface using link address: "
-			  << linkAddr->getPlain() << LogEnd;
-	    } else {
-		how_found = string("using link-addr=") + linkAddr->getPlain();
-            }
-        }
-
-        // the last hope - use guess-mode to get any relay
-        if ((ifindex == -1) && guessMode) {
-            ifindex = SrvCfgMgr().getAnyRelay();
-            if (ifindex != -1) {
-		how_found = "using guess-mode";
-            }
-        }
-
-	// --- selectSubnet() ends here ---
-
-        // now switch to relay interface
-        buf = relay_buf;
-        bufsize = relay_bufsize;
+    if (relays > HOP_COUNT_LIMIT) {
+      Log(Error) << "Message is nested more than allowed " << HOP_COUNT_LIMIT
+                 << " times. Message dropped." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
     }
 
-    if (ifindex == -1) {
-	Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
+    if (optRelayCnt != 1) {
+      Log(Error) << optRelayCnt << " RELAY_MSG options received, but exactly one was "
+                 << "expected. Message dropped." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
+    }
+    if (optIfaceIDCnt > 1) {
+      Log(Error) << "More than one (" << optIfaceIDCnt
+                 << ") interface-ID options received, but exactly 1 was expected. "
+                 << "Message dropped." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
+    }
+
+    Log(Info) << "RELAY_FORW was decapsulated: link=" << linkAddr->getPlain()
+              << ", peer=" << peerAddr->getPlain();
+
+    // --- selectSubnet() starts here ---
+
+    bool guessMode = SrvCfgMgr().guessMode();
+
+    // First try to find a relay based on the interface-id option
+    if (ptrIfaceID) {
+      Log(Cont) << ", interfaceID len=" << ptrIfaceID->getSize() << LogEnd;
+      ifindex = SrvCfgMgr().getRelayByInterfaceID(ptrIfaceID);
+      if (ifindex == -1) {
+        Log(Debug) << "Unable to find relay interface with interfaceID=" << ptrIfaceID->getPlain()
+                   << " defined on the " << physicalIface->getFullName() << " interface." << LogEnd;
+      } else {
+        how_found = "using interface-id=" + ptrIfaceID->getPlain();
+      }
     } else {
-	SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
-	Log(Notice) << "Found relay " << cfgIface->getFullName()
-		    << " by " << how_found << LogEnd;
+      Log(Cont) << ", no interface-id option." << LogEnd;
     }
 
-    SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
-    if (!msg) {
-        return SPtr<TSrvMsg>(); // NULL
-    }
-    for (int i=0; i<relays; i++) {
-        msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
-    }
-    msg->setPhysicalIface(physicalIface->getID());
-
-    if (remoteID) {
-        Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()
-                   << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
-        msg->setRemoteID(remoteID);
-
-        /// @todo: WTF is that? ----v
-        remoteID.reset();
-        remoteID = msg->getRemoteID();
-        
-        PrintHex("RemoteID:", (uint8_t*)remoteID->getVendorData(), remoteID->getVendorDataLen());
+    // then try to find a relay based on the link address
+    if (ifindex == -1) {
+      ifindex = SrvCfgMgr().getRelayByLinkAddr(linkAddr);
+      if (ifindex == -1) {
+        Log(Info) << "Unable to find relay interface using link address: " << linkAddr->getPlain()
+                  << LogEnd;
+      } else {
+        how_found = string("using link-addr=") + linkAddr->getPlain();
+      }
     }
 
-    return msg;
- }
-
-SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
-                                      SPtr<TIPv6Addr> peer,
-                                      char * buf, int bufsize) {
-    if (bufsize < 4) {// 4 is the minimum DHCPv6 packet size (type + 3 bytes for transaction-id)
-        Log(Warning) << "Truncated message received (len " << bufsize
-                     << ", at least 4 is required)." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
+    // the last hope - use guess-mode to get any relay
+    if ((ifindex == -1) && guessMode) {
+      ifindex = SrvCfgMgr().getAnyRelay();
+      if (ifindex != -1) {
+        how_found = "using guess-mode";
+      }
     }
-    switch (buf[0]) {
+
+    // --- selectSubnet() ends here ---
+
+    // now switch to relay interface
+    buf = relay_buf;
+    bufsize = relay_bufsize;
+  }
+
+  if (ifindex == -1) {
+    Log(Warning) << "Unable to find appropriate interface for this RELAY-FORW." << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  } else {
+    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(ifindex);
+    Log(Notice) << "Found relay " << cfgIface->getFullName() << " by " << how_found << LogEnd;
+  }
+
+  SPtr<TSrvMsg> msg = decodeMsg(ifindex, peer, relay_buf, relay_bufsize);
+  if (!msg) {
+    return SPtr<TSrvMsg>();  // NULL
+  }
+  for (int i = 0; i < relays; i++) {
+    msg->addRelayInfo(linkAddrTbl[i], peerAddrTbl[i], hopTbl[i], echoListTbl[i]);
+  }
+  msg->setPhysicalIface(physicalIface->getID());
+
+  if (remoteID) {
+    Log(Debug) << "RemoteID received: vendor=" << remoteID->getVendor()
+               << ", length=" << remoteID->getVendorDataLen() << "." << LogEnd;
+    msg->setRemoteID(remoteID);
+
+    /// @todo: WTF is that? ----v
+    remoteID.reset();
+    remoteID = msg->getRemoteID();
+
+    PrintHex("RemoteID:", (uint8_t *)remoteID->getVendorData(), remoteID->getVendorDataLen());
+  }
+
+  return msg;
+}
+
+SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid, SPtr<TIPv6Addr> peer, char *buf, int bufsize) {
+  if (bufsize < 4) {  // 4 is the minimum DHCPv6 packet size (type + 3 bytes for
+                      // transaction-id)
+    Log(Warning) << "Truncated message received (len " << bufsize << ", at least 4 is required)."
+                 << LogEnd;
+    return SPtr<TSrvMsg>();  // NULL
+  }
+  switch (buf[0]) {
     case SOLICIT_MSG:
-        return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgSolicit(ifaceid, peer, buf, bufsize);
     case REQUEST_MSG:
-        return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgRequest(ifaceid, peer, buf, bufsize);
     case CONFIRM_MSG:
-        return new TSrvMsgConfirm(ifaceid,  peer, buf, bufsize);
+      return new TSrvMsgConfirm(ifaceid, peer, buf, bufsize);
     case RENEW_MSG:
-        return new TSrvMsgRenew  (ifaceid,  peer, buf, bufsize);
+      return new TSrvMsgRenew(ifaceid, peer, buf, bufsize);
     case REBIND_MSG:
-        return new TSrvMsgRebind (ifaceid, peer, buf, bufsize);
+      return new TSrvMsgRebind(ifaceid, peer, buf, bufsize);
     case RELEASE_MSG:
-        return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgRelease(ifaceid, peer, buf, bufsize);
     case DECLINE_MSG:
-        return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgDecline(ifaceid, peer, buf, bufsize);
     case INFORMATION_REQUEST_MSG:
-        return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgInfRequest(ifaceid, peer, buf, bufsize);
     case LEASEQUERY_MSG:
-        return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
+      return new TSrvMsgLeaseQuery(ifaceid, peer, buf, bufsize);
     default:
-        Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
-        return SPtr<TSrvMsg>(); // NULL
-    }
+      Log(Warning) << "Illegal message type " << (int)(buf[0]) << " received." << LogEnd;
+      return SPtr<TSrvMsg>();  // NULL
+  }
 }
 
 /**
@@ -618,239 +593,224 @@ SPtr<TSrvMsg> TSrvIfaceMgr::decodeMsg(int ifaceid,
  * stored flags of the interface are updated
  */
 void TSrvIfaceMgr::redetectIfaces() {
-    struct iface  * ptr;
-    struct iface  * ifaceList;
-    SPtr<TIfaceIface> iface;
-    ifaceList = if_list_get(); // external (C coded) function
-    ptr = ifaceList;
+  struct iface *ptr;
+  struct iface *ifaceList;
+  SPtr<TIfaceIface> iface;
+  ifaceList = if_list_get();  // external (C coded) function
+  ptr = ifaceList;
 
-    if  (!ifaceList) {
-        Log(Error) << "Unable to read interface info. Inactive mode failed." << LogEnd;
-        return;
+  if (!ifaceList) {
+    Log(Error) << "Unable to read interface info. Inactive mode failed." << LogEnd;
+    return;
+  }
+  while (ptr != NULL) {
+    iface = getIfaceByID(ptr->id);
+    if (iface && (ptr->flags != iface->getFlags())) {
+      Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old=" << hex
+                  << iface->getFlags() << ", new=" << ptr->flags << ")." << dec << LogEnd;
+      iface->updateState(ptr);
     }
-    while (ptr!=NULL) {
-        iface = getIfaceByID(ptr->id);
-        if (iface && (ptr->flags!=iface->getFlags())) {
-            Log(Notice) << "Flags on interface " << iface->getFullName() << " has changed (old="
-                        << hex <<iface->getFlags() << ", new=" << ptr->flags << ")." << dec << LogEnd;
-            iface->updateState(ptr);
-        }
-        ptr = ptr->next;
-    }
+    ptr = ptr->next;
+  }
 
-    if_list_release(ifaceList); // allocated in pure C, and so release it there
+  if_list_release(ifaceList);  // allocated in pure C, and so release it there
 }
 
-void TSrvIfaceMgr::instanceCreate(const std::string& xmlDumpFile)
-{
-    if (Instance) {
-      Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;
-      return; // don't create second instance
-    }
-    Instance = new TSrvIfaceMgr(xmlDumpFile);
+void TSrvIfaceMgr::instanceCreate(const std::string &xmlDumpFile) {
+  if (Instance) {
+    Log(Crit) << "SrvIfaceMgr instance already created! Application error." << LogEnd;
+    return;  // don't create second instance
+  }
+  Instance = new TSrvIfaceMgr(xmlDumpFile);
 }
 
-TSrvIfaceMgr & TSrvIfaceMgr::instance()
-{
-    if (!Instance) {
-        Log(Crit) << "SrvIfaceMgr not create yet. Application error. Emergency shutdown."
-                  << LogEnd;
-        exit(EXIT_FAILURE);
-    }
-    return *Instance;
+TSrvIfaceMgr &TSrvIfaceMgr::instance() {
+  if (!Instance) {
+    Log(Crit) << "SrvIfaceMgr not create yet. Application error. Emergency shutdown." << LogEnd;
+    exit(EXIT_FAILURE);
+  }
+  return *Instance;
 }
 
 bool TSrvIfaceMgr::addFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
-                           const std::string& name) {
+                           const std::string &name) {
 
-    bool success = true;
+  bool success = true;
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
-    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
-    if (!cfgIface) {
-        Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed."
-                   << LogEnd;
-        return false;
+  SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+  if (!cfgIface) {
+    Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed." << LogEnd;
+    return false;
+  }
+
+  DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+
+  SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+
+  TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+  DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+  if (proto == TCfgMgr::DNSUPDATE_UDP) proto2 = DNSUpdate::DNSUPDATE_UDP;
+  if (proto == TCfgMgr::DNSUPDATE_ANY) proto2 = DNSUpdate::DNSUPDATE_ANY;
+  unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
+  // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
+  if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
+    // Test for DNS update
+    char zoneroot[128];
+    doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
+    /* add PTR only */
+    DnsUpdateResult result = DNSUPDATE_SKIP;
+    DNSUpdate *act =
+        new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(), DNSUPDATE_PTR, proto2);
+
+    if (key) {
+      act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(), key->Fudge_);
     }
 
-    DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+    result = act->run(timeout);
+    act->showResult(result);
+    delete act;
 
-    SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+    success = (result == DNSUPDATE_SUCCESS);
+  }
 
-    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
-    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
-    if (proto == TCfgMgr::DNSUPDATE_UDP)
-        proto2 = DNSUpdate::DNSUPDATE_UDP;
-    if (proto == TCfgMgr::DNSUPDATE_ANY)
-        proto2 = DNSUpdate::DNSUPDATE_ANY;
-    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+  if (FQDNMode == DNSUPDATE_MODE_BOTH) {
+    DnsUpdateResult result = DNSUPDATE_SKIP;
+    DNSUpdate *act =
+        new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(), DNSUPDATE_AAAA, proto2);
 
-    // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
-    if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
-        //Test for DNS update
-        char zoneroot[128];
-        doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
-        /* add PTR only */
-        DnsUpdateResult result = DNSUPDATE_SKIP;
-        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
-                                       DNSUPDATE_PTR, proto2);
-	
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
-
-        result = act->run(timeout);
-        act->showResult(result);
-        delete act;
-
-        success = (result == DNSUPDATE_SUCCESS);
+    if (key) {
+      act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(), key->Fudge_);
     }
 
-    if (FQDNMode == DNSUPDATE_MODE_BOTH) {
-        DnsUpdateResult result = DNSUPDATE_SKIP;
-        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name,
-                                       addr->getPlain(),
-                                       DNSUPDATE_AAAA, proto2);
-
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
-
-        result = act->run(timeout);
-        act->showResult(result);
-        delete act;
-        success = (result == DNSUPDATE_SUCCESS) && success;
-    }
+    result = act->run(timeout);
+    act->showResult(result);
+    delete act;
+    success = (result == DNSUPDATE_SUCCESS) && success;
+  }
 #else
-    Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
+  Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
 #endif
 
-    return success;
+  return success;
 }
 
 bool TSrvIfaceMgr::delFQDN(int iface, SPtr<TIPv6Addr> dnsAddr, SPtr<TIPv6Addr> addr,
-                           const std::string& name) {
+                           const std::string &name) {
 
-    bool success = true;
+  bool success = true;
 
 #ifndef MOD_SRV_DISABLE_DNSUPDATE
-    SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
-    if (!cfgIface) {
-        Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed."
-                   << LogEnd;
-        return false;
+  SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
+  if (!cfgIface) {
+    Log(Error) << "Unable find cfgIface with ifindex=" << iface << ", DDNS failed." << LogEnd;
+    return false;
+  }
+
+  DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+
+  SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+
+  char zoneroot[128];
+  doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
+
+  // that's ugly but required. Otherwise we would have to include CfgMgr.h in
+  // DNSUpdate.h and that would include both poslib and Dibbler headers in one
+  // place. Universe would implode then.
+  TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
+  DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
+  if (proto == TCfgMgr::DNSUPDATE_UDP) proto2 = DNSUpdate::DNSUPDATE_UDP;
+  if (proto == TCfgMgr::DNSUPDATE_ANY) proto2 = DNSUpdate::DNSUPDATE_ANY;
+  unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
+
+  // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
+  if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
+    /* PTR cleanup */
+    // Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server "
+    //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+    //            << " and FQDN=" << name << LogEnd;
+    DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
+                                   DNSUPDATE_PTR_CLEANUP, proto2);
+
+    if (key) {
+      act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(), key->Fudge_);
     }
 
-    DnsUpdateModeCfg FQDNMode = static_cast<DnsUpdateModeCfg>(cfgIface->getFQDNMode());
+    int result = act->run(timeout);
+    act->showResult(result);
+    delete act;
+    success = (result == DNSUPDATE_SUCCESS);
+  }
 
-    SPtr<TSIGKey> key = SrvCfgMgr().getKey();
+  if (FQDNMode == DNSUPDATE_MODE_BOTH) {
+    /* AAAA Cleanup */
+    // Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS
+    // Server "
+    //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
+    //            << " and FQDN=" << name << LogEnd;
 
-    char zoneroot[128];
-    doRevDnsZoneRoot(addr->getAddr(), zoneroot, cfgIface->getRevDNSZoneRootLength());
+    DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
+                                   DNSUPDATE_AAAA_CLEANUP, proto2);
 
-    // that's ugly but required. Otherwise we would have to include CfgMgr.h in DNSUpdate.h
-    // and that would include both poslib and Dibbler headers in one place. Universe would
-    // implode then.
-    TCfgMgr::DNSUpdateProtocol proto = SrvCfgMgr().getDDNSProtocol();
-    DNSUpdate::DnsUpdateProtocol proto2 = DNSUpdate::DNSUPDATE_TCP;
-    if (proto == TCfgMgr::DNSUPDATE_UDP)
-        proto2 = DNSUpdate::DNSUPDATE_UDP;
-    if (proto == TCfgMgr::DNSUPDATE_ANY)
-        proto2 = DNSUpdate::DNSUPDATE_ANY;
-    unsigned int timeout = SrvCfgMgr().getDDNSTimeout();
-
-    // FQDNMode: 0 = NONE, 1 = PTR only, 2 = BOTH PTR and AAAA
-    if ((FQDNMode == DNSUPDATE_MODE_PTR) || (FQDNMode == DNSUPDATE_MODE_BOTH)) {
-        /* PTR cleanup */
-        // Log(Notice) << "FQDN: Attempting to clean up PTR record in DNS Server "
-        //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
-        //            << " and FQDN=" << name << LogEnd;
-        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), zoneroot, name, addr->getPlain(),
-                                       DNSUPDATE_PTR_CLEANUP, proto2);
-
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
-
-        int result = act->run(timeout);
-        act->showResult(result);
-        delete act;
-        success = (result == DNSUPDATE_SUCCESS);
+    if (key) {
+      act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(), key->Fudge_);
     }
 
-    if (FQDNMode == DNSUPDATE_MODE_BOTH) {
-        /* AAAA Cleanup */
-        //Log(Notice) << "FQDN: Attempting to clean up AAAA and PTR record in DNS Server "
-        //            << dnsAddr->getPlain() << ", IP = " << addr->getPlain()
-        //            << " and FQDN=" << name << LogEnd;
+    int result = act->run(timeout);
+    act->showResult(result);
+    delete act;
 
-        DNSUpdate *act = new DNSUpdate(dnsAddr->getPlain(), "", name, addr->getPlain(),
-                                       DNSUPDATE_AAAA_CLEANUP, proto2);
-
-	if (key) {
-	    act->setTSIG(key->Name_, key->getPackedData(), key->getAlgorithmText(),
-			 key->Fudge_);
-	}
-
-        int result = act->run(timeout);
-        act->showResult(result);
-        delete act;
-
-        success = (result == DNSUPDATE_SUCCESS) && success;
-
-    }
+    success = (result == DNSUPDATE_SUCCESS) && success;
+  }
 #else
-    Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
+  Log(Info) << "DNSUpdate not compiled in. Pretending success." << LogEnd;
 #endif
 
-    return success;
-
+  return success;
 }
 
-void TSrvIfaceMgr::notifyScripts(const std::string& scriptName, SPtr<TMsg> question,
+void TSrvIfaceMgr::notifyScripts(const std::string &scriptName, SPtr<TMsg> question,
                                  SPtr<TMsg> answer) {
-    TNotifyScriptParams* params = (TNotifyScriptParams*)answer->getNotifyScriptParams();
+  TNotifyScriptParams *params = (TNotifyScriptParams *)answer->getNotifyScriptParams();
 
-    // add info about relays
-    SPtr<TSrvMsg> reply = SPtr_cast<TSrvMsg>(answer);
-    if (!reply) {
-        Log(Error) << "Incorrect answer object specified, not derived from TSrvMsg" << LogEnd;
-        return;
-    }
+  // add info about relays
+  SPtr<TSrvMsg> reply = SPtr_cast<TSrvMsg>(answer);
+  if (!reply) {
+    Log(Error) << "Incorrect answer object specified, not derived from TSrvMsg" << LogEnd;
+    return;
+  }
 
-    const vector<TSrvMsg::RelayInfo> relayInfo = reply->RelayInfo_;
+  const vector<TSrvMsg::RelayInfo> relayInfo = reply->RelayInfo_;
 
-    stringstream relaysNum;
-    relaysNum << relayInfo.size();
-    params->addParam("RELAYS", relaysNum.str());
+  stringstream relaysNum;
+  relaysNum << relayInfo.size();
+  params->addParam("RELAYS", relaysNum.str());
 
-    int cnt = 1;
-    for (vector<TSrvMsg::RelayInfo>::const_reverse_iterator relay = relayInfo.rbegin();
-         relay != relayInfo.rend(); ++relay) {
-        stringstream peer;
-        stringstream link;
-        peer << "RELAY" << cnt << "_PEER";
-        link << "RELAY" << cnt << "_LINK";
+  int cnt = 1;
+  for (vector<TSrvMsg::RelayInfo>::const_reverse_iterator relay = relayInfo.rbegin();
+       relay != relayInfo.rend(); ++relay) {
+    stringstream peer;
+    stringstream link;
+    peer << "RELAY" << cnt << "_PEER";
+    link << "RELAY" << cnt << "_LINK";
 
-        params->addParam(peer.str(), relay->PeerAddr_->getPlain());
-        params->addParam(link.str(), relay->LinkAddr_->getPlain());
+    params->addParam(peer.str(), relay->PeerAddr_->getPlain());
+    params->addParam(link.str(), relay->LinkAddr_->getPlain());
 
-        cnt++;
-    }
+    cnt++;
+  }
 
-    TIfaceMgr::notifyScripts(scriptName, question, answer);
+  TIfaceMgr::notifyScripts(scriptName, question, answer);
 }
 
-ostream & operator <<(ostream & strum, TSrvIfaceMgr &x) {
-    strum << "<SrvIfaceMgr>" << std::endl;
-    SPtr<TIfaceIface> ptr;
-    x.IfaceLst.first();
-    while (ptr = x.IfaceLst.get()) {
-        strum << *ptr;
-    }
-    strum << "</SrvIfaceMgr>" << std::endl;
-    return strum;
+ostream &operator<<(ostream &strum, TSrvIfaceMgr &x) {
+  strum << "<SrvIfaceMgr>" << std::endl;
+  SPtr<TIfaceIface> ptr;
+  x.IfaceLst.first();
+  while (ptr = x.IfaceLst.get()) {
+    strum << *ptr;
+  }
+  strum << "</SrvIfaceMgr>" << std::endl;
+  return strum;
 }

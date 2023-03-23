@@ -13,20 +13,17 @@ class TClntMsgRelease;
 #define CLNTMSGRELEASE_H
 #include "ClntMsg.h"
 
-class TClntMsgRelease : public TClntMsg
-{
-  public:
-    /* TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr=NULL); */
-    
-    TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
-                    List(TAddrIA) iaLst, 
-                    SPtr<TAddrIA> ta,
-                    List(TAddrIA) pdLst);
+class TClntMsgRelease : public TClntMsg {
+public:
+  /* TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr=NULL); */
 
-    void answer(SPtr<TClntMsg> Rep);
-    void doDuties();
-    bool check();
-    std::string getName() const;
-    ~TClntMsgRelease();
+  TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr, List(TAddrIA) iaLst,
+                  SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
+
+  void answer(SPtr<TClntMsg> Rep);
+  void doDuties();
+  bool check();
+  std::string getName() const;
+  ~TClntMsgRelease();
 };
 #endif /* CLNTMSGRELEASE_H */

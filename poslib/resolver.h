@@ -23,8 +23,8 @@
 
 #include "sysstl.h"
 
-#include "socket.h"
 #include "dnsmessage.h"
+#include "socket.h"
 
 /*! \file poslib/resolver.h
  * \brief Posadis resolver functionality
@@ -55,8 +55,8 @@
 #define Q_NOTCP 1
 
 class WaitAnswerData {
- public:
-  WaitAnswerData(u_int16 _r_id, _addr& _from);
+public:
+  WaitAnswerData(u_int16 _r_id, _addr &_from);
   u_int16 r_id;
   _addr from;
 };
@@ -83,7 +83,7 @@ class WaitAnswerData {
  * as a TCP resolver. This is however not encouraged.
  */
 class pos_resolver {
-  public:
+public:
   /*!
    * \brief default constructor
    *
@@ -153,7 +153,8 @@ class pos_resolver {
    * \param server The server to query
    * \param flags Flags controlling query behavior.
    */
-  virtual void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL) = 0;
+  virtual void query(DnsMessage *q, DnsMessage *&a, _addr *server,
+                     int flags = Q_DFL) = 0;
 
   /*!
    * \brief high-level query function using multiple servers
@@ -166,7 +167,7 @@ class pos_resolver {
    * querying at a random place in the servers list; after that, it will run
    * through all servers listed in the order in which you specify them.
    *
-   * \param q 
+   * \param q
    * \param a likely an answer
    * \param servers List of servers to query
    * \param flags
@@ -174,7 +175,8 @@ class pos_resolver {
    * \return The address of the server that returned this answer
    * \sa query()
    */
-  virtual _addr query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL) = 0;
+  virtual _addr query(DnsMessage *q, DnsMessage *&a, stl_slist(_addr) & servers,
+                      int flags = Q_DFL) = 0;
 
   /*!
    * \brief low-level resolver function for sending a message
@@ -204,7 +206,9 @@ class pos_resolver {
    *           message this was an answer to.
    * \param sockid Implementation-dependent argument.
    */
-  virtual bool waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& it, int sockid = -1) = 0;
+  virtual bool waitanswer(DnsMessage *&ans, stl_slist(WaitAnswerData) & wait,
+                          int timeout, stl_slist(WaitAnswerData)::iterator &it,
+                          int sockid = -1) = 0;
 
   /*!
    * \brief establishes a TCP connection to a DNS server
@@ -238,7 +242,7 @@ class pos_resolver {
    * \param a Variable to put the answer in
    * \param sockid The TCP connection (as returned by tcpconnect())
    */
-  virtual void tcpquery(DnsMessage *q, DnsMessage*& a, int sockid);
+  virtual void tcpquery(DnsMessage *q, DnsMessage *&a, int sockid);
 
   /*!
    * \brief TCP low-level function for sending a message
@@ -262,7 +266,7 @@ class pos_resolver {
    *            this may be non-NULL.
    * \param sockid The TCP connection (as returned by tcpconnect())
    */
-  virtual void tcpwaitanswer(DnsMessage*& ans, int sockid);
+  virtual void tcpwaitanswer(DnsMessage *&ans, int sockid);
 };
 
 /*!
@@ -279,7 +283,7 @@ class pos_resolver {
  */
 
 class pos_cliresolver : public pos_resolver {
-  public:
+public:
   /*!
    * \brief resolver constructor
    *
@@ -293,10 +297,11 @@ class pos_cliresolver : public pos_resolver {
    * Destructor for the client resolver
    */
   virtual ~pos_cliresolver();
-  
-  void query(DnsMessage *q, DnsMessage*& a, _addr *server, int flags = Q_DFL);
 
-  _addr query(DnsMessage *q, DnsMessage*& a, stl_slist(_addr) &servers, int flags = Q_DFL);
+  void query(DnsMessage *q, DnsMessage *&a, _addr *server, int flags = Q_DFL);
+
+  _addr query(DnsMessage *q, DnsMessage *&a, stl_slist(_addr) & servers,
+              int flags = Q_DFL);
 
   /*!
    * \brief low-level resolver function for sending a message
@@ -325,7 +330,9 @@ class pos_cliresolver : public pos_resolver {
    *           message this was an answer to.
    * \param sockid The socket id the answers will come from.
    */
-  bool waitanswer(DnsMessage*& ans, stl_slist(WaitAnswerData)& wait, int timeout, stl_slist(WaitAnswerData)::iterator& it, int sockid = -1);
+  bool waitanswer(DnsMessage *&ans, stl_slist(WaitAnswerData) & wait,
+                  int timeout, stl_slist(WaitAnswerData)::iterator &it,
+                  int sockid = -1);
 
   /*!
    * \brief stops the resolving process asap
@@ -337,7 +344,8 @@ class pos_cliresolver : public pos_resolver {
    * quit.
    */
   void stop();
- private:
+
+private:
   void clrstop();
   int sockid;
   bool quit_flag;

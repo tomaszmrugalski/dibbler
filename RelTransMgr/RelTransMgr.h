@@ -12,51 +12,49 @@ class TRelTransMgr;
 #ifndef RELTRANSMGR_H
 #define RELTRANSMGR_H
 
-#include <iostream>
-#include "SmartPtr.h"
 #include "RelCfgIface.h"
 #include "RelMsg.h"
+#include "SmartPtr.h"
+#include <iostream>
 
 #define RelTransMgr() (TRelTransMgr::instance())
 
-class TRelTransMgr
-{
-    friend std::ostream & operator<<(std::ostream &strum, TRelTransMgr &x);
-  public:
-    static void instanceCreate(const std::string& xmlFile);
-    static TRelTransMgr& instance();
+class TRelTransMgr {
+  friend std::ostream &operator<<(std::ostream &strum, TRelTransMgr &x);
 
-    ~TRelTransMgr();
+public:
+  static void instanceCreate(const std::string &xmlFile);
+  static TRelTransMgr &instance();
 
-    bool openSocket(SPtr<TRelCfgIface> confIface);
+  ~TRelTransMgr();
 
-    bool doDuties();
+  bool openSocket(SPtr<TRelCfgIface> confIface);
 
-    void relayMsg(SPtr<TRelMsg> msg);
-    void relayMsgRepl(SPtr<TRelMsg> msg);
-    void dump();
+  bool doDuties();
 
-    bool isDone();
-    void shutdown();
+  void relayMsg(SPtr<TRelMsg> msg);
+  void relayMsgRepl(SPtr<TRelMsg> msg);
+  void dump();
 
-    char * getCtrlAddr();
-    int    getCtrlIface();
+  bool isDone();
+  void shutdown();
+
+  char *getCtrlAddr();
+  int getCtrlIface();
 
 protected:
-    TRelTransMgr(const std::string& xmlFile);
-    static TRelTransMgr * Instance;
+  TRelTransMgr(const std::string &xmlFile);
+  static TRelTransMgr *Instance;
 
-    SPtr<TOpt> getClientLinkLayerAddr(SPtr<TRelMsg> msg);
-    SPtr<TOpt> getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg);
-    SPtr<TOpt> getLinkAddrFromDuid(SPtr<TOpt> duid_opt);
+  SPtr<TOpt> getClientLinkLayerAddr(SPtr<TRelMsg> msg);
+  SPtr<TOpt> getLinkAddrFromSrcAddr(SPtr<TRelMsg> msg);
+  SPtr<TOpt> getLinkAddrFromDuid(SPtr<TOpt> duid_opt);
 
-  private:
-    std::string XmlFile;
-    bool IsDone;
-    int ctrlIface;
-    char ctrlAddr[48];
+private:
+  std::string XmlFile;
+  bool IsDone;
+  int ctrlIface;
+  char ctrlAddr[48];
 };
-
-
 
 #endif

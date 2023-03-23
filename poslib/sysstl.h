@@ -1,7 +1,8 @@
 /*
     Posadis - A DNS Server
-    Universal include file for string functions, since different OS'ses use different directories
-    Copyright (C) 2001  Meilof Veeningen <meilof@users.sourceforge.net>
+    Universal include file for string functions, since different OS'ses use
+   different directories Copyright (C) 2001  Meilof Veeningen
+   <meilof@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,14 +29,14 @@
 #include <list>
 
 #ifdef HAVE_SLIST
-#  include <slist>
+#include <slist>
 #else
-#  ifdef HAVE_EXT_SLIST
-#    define HAVE_SLIST
-#    include <ext/slist>
-#  else
-#    define slist std::list
-#  endif
+#ifdef HAVE_EXT_SLIST
+#define HAVE_SLIST
+#include <ext/slist>
+#else
+#define slist std::list
+#endif
 #endif
 
 #include <string>
@@ -48,11 +49,12 @@
  * It does work on my debian box however, so I'll do my leak tests on that
  * one.
  */
-#define stl_string std::basic_string<char, std::string_char_traits<char>, malloc_alloc >
-#define stl_slist(type) slist <type, malloc_alloc >
-#define stl_list(type) std::list<type, malloc_alloc >
+#define stl_string                                                             \
+  std::basic_string<char, std::string_char_traits<char>, malloc_alloc>
+#define stl_slist(type) slist<type, malloc_alloc>
+#define stl_list(type) std::list<type, malloc_alloc>
 #else
-#define stl_slist(type) slist <type>
+#define stl_slist(type) slist<type>
 #define stl_list(type) std::list<type>
 #define stl_string std::string
 #endif

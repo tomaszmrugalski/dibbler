@@ -11,22 +11,23 @@
 #ifndef SRVCFGCLIENTCLASS_H_
 #define SRVCFGCLIENTCLASS_H_
 
-#include <string>
-#include "SmartPtr.h"
 #include "Node.h"
+#include "SmartPtr.h"
+#include <string>
 
 class TSrvCfgClientClass {
 public:
-    TSrvCfgClientClass();
-    TSrvCfgClientClass(std::string);
-    TSrvCfgClientClass(std::string , SPtr<Node>&);
-    virtual ~TSrvCfgClientClass();
-    std::string getClassName();
-    SPtr<Node> getCondition();
-    bool isStatisfy(SPtr<TSrvMsg> msg);
+  TSrvCfgClientClass();
+  TSrvCfgClientClass(std::string);
+  TSrvCfgClientClass(std::string, SPtr<Node> &);
+  virtual ~TSrvCfgClientClass();
+  std::string getClassName();
+  SPtr<Node> getCondition();
+  bool isStatisfy(SPtr<TSrvMsg> msg);
+
 private:
-    std::string classname;
-    SPtr<Node> condition;
+  std::string classname;
+  SPtr<Node> condition;
 };
 
 #endif /* SRVCFGCLIENTCLASS_H_ */

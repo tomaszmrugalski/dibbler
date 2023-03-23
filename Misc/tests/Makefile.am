@@ -14,7 +14,7 @@ Misc_tests_SOURCES += DUID_unittest.cc
 Misc_tests_SOURCES += SPtr_unittest.cc
 Misc_tests_SOURCES += Container_unittest.cc
 
-Misc_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS)
+Misc_tests_LDFLAGS = $(AM_LDFLAGS) $(GTEST_LDFLAGS) -pthread
 
 Misc_tests_LDADD = $(GTEST_LDADD)
 Misc_tests_LDADD += $(top_builddir)/Misc/libMisc.a

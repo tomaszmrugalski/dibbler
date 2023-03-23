@@ -21,12 +21,13 @@
 #ifndef __POSLIB_SYSSTRING_H
 #define __POSLIB_SYSSTRING_H
 
+#include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <ctype.h>
 
-/* linux & bloodshed string comp functions have other names than the win32 ones */
+/* linux & bloodshed string comp functions have other names than the win32 ones
+ */
 #if !defined(__BORLANDC__) && !defined(WIN32)
 #define stricmp strcasecmp
 #define strcmpi strcasecmp

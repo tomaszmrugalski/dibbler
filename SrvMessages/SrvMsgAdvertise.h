@@ -12,18 +12,17 @@
 #define SRVMSGADVERTISE_H
 
 #include "SrvMsg.h"
-class TSrvMsgAdvertise : public TSrvMsg
-{
-  public:
-    // creates object based on a buffer
-    TSrvMsgAdvertise(SPtr<TSrvMsg> question);
+class TSrvMsgAdvertise : public TSrvMsg {
+public:
+  // creates object based on a buffer
+  TSrvMsgAdvertise(SPtr<TSrvMsg> question);
 
-    bool check();
-    bool handleSolicitOptions(SPtr<TSrvMsg> solicit);
-    void doDuties();
-    unsigned long getTimeout();
-    std::string getName() const;
-    ~TSrvMsgAdvertise();
+  bool check();
+  bool handleSolicitOptions(SPtr<TSrvMsg> solicit);
+  void doDuties();
+  unsigned long getTimeout();
+  std::string getName() const;
+  ~TSrvMsgAdvertise();
 };
 
 #endif /* SRVMSGADVERTISE_H */

@@ -9,30 +9,31 @@
 #ifndef KEY_H
 #define KEY_H
 
-#include <vector>
-#include "SmartPtr.h"
 #include "DHCPConst.h"
 #include "Portable.h"
+#include "SmartPtr.h"
+#include <vector>
 
 typedef std::vector<uint8_t> TKey;
 
 class TSIGKey {
 public:
-    TSIGKey(const std::string& name);
-    std::string getAlgorithmText();
+  TSIGKey(const std::string &name);
+  std::string getAlgorithmText();
 
-    bool setData(const std::string& base64encoded);
-    std::string getPackedData();
-    std::string getBase64Data();
+  bool setData(const std::string &base64encoded);
+  std::string getPackedData();
+  std::string getBase64Data();
 
-    DigestTypes Digest_;
-    std::string Name_;
-    uint16_t Fudge_;
+  DigestTypes Digest_;
+  std::string Name_;
+  uint16_t Fudge_;
+
 protected:
-    std::string Data_;
-    std::string Base64Data_;
+  std::string Data_;
+  std::string Base64Data_;
 };
 
-typedef std::vector< SPtr<TSIGKey> > TSIGKeyList;
+typedef std::vector<SPtr<TSIGKey>> TSIGKeyList;
 
 #endif /* KEY_H */

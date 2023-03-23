@@ -17,34 +17,27 @@ You should have received a copy of the GNU General Public License
 along with Bison; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-
-#define	TABSIZE	1009
-
+#define TABSIZE 1009
 
 /*  symbol classes  */
 
 #define SUNKNOWN 0
-#define STOKEN	 1
-#define SNTERM	 2
+#define STOKEN 1
+#define SNTERM 2
 
-
-typedef
-  struct bucket
-    {
-      struct bucket *link;
-      struct bucket *next;
-      char *tag;
-      char *type_name;
-      short value;
-      short prec;
-      short assoc;
-      short user_token_number;
-      char internalClass;
-    }
-  bucket;
-
+typedef struct bucket {
+  struct bucket *link;
+  struct bucket *next;
+  char *tag;
+  char *type_name;
+  short value;
+  short prec;
+  short assoc;
+  short user_token_number;
+  char internalClass;
+} bucket;
 
 extern bucket **symtab;
 extern bucket *firstsymbol;
 
-extern bucket *getsym(char*);
+extern bucket *getsym(char *);

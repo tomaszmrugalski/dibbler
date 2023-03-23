@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -35,7 +35,7 @@ void interface_up(int fd, const char *iface);
 interface_status_t interface_detect_beat_ethtool(int fd, const char *iface);
 /* interface_status_t interface_detect_beat_wlan(int fd, char *iface); */
 interface_status_t interface_detect_beat_iff(int fd, const char *iface);
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 #endif

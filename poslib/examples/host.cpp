@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <poslib/poslib.h>
+#include <stdio.h>
 
 int main(int argc, char **argv) {
   _addr addr;
@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
 
     res.query(q, a, &addr);
     ip = get_a_record(a);
-    printf("%s has address %d.%d.%d.%d\n", q->questions.begin()->QNAME.tocstr(), ip.address[0], ip.address[1], ip.address[2], ip.address[3]);
+    printf("%s has address %d.%d.%d.%d\n", q->questions.begin()->QNAME.tocstr(), ip.address[0],
+           ip.address[1], ip.address[2], ip.address[3]);
 
   } catch (PException p) {
     printf("Fatal exception: %s\n", p.message);
@@ -34,4 +35,3 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-

@@ -13,35 +13,34 @@
 #ifndef RELPARSIFACEOPT_H_
 #define RELPARSIFACEOPT_H_
 
-#include "SmartPtr.h"
 #include "IPv6Addr.h"
+#include "SmartPtr.h"
 
-class TRelParsIfaceOpt
-{
+class TRelParsIfaceOpt {
 public:
-    TRelParsIfaceOpt(void);
-    ~TRelParsIfaceOpt(void);
+  TRelParsIfaceOpt(void);
+  ~TRelParsIfaceOpt(void);
 
-    void setClientUnicast(SPtr<TIPv6Addr> addr);
-    void setServerUnicast(SPtr<TIPv6Addr> addr);
-    void setClientMulticast(bool unicast);
-    void setServerMulticast(bool unicast);
+  void setClientUnicast(SPtr<TIPv6Addr> addr);
+  void setServerUnicast(SPtr<TIPv6Addr> addr);
+  void setClientMulticast(bool unicast);
+  void setServerMulticast(bool unicast);
 
-    SPtr<TIPv6Addr> getServerUnicast();
-    SPtr<TIPv6Addr> getClientUnicast();
-    bool getServerMulticast();
-    bool getClientMulticast();
+  SPtr<TIPv6Addr> getServerUnicast();
+  SPtr<TIPv6Addr> getClientUnicast();
+  bool getServerMulticast();
+  bool getClientMulticast();
 
-    void setInterfaceID(int id);
-    int getInterfaceID();
+  void setInterfaceID(int id);
+  int getInterfaceID();
 
 private:
-    SPtr<TIPv6Addr> ClientUnicast_;
-    SPtr<TIPv6Addr> ServerUnicast_;
-    bool ClientMulticast_;
-    bool ServerMulticast_;
+  SPtr<TIPv6Addr> ClientUnicast_;
+  SPtr<TIPv6Addr> ServerUnicast_;
+  bool ClientMulticast_;
+  bool ServerMulticast_;
 
-    int InterfaceID_;
+  int InterfaceID_;
 };
 
 #endif
