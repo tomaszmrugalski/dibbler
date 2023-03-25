@@ -149,6 +149,7 @@
 
   - Matthieu Patou <mat(at)matws(dot)net>
   - 2023-03: Fixed memory leaks
+  - 2023-03: Client now sends valid prefix length
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
