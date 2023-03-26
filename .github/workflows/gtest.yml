@@ -20,7 +20,7 @@ jobs:
         tar zxvf gtest.tar.gz
 
     - name: configure
-      run: ./configure --with-gtest-source=${pwd}/googletest-release-1.12.1
+      run: ./configure --with-gtest-source=${{ github.workspace }}/googletest-release-1.12.1
 
     - name: make
       run: make -j2
