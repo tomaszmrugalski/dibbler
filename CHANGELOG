@@ -5,6 +5,8 @@
 master (no new released planned)
   - Fix for client requesting incorrect prefix length. Thanks to Matthieu Patou
     for the patch.
+  - Notify script is now called on expiration. Thanks to Deepak Krishnan
+    for the patch.
 
 1.0.2RC1 [2017-07-03]
   - Fix for calling a script when rapid-commit is used
