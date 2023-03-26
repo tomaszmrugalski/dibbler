@@ -1,11 +1,11 @@
 
   Dibbler authors and contributors
  ----------------------------------
- 
- Primary authors: 
+
+ Primary authors:
   - Tomasz Mrugalski
   - Marek Senderski (inactive since 2003)
-   
+
  Contributors:
   - Tomasz Torcz
     2005-07: Compatibility with gcc 2.x fixed
@@ -16,7 +16,7 @@
   - Sob
     2006-01: Process checking in Linux
 
-  - Adrien CLERC, Bahattin DEMIRPLAK, Gaëtant ELEOUET, 
+  - Adrien CLERC, Bahattin DEMIRPLAK, Gaëtant ELEOUET,
     Mickaël GUÉRIN, Lionel GUILMIN, Lauréline PROVOST
     from the ENSEEIHT University, Toulouse, France.
     2006-03: DNS Updates (FQDN) support
@@ -149,8 +149,11 @@
     2023-03: notify-script is called on lease expiration
 
   - Matthieu Patou <mat(at)matws(dot)net>
-  - 2023-03: Fixed memory leaks
-  - 2023-03: Client now sends valid prefix length
+    2023-03: Fixed memory leaks
+    2023-03: Client now sends valid prefix length
+
+  - Andre McCurdy <armccurdy(at)gmail(dot)com>
+    2023-03: Fixed clock_gettime() usage
 
   Dibbler uses poslib library to communicate with DNS servers (DNS Update mechanism).
   Poslib is written by Meilof Veeningen <meilof@users.sourceforge.net>
