@@ -209,11 +209,11 @@ parser. In particular, make sure that there are no error messages that
 the grammar is inconsistent. Please refer to one of many bison tutorials
 that explain how to solve conflicts.
 
-@b Note: When making the configuration parsers you might run into some 
+@b Note: When making the configuration parsers you might run into some
 prototype issues with yyFlexLexer::LexerInput(..) and yyFlexLexer::LexerOutput(..)
 due to incompatibilities between the 'FlexLex.h' file distributed with dibbler
-and the Flex on you system. These issuses can for the most parts be solved by simply 
-replacing the 'CfgMgr/FlexLexer.h' distributed with dibbler with the one found 
+and the Flex on you system. These issuses can for the most parts be solved by simply
+replacing the 'CfgMgr/FlexLexer.h' distributed with dibbler with the one found
 on you system.
 
 
@@ -344,6 +344,9 @@ whole poslib library used to be a separare library.
 Camel notation is a naming conventions when words are concatenated with first letter of each
 word (usually except the first one) is capitalized.
 
+There is now <tt>make lint target</tt> that runs clang-format on the sources. Feel free to use it.
+
+ -# Historically there was no specific line length observed. Let's settle for 128.
  -# Class names start with T, e.g. TOpt, TMsg. (Yes, yes, I know. Pascal sucks. I was young and dumb,
     when I started writing Dibbler :)
  -# Object, function and variables should use prefixes when appropriate. Following are used:
@@ -385,7 +388,7 @@ word (usually except the first one) is capitalized.
    the future.
  -# There are 4 main managers: \c AddrMgr, \c CfgMgr, \c IfaceMgr and \c TransMgr. You can access each of them at any time
    using defined macros, e.g. \c ClntCfgMgr(), \c SrvIfaceMgr() and similar.
- -# Support for googletest was added recently. While not strictly required, googletest-based unit tests for
+ -# Support for googletest was added. While not strictly required, googletest-based unit tests for
    new code is greatly appreciated. Once number of tests for existing code increases, they will become mandatory for
    contributed code as well.
 

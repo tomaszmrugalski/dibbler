@@ -184,4 +184,9 @@ parser:
 	$(MAKE) -C ClntCfgMgr parser
 	$(MAKE) -C RelCfgMgr parser
 
-.PHONY: common-libs
+lint:
+	find . \( -name "*.h" -o -name "*.cpp" -o -name "*.c" \) \
+		-not \( -path "./poslib/*" -o -path "./nettle/*" -o -path "./bison++/*" \) \
+		-exec clang-format -style=file -i {} \;
+
+.PHONY: common-libs lint
