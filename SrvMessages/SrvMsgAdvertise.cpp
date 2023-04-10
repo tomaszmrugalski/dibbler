@@ -11,22 +11,19 @@
 
 #include "SrvMsgAdvertise.h"
 #include "Logger.h"
-#include "OptOptionRequest.h"
 #include "OptDUID.h"
-#include "SrvOptIA_NA.h"
-#include "SrvOptTA.h"
+#include "OptOptionRequest.h"
 #include "OptStatusCode.h"
 #include "SrvOptFQDN.h"
+#include "SrvOptIA_NA.h"
 #include "SrvOptIA_PD.h"
+#include "SrvOptTA.h"
 #include "SrvTransMgr.h"
-#include "Logger.h"
 
 using namespace std;
 
 TSrvMsgAdvertise::TSrvMsgAdvertise(SPtr<TSrvMsg> solicit)
-    :TSrvMsg(solicit->getIface(),solicit->getRemoteAddr(), ADVERTISE_MSG,
-             solicit->getTransID())
-{
+    : TSrvMsg(solicit->getIface(), solicit->getRemoteAddr(), ADVERTISE_MSG, solicit->getTransID()) {
     getORO(SPtr_cast<TMsg>(solicit));
     copyClientID(SPtr_cast<TMsg>(solicit));
     copyRelayInfo(solicit);
@@ -47,7 +44,7 @@ bool TSrvMsgAdvertise::handleSolicitOptions(SPtr<TSrvMsg> solicit) {
     // append serverID, preference and possibly unicast
     appendMandatoryOptions(ORO);
 
-    //if client requested parameters and policy doesn't forbid from answering
+    // if client requested parameters and policy doesn't forbid from answering
     appendRequestedOptions(ClientDUID, PeerAddr_, Iface, ORO);
 
     appendStatusCode();
@@ -76,6 +73,6 @@ void TSrvMsgAdvertise::doDuties() {
     IsDone = true;
 }
 
-std::string TSrvMsgAdvertise::getName() const{
+std::string TSrvMsgAdvertise::getName() const {
     return "ADVERTISE";
 }

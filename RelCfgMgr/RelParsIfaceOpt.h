@@ -13,12 +13,11 @@
 #ifndef RELPARSIFACEOPT_H_
 #define RELPARSIFACEOPT_H_
 
-#include "SmartPtr.h"
 #include "IPv6Addr.h"
+#include "SmartPtr.h"
 
-class TRelParsIfaceOpt
-{
-public:
+class TRelParsIfaceOpt {
+  public:
     TRelParsIfaceOpt(void);
     ~TRelParsIfaceOpt(void);
 
@@ -35,7 +34,7 @@ public:
     void setInterfaceID(int id);
     int getInterfaceID();
 
-private:
+  private:
     SPtr<TIPv6Addr> ClientUnicast_;
     SPtr<TIPv6Addr> ServerUnicast_;
     bool ClientMulticast_;

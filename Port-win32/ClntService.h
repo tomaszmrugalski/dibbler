@@ -15,21 +15,21 @@
 class TClntService;
 extern TClntService StaticService;
 
-class TClntService : public TWinService
-{
-public:
-	TClntService(void);
-	void Run();
+class TClntService : public TWinService {
+  public:
+    TClntService(void);
+    void Run();
     void OnStop();
     void OnShutdown();
-	~TClntService(void);
-    EServiceState ParseStandardArgs(int argc, char* argv[]);
-	void setState(EServiceState status);
-    static TClntService * getHandle() { return &StaticService; }
+    ~TClntService(void);
+    EServiceState ParseStandardArgs(int argc, char * argv[]);
+    void setState(EServiceState status);
+    static TClntService * getHandle() {
+        return &StaticService;
+    }
 
-private:
-	EServiceState status;
-	
+  private:
+    EServiceState status;
 };
 
 #endif

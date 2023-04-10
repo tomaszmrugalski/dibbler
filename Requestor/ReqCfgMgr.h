@@ -15,7 +15,7 @@ typedef struct {
     // global parameters
     char * iface;
     int timeout;
-    
+
     char * dstaddr;
 
     // message specific parameters

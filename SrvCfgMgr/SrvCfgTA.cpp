@@ -9,23 +9,22 @@
  */
 
 #include "SrvCfgTA.h"
-#include "SmartPtr.h"
-#include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "SmartPtr.h"
 #include "SrvMsg.h"
+#include "SrvParsGlobalOpt.h"
 
 using namespace std;
 
 /*
  * static field initialization
  */
-unsigned long TSrvCfgTA::staticID=0;
+unsigned long TSrvCfgTA::staticID = 0;
 
-
-TSrvCfgTA::TSrvCfgTA() 
-    :Pref(SERVER_DEFAULT_TA_PREF_LIFETIME), Valid(SERVER_DEFAULT_TA_VALID_LIFETIME),
-     ClassMaxLease(SERVER_DEFAULT_CLASS_MAX_LEASE), AddrsAssigned(0), AddrsCount(0) {
+TSrvCfgTA::TSrvCfgTA()
+    : Pref(SERVER_DEFAULT_TA_PREF_LIFETIME), Valid(SERVER_DEFAULT_TA_VALID_LIFETIME),
+      ClassMaxLease(SERVER_DEFAULT_CLASS_MAX_LEASE), AddrsAssigned(0), AddrsCount(0) {
     ID = staticID++;
 }
 
@@ -40,21 +39,20 @@ TSrvCfgTA::~TSrvCfgTA() {
  *
  * @return
  */
-bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
-{
+bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr) {
     SPtr<THostRange> range;
     RejedClnt.first();
     // is client on black list?
-    while(range=RejedClnt.get())
-        if (range->in(clntDuid,clntAddr))
+    while (range = RejedClnt.get())
+        if (range->in(clntDuid, clntAddr))
             return false;
 
     if (AcceptClnt.count()) {
         AcceptClnt.first();
-	    // there's white list
-        while(range=AcceptClnt.get()) {
-	    // is client on this white list?
-            if (range->in(clntDuid,clntAddr))
+        // there's white list
+        while (range = AcceptClnt.get()) {
+            // is client on this white list?
+            if (range->in(clntDuid, clntAddr))
                 return true;
         }
         return false;
@@ -63,72 +61,64 @@ bool TSrvCfgTA::clntSupported(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr)
     return true;
 }
 
+bool TSrvCfgTA::clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg) {
 
- bool TSrvCfgTA::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg)
- {
+    // is client on denied client class
+    SPtr<TSrvCfgClientClass> clntClass;
+    denyClientClassLst.first();
+    while (clntClass = denyClientClassLst.get()) {
+        if (clntClass->isStatisfy(msg))
+            return false;
+    }
 
-     // is client on denied client class
- 	SPtr<TSrvCfgClientClass> clntClass;
- 	denyClientClassLst.first();
- 	while(clntClass = denyClientClassLst.get())
- 	{
- 		if (clntClass->isStatisfy(msg))
- 		return false;
- 	}
+    // is client on accepted client class
+    allowClientClassLst.first();
+    while (clntClass = allowClientClassLst.get()) {
+        if (clntClass->isStatisfy(msg))
+            return true;
+    }
 
- 	// is client on accepted client class
- 	allowClientClassLst.first();
- 	while(clntClass = allowClientClassLst.get())
- 	{
- 		if (clntClass->isStatisfy(msg))
- 			return true;
- 	}
-
-     SPtr<THostRange> range;
-     RejedClnt.first();
-
-     // is client on black list?
-     while(range=RejedClnt.get())
-         if (range->in(duid,clntAddr))
-             return false;
-
-     if (AcceptClnt.count()) {
-         AcceptClnt.first();
- 	    // there's white list
-         while(range=AcceptClnt.get()) {
- 	    // is client on this white list?
-             if (range->in(duid,clntAddr))
-                 return true;
-         }
-         return false;
-     }
-
-     if (allowClientClassLst.count())
-     	return false ;
-    return true;
-
- }
-
-
-/*
- * is client prefered in this class? (= is it in whitelist?)
- */
-bool TSrvCfgTA::clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
-{
     SPtr<THostRange> range;
     RejedClnt.first();
+
     // is client on black list?
-    while(range=RejedClnt.get())
-        if (range->in(duid,clntAddr))
+    while (range = RejedClnt.get())
+        if (range->in(duid, clntAddr))
             return false;
 
     if (AcceptClnt.count()) {
         AcceptClnt.first();
-        while(range=AcceptClnt.get()) {
-            if (range->in(duid,clntAddr))
+        // there's white list
+        while (range = AcceptClnt.get()) {
+            // is client on this white list?
+            if (range->in(duid, clntAddr))
                 return true;
         }
+        return false;
+    }
 
+    if (allowClientClassLst.count())
+        return false;
+    return true;
+}
+
+/*
+ * is client prefered in this class? (= is it in whitelist?)
+ */
+bool TSrvCfgTA::clntPrefered(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
+    SPtr<THostRange> range;
+    RejedClnt.first();
+    // is client on black list?
+    while (range = RejedClnt.get())
+        if (range->in(duid, clntAddr))
+            return false;
+
+    if (AcceptClnt.count()) {
+        AcceptClnt.first();
+        while (range = AcceptClnt.get()) {
+            if (range->in(duid, clntAddr))
+                return true;
+        }
     }
     return false;
 }
@@ -141,17 +131,16 @@ unsigned long TSrvCfgTA::getValid() {
     return this->Valid;
 }
 
-void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt)
-{
-    if (opt->getPrefBeg()!=opt->getPrefEnd()) {
-	Log(Warning) << "TA-class does not support preferred-lifetime ranges. Lower bound ("
-		     << opt->getPrefBeg() << ") was used." << LogEnd;
+void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
+    if (opt->getPrefBeg() != opt->getPrefEnd()) {
+        Log(Warning) << "TA-class does not support preferred-lifetime ranges. Lower bound (" << opt->getPrefBeg()
+                     << ") was used." << LogEnd;
     }
     this->Pref = opt->getPrefBeg();
 
-    if (opt->getValidBeg()!=opt->getValidEnd()) {
-	Log(Warning) << "TA-class does not support valid-lifetime ranges. Lower bound ("
-		     << opt->getPrefBeg() << ") was used." << LogEnd;
+    if (opt->getValidBeg() != opt->getValidEnd()) {
+        Log(Warning) << "TA-class does not support valid-lifetime ranges. Lower bound (" << opt->getPrefBeg() << ") was used."
+                     << LogEnd;
     }
     this->Valid = opt->getValidBeg();
 
@@ -160,18 +149,18 @@ void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt)
     // copy black-list
     SPtr<THostRange> statRange;
     opt->firstRejedClnt();
-    while(statRange=opt->getRejedClnt())
+    while (statRange = opt->getRejedClnt())
         this->RejedClnt.append(statRange);
 
     // copy white-list
     opt->firstAcceptClnt();
-    while(statRange=opt->getAcceptClnt())
+    while (statRange = opt->getAcceptClnt())
         this->AcceptClnt.append(statRange);
 
     opt->firstPool();
     this->Pool = opt->getPool();
     if (opt->getPool()) {
-	Log(Warning) << "Two or more pool defined for TA. Only one is used." << LogEnd;
+        Log(Warning) << "Two or more pool defined for TA. Only one is used." << LogEnd;
     }
 
     // set up address counter counts
@@ -179,22 +168,19 @@ void TSrvCfgTA::setOptions(SPtr<TSrvParsGlobalOpt> opt)
     this->AddrsAssigned = 0;
 
     if (this->ClassMaxLease > this->AddrsCount)
-	this->ClassMaxLease = this->AddrsCount;
+        this->ClassMaxLease = this->AddrsCount;
 
     // Get ClientClass
 
     allowLst = opt->getAllowClientClassString();
     denyLst = opt->getDenyClientClassString();
-
 }
 
-unsigned long TSrvCfgTA::countAddrInPool()
-{
+unsigned long TSrvCfgTA::countAddrInPool() {
     return this->AddrsCount;
 }
 
-SPtr<TIPv6Addr> TSrvCfgTA::getRandomAddr()
-{
+SPtr<TIPv6Addr> TSrvCfgTA::getRandomAddr() {
     return Pool->getRandomAddr();
 }
 
@@ -202,8 +188,7 @@ unsigned long TSrvCfgTA::getClassMaxLease() {
     return ClassMaxLease;
 }
 
-unsigned long TSrvCfgTA::getID()
-{
+unsigned long TSrvCfgTA::getID() {
     return this->ID;
 }
 
@@ -221,17 +206,15 @@ unsigned long TSrvCfgTA::getAssignedCount() {
     return this->AddrsAssigned;
 }
 
-bool TSrvCfgTA::addrInPool(SPtr<TIPv6Addr> addr) 
-{
+bool TSrvCfgTA::addrInPool(SPtr<TIPv6Addr> addr) {
     return Pool->in(addr);
 }
 
-ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
-{
-    out << "    <taClass id=\"" << addrClass.ID << "\" pref=\"" << addrClass.Pref
-	<< "\" valid=\"" << addrClass.Valid << "\">" << endl;
-    out << "      <!-- total addrs in class: " << addrClass.AddrsCount
-	<< ", addrs assigned: " << addrClass.AddrsAssigned << " -->" << endl;
+ostream & operator<<(ostream & out, TSrvCfgTA & addrClass) {
+    out << "    <taClass id=\"" << addrClass.ID << "\" pref=\"" << addrClass.Pref << "\" valid=\"" << addrClass.Valid << "\">"
+        << endl;
+    out << "      <!-- total addrs in class: " << addrClass.AddrsCount << ", addrs assigned: " << addrClass.AddrsAssigned
+        << " -->" << endl;
     out << "      <ClassMaxLease>" << addrClass.ClassMaxLease << "</ClassMaxLease>" << endl;
 
     SPtr<THostRange> statRange;
@@ -240,57 +223,46 @@ ostream& operator<<(ostream& out,TSrvCfgTA& addrClass)
 
     out << "      <!-- reject-clients (black list) ranges:" << addrClass.RejedClnt.count() << " -->" << endl;
     addrClass.RejedClnt.first();
-    while(statRange=addrClass.RejedClnt.get())
-	out << *statRange;
+    while (statRange = addrClass.RejedClnt.get())
+        out << *statRange;
 
     out << "      <!-- accept-only (white list) ranges:" << addrClass.AcceptClnt.count() << " -->" << endl;
     addrClass.AcceptClnt.first();
-    while(statRange=addrClass.AcceptClnt.get())
-	out << *statRange;
+    while (statRange = addrClass.AcceptClnt.get())
+        out << *statRange;
     out << "    </taClass>" << std::endl;
     return out;
 }
 
+void TSrvCfgTA::mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst) {
 
-void TSrvCfgTA::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
-{
+    Log(Info) << "Mapping allow, deny list to TA " << ID << LogEnd;
 
-	Log(Info)<<"Mapping allow, deny list to TA "<< ID <<LogEnd;
+    SPtr<string> classname;
+    SPtr<TSrvCfgClientClass> clntClass;
 
-	SPtr<string> classname;
-	SPtr<TSrvCfgClientClass> clntClass;
+    allowLst.first();
+    while (classname = allowLst.get()) {
+        clientClassLst.first();
+        while (clntClass = clientClassLst.get()) {
+            if (clntClass->getClassName() == *classname) {
+                allowClientClassLst.append(clntClass);
+                //	Log(Info)<<"  Insert ino allow list  "<<clntClass->getClassName()<<LogEnd;
+            }
+        }
+    }
 
-	allowLst.first();
-	while (classname = allowLst.get())
-	{
-		clientClassLst.first();
-		while( clntClass = clientClassLst.get() )
-		{
-			if (clntClass->getClassName()== *classname)
-			{
-				allowClientClassLst.append(clntClass);
-			//	Log(Info)<<"  Insert ino allow list  "<<clntClass->getClassName()<<LogEnd;
-			}
-		}
-
-	}
-
-	denyLst.first();
-	while (classname = denyLst.get())
-		{
-			clientClassLst.first();
-			while( clntClass = clientClassLst.get() )
-			{
-				if (clntClass->getClassName()== *classname)
-				{
-					denyClientClassLst.append(clntClass);
-				//	Log(Info)<<"  Insert ino deny list  "<<clntClass->getClassName()<<LogEnd;
-				}
-			}
-
-		}
+    denyLst.first();
+    while (classname = denyLst.get()) {
+        clientClassLst.first();
+        while (clntClass = clientClassLst.get()) {
+            if (clntClass->getClassName() == *classname) {
+                denyClientClassLst.append(clntClass);
+                //	Log(Info)<<"  Insert ino deny list  "<<clntClass->getClassName()<<LogEnd;
+            }
+        }
+    }
 }
-
 
 /*
  * $Log: not supported by cvs2svn $

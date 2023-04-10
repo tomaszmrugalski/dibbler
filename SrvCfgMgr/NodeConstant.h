@@ -13,9 +13,8 @@
 #include "Node.h"
 #include <iostream>
 
-class NodeConstant : public Node
-{
-public :
+class NodeConstant : public Node {
+  public:
     NodeConstant();
     NodeConstant(std::string v);
     ~NodeConstant();

@@ -13,18 +13,17 @@ class TAddrClient;
 #ifndef ADDRCLIENT_H
 #define ADDRCLIENT_H
 
-#include <vector>
-#include "SmartPtr.h"
-#include "Container.h"
 #include "AddrIA.h"
+#include "Container.h"
 #include "DUID.h"
 #include "Portable.h"
+#include "SmartPtr.h"
+#include <vector>
 
-class TAddrClient
-{
-    friend std::ostream & operator<<(std::ostream & strum, TAddrClient &x);
+class TAddrClient {
+    friend std::ostream & operator<<(std::ostream & strum, TAddrClient & x);
 
-public:
+  public:
     TAddrClient(SPtr<TDUID> duid);
     SPtr<TDUID> getDUID();
 
@@ -58,7 +57,7 @@ public:
     unsigned long getPrefTimeout();
     unsigned long getValidTimeout();
 
-    //authentication
+    // authentication
     uint32_t getSPI();
     void setSPI(uint32_t val);
     uint64_t getReplayDetectionRcvd();
@@ -75,7 +74,7 @@ public:
     /// server that initially provided the configuration.
     std::vector<uint8_t> ReconfKey_;
 
-private:
+  private:
     List(TAddrIA) IAsLst;
     List(TAddrIA) TALst;
     List(TAddrIA) PDLst;
@@ -84,7 +83,5 @@ private:
     uint32_t SPI_;
     uint64_t ReplayDetectionRcvd_;
 };
-
-
 
 #endif

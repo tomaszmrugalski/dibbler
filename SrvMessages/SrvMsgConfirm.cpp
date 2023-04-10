@@ -10,12 +10,11 @@
  *
  */
 
-#include "SmartPtr.h"
-#include "AddrClient.h"
 #include "SrvMsgConfirm.h"
+#include "AddrClient.h"
+#include "SmartPtr.h"
 
-TSrvMsgConfirm::TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface, addr,buf,bufSize) {
+TSrvMsgConfirm::TSrvMsgConfirm(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize) : TSrvMsg(iface, addr, buf, bufSize) {
 }
 
 void TSrvMsgConfirm::doDuties() {

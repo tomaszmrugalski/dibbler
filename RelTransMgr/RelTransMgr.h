@@ -12,19 +12,19 @@ class TRelTransMgr;
 #ifndef RELTRANSMGR_H
 #define RELTRANSMGR_H
 
-#include <iostream>
-#include "SmartPtr.h"
 #include "RelCfgIface.h"
 #include "RelMsg.h"
+#include "SmartPtr.h"
+#include <iostream>
 
 #define RelTransMgr() (TRelTransMgr::instance())
 
-class TRelTransMgr
-{
-    friend std::ostream & operator<<(std::ostream &strum, TRelTransMgr &x);
+class TRelTransMgr {
+    friend std::ostream & operator<<(std::ostream & strum, TRelTransMgr & x);
+
   public:
-    static void instanceCreate(const std::string& xmlFile);
-    static TRelTransMgr& instance();
+    static void instanceCreate(const std::string & xmlFile);
+    static TRelTransMgr & instance();
 
     ~TRelTransMgr();
 
@@ -40,10 +40,10 @@ class TRelTransMgr
     void shutdown();
 
     char * getCtrlAddr();
-    int    getCtrlIface();
+    int getCtrlIface();
 
-protected:
-    TRelTransMgr(const std::string& xmlFile);
+  protected:
+    TRelTransMgr(const std::string & xmlFile);
     static TRelTransMgr * Instance;
 
     SPtr<TOpt> getClientLinkLayerAddr(SPtr<TRelMsg> msg);
@@ -56,7 +56,5 @@ protected:
     int ctrlIface;
     char ctrlAddr[48];
 };
-
-
 
 #endif

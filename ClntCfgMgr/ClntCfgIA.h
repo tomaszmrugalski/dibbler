@@ -15,13 +15,13 @@ class TClntCfgIA;
 #include "ClntCfgAddr.h"
 #include "ClntParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class TClntCfgIA
-{
-    friend std::ostream& operator<<(std::ostream& out, TClntCfgIA& group);
- public:
+class TClntCfgIA {
+    friend std::ostream & operator<<(std::ostream & out, TClntCfgIA & group);
+
+  public:
     long getIAID();
     void setIAID(long iaid);
 
@@ -51,8 +51,7 @@ class TClntCfgIA
     List(TClntCfgAddr) ClntCfgAddrLst;
     static long newID();
 
-    bool AddrParams;     /// experimental address parameters feature
+    bool AddrParams; /// experimental address parameters feature
 };
 
-#endif 
-
+#endif

@@ -13,26 +13,25 @@
 #define SRVCFGOPTIONS_H
 
 #include <iostream>
-#include <string>
 #include <list>
+#include <string>
 
-#include "SmartPtr.h"
 #include "Container.h"
 #include "IPv6Addr.h"
+#include "SmartPtr.h"
 #include "SrvParsGlobalOpt.h"
 
-#include "OptVendorSpecInfo.h"
-#include "OptVendorData.h"
 #include "OptGeneric.h"
+#include "OptVendorData.h"
+#include "OptVendorSpecInfo.h"
 
 class TSrvCfgIface;
 
-class TSrvCfgOptions 
-{
-    friend std::ostream& operator<<(std::ostream& out,TSrvCfgIface& iface);
-    friend std::ostream& operator<<(std::ostream& out,TSrvCfgOptions& opt);
+class TSrvCfgOptions {
+    friend std::ostream & operator<<(std::ostream & out, TSrvCfgIface & iface);
+    friend std::ostream & operator<<(std::ostream & out, TSrvCfgOptions & opt);
 
-public:
+  public:
     TSrvCfgOptions();
     TSrvCfgOptions(SPtr<TDUID> duid);
     TSrvCfgOptions(SPtr<TOptVendorData> remoteid);
@@ -42,11 +41,17 @@ public:
     // address reservation
     void setAddr(SPtr<TIPv6Addr> addr);
     SPtr<TIPv6Addr> getAddr() const;
-    
-    void setPrefix(SPtr<TIPv6Addr> prefix, uint8_t length) { Prefix = prefix, PrefixLen = length; }
-    SPtr<TIPv6Addr> getPrefix() { return Prefix; }
-    uint8_t getPrefixLen() { return PrefixLen; }
-    
+
+    void setPrefix(SPtr<TIPv6Addr> prefix, uint8_t length) {
+        Prefix = prefix, PrefixLen = length;
+    }
+    SPtr<TIPv6Addr> getPrefix() {
+        return Prefix;
+    }
+    uint8_t getPrefixLen() {
+        return PrefixLen;
+    }
+
     SPtr<TDUID> getDuid() const;
     SPtr<TOptVendorData> getRemoteID() const;
     SPtr<TIPv6Addr> getClntAddr() const;
@@ -64,16 +69,16 @@ public:
     // option: LIFETIME is now handled with extra options mechanism
 
     // option: VENDOR-SPEC
-    List(TOptVendorSpecInfo) getVendorSpecLst(unsigned int vendor=0);
+    List(TOptVendorSpecInfo) getVendorSpecLst(unsigned int vendor = 0);
 
     void addExtraOption(SPtr<TOpt> extra, bool always);
-    const TOptList& getExtraOptions();
+    const TOptList & getExtraOptions();
     SPtr<TOpt> getExtraOption(uint16_t type);
-    const TOptList& getForcedOptions();
-    void addExtraOptions(const TOptList& extra);
-    void addForcedOptions(const TOptList& extra);
+    const TOptList & getForcedOptions();
+    void addExtraOptions(const TOptList & extra);
+    void addForcedOptions(const TOptList & extra);
 
-private:
+  private:
     // options
     bool VendorSpecSupport;
 
@@ -88,7 +93,7 @@ private:
 
     void SetDefaults();
 
-    //client specification
+    // client specification
     SPtr<TOptVendorData> RemoteID;
     SPtr<TDUID> Duid;
     SPtr<TIPv6Addr> ClntAddr;

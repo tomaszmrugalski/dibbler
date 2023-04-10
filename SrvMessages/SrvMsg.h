@@ -13,24 +13,23 @@
 #ifndef SRVMSG_H
 #define SRVMSG_H
 
-#include <vector>
+#include "IPv6Addr.h"
 #include "Msg.h"
+#include "OptGeneric.h"
+#include "OptOptionRequest.h"
+#include "OptVendorData.h"
 #include "SmartPtr.h"
 #include "SrvAddrMgr.h"
-#include "IPv6Addr.h"
 #include "SrvCfgIface.h"
-#include "OptOptionRequest.h"
-#include "SrvOptInterfaceID.h"
 #include "SrvOptFQDN.h"
 #include "SrvOptIA_NA.h"
-#include "SrvOptTA.h"
 #include "SrvOptIA_PD.h"
-#include "OptVendorData.h"
-#include "OptGeneric.h"
+#include "SrvOptInterfaceID.h"
+#include "SrvOptTA.h"
+#include <vector>
 
-class TSrvMsg : public TMsg
-{
-public:
+class TSrvMsg : public TMsg {
+  public:
     struct RelayInfo {
         int Hop_;
         SPtr<TIPv6Addr> LinkAddr_;
@@ -39,7 +38,7 @@ public:
         TOptList EchoList_;
     };
 
-    TSrvMsg(int iface,  SPtr<TIPv6Addr> addr, char* buf,  int bufSize);
+    TSrvMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize);
     TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
     void copyRelayInfo(SPtr<TSrvMsg> q);
@@ -49,8 +48,7 @@ public:
 
     void appendAuthenticationOption(SPtr<TDUID> duid);
     bool appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool includeClientID = true);
-    bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
-                                int iface, SPtr<TOptOptionRequest> reqOpt);
+    bool appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, int iface, SPtr<TOptOptionRequest> reqOpt);
     std::string showRequestedOptions(SPtr<TOptOptionRequest> oro);
     bool appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt);
     void appendStatusCode();
@@ -61,13 +59,9 @@ public:
 #endif
 
     /// @todo: modify this to use RelayInfo structure
-    void addRelayInfo(SPtr<TIPv6Addr> linkAddr,
-                      SPtr<TIPv6Addr> peerAddr,
-                      int hop,
-                      const TOptList& echoList);
+    void addRelayInfo(SPtr<TIPv6Addr> linkAddr, SPtr<TIPv6Addr> peerAddr, int hop, const TOptList & echoList);
 
     bool releaseAll(bool quiet);
-
 
     virtual bool check() = 0;
 
@@ -87,7 +81,7 @@ public:
     ///
     /// @param type type of a message (RELAY_FORW or RELAY_REPL)
     inline void setMsgType(uint8_t type) {
-      forceMsgType_ = type;
+        forceMsgType_ = type;
     }
 
     /// @brief clears relay information (used in testing only)
@@ -102,10 +96,9 @@ public:
     std::vector<RelayInfo> RelayInfo_;
 
     void setPhysicalIface(int iface);
-    int  getPhysicalIface() const;
+    int getPhysicalIface() const;
 
-
-protected:
+  protected:
     void setDefaults();
     SPtr<TOptOptionRequest> ORO;
     void handleDefaultOption(SPtr<TOpt> ptrOpt);
@@ -124,11 +117,9 @@ protected:
                                   SPtr<TIPv6Addr> clntAddr, std::string hint, bool doRealUpdate);
     void fqdnRelease(SPtr<TSrvCfgIface> ptrIface, SPtr<TAddrIA> ia, SPtr<TFQDN> fqdn);
 #endif
-    SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
-                              SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
+    SPtr<TSrvOptFQDN> addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
                               std::string hint, bool doRealUpdate);
     void delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn);
-
 
     int storeSelfRelay(char * buf, uint8_t relayLevel, ESrvIfaceIdOrder order);
 
@@ -146,6 +137,6 @@ protected:
     int physicalIface_;
 };
 
-typedef std::vector< SPtr<TSrvMsg> > SrvMsgList;
+typedef std::vector<SPtr<TSrvMsg>> SrvMsgList;
 
 #endif

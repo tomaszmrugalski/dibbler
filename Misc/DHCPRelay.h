@@ -14,10 +14,9 @@
 #include <iostream>
 #include <string>
 
-class TDHCPRelay
-{
+class TDHCPRelay {
   public:
-    TDHCPRelay(const std::string& config);
+    TDHCPRelay(const std::string & config);
     void run();
     void stop();
     bool isDone();

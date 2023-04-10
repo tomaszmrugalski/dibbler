@@ -20,18 +20,17 @@
 
 #define RelCfgMgr() (TRelCfgMgr::instance())
 
-class TRelCfgMgr : public TCfgMgr
-{
-public:  
-    friend std::ostream & operator<<(std::ostream &strum, TRelCfgMgr &x);
+class TRelCfgMgr : public TCfgMgr {
+  public:
+    friend std::ostream & operator<<(std::ostream & strum, TRelCfgMgr & x);
     virtual ~TRelCfgMgr();
 
-    static void instanceCreate(const std::string& cfgFile, const std::string& xmlFile);
-    static TRelCfgMgr& instance();
+    static void instanceCreate(const std::string & cfgFile, const std::string & xmlFile);
+    static TRelCfgMgr & instance();
 
-    bool parseConfigFile(const std::string& cfgFile);
+    bool parseConfigFile(const std::string & cfgFile);
 
-    //Interfaces access methods
+    // Interfaces access methods
     void firstIface();
     SPtr<TRelCfgIface> getIface();
     SPtr<TRelCfgIface> getIfaceByID(int iface);
@@ -51,7 +50,7 @@ public:
     ERelIfaceIdOrder getInterfaceIDOrder();
 
     SPtr<TOptVendorData> getRemoteID();
-    SPtr<TRelOptEcho>     getEcho();
+    SPtr<TRelOptEcho> getEcho();
 
     void setRelayID(SPtr<TOpt> relayID);
     SPtr<TOpt> getRelayID();
@@ -59,12 +58,11 @@ public:
     void setClientLinkLayerAddress(bool enabled);
     bool getClientLinkLayerAddress();
 
-protected:
+  protected:
     static TRelCfgMgr * Instance;
-    TRelCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
+    TRelCfgMgr(const std::string & cfgFile, const std::string & xmlFile);
 
-private:
-
+  private:
     std::string XmlFile;
 
     static int NextRelayID;

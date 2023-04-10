@@ -9,44 +9,42 @@
  *
  */
 
+#include "ClntMsgRebind.h"
+#include "AddrIA.h"
+#include "ClntMsg.h"
+#include "ClntOptIA_NA.h"
+#include "ClntOptIA_PD.h"
+#include "Logger.h"
+#include "OptAddr.h"
+#include "OptDUID.h"
+#include "SmartPtr.h"
 #include <cmath>
 #include <iostream>
 #include <sstream>
-#include "SmartPtr.h"
-#include "ClntMsg.h"
-#include "ClntMsgRebind.h"
-#include "ClntOptIA_NA.h"
-#include "ClntOptIA_PD.h"
-#include "OptDUID.h"
-#include "OptAddr.h"
-#include "AddrIA.h"
-#include "Logger.h"
 
 using namespace std;
 
-TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
-  :TClntMsg(iface, SPtr<TIPv6Addr>(), REBIND_MSG)
-{
-    Options=ptrOpts;
-    IRT=REB_TIMEOUT;
-    MRT=REB_MAX_RT;
-    MRC=0;
-    RT=0;
+TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface) : TClntMsg(iface, SPtr<TIPv6Addr>(), REBIND_MSG) {
+    Options = ptrOpts;
+    IRT = REB_TIMEOUT;
+    MRT = REB_MAX_RT;
+    MRC = 0;
+    RT = 0;
 
     // there are options copied from RENEW. Get rid of some of them
     delOption(OPTION_ELAPSED_TIME);
     delOption(OPTION_SERVERID);
     SPtr<TOpt> opt;
-    
+
     // calculate timeout (how long should be the REBIND message transmitted)
-    unsigned long maxMRD=0;    
+    unsigned long maxMRD = 0;
     firstOption();
-    while(opt=getOption()) {
+    while (opt = getOption()) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             SPtr<TClntOptIA_NA> ptrIA = SPtr_cast<TClntOptIA_NA>(opt);
             SPtr<TAddrIA> ptrAddrIA = ClntAddrMgr().getIA(ptrIA->getIAID());
-            if (ptrAddrIA && maxMRD<ptrAddrIA->getMaxValidTimeout()) {
+            if (ptrAddrIA && maxMRD < ptrAddrIA->getMaxValidTimeout()) {
                 maxMRD = ptrAddrIA->getMaxValidTimeout();
             }
             break;
@@ -54,7 +52,7 @@ TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
         case OPTION_IA_PD: {
             SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(opt);
             SPtr<TAddrIA> addrPd = ClntAddrMgr().getPD(pd->getIAID());
-            if (addrPd && maxMRD<addrPd->getMaxValidTimeout()) {
+            if (addrPd && maxMRD < addrPd->getMaxValidTimeout()) {
                 maxMRD = addrPd->getMaxValidTimeout();
             }
             break;
@@ -66,12 +64,11 @@ TClntMsgRebind::TClntMsgRebind(TOptList ptrOpts, int iface)
     appendElapsedOption();
     appendAuthenticationOption();
 
-    IsDone = false;    
+    IsDone = false;
     send();
 }
 
-void TClntMsgRebind::answer(SPtr<TClntMsg> Reply)
-{
+void TClntMsgRebind::answer(SPtr<TClntMsg> Reply) {
     TClntMsg::answer(Reply);
     return;
 
@@ -154,94 +151,86 @@ SPtr<TOpt> opt;
 #endif
 }
 
-void TClntMsgRebind::updateIA(SPtr <TClntOptIA_NA> ptrOptIA,
-			      SPtr<TOptDUID> optSrvDUID, 
-			      SPtr<TOptAddr> optUnicast) {
+void TClntMsgRebind::updateIA(SPtr<TClntOptIA_NA> ptrOptIA, SPtr<TOptDUID> optSrvDUID, SPtr<TOptAddr> optUnicast) {
 
-    SPtr< TAddrIA> ptrAddrIA;
+    SPtr<TAddrIA> ptrAddrIA;
     bool found = false;
-    
+
     // ..find IA in addrMgr...
     ClntAddrMgr().firstIA();
-    while  (ptrAddrIA = ClntAddrMgr().getIA() ) {
-	if (ptrOptIA->getIAID() == ptrAddrIA->getIAID()) {
-	    found = true;
-	    break;
-	}
+    while (ptrAddrIA = ClntAddrMgr().getIA()) {
+        if (ptrOptIA->getIAID() == ptrAddrIA->getIAID()) {
+            found = true;
+            break;
+        }
     }
 
     if (found) {
 
-	// set new server's DUID to handle this IA
-	ptrAddrIA->setDUID(optSrvDUID->getDUID());
+        // set new server's DUID to handle this IA
+        ptrAddrIA->setDUID(optSrvDUID->getDUID());
 
-	//
-	if (optUnicast) {
-	    ptrAddrIA->setUnicast(optUnicast->getAddr());
-	} else {
-	    ptrAddrIA->setMulticast();
-	}
+        //
+        if (optUnicast) {
+            ptrAddrIA->setUnicast(optUnicast->getAddr());
+        } else {
+            ptrAddrIA->setMulticast();
+        }
 
-	// IAID found, set up new received options.
-	SPtr<TAddrAddr> ptrAddrAddr;
-	SPtr<TOptIAAddress> ptrOptAddr;
-	
-	// are all addrs configured?
-	if (ptrOptIA->countAddr() != ptrAddrIA->countAddr() ) {
-	    this->releaseIA(ptrOptIA->getIAID());
-	}
-	
-	// for each address in IA option...
-	ptrOptIA->firstAddr();
-	while (ptrOptAddr = ptrOptIA->getAddr() ) {
-	    ptrAddrAddr = ptrAddrIA->getAddr( ptrOptAddr->getAddr() );
-	    if (!ptrAddrAddr) {
-		// there is no such addr in db
-		/// @todo: what to do with new addrs?
-		// (Thomson:I think we should RELEASE all addrs, and issue new REQUEST for this IA)
-	    } else {
-		if ( (ptrOptAddr->getPref() == 0) || (ptrOptAddr->getValid() == 0) ) {
-		    releaseIA( ptrOptIA->getIAID() );
-		    break; // analyze next option OPTION_IA_NA
-		}
-		// set up new options
-		if (ptrOptAddr->getPref() != ptrAddrAddr->getPref() )
-		{
-		    // received diffrent prefered-lifetime
-		    /// @todo:
-		}
-		if (ptrOptAddr->getValid() != ptrAddrAddr->getValid() )
-		{
-		    // received diffrent prefered-lifetime
-		    /// @todo:
-		}
-		ptrAddrAddr->setTimestamp();
-	    }
-	}
-	ptrAddrIA->setT1( ptrOptIA->getT1() );
-	ptrAddrIA->setT2( ptrOptIA->getT2() );
-	ptrAddrIA->setTimestamp();
-	ptrAddrIA->setState(STATE_CONFIGURED);
+        // IAID found, set up new received options.
+        SPtr<TAddrAddr> ptrAddrAddr;
+        SPtr<TOptIAAddress> ptrOptAddr;
+
+        // are all addrs configured?
+        if (ptrOptIA->countAddr() != ptrAddrIA->countAddr()) {
+            this->releaseIA(ptrOptIA->getIAID());
+        }
+
+        // for each address in IA option...
+        ptrOptIA->firstAddr();
+        while (ptrOptAddr = ptrOptIA->getAddr()) {
+            ptrAddrAddr = ptrAddrIA->getAddr(ptrOptAddr->getAddr());
+            if (!ptrAddrAddr) {
+                // there is no such addr in db
+                /// @todo: what to do with new addrs?
+                // (Thomson:I think we should RELEASE all addrs, and issue new REQUEST for this IA)
+            } else {
+                if ((ptrOptAddr->getPref() == 0) || (ptrOptAddr->getValid() == 0)) {
+                    releaseIA(ptrOptIA->getIAID());
+                    break; // analyze next option OPTION_IA_NA
+                }
+                // set up new options
+                if (ptrOptAddr->getPref() != ptrAddrAddr->getPref()) {
+                    // received diffrent prefered-lifetime
+                    /// @todo:
+                }
+                if (ptrOptAddr->getValid() != ptrAddrAddr->getValid()) {
+                    // received diffrent prefered-lifetime
+                    /// @todo:
+                }
+                ptrAddrAddr->setTimestamp();
+            }
+        }
+        ptrAddrIA->setT1(ptrOptIA->getT1());
+        ptrAddrIA->setT2(ptrOptIA->getT2());
+        ptrAddrIA->setTimestamp();
+        ptrAddrIA->setState(STATE_CONFIGURED);
     } else {
-	// unknown IAID, ignore it
-	Log(Warning) << "Received message contains unknown IA (IAID="
-	     << ptrOptIA->getIAID() << "). Ignoring it." << LogEnd;
+        // unknown IAID, ignore it
+        Log(Warning) << "Received message contains unknown IA (IAID=" << ptrOptIA->getIAID() << "). Ignoring it." << LogEnd;
     }
 }
 
-void TClntMsgRebind::doDuties()
-{
+void TClntMsgRebind::doDuties() {
     SPtr<TIfaceIface> iface = ClntIfaceMgr().getIfaceByID(this->Iface);
 
-    if (!MRD)
-    {
+    if (!MRD) {
         ostringstream iaLst;
         ostringstream pdLst;
         SPtr<TOpt> ptrOpt;
         firstOption();
-        while(ptrOpt=getOption())
-        {
-            switch( ptrOpt->getOptType()) {
+        while (ptrOpt = getOption()) {
+            switch (ptrOpt->getOptType()) {
             case OPTION_IA_NA: {
                 SPtr<TClntOptIA_NA> ptrIA = SPtr_cast<TClntOptIA_NA>(ptrOpt);
                 iaLst << ptrIA->getIAID() << " ";
@@ -256,50 +245,44 @@ void TClntMsgRebind::doDuties()
             }
             };
         }
-	Log(Warning) << "REBIND for the IA(s):" << iaLst.str()
-		     << ", PD(s):" << pdLst.str()
-		     << " failed on the " << iface->getFullName() 
-		     << " interface." << LogEnd;
-	Log(Warning) << "Restarting server discovery process." << LogEnd;
-        IsDone=true;
-    }
-    else
+        Log(Warning) << "REBIND for the IA(s):" << iaLst.str() << ", PD(s):" << pdLst.str() << " failed on the "
+                     << iface->getFullName() << " interface." << LogEnd;
+        Log(Warning) << "Restarting server discovery process." << LogEnd;
+        IsDone = true;
+    } else
         this->send();
 }
 
-void TClntMsgRebind::releaseIA(int IAID)
-{
-    SPtr<TAddrIA> ptrAddrIA=ClntAddrMgr().getIA(IAID);
-    if (!ptrAddrIA)
-    {
-        Log(Error) << "IA has not been found in Address Manager."<< LogEnd;
+void TClntMsgRebind::releaseIA(int IAID) {
+    SPtr<TAddrIA> ptrAddrIA = ClntAddrMgr().getIA(IAID);
+    if (!ptrAddrIA) {
+        Log(Error) << "IA has not been found in Address Manager." << LogEnd;
         return;
     }
 
     SPtr<TAddrAddr> ptrAddr;
     ptrAddrIA->firstAddr();
-    while(ptrAddr=ptrAddrIA->getAddr())
-    {
-        //remove outdated address from interface
-	SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrAddrIA->getIfindex());
-	if (!ptrIface) {
-	    Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIfindex() << LogEnd;
-	    continue;
-	}
-	ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
-        //and from db
+    while (ptrAddr = ptrAddrIA->getAddr()) {
+        // remove outdated address from interface
+        SPtr<TIfaceIface> ptrIface = ClntIfaceMgr().getIfaceByID(ptrAddrIA->getIfindex());
+        if (!ptrIface) {
+            Log(Error) << "Unable to find interface with ifindex " << ptrAddrIA->getIfindex() << LogEnd;
+            continue;
+        }
+        ptrIface->delAddr(ptrAddr->get(), ptrIface->getPrefixLength());
+        // and from db
         ptrAddrIA->delAddr(ptrAddr->get());
     }
     ptrAddrIA->setState(STATE_NOTCONFIGURED);
 
     SPtr<TClntCfgIA> cfgIA = ClntCfgMgr().getIA(IAID);
     if (!cfgIA)
-	return;
+        return;
     cfgIA->setState(STATE_NOTCONFIGURED);
 }
 
 bool TClntMsgRebind::check() {
-	return 0;
+    return 0;
 }
 
 std::string TClntMsgRebind::getName() const {

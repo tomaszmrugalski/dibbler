@@ -7,18 +7,17 @@
  *
  */
 
-#include <stdio.h>
-#include <sstream>
 #include "ScriptParams.h"
 #include "Logger.h"
-#include <string.h>
 #include "Portable.h"
+#include <sstream>
+#include <stdio.h>
+#include <string.h>
 
 using namespace std;
 
-TNotifyScriptParams::TNotifyScriptParams() 
-    :envCnt(0), ipCnt(1), pdCnt(1) {
-    for (int i = 0; i<512; i++) {
+TNotifyScriptParams::TNotifyScriptParams() : envCnt(0), ipCnt(1), pdCnt(1) {
+    for (int i = 0; i < 512; i++) {
         env[i] = 0;
     }
 }
@@ -29,9 +28,8 @@ TNotifyScriptParams::TNotifyScriptParams()
 /// @param value value to be copied
 ///
 /// @return next unused offset
-void TNotifyScriptParams::addParam(const std::string& name, const std::string& value)
-{
-    if (envCnt>=MAX_PARAMS) {
+void TNotifyScriptParams::addParam(const std::string & name, const std::string & value) {
+    if (envCnt >= MAX_PARAMS) {
         Log(Error) << "Too many parameter for script: " << envCnt << LogEnd;
         return;
     }
@@ -44,19 +42,17 @@ void TNotifyScriptParams::addParam(const std::string& name, const std::string& v
     envCnt++;
 }
 
-TNotifyScriptParams::~TNotifyScriptParams()
-{
+TNotifyScriptParams::~TNotifyScriptParams() {
     int offset = 0;
     while (env[offset] != NULL) {
-        delete [] env[offset];
+        delete[] env[offset];
         env[offset] = 0;
         offset++;
     }
 }
 
-
-void TNotifyScriptParams::addAddr(SPtr<TIPv6Addr> addr, unsigned int prefered, unsigned int valid, 
-                                  std::string txt /*= std::string("")*/ ) {
+void TNotifyScriptParams::addAddr(SPtr<TIPv6Addr> addr, unsigned int prefered, unsigned int valid,
+                                  std::string txt /*= std::string("")*/) {
     stringstream name, value;
     name << "ADDR" << ipCnt;
     addParam(name.str(), addr->getPlain());
@@ -74,8 +70,8 @@ void TNotifyScriptParams::addAddr(SPtr<TIPv6Addr> addr, unsigned int prefered, u
     ipCnt++;
 }
 
-void TNotifyScriptParams::addPrefix(SPtr<TIPv6Addr> prefix, unsigned short length, unsigned int prefered, 
-                                    unsigned int valid, std::string txt /*= std::string("") */ ) {
+void TNotifyScriptParams::addPrefix(SPtr<TIPv6Addr> prefix, unsigned short length, unsigned int prefered, unsigned int valid,
+                                    std::string txt /*= std::string("") */) {
     stringstream name, value;
     name << "PREFIX" << pdCnt;
     addParam(name.str(), prefix->getPlain());

@@ -10,11 +10,11 @@
  */
 
 #include "SrvCfgPD.h"
-#include "SmartPtr.h"
-#include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
 #include "Logger.h"
+#include "SmartPtr.h"
 #include "SrvMsg.h"
+#include "SrvParsGlobalOpt.h"
 
 using namespace std;
 
@@ -24,11 +24,9 @@ using namespace std;
 unsigned long TSrvCfgPD::StaticID_ = 0;
 
 TSrvCfgPD::TSrvCfgPD()
-    :PD_T1Beg_(SERVER_DEFAULT_MIN_T1), PD_T1End_(SERVER_DEFAULT_MAX_T1), 
-     PD_T2Beg_(SERVER_DEFAULT_MIN_T2), PD_T2End_(SERVER_DEFAULT_MAX_T2),
-     PD_PrefBeg_(SERVER_DEFAULT_MIN_PREF), PD_PrefEnd_(SERVER_DEFAULT_MAX_PREF),
-     PD_ValidBeg_(SERVER_DEFAULT_MIN_VALID), PD_ValidEnd_(SERVER_DEFAULT_MAX_VALID)
-{
+    : PD_T1Beg_(SERVER_DEFAULT_MIN_T1), PD_T1End_(SERVER_DEFAULT_MAX_T1), PD_T2Beg_(SERVER_DEFAULT_MIN_T2),
+      PD_T2End_(SERVER_DEFAULT_MAX_T2), PD_PrefBeg_(SERVER_DEFAULT_MIN_PREF), PD_PrefEnd_(SERVER_DEFAULT_MAX_PREF),
+      PD_ValidBeg_(SERVER_DEFAULT_MIN_VALID), PD_ValidEnd_(SERVER_DEFAULT_MAX_VALID) {
     ID_ = StaticID_++;
     PD_MaxLease_ = SERVER_DEFAULT_CLASSMAXLEASE;
     PD_Assigned_ = 0;
@@ -39,8 +37,7 @@ TSrvCfgPD::TSrvCfgPD()
 TSrvCfgPD::~TSrvCfgPD() {
 }
 
-unsigned long TSrvCfgPD::chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime)
-{
+unsigned long TSrvCfgPD::chooseTime(unsigned long beg, unsigned long end, unsigned long clntTime) {
     if (clntTime < beg)
         return beg;
     if (clntTime > end)
@@ -68,35 +65,32 @@ unsigned long TSrvCfgPD::getPD_Length() {
     return PD_Length_;
 }
 
-bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
-{
-    int poolLength=0;
-    Log(Debug) << "PD: Client will receive /" << prefixLength << " prefixes (T1=" << opt->getT1Beg()
-               << ".." << opt->getT1End() << ", T2=" << opt->getT2Beg() << ".." << opt->getT2End()
-               << ")." <<LogEnd;
-    PD_T1Beg_    = opt->getT1Beg();
-    PD_T2Beg_    = opt->getT2Beg();
-    PD_T1End_    = opt->getT1End();
-    PD_T2End_    = opt->getT2End();
-    PD_PrefBeg_  = opt->getPrefBeg();
-    PD_PrefEnd_  = opt->getPrefEnd();
+bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength) {
+    int poolLength = 0;
+    Log(Debug) << "PD: Client will receive /" << prefixLength << " prefixes (T1=" << opt->getT1Beg() << ".." << opt->getT1End()
+               << ", T2=" << opt->getT2Beg() << ".." << opt->getT2End() << ")." << LogEnd;
+    PD_T1Beg_ = opt->getT1Beg();
+    PD_T2Beg_ = opt->getT2Beg();
+    PD_T1End_ = opt->getT1End();
+    PD_T2End_ = opt->getT2End();
+    PD_PrefBeg_ = opt->getPrefBeg();
+    PD_PrefEnd_ = opt->getPrefEnd();
     PD_ValidBeg_ = opt->getValidBeg();
     PD_ValidEnd_ = opt->getValidEnd();
 
-    PD_Length_   = prefixLength;
+    PD_Length_ = prefixLength;
     PD_MaxLease_ = opt->getClassMaxLease();
 
     SPtr<THostRange> PD_Range;
 
     opt->firstPool();
     SPtr<THostRange> pool;
-    if (!(pool=opt->getPool())) {
+    if (!(pool = opt->getPool())) {
         Log(Error) << "Unable to find any prefix pools. Please define at least one using 'pd-pool' keyword." << LogEnd;
         return false;
     }
     PD_Count_ = prefixLength - pool->getPrefixLength();
-    if (PD_Count_ > 0)
-    {
+    if (PD_Count_ > 0) {
         if (PD_Count_ > 32) {
             PD_Count_ = DHCPV6_INFINITY;
         } else {
@@ -107,12 +101,11 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
     }
 
     opt->firstPool();
-    while ( pool = opt->getPool() ) {
+    while (pool = opt->getPool()) {
         poolLength = pool->getPrefixLength();
         PoolLst_.append(pool);
-        Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - "
-                   << pool->getAddrR()->getPlain() << ", pool length: "
-                   << pool->getPrefixLength() << ", " << PD_Count_ << " prefix(es) total." << LogEnd;
+        Log(Debug) << "PD: Pool " << pool->getAddrL()->getPlain() << " - " << pool->getAddrR()->getPlain()
+                   << ", pool length: " << pool->getPrefixLength() << ", " << PD_Count_ << " prefix(es) total." << LogEnd;
         /** @todo: this code is fishy. It behave erraticaly, when there is only 1 prefix to be assigned
         if (PD_Count_ > pool->rangeCount())
             PD_Count_ = pool->rangeCount();
@@ -127,8 +120,8 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
         return false;
     }
 
-    CommonPool_ = new THostRange( new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
-    CommonPool_->truncate(pool->getPrefixLength()+1, prefixLength);
+    CommonPool_ = new THostRange(new TIPv6Addr(*pool->getAddrL()), new TIPv6Addr(*pool->getAddrR()));
+    CommonPool_->truncate(pool->getPrefixLength() + 1, prefixLength);
     CommonPool_->setPrefixLength(poolLength);
 
     /* Log(Debug) << "PD: Common part is " << CommonPool->getAddrL()->getPlain() << " - "
@@ -145,11 +138,10 @@ bool TSrvCfgPD::setOptions(SPtr<TSrvParsGlobalOpt> opt, int prefixLength)
     return true;
 }
 
-bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix)
-{
+bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix) {
     SPtr<THostRange> pool;
     PoolLst_.first();
-    while ( pool = PoolLst_.get() ) {
+    while (pool = PoolLst_.get()) {
         if (pool->in(prefix))
             return true;
     }
@@ -161,8 +153,7 @@ bool TSrvCfgPD::prefixInPool(SPtr<TIPv6Addr> prefix)
  *
  * @return
  */
-SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
-{
+SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix() {
     SPtr<THostRange> pool;
     PoolLst_.first();
     pool = PoolLst_.get();
@@ -179,7 +170,7 @@ SPtr<TIPv6Addr> TSrvCfgPD::getRandomPrefix()
  * @return list of prefixes (one prefix for each defined pool)
  */
 List(TIPv6Addr) TSrvCfgPD::getRandomList() {
-    SPtr<TIPv6Addr> commonPart,tmp;
+    SPtr<TIPv6Addr> commonPart, tmp;
     SPtr<THostRange> range;
 
     List(TIPv6Addr) lst;
@@ -195,10 +186,9 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
 
     PoolLst_.first();
     while (range = PoolLst_.get()) {
-              tmp = range->getAddrL();
-              SPtr<TIPv6Addr> x = new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(),
-                                                CommonPool_->getPrefixLength());
-              lst.append( x );
+        tmp = range->getAddrL();
+        SPtr<TIPv6Addr> x = new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(), CommonPool_->getPrefixLength());
+        lst.append(x);
     }
     return lst;
 }
@@ -207,8 +197,7 @@ unsigned long TSrvCfgPD::getPD_MaxLease() {
     return PD_MaxLease_;
 }
 
-unsigned long TSrvCfgPD::getID()
-{
+unsigned long TSrvCfgPD::getID() {
     return ID_;
 }
 
@@ -230,16 +219,14 @@ unsigned long TSrvCfgPD::getTotalCount() {
     return PD_Count_;
 }
 
-
-ostream& operator<<(ostream& out,TSrvCfgPD& prefix)
-{
+ostream & operator<<(ostream & out, TSrvCfgPD & prefix) {
     out << "    <PD id=\"" << prefix.ID_ << "\">" << std::endl;
-    out << "      <!-- total prefixes in class: " << prefix.PD_Count_
-        << ", prefixes assigned: " << prefix.PD_Assigned_ << " -->" << endl;
-    out << "      <T1 min=\"" << prefix.PD_T1Beg_ << "\" max=\"" << prefix.PD_T1End_  << "\" />" << endl;
-    out << "      <T2 min=\"" << prefix.PD_T2Beg_ << "\" max=\"" << prefix.PD_T2End_  << "\" />" << endl;
-    out << "      <prefered-lifetime min=\"" << prefix.PD_PrefBeg_ << "\" max=\"" << prefix.PD_PrefEnd_  << "\" />" << endl;
-    out << "      <valid-lifetime min=\"" << prefix.PD_ValidBeg_ << "\" max=\"" << prefix.PD_ValidEnd_  << "\" />" << endl;
+    out << "      <!-- total prefixes in class: " << prefix.PD_Count_ << ", prefixes assigned: " << prefix.PD_Assigned_
+        << " -->" << endl;
+    out << "      <T1 min=\"" << prefix.PD_T1Beg_ << "\" max=\"" << prefix.PD_T1End_ << "\" />" << endl;
+    out << "      <T2 min=\"" << prefix.PD_T2Beg_ << "\" max=\"" << prefix.PD_T2End_ << "\" />" << endl;
+    out << "      <prefered-lifetime min=\"" << prefix.PD_PrefBeg_ << "\" max=\"" << prefix.PD_PrefEnd_ << "\" />" << endl;
+    out << "      <valid-lifetime min=\"" << prefix.PD_ValidBeg_ << "\" max=\"" << prefix.PD_ValidEnd_ << "\" />" << endl;
     out << "      <PDMaxLease>" << prefix.PD_MaxLease_ << "</PDMaxLease>" << endl;
 
     SPtr<THostRange> statRange;
@@ -263,11 +250,8 @@ ostream& operator<<(ostream& out,TSrvCfgPD& prefix)
     return out;
 }
 
-
-
-void TSrvCfgPD::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
-{
-    Log(Info)<<"Mapping allow, deny list to PD  "<< ID_ <<LogEnd;
+void TSrvCfgPD::mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst) {
+    Log(Info) << "Mapping allow, deny list to PD  " << ID_ << LogEnd;
 
     SPtr<string> classname;
     SPtr<TSrvCfgClientClass> clntClass;
@@ -275,61 +259,50 @@ void TSrvCfgPD::mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst)
     AllowLst_.first();
     while (classname = AllowLst_.get()) {
         clientClassLst.first();
-        while( clntClass = clientClassLst.get() ) {
-            if (clntClass->getClassName()== *classname)
-            {
+        while (clntClass = clientClassLst.get()) {
+            if (clntClass->getClassName() == *classname) {
                 AllowClientClassLst_.append(clntClass);
                 //	Log(Info)<<"  Insert ino allow list  "<<clntClass->getClassName()<<LogEnd;
             }
         }
-
     }
 
     DenyLst_.first();
-    while (classname = DenyLst_.get())
-    {
+    while (classname = DenyLst_.get()) {
         clientClassLst.first();
-        while( clntClass = clientClassLst.get() )
-        {
-            if (clntClass->getClassName()== *classname)
-            {
+        while (clntClass = clientClassLst.get()) {
+            if (clntClass->getClassName() == *classname) {
                 DenyClientClassLst_.append(clntClass);
                 //	Log(Info)<<"  Insert ino deny list  "<<clntClass->getClassName()<<LogEnd;
             }
         }
-
     }
 }
 
-
-bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr)
-{
+bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr) {
     ///@todo implement access control for PD for real
     return true;
 }
 
-bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg)
-{
+bool TSrvCfgPD::clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg) {
     ///@todo implement access control for PD for real
 
     // is client on denied client class
     SPtr<TSrvCfgClientClass> clntClass;
     DenyClientClassLst_.first();
-    while(clntClass = DenyClientClassLst_.get())
-    {
+    while (clntClass = DenyClientClassLst_.get()) {
         if (clntClass->isStatisfy(msg))
             return false;
     }
 
     // is client on accepted client class
     AllowClientClassLst_.first();
-    while(clntClass = AllowClientClassLst_.get())
-    {
+    while (clntClass = AllowClientClassLst_.get()) {
         if (clntClass->isStatisfy(msg))
             return true;
     }
     if (AllowClientClassLst_.count())
-        return false ;
+        return false;
 
     return true;
 }

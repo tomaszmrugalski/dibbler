@@ -9,8 +9,8 @@
  *
  */
 
-#include "Logger.h"
 #include "SrvCfgOptions.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -46,7 +46,7 @@ SPtr<TIPv6Addr> TSrvCfgOptions::getClntAddr() const {
 }
 
 void TSrvCfgOptions::SetDefaults() {
-    this->VendorSpecSupport       = false;
+    this->VendorSpecSupport = false;
 
     Duid.reset();
     RemoteID.reset();
@@ -83,17 +83,15 @@ List(TOptVendorSpecInfo) TSrvCfgOptions::getVendorSpecLst(unsigned int vendor) {
     List(TOptVendorSpecInfo) returnList;
     returnList.clear();
 
-    for (TOptList::iterator opt = ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
-    {
-        if ( (*opt)->getOptType() != OPTION_VENDOR_OPTS) {
+    for (TOptList::iterator opt = ExtraOpts_.begin(); opt != ExtraOpts_.end(); ++opt) {
+        if ((*opt)->getOptType() != OPTION_VENDOR_OPTS) {
             continue;
         }
         x = SPtr_cast<TOptVendorSpecInfo>(*opt);
         if (!x) {
             continue;
         }
-        if (!vendor || x->getVendor() == vendor)
-        {
+        if (!vendor || x->getVendor() == vendor) {
             // enterprise number not specified => return all
             returnList.append(x);
         }
@@ -111,9 +109,8 @@ SPtr<TIPv6Addr> TSrvCfgOptions::getAddr() const {
 }
 
 void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
-    Log(Debug) << "Setting " << (always?"mandatory ":"request-only ")
-               << custom->getOptType() << " generic option (length="
-               << custom->getSize() << ")." << LogEnd;
+    Log(Debug) << "Setting " << (always ? "mandatory " : "request-only ") << custom->getOptType()
+               << " generic option (length=" << custom->getSize() << ")." << LogEnd;
 
     ExtraOpts_.push_back(custom); // allways add to extra options
 
@@ -121,20 +118,19 @@ void TSrvCfgOptions::addExtraOption(SPtr<TOpt> custom, bool always) {
         ForcedOpts_.push_back(custom); // also add to forced, if requested so
 }
 
-const TOptList& TSrvCfgOptions::getExtraOptions() {
+const TOptList & TSrvCfgOptions::getExtraOptions() {
     return ExtraOpts_;
 }
 
 TOptPtr TSrvCfgOptions::getExtraOption(uint16_t type) {
-    for (TOptList::iterator opt=ExtraOpts_.begin(); opt!=ExtraOpts_.end(); ++opt)
-    {
+    for (TOptList::iterator opt = ExtraOpts_.begin(); opt != ExtraOpts_.end(); ++opt) {
         if ((*opt)->getOptType() == type)
             return *opt;
     }
     return TOptPtr(); // NULL
 }
 
-const TOptList& TSrvCfgOptions::getForcedOptions() {
+const TOptList & TSrvCfgOptions::getForcedOptions() {
     return ForcedOpts_;
 }
 
@@ -153,7 +149,7 @@ bool TSrvCfgOptions::setOptions(SPtr<TSrvParsGlobalOpt> opt) {
 /// asks for them or not).
 ///
 /// @param extra list of options to be copied
-void TSrvCfgOptions::addExtraOptions(const TOptList& extra) {
+void TSrvCfgOptions::addExtraOptions(const TOptList & extra) {
     for (TOptList::const_iterator opt = extra.begin(); opt != extra.end(); ++opt)
         ExtraOpts_.push_back(*opt);
 }
@@ -164,7 +160,7 @@ void TSrvCfgOptions::addExtraOptions(const TOptList& extra) {
 /// are sent to a client, regardless if client requested them or not.
 ///
 /// @param forced list of forced options to be copied
-void TSrvCfgOptions::addForcedOptions(const TOptList& forced) {
+void TSrvCfgOptions::addForcedOptions(const TOptList & forced) {
     for (TOptList::const_iterator opt = forced.begin(); opt != forced.end(); ++opt)
         ForcedOpts_.push_back(*opt);
 }
@@ -172,7 +168,7 @@ void TSrvCfgOptions::addForcedOptions(const TOptList& forced) {
 // --------------------------------------------------------------------
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
-ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
+ostream & operator<<(ostream & out, TSrvCfgOptions & iface) {
 
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
@@ -203,7 +199,6 @@ ostream& operator<<(ostream& out,TSrvCfgOptions& iface) {
     // option: SIP-SERVERS
     // option: SIP-DOMAINS
     // option: LIFETIME
-
 
 #if 0
     // option: VENDOR-SPEC

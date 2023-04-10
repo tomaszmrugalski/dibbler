@@ -14,10 +14,9 @@ class TClntMsgReply;
 #define CLNTMSGREPLY_H
 #include "ClntMsg.h"
 
-class TClntMsgReply : public TClntMsg
-{
+class TClntMsgReply : public TClntMsg {
   public:
-    TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
+    TClntMsgReply(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize);
 
     SPtr<TIPv6Addr> getFirstAddr();
     void answer(SPtr<TClntMsg> Rep);

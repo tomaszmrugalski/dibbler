@@ -12,10 +12,9 @@
 
 #include "OptInteger.h"
 
-class TOptAddrParams : public TOptInteger
-{
-public:
-    TOptAddrParams(const char * buf, size_t len, TMsg* parent);
+class TOptAddrParams : public TOptInteger {
+  public:
+    TOptAddrParams(const char * buf, size_t len, TMsg * parent);
 
     int getPrefix();
     int getBitfield();

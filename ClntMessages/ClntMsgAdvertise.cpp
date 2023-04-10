@@ -9,25 +9,23 @@
  *
  */
 
-#include <sstream>
 #include "ClntMsgAdvertise.h"
-#include "OptInteger.h"
-#include "OptDUID.h"
 #include "ClntOptPreference.h"
+#include "OptDUID.h"
+#include "OptInteger.h"
+#include <sstream>
 
 using namespace std;
 
-/* 
+/*
  * creates buffer based on buffer
  */
-TClntMsgAdvertise::TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, 
-                                     char* buf, int buflen)
-    :TClntMsg(iface,addr,buf,buflen) {
+TClntMsgAdvertise::TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, char * buf, int buflen)
+    : TClntMsg(iface, addr, buf, buflen) {
 }
 
 bool TClntMsgAdvertise::check() {
-    return TClntMsg::check(true /* clientID mandatory */,
-                           true /* serverID mandatory */ );
+    return TClntMsg::check(true /* clientID mandatory */, true /* serverID mandatory */);
 }
 
 int TClntMsgAdvertise::getPreference() {
@@ -51,21 +49,20 @@ string TClntMsgAdvertise::getName() const {
     return "ADVERTISE";
 }
 
-string TClntMsgAdvertise::getInfo()
-{
+string TClntMsgAdvertise::getInfo() {
     ostringstream tmp;
     SPtr<TOptDUID> srvID = getServerID();
 
     int pref = getPreference();
 
     if (srvID) {
-	tmp << "Server ID=" << srvID->getDUID()->getPlain();
+        tmp << "Server ID=" << srvID->getDUID()->getPlain();
     } else {
         tmp << "malformed (Server ID option missing)";
     }
 
     tmp << ", preference=" << pref;
-    
+
     return tmp.str();
 }
 

@@ -9,12 +9,12 @@
  */
 
 #include "SrvMsgInfRequest.h"
-#include "SmartPtr.h"
 #include "DHCPConst.h"
+#include "SmartPtr.h"
 #include "SrvMsgAdvertise.h"
 
-TSrvMsgInfRequest::TSrvMsgInfRequest(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface, addr, buf, bufSize) {
+TSrvMsgInfRequest::TSrvMsgInfRequest(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize)
+    : TSrvMsg(iface, addr, buf, bufSize) {
 }
 
 void TSrvMsgInfRequest::doDuties() {
@@ -34,6 +34,5 @@ std::string TSrvMsgInfRequest::getName() const {
     return "INF-REQUEST";
 }
 
-
-TSrvMsgInfRequest::~TSrvMsgInfRequest(){
+TSrvMsgInfRequest::~TSrvMsgInfRequest() {
 }

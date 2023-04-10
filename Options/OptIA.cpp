@@ -8,16 +8,14 @@
  */
 
 #include "OptIA.h"
-#include "OptStatusCode.h"
 #include "DHCPConst.h"
+#include "OptStatusCode.h"
 
-TOptIA::TOptIA(uint16_t code, uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
-    :TOpt(code, parent), IAID_(iaid), T1_(t1), T2_(t2) {
+TOptIA::TOptIA(uint16_t code, uint32_t iaid, uint32_t t1, uint32_t t2, TMsg * parent)
+    : TOpt(code, parent), IAID_(iaid), T1_(t1), T2_(t2) {
 }
 
-TOptIA::TOptIA(uint16_t code, TMsg* parent)
-    :TOpt(code, parent) {
-
+TOptIA::TOptIA(uint16_t code, TMsg * parent) : TOpt(code, parent) {
 }
 
 void TOptIA::setIAID(uint32_t iaid) {
@@ -47,12 +45,12 @@ void TOptIA::setT2(unsigned long t2) {
 int TOptIA::getStatusCode() {
     SPtr<TOpt> ptrOpt;
     SubOptions.first();
-    while ( ptrOpt = SubOptions.get() ) {
-        if ( ptrOpt->getOptType() != OPTION_STATUS_CODE) {
+    while (ptrOpt = SubOptions.get()) {
+        if (ptrOpt->getOptType() != OPTION_STATUS_CODE) {
             continue;
         }
 
-        SPtr <TOptStatusCode> ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
+        SPtr<TOptStatusCode> ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
         if (ptrStatus) {
             return ptrStatus->getCode();
         }

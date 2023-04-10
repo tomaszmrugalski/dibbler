@@ -12,49 +12,47 @@
 
 #include "HostID.h"
 
+#include "ClntParsAddrOpt.h"
 #include "Container.h"
 #include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "ClntParsAddrOpt.h"
 #include "IPv6Addr.h"
+#include "SmartPtr.h"
 
-
-class TClntParsIAOpt : public TClntParsAddrOpt
-{
- public:
+class TClntParsIAOpt : public TClntParsAddrOpt {
+  public:
     TClntParsIAOpt();
-    
+
     long getT1();
     void setT1(long T1);
-    
+
     long getT2();
     void setT2(long T2);
-    
+
     long getIAIDCnt();
     void setIAIDCnt(long cnt);
-    
+
     bool getAddrHint();
     void setAddrHint(bool addrHint);
-    
+
     void addPrefSrv(SPtr<THostID> prefSrv);
     void firstPrefSrv();
     SPtr<THostID> getPrefSrv();
     void clearPrefSrv();
-    void setPrefSrvLst(TContainer<SPtr<THostID> > *lst);
-    
+    void setPrefSrvLst(TContainer<SPtr<THostID>> * lst);
+
     void addRejedSrv(SPtr<THostID> prefSrv);
     void firstRejedSrv();
     SPtr<THostID> getRejedSrv();
     void clearRejedSrv();
-    void setRejedSrvLst(TContainer<SPtr<THostID> > *lst);
+    void setRejedSrvLst(TContainer<SPtr<THostID>> * lst);
 
     void setAddrParams(bool useAddrParams);
     bool getAddrParams();
 
-private:
+  private:
     long T1;
     long T2;
-    
+
     long IAIDCnt;
     bool AddrHint;
     List(THostID) PrefSrv;

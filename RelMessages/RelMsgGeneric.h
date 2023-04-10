@@ -13,9 +13,9 @@
 
 #include "RelMsg.h"
 
-class TRelMsgGeneric: public TRelMsg {
+class TRelMsgGeneric : public TRelMsg {
 
- public:
+  public:
     TRelMsgGeneric(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     std::string getName() const;
     bool check();

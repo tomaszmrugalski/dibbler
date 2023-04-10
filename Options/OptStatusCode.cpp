@@ -8,11 +8,11 @@
  *
  */
 
-#include <string.h>
-#include <string>
-#include "Portable.h"
 #include "OptStatusCode.h"
 #include "Logger.h"
+#include "Portable.h"
+#include <string.h>
+#include <string>
 
 #if defined(LINUX) || defined(BSD)
 #include <arpa/inet.h>
@@ -20,9 +20,7 @@
 
 using namespace std;
 
-TOptStatusCode::TOptStatusCode(const char * buf, size_t  len, TMsg* parent)
-    :TOpt(OPTION_STATUS_CODE, parent), Valid_(false)
-{
+TOptStatusCode::TOptStatusCode(const char * buf, size_t len, TMsg * parent) : TOpt(OPTION_STATUS_CODE, parent), Valid_(false) {
     if (len < 2) {
         buf += len;
         len = 0;
@@ -31,14 +29,13 @@ TOptStatusCode::TOptStatusCode(const char * buf, size_t  len, TMsg* parent)
     StatusCode_ = readUint16(buf);
     buf += sizeof(uint16_t);
     len -= sizeof(uint16_t);
-    char *msg = new char[len+1];
+    char * msg = new char[len + 1];
     memcpy(msg, buf, len);
-    msg[len]=0;
+    msg[len] = 0;
     Message_ = (string)msg;
-    delete [] msg;
+    delete[] msg;
     Valid_ = true;
 }
-
 
 size_t TOptStatusCode::getSize() {
     return Message_.length() + 6;
@@ -52,23 +49,19 @@ string TOptStatusCode::getText() {
     return Message_;
 }
 
-
-char * TOptStatusCode::storeSelf(char* buf)
-{
+char * TOptStatusCode::storeSelf(char * buf) {
     buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint16(buf, getSize() - 4);
     buf = writeUint16(buf, StatusCode_);
     strncpy((char *)buf, Message_.c_str(), Message_.length());
     buf += Message_.length();
     return buf;
 }
-TOptStatusCode::TOptStatusCode(int status,const std::string& message, TMsg* parent)
-    :TOpt(OPTION_STATUS_CODE, parent), Message_(message), StatusCode_(status),
-     Valid_(true) {
+TOptStatusCode::TOptStatusCode(int status, const std::string & message, TMsg * parent)
+    : TOpt(OPTION_STATUS_CODE, parent), Message_(message), StatusCode_(status), Valid_(true) {
 }
 
-bool TOptStatusCode::doDuties()
-{
+bool TOptStatusCode::doDuties() {
     switch (StatusCode_) {
     case STATUSCODE_SUCCESS:
         Log(Notice) << "Status SUCCESS :" << Message_ << LogEnd;

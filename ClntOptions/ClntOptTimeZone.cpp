@@ -8,19 +8,17 @@
  */
 
 #include "ClntOptTimeZone.h"
-#include "OptDUID.h"
 #include "ClntMsg.h"
 #include "Logger.h"
+#include "OptDUID.h"
 
-TClntOptTimeZone::TClntOptTimeZone(const std::string& domain, TMsg* parent)
-    :TOptString(OPTION_NEW_TZDB_TIMEZONE, domain, parent) {
-
+TClntOptTimeZone::TClntOptTimeZone(const std::string & domain, TMsg * parent)
+    : TOptString(OPTION_NEW_TZDB_TIMEZONE, domain, parent) {
 }
 
-TClntOptTimeZone::TClntOptTimeZone(char *buf, int bufsize, TMsg* parent)
-    :TOptString(OPTION_NEW_TZDB_TIMEZONE, buf,bufsize, parent) {
+TClntOptTimeZone::TClntOptTimeZone(char * buf, int bufsize, TMsg * parent)
+    : TOptString(OPTION_NEW_TZDB_TIMEZONE, buf, bufsize, parent) {
     /// @todo: do some validity check
-
 }
 
 bool TClntOptTimeZone::isValid() const {
@@ -34,14 +32,13 @@ bool TClntOptTimeZone::doDuties() {
 
     SPtr<TOptDUID> duid = SPtr_cast<TOptDUID>(Parent->getOption(OPTION_SERVERID));
     if (!duid) {
-	Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
-	return false;
+        Log(Error) << "Unable to find proper DUID while " << reason << LogEnd;
+        return false;
     }
 
     SPtr<TClntIfaceIface> iface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(ifindex));
     if (!iface) {
-        Log(Error) << "Unable to find interface ifindex=" << ifindex
-            << reason << LogEnd;
+        Log(Error) << "Unable to find interface ifindex=" << ifindex << reason << LogEnd;
         return false;
     }
 
@@ -53,6 +50,5 @@ bool TClntOptTimeZone::doDuties() {
 
 /// @todo remove this
 void TClntOptTimeZone::setSrvDuid(SPtr<TDUID> duid) {
-    SrvDUID=duid;
+    SrvDUID = duid;
 }
-

@@ -13,13 +13,13 @@
 
 #include "ClntParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class TClntCfgTA
-{
-    friend std::ostream& operator<<(std::ostream& out,TClntCfgTA& ta);
- public:
+class TClntCfgTA {
+    friend std::ostream & operator<<(std::ostream & out, TClntCfgTA & ta);
+
+  public:
     TClntCfgTA();
     unsigned long getIAID();
     void setIAID(unsigned long iaid);
@@ -28,7 +28,7 @@ class TClntCfgTA
 
   private:
     unsigned long iaid;
-    EState State;	
+    EState State;
 };
 
-#endif 
+#endif

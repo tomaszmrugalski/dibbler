@@ -13,35 +13,34 @@ class TSrvCfgAddrClass;
 #ifndef SRVCONFADDRCLASS_H
 #define SRVCONFADDRCLASS_H
 
-#include <string>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <string>
 
-#include "DHCPDefaults.h"
-#include "SrvAddrMgr.h"
-#include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "IPv6Addr.h"
+#include "DHCPDefaults.h"
 #include "DUID.h"
+#include "IPv6Addr.h"
 #include "SmartPtr.h"
-#include "SrvOptAddrParams.h"
+#include "SrvAddrMgr.h"
 #include "SrvCfgClientClass.h"
+#include "SrvOptAddrParams.h"
+#include "SrvParsGlobalOpt.h"
 
-class TSrvCfgAddrClass
-{
-    friend std::ostream& operator<<(std::ostream& out, TSrvCfgAddrClass& iface);
- public:
+class TSrvCfgAddrClass {
+    friend std::ostream & operator<<(std::ostream & out, TSrvCfgAddrClass & iface);
+
+  public:
     TSrvCfgAddrClass();
 
-    //Is client with this DUID and IP address supported?
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
+    // Is client with this DUID and IP address supported?
+    bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
 
-    //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
+    // Is client with this DUID and IP address prefered? (is in accept-only?)
+    bool clntPrefered(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
 
-    //checks if the address belongs to the pool
+    // checks if the address belongs to the pool
     bool addrInPool(SPtr<TIPv6Addr> addr);
     unsigned long countAddrInPool();
     SPtr<TIPv6Addr> getRandomAddr();
@@ -59,16 +58,16 @@ class TSrvCfgAddrClass
     bool isLinkLocal();
 
     unsigned long getAssignedCount();
-    long incrAssigned(int count=1);
-    long decrAssigned(int count=1);
+    long incrAssigned(int count = 1);
+    long decrAssigned(int count = 1);
 
     void setOptions(SPtr<TSrvParsGlobalOpt> opt);
     SPtr<TSrvOptAddrParams> getAddrParams();
 
     virtual ~TSrvCfgAddrClass();
-    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
+    void mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst);
 
- private:
+  private:
     uint32_t T1Min_;
     uint32_t T2Min_;
     uint32_t PrefMin_;

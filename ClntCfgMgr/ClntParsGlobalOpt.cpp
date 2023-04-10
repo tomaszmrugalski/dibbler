@@ -9,28 +9,27 @@
  */
 
 #include "ClntParsGlobalOpt.h"
-#include "Portable.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include "Portable.h"
 
 using namespace std;
 
-TClntParsGlobalOpt::TClntParsGlobalOpt()
-    :TClntParsIfaceOpt() {
-    this->WorkDir        = DEFAULT_WORKDIR;
-    this->PrefixLength   = CLIENT_DEFAULT_PREFIX_LENGTH;
+TClntParsGlobalOpt::TClntParsGlobalOpt() : TClntParsIfaceOpt() {
+    this->WorkDir = DEFAULT_WORKDIR;
+    this->PrefixLength = CLIENT_DEFAULT_PREFIX_LENGTH;
     this->AnonInfRequest = false;
-    this->InactiveMode   = false;
-    this->InsistMode     = false;
-    this->FQDNFlagS      = CLIENT_DEFAULT_FQDN_FLAG_S;
-    this->Experimental   = false;
-    this->UseConfirm     = true;
+    this->InactiveMode = false;
+    this->InsistMode = false;
+    this->FQDNFlagS = CLIENT_DEFAULT_FQDN_FLAG_S;
+    this->Experimental = false;
+    this->UseConfirm = true;
 }
 
 TClntParsGlobalOpt::~TClntParsGlobalOpt() {
 }
 
-void TClntParsGlobalOpt::setWorkDir(const std::string& dir) {
+void TClntParsGlobalOpt::setWorkDir(const std::string & dir) {
     WorkDir = dir;
 }
 
@@ -54,52 +53,42 @@ bool TClntParsGlobalOpt::getAnonInfRequest() {
     return this->AnonInfRequest;
 }
 
-void TClntParsGlobalOpt::setInsistMode(bool insist)
-{
+void TClntParsGlobalOpt::setInsistMode(bool insist) {
     InsistMode = insist;
 }
 
-bool TClntParsGlobalOpt::getInsistMode()
-{
+bool TClntParsGlobalOpt::getInsistMode() {
     return InsistMode;
 }
 
-void TClntParsGlobalOpt::setInactiveMode(bool flex)
-{
+void TClntParsGlobalOpt::setInactiveMode(bool flex) {
     InactiveMode = flex;
 }
 
-bool TClntParsGlobalOpt::getInactiveMode()
-{
+bool TClntParsGlobalOpt::getInactiveMode() {
     return InactiveMode;
 }
 
-void TClntParsGlobalOpt::setExperimental()
-{
+void TClntParsGlobalOpt::setExperimental() {
     Experimental = true;
 }
 
-bool TClntParsGlobalOpt::getExperimental()
-{
+bool TClntParsGlobalOpt::getExperimental() {
     return Experimental;
 }
 
-void TClntParsGlobalOpt::setFQDNFlagS(bool s)
-{
+void TClntParsGlobalOpt::setFQDNFlagS(bool s) {
     FQDNFlagS = s;
 }
 
-bool TClntParsGlobalOpt::getFQDNFlagS()
-{
+bool TClntParsGlobalOpt::getFQDNFlagS() {
     return FQDNFlagS;
 }
 
-void TClntParsGlobalOpt::setConfirm(bool conf)
-{
+void TClntParsGlobalOpt::setConfirm(bool conf) {
     UseConfirm = conf;
 }
 
-bool TClntParsGlobalOpt::getConfirm()
-{
+bool TClntParsGlobalOpt::getConfirm() {
     return UseConfirm;
 }

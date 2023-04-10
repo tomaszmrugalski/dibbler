@@ -10,14 +10,11 @@
 
 #include "SrvOptFQDN.h"
 
-TSrvOptFQDN::TSrvOptFQDN(const std::string& fqdn, TMsg* parent)
-    :TOptFQDN(fqdn, parent) {
-	this->setNFlag(false);
+TSrvOptFQDN::TSrvOptFQDN(const std::string & fqdn, TMsg * parent) : TOptFQDN(fqdn, parent) {
+    this->setNFlag(false);
 }
 
-TSrvOptFQDN::TSrvOptFQDN(char *buf, int bufsize, TMsg* parent)
-    :TOptFQDN(buf, bufsize, parent) {
-
+TSrvOptFQDN::TSrvOptFQDN(char * buf, int bufsize, TMsg * parent) : TOptFQDN(buf, bufsize, parent) {
 }
 
 bool TSrvOptFQDN::doDuties() {

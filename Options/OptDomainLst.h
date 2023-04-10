@@ -13,20 +13,24 @@
 #include <iostream>
 #include <string>
 
-class TOptDomainLst : public TOpt
-{
-public:
-    TOptDomainLst(int type, List(std::string) strLst, TMsg* parent);
-    TOptDomainLst(int type, const std::string& domain, TMsg* parent);
-    TOptDomainLst(int type, const char *buf, unsigned short bufsize, TMsg* parent);
-    const List(std::string)& getDomainLst() { return StringLst; }
-    const std::string& getDomain();
-    char * storeSelf( char* buf);
+class TOptDomainLst : public TOpt {
+  public:
+    TOptDomainLst(int type, List(std::string) strLst, TMsg * parent);
+    TOptDomainLst(int type, const std::string & domain, TMsg * parent);
+    TOptDomainLst(int type, const char * buf, unsigned short bufsize, TMsg * parent);
+    const List(std::string) & getDomainLst() {
+        return StringLst;
+    }
+    const std::string & getDomain();
+    char * storeSelf(char * buf);
     size_t getSize();
     int countString();
-    bool doDuties() { return true; }
+    bool doDuties() {
+        return true;
+    }
     virtual std::string getPlain();
-protected:
+
+  protected:
     List(std::string) StringLst;
 };
 

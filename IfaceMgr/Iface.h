@@ -11,22 +11,22 @@
 #ifndef IFACEIFACE_H
 #define IFACEIFACE_H
 
-#include <list>
+#include "Container.h"
+#include "IPv6Addr.h"
 #include "Portable.h"
 #include "SmartPtr.h"
-#include "Container.h"
 #include "SocketIPv6.h"
-#include "IPv6Addr.h"
+#include <list>
 
 /*
- * represents network interface 
+ * represents network interface
  */
-class TIfaceIface{
- public:
-    friend std::ostream & operator <<(std::ostream & strum, TIfaceIface &x);
+class TIfaceIface {
+  public:
+    friend std::ostream & operator<<(std::ostream & strum, TIfaceIface & x);
 
-    TIfaceIface(const char * name, int id, unsigned int flags, char* mac, 
-                int maclen, char* llAddr, int llAddrCnt, char * globalAddr, int globalCnt, int hwType);
+    TIfaceIface(const char * name, int id, unsigned int flags, char * mac, int maclen, char * llAddr, int llAddrCnt,
+                char * globalAddr, int globalCnt, int hwType);
     char * getName();
     int getID();
     std::string getFullName();
@@ -46,12 +46,12 @@ class TIfaceIface{
     bool getOBit();
 
     // ---layer-2 related---
-    int   getMacLen();
-    char* getMac();
-    int   getHardwareType();
-    char* firstLLAddress();
-    char* getLLAddress();
-    int   countLLAddress();
+    int getMacLen();
+    char * getMac();
+    int getHardwareType();
+    char * firstLLAddress();
+    char * getLLAddress();
+    int countLLAddress();
 
     void firstGlobalAddr();
     SPtr<TIPv6Addr> getGlobalAddr();
@@ -65,27 +65,27 @@ class TIfaceIface{
     bool updateAddr(SPtr<TIPv6Addr> addr, long pref, long valid);
     void setPrefixLength(int len);
     int getPrefixLength();
-    
+
     // ---socket related---
-    bool addSocket(SPtr<TIPv6Addr> addr,int port, bool ifaceonly, bool reuse);
-    // bool addSocket(int port, bool ifaceonly, bool reuse); 
+    bool addSocket(SPtr<TIPv6Addr> addr, int port, bool ifaceonly, bool reuse);
+    // bool addSocket(int port, bool ifaceonly, bool reuse);
     bool delSocket(int id);
     void firstSocket();
-    SPtr <TIfaceSocket> getSocketByFD(int fd);
-    SPtr <TIfaceSocket> getSocket();
+    SPtr<TIfaceSocket> getSocketByFD(int fd);
+    SPtr<TIfaceSocket> getSocket();
     SPtr<TIfaceSocket> getSocketByAddr(SPtr<TIPv6Addr> addr);
     int countSocket();
 
     virtual ~TIfaceIface();
 
- protected:
+  protected:
     // ---interface data---
     char Name[MAX_IFNAME_LENGTH];
     int ID;
     unsigned int Flags;
-    char* Mac;
+    char * Mac;
     int Maclen;
-    char* LLAddr;
+    char * LLAddr;
     int LLAddrCnt;
     bool M_bit_; // M (managed) bit from Router Advertisement
     bool O_bit_; // O (other conf) bit from Router Advertisement
@@ -96,11 +96,11 @@ class TIfaceIface{
 
     // sockets
     List(TIfaceSocket) SocketsLst;
-    char*   PresLLAddr;
+    char * PresLLAddr;
 
     int PrefixLen; // used during address adding
 };
 
-typedef std::list < SPtr<TIfaceIface> > TIfaceIfaceLst;
+typedef std::list<SPtr<TIfaceIface>> TIfaceIfaceLst;
 
 #endif

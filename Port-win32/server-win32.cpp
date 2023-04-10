@@ -9,17 +9,17 @@
  *
  */
 
-#include <string>
-#include <iostream>
-#include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <iostream>
+#include <string>
+#include <winsock2.h>
 
-#include "Portable.h"
 #include "DHCPServer.h"
+#include "Portable.h"
 
-#include "WinService.h"
-#include "SrvService.h"
 #include "Logger.h"
+#include "SrvService.h"
+#include "WinService.h"
 
 extern "C" int lowlevelInit();
 extern TDHCPServer * srvPtr;
@@ -35,17 +35,16 @@ void usage() {
          << " stop      - stop installed service" << endl
          << " install   - install service" << endl
          << " uninstall - uninstall service" << endl
-         << " run       - run in console" << endl << endl
+         << " run       - run in console" << endl
+         << endl
          << " -d paramters is now optional." << endl;
 }
 
 /*
  * Handle the CTRL-C, CTRL-BREAK signal.
  */
-BOOL CtrlHandler( DWORD fdwCtrlType )
-{
-    switch( fdwCtrlType )
-    {
+BOOL CtrlHandler(DWORD fdwCtrlType) {
+    switch (fdwCtrlType) {
     case CTRL_C_EVENT: {
         srvPtr->stop();
         return TRUE;
@@ -56,7 +55,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
     return TRUE;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char * argv[]) {
 
     cout << DIBBLER_COPYRIGHT1 << " (SERVER, WinXP/2003/Vista/7/8 port)" << endl;
     cout << DIBBLER_COPYRIGHT2 << endl;
@@ -68,8 +67,8 @@ int main(int argc, char* argv[]) {
     TSrvService * SrvService = TSrvService::getHandle();
 
     WSADATA wsaData;
-    if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
-        cout<<"Unable to load WinSock 2.2"<<endl;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
+        cout << "Unable to load WinSock 2.2" << endl;
         return 0;
     }
 
@@ -84,20 +83,19 @@ int main(int argc, char* argv[]) {
 
     // is this proper port?
     if (!SrvService->verifyPort()) {
-        Log(Crit) << "Operating system version is not supported by this Dibbler port."
-                  << LogEnd;
-       return -1;
+        Log(Crit) << "Operating system version is not supported by this Dibbler port." << LogEnd;
+        return -1;
     }
 
-    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 
     // Check for administrative privileges for some of the actions
-    switch ( status ) {
+    switch (status) {
     case START:
     case STOP:
     case INSTALL:
     case UNINSTALL:
-        if( !SrvService->isRunAsAdmin() ) {
+        if (!SrvService->isRunAsAdmin()) {
             Log(Crit) << SrvService->ADMIN_REQUIRED_STR << LogEnd;
             return -1;
         }

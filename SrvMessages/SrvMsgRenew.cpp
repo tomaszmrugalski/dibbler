@@ -9,12 +9,10 @@
  */
 
 #include "SrvMsgRenew.h"
-#include "SrvCfgMgr.h"
 #include "DHCPConst.h"
+#include "SrvCfgMgr.h"
 
-TSrvMsgRenew::TSrvMsgRenew(int iface,  SPtr<TIPv6Addr> addr, char* buf, int bufSize)
-    :TSrvMsg(iface,addr,buf,bufSize) {
-
+TSrvMsgRenew::TSrvMsgRenew(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize) : TSrvMsg(iface, addr, buf, bufSize) {
 }
 
 void TSrvMsgRenew::doDuties() {

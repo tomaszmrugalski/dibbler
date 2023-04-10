@@ -11,23 +11,21 @@
 #ifndef OPT_H
 #define OPT_H
 
-#include <stdint.h>
-#include <list>
-#include "SmartPtr.h"
 #include "Container.h"
 #include "DUID.h"
+#include "SmartPtr.h"
+#include <list>
+#include <stdint.h>
 
 class TMsg;
 class TOpt;
 
 typedef SPtr<TOpt> TOptPtr;
-typedef std::list< TOptPtr > TOptList;
-typedef TContainer< TOptPtr > TOptContainer;
+typedef std::list<TOptPtr> TOptList;
+typedef TContainer<TOptPtr> TOptContainer;
 
-class TOpt
-{
+class TOpt {
   public:
-
     /// length of a DHCPv6 option header
     const static size_t OPTION6_HDR_LEN = 4;
 
@@ -36,15 +34,15 @@ class TOpt
        to hold that information. Option object is created when requested
        option is received. */
     typedef enum {
-	Layout_Addr,
-	Layout_AddrLst,
-	Layout_String,
-	Layout_StringLst,
-	Layout_Duid,
-	Layout_Generic
+        Layout_Addr,
+        Layout_AddrLst,
+        Layout_String,
+        Layout_StringLst,
+        Layout_Duid,
+        Layout_Generic
     } EOptionLayout;
 
-    TOpt(int optType, TMsg* parent);
+    TOpt(int optType, TMsg * parent);
     virtual ~TOpt();
 
     /**
@@ -64,7 +62,7 @@ class TOpt
      * @param buf The address where to store the option
      * @return The address where the option ends
      */
-    virtual char * storeSelf(char* buf) = 0;
+    virtual char * storeSelf(char * buf) = 0;
     virtual bool doDuties() = 0;
 
     /**
@@ -87,26 +85,23 @@ class TOpt
     bool delOption(uint16_t type);
     int countOption();
     void delAllOptions();
-    void setParent(TMsg* Parent);
+    void setParent(TMsg * Parent);
 
-    static bool parseOptions(TOptContainer& options,
-                             const char* buf,
-                             size_t len,
-                             TMsg* parent,
-                             uint16_t placeId = 0, // 5 (option 5) or (message 5)
+    static bool parseOptions(TOptContainer & options, const char * buf, size_t len, TMsg * parent,
+                             uint16_t placeId = 0,        // 5 (option 5) or (message 5)
                              std::string place = "option" // "option" or "message"
-                             );
+    );
 
-    static TOptPtr getOption(const TOptList& list, uint16_t opt_type);
+    static TOptPtr getOption(const TOptList & list, uint16_t opt_type);
 
- protected:
-    char* storeHeader(char* buf);
-    char* storeSubOpt(char* buf);
+  protected:
+    char * storeHeader(char * buf);
+    char * storeSubOpt(char * buf);
     int getSubOptSize();
 
     TOptContainer SubOptions;
     int OptType;
-    TMsg* Parent;
+    TMsg * Parent;
     bool Valid;
 };
 

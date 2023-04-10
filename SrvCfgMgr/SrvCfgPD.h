@@ -11,7 +11,6 @@
  *
  */
 
-
 /*
   Generally prefixes can be divided into 3 parts:
   - constant prefix (a)
@@ -31,35 +30,34 @@ class TSrvCfgPD;
 #ifndef SRVCONFPD_H
 #define SRVCONFPD_H
 
-#include <string>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <string>
 
-#include "SrvAddrMgr.h"
-#include "SrvParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "IPv6Addr.h"
 #include "DUID.h"
-#include "SmartPtr.h"
-#include "SrvCfgPD.h"
+#include "IPv6Addr.h"
 #include "Node.h"
+#include "SmartPtr.h"
+#include "SrvAddrMgr.h"
+#include "SrvCfgPD.h"
+#include "SrvParsGlobalOpt.h"
 
 class TSrvCfgClientClass;
 
-class TSrvCfgPD
-{
-    friend std::ostream& operator<<(std::ostream& out, TSrvCfgPD& iface);
- public:
+class TSrvCfgPD {
+    friend std::ostream & operator<<(std::ostream & out, TSrvCfgPD & iface);
+
+  public:
     TSrvCfgPD();
 
-    //Is client with this DUID and IP address supported?
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
-    bool clntSupported(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
-    //Is client with this DUID and IP address prefered? (is in accept-only?)
-    bool clntPrefered(SPtr<TDUID> duid,SPtr<TIPv6Addr> clntAddr);
+    // Is client with this DUID and IP address supported?
+    bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
+    bool clntSupported(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr, SPtr<TSrvMsg> msg);
+    // Is client with this DUID and IP address prefered? (is in accept-only?)
+    bool clntPrefered(SPtr<TDUID> duid, SPtr<TIPv6Addr> clntAddr);
 
-    //checks if the prefix belongs to the pool
+    // checks if the prefix belongs to the pool
     bool prefixInPool(SPtr<TIPv6Addr> prefix);
     unsigned long countPrefixesInPool();
     SPtr<TIPv6Addr> getRandomPrefix();
@@ -78,19 +76,19 @@ class TSrvCfgPD
 
     unsigned long getAssignedCount();
     unsigned long getTotalCount();
-    long incrAssigned(int count=1);
-    long decrAssigned(int count=1);
+    long incrAssigned(int count = 1);
+    long decrAssigned(int count = 1);
 
     bool setOptions(SPtr<TSrvParsGlobalOpt> opt, int PDPrefix);
     virtual ~TSrvCfgPD();
-    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
+    void mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst);
 
- private:
+  private:
     unsigned long PD_T1Beg_;
     unsigned long PD_T1End_;
     unsigned long PD_T2Beg_;
     unsigned long PD_T2End_;
-    unsigned long PD_Length_;     // (shorter) prefix, assigned to the user, e.g. 64
+    unsigned long PD_Length_; // (shorter) prefix, assigned to the user, e.g. 64
     unsigned long PD_PrefBeg_;
     unsigned long PD_PrefEnd_;
     unsigned long PD_ValidBeg_;

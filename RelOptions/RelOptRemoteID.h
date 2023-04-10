@@ -13,13 +13,13 @@ class TRelOptRemoteID;
 
 #include "OptVendorData.h"
 
-class TRelOptRemoteID : public TOptVendorData
-{
-public:
-    TRelOptRemoteID(int enterprise, char * data, int dataLen, TMsg* parent);
-    TRelOptRemoteID(char * buf,  int n, TMsg* parent);
+class TRelOptRemoteID : public TOptVendorData {
+  public:
+    TRelOptRemoteID(int enterprise, char * data, int dataLen, TMsg * parent);
+    TRelOptRemoteID(char * buf, int n, TMsg * parent);
     bool doDuties();
- private:
+
+  private:
 };
 
 #endif /* CLNTOPTVENDORSPECINFO_H */

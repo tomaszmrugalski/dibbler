@@ -10,18 +10,16 @@
 
 #ifndef NODE_H_
 #define NODE_H_
-#include <iostream>
 #include "SmartPtr.h"
+#include <iostream>
 
 class TSrvMsg;
-class Node
-{
-public:
-    enum NodeType
-    {
-	NODE_OPERATOR        = 1,
-	NODE_CONST           = 2,
-	NODE_CLIENT_SPECIFIC = 3
+class Node {
+  public:
+    enum NodeType {
+        NODE_OPERATOR = 1,
+        NODE_CONST = 2,
+        NODE_CLIENT_SPECIFIC = 3
     };
 
     Node(NodeType type);

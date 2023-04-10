@@ -8,48 +8,44 @@
  *
  */
 
-#include <string.h>
-#include "hex.h"
 #include "DUID.h"
 #include "Logger.h"
+#include "hex.h"
+#include <string.h>
 
 using namespace std;
 
-TDUID::TDUID()
-{
+TDUID::TDUID() {
 }
 
 // packed
-TDUID::TDUID(const char* duid,int len)
-{
+TDUID::TDUID(const char * duid, int len) {
     if (duid && len) {
         DUID_.resize(len);
         memcpy(&DUID_[0], duid, len);
-        Plain_ = hexToText((uint8_t*)&DUID_[0], DUID_.size(), true);
+        Plain_ = hexToText((uint8_t *)&DUID_[0], DUID_.size(), true);
     }
 }
 
 // plain
-TDUID::TDUID(const char* text)
-{
+TDUID::TDUID(const char * text) {
     if (!text) {
         return;
     }
     Plain_ = string(text);
     DUID_ = textToHex(Plain_);
-    Plain_ = hexToText((uint8_t*)&DUID_[0], DUID_.size(), true);
+    Plain_ = hexToText((uint8_t *)&DUID_[0], DUID_.size(), true);
 }
-
 
 TDUID::~TDUID() {
 }
 
-TDUID::TDUID(const TDUID &other) {
+TDUID::TDUID(const TDUID & other) {
     DUID_ = other.DUID_;
     Plain_ = other.Plain_;
 }
 
-TDUID& TDUID::operator=(const TDUID &other) {
+TDUID & TDUID::operator=(const TDUID & other) {
     if (this == &other)
         return *this;
 
@@ -59,11 +55,11 @@ TDUID& TDUID::operator=(const TDUID &other) {
     return *this;
 }
 
-bool TDUID::operator==(const TDUID &other) {
+bool TDUID::operator==(const TDUID & other) {
     return (DUID_ == other.DUID_);
 }
 
-bool TDUID::operator<=(const TDUID &other) {
+bool TDUID::operator<=(const TDUID & other) {
 
     return (DUID_ <= other.DUID_);
 }
@@ -76,19 +72,18 @@ const string TDUID::getPlain() const {
     return Plain_;
 }
 
-const char* TDUID::get() const {
-    return (const char*)(&DUID_[0]);
+const char * TDUID::get() const {
+    return (const char *)(&DUID_[0]);
 }
 
-char * TDUID::storeSelf(char* buf) {
+char * TDUID::storeSelf(char * buf) {
     memcpy(buf, &DUID_[0], DUID_.size());
     return buf + DUID_.size();
 }
 
-ostream& operator<<(ostream& out,TDUID&  duid) {
+ostream & operator<<(ostream & out, TDUID & duid) {
     if (duid.DUID_.size()) {
-        out << "<duid length=\"" << duid.DUID_.size() << "\">"
-            << duid.Plain_ << "</duid>" << std::endl;
+        out << "<duid length=\"" << duid.DUID_.size() << "\">" << duid.Plain_ << "</duid>" << std::endl;
     } else {
         out << "<duid length=\"0\"></duid>" << std::endl;
     }

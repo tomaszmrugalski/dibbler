@@ -9,30 +9,30 @@
  * released under GNU GPL v2 only licence
  */
 
-#include <sstream>
-#include "Portable.h"
 #include "SrvMsg.h"
-#include "OptEmpty.h"
-#include "OptDUID.h"
 #include "OptAddr.h"
-#include "OptString.h"
-#include "SrvOptIA_NA.h"
-#include "SrvOptIA_PD.h"
-#include "OptStatusCode.h"
-#include "OptGeneric.h"
-#include "SrvOptLQ.h"
-#include "SrvOptTA.h"
-#include "SrvCfgOptions.h"
-#include "SrvOptFQDN.h"
 #include "OptAddrLst.h"
+#include "OptAuthentication.h"
+#include "OptDUID.h"
 #include "OptDomainLst.h"
+#include "OptEmpty.h"
+#include "OptGeneric.h"
+#include "OptStatusCode.h"
+#include "OptString.h"
 #include "OptUserClass.h"
 #include "OptVendorClass.h"
-#include "OptAuthentication.h"
+#include "Portable.h"
+#include "SrvCfgOptions.h"
+#include "SrvOptFQDN.h"
+#include "SrvOptIA_NA.h"
+#include "SrvOptIA_PD.h"
+#include "SrvOptLQ.h"
+#include "SrvOptTA.h"
+#include <sstream>
 
+#include "AddrClient.h"
 #include "Logger.h"
 #include "SrvIfaceMgr.h"
-#include "AddrClient.h"
 
 using namespace std;
 
@@ -46,9 +46,8 @@ using namespace std;
  * @param transID
  */
 TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
-    :TMsg(iface, addr, msgType, transID), FirstTimeStamp_((uint32_t)time(NULL)),
-     MRT_(0), forceMsgType_(0), physicalIface_(iface)
-{
+    : TMsg(iface, addr, msgType, transID), FirstTimeStamp_((uint32_t)time(NULL)), MRT_(0), forceMsgType_(0),
+      physicalIface_(iface) {
 }
 
 /**
@@ -60,29 +59,26 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID)
  * @param buf
  * @param bufSize
  */
-TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
-                 char* buf, int bufSize)
-    :TMsg(iface, addr, buf, bufSize), forceMsgType_(0), physicalIface_(iface)
-{
+TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize)
+    : TMsg(iface, addr, buf, bufSize), forceMsgType_(0), physicalIface_(iface) {
     setDefaults();
 
-    int pos=0;
-    while (pos<bufSize)	{
-        if (pos+4>bufSize) {
-            Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize-pos)
+    int pos = 0;
+    while (pos < bufSize) {
+        if (pos + 4 > bufSize) {
+            Log(Error) << "Message " << MsgType << " truncated. There are " << (bufSize - pos)
                        << " bytes left to parse. Bytes ignored." << LogEnd;
             break;
         }
 
+        unsigned short code = buf[pos] * 256 + buf[pos + 1];
+        pos += 2;
+        unsigned short length = buf[pos] * 256 + buf[pos + 1];
+        pos += 2;
 
-        unsigned short code   = buf[pos]*256 + buf[pos+1];
-        pos+=2;
-        unsigned short length = buf[pos]*256 + buf[pos+1];
-        pos+=2;
-
-        if (pos+length>bufSize) {
+        if (pos + length > bufSize) {
             Log(Error) << "Malformed option (type=" << code << ", len=" << length
-                       << ", offset from beginning of DHCPv6 message=" << pos+4 /* 4=msg-type+trans-id */
+                       << ", offset from beginning of DHCPv6 message=" << pos + 4 /* 4=msg-type+trans-id */
                        << ") received (msgtype=" << MsgType << "). Message dropped." << LogEnd;
             IsDone = true;
             return;
@@ -90,84 +86,82 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
 
         SPtr<TOpt> ptr;
 
-        if (!allowOptInMsg(MsgType,code)) {
-            Log(Warning) << "Option " << code << " not allowed in message type="<< MsgType <<". Option ignored." << LogEnd;
-            pos+=length;
+        if (!allowOptInMsg(MsgType, code)) {
+            Log(Warning) << "Option " << code << " not allowed in message type=" << MsgType << ". Option ignored." << LogEnd;
+            pos += length;
             continue;
         }
-        if (!allowOptInOpt(MsgType,0,code)) {
-            Log(Warning) <<"Option " << code << " can't be present in message (type="
-                         << MsgType <<") directly. Option ignored." << LogEnd;
-            pos+=length;
+        if (!allowOptInOpt(MsgType, 0, code)) {
+            Log(Warning) << "Option " << code << " can't be present in message (type=" << MsgType
+                         << ") directly. Option ignored." << LogEnd;
+            pos += length;
             continue;
         }
         ptr.reset();
         switch (code) {
         case OPTION_CLIENTID:
-            ptr = new TOptDUID(OPTION_CLIENTID, buf+pos, length, this);
+            ptr = new TOptDUID(OPTION_CLIENTID, buf + pos, length, this);
             break;
         case OPTION_SERVERID:
-            ptr = new TOptDUID(OPTION_SERVERID, buf+pos, length, this);
+            ptr = new TOptDUID(OPTION_SERVERID, buf + pos, length, this);
             break;
         case OPTION_IA_NA:
-            ptr = new TSrvOptIA_NA(buf+pos,length,this);
+            ptr = new TSrvOptIA_NA(buf + pos, length, this);
             break;
         case OPTION_ORO:
-            ptr = new TOptOptionRequest(OPTION_ORO, buf+pos, length, this);
+            ptr = new TOptOptionRequest(OPTION_ORO, buf + pos, length, this);
             break;
         case OPTION_PREFERENCE:
-            ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf+pos, length, this);
+            ptr = new TOptInteger(OPTION_PREFERENCE, 1, buf + pos, length, this);
             break;
         case OPTION_ELAPSED_TIME:
-            ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN,
-				  buf+pos, length, this);
+            ptr = new TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf + pos, length, this);
             break;
         case OPTION_UNICAST:
-            ptr = new TOptAddr(OPTION_UNICAST, buf+pos, length, this);
+            ptr = new TOptAddr(OPTION_UNICAST, buf + pos, length, this);
             break;
         case OPTION_STATUS_CODE:
-            ptr = new TOptStatusCode(buf+pos,length,this);
+            ptr = new TOptStatusCode(buf + pos, length, this);
             break;
         case OPTION_RAPID_COMMIT:
-            ptr = new TOptEmpty(code, buf+pos, length, this);
+            ptr = new TOptEmpty(code, buf + pos, length, this);
             break;
         case OPTION_DNS_SERVERS:
         case OPTION_SNTP_SERVERS:
         case OPTION_SIP_SERVER_A:
         case OPTION_NIS_SERVERS:
         case OPTION_NISP_SERVERS:
-            ptr = new TOptAddrLst(code, buf+pos, length, this);
+            ptr = new TOptAddrLst(code, buf + pos, length, this);
             break;
         case OPTION_DOMAIN_LIST:
         case OPTION_SIP_SERVER_D:
         case OPTION_NIS_DOMAIN_NAME:
         case OPTION_NISP_DOMAIN_NAME:
-            ptr = new TOptDomainLst(code, buf+pos, length, this);
+            ptr = new TOptDomainLst(code, buf + pos, length, this);
             break;
         case OPTION_NEW_TZDB_TIMEZONE:
-            ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf+pos, length, this);
+            ptr = new TOptString(OPTION_NEW_TZDB_TIMEZONE, buf + pos, length, this);
             break;
         case OPTION_FQDN:
-            ptr = new TSrvOptFQDN(buf+pos, length, this);
+            ptr = new TSrvOptFQDN(buf + pos, length, this);
             break;
         case OPTION_INFORMATION_REFRESH_TIME:
-            ptr = new TOptInteger(OPTION_INFORMATION_REFRESH_TIME,
-				  OPTION_INFORMATION_REFRESH_TIME_LEN,
-				  buf+pos, length, this);
+            ptr =
+                new TOptInteger(OPTION_INFORMATION_REFRESH_TIME, OPTION_INFORMATION_REFRESH_TIME_LEN, buf + pos, length, this);
             break;
         case OPTION_IA_TA:
-            ptr = new TSrvOptTA(buf+pos, length, this);
+            ptr = new TSrvOptTA(buf + pos, length, this);
             break;
         case OPTION_IA_PD:
-            ptr = new TSrvOptIA_PD(buf+pos, length, this);
+            ptr = new TSrvOptIA_PD(buf + pos, length, this);
             break;
         case OPTION_LQ_QUERY:
-            ptr = new TSrvOptLQ(buf+pos, length, this);
+            ptr = new TSrvOptLQ(buf + pos, length, this);
             break;
             // remaining LQ options are not supported to be received by server
 
         case OPTION_AUTH:
-            ptr = new TOptAuthentication(buf+pos, length, this);
+            ptr = new TOptAuthentication(buf + pos, length, this);
 #ifndef MOD_DISABLE_AUTH
             if (SrvCfgMgr().getDigest() != DIGEST_NONE) {
 
@@ -182,30 +176,29 @@ TSrvMsg::TSrvMsg(int iface, SPtr<TIPv6Addr> addr,
             break;
 
         case OPTION_VENDOR_OPTS:
-            ptr = new TOptVendorSpecInfo(code, buf+pos, length, this);
+            ptr = new TOptVendorSpecInfo(code, buf + pos, length, this);
             break;
-	case OPTION_RECONF_ACCEPT:
-	    ptr = new TOptEmpty(code, buf+pos, length, this);
-	    break;
+        case OPTION_RECONF_ACCEPT:
+            ptr = new TOptEmpty(code, buf + pos, length, this);
+            break;
         case OPTION_USER_CLASS:
-	    ptr = new TOptUserClass(code, buf+pos, length, this);
-	    break;
+            ptr = new TOptUserClass(code, buf + pos, length, this);
+            break;
         case OPTION_VENDOR_CLASS:
-	    ptr = new TOptVendorClass(code, buf+pos, length, this);
-	    break;
+            ptr = new TOptVendorClass(code, buf + pos, length, this);
+            break;
         case OPTION_RECONF_MSG:
         case OPTION_RELAY_MSG:
         default:
             Log(Warning) << "Option type " << code << " not supported yet." << LogEnd;
             break;
         }
-        if ( (ptr) && (ptr->isValid()) )
-            Options.push_back( ptr );
+        if ((ptr) && (ptr->isValid()))
+            Options.push_back(ptr);
         else
             Log(Warning) << "Option type " << code << " invalid. Option ignored." << LogEnd;
         pos += length;
     }
-
 }
 
 void TSrvMsg::setDefaults() {
@@ -231,9 +224,9 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
 
     // --- process this message ---
     clientMsg->firstOption();
-    while ( opt = clientMsg->getOption()) {
+    while (opt = clientMsg->getOption()) {
         switch (opt->getOptType()) {
-        case OPTION_IA_NA : {
+        case OPTION_IA_NA: {
             processIA_NA(clientMsg, SPtr_cast<TSrvOptIA_NA>(opt));
             break;
         }
@@ -245,16 +238,15 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
             processIA_PD(clientMsg, SPtr_cast<TSrvOptIA_PD>(opt));
             break;
         }
-        case OPTION_AUTH : {
+        case OPTION_AUTH: {
             ORO->addOption(OPTION_AUTH);
             break;
         }
-        case OPTION_FQDN : {
+        case OPTION_FQDN: {
             // skip processing for now (we need to process all IA_NA/IA_TA first)
             break;
         }
-        case OPTION_VENDOR_OPTS:
-        {
+        case OPTION_VENDOR_OPTS: {
             SPtr<TOptVendorData> v = SPtr_cast<TOptVendorData>(opt);
             appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
             break;
@@ -264,8 +256,8 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         case OPTION_UNICAST:
         case OPTION_RELAY_MSG:
         case OPTION_INTERFACE_ID:
-        case OPTION_RECONF_MSG :
-        case OPTION_STATUS_CODE : {
+        case OPTION_RECONF_MSG:
+        case OPTION_STATUS_CODE: {
             Log(Warning) << "Invalid option (" << opt->getOptType() << ") received. "
                          << "Client is not supposed to send it. Option ignored." << LogEnd;
             break;
@@ -281,7 +273,7 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         }
 
         } // end of switch
-    } // end of while
+    }     // end of while
 
     // process FQDN afer all addresses are processed
     opt = clientMsg->getOption(OPTION_FQDN);
@@ -289,7 +281,6 @@ void TSrvMsg::processOptions(SPtr<TSrvMsg> clientMsg, bool quiet) {
         processFQDN(clientMsg, SPtr_cast<TSrvOptFQDN>(opt));
     }
 }
-
 
 /// @brief Releases all addresses and prefixes specified in this message.
 ///
@@ -300,7 +291,7 @@ bool TSrvMsg::releaseAll(bool quiet) {
     bool released = false;
     SPtr<TOpt> opt;
     this->firstOption();
-    while ( opt = this->getOption()) {
+    while (opt = this->getOption()) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             SPtr<TSrvOptIA_NA> ptrOptIA_NA;
@@ -331,36 +322,31 @@ bool TSrvMsg::releaseAll(bool quiet) {
     return released;
 }
 
-
 void TSrvMsg::doDuties() {
-    if ( !this->getTimeout() )
+    if (!this->getTimeout())
         this->IsDone = true;
 }
 
 unsigned long TSrvMsg::getTimeout() {
     uint32_t now = (uint32_t)time(NULL);
-    if (FirstTimeStamp_ + MRT_ - now > 0 )
+    if (FirstTimeStamp_ + MRT_ - now > 0)
         return FirstTimeStamp_ + MRT_ - now;
     else
         return 0;
 }
 
-void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr,
-                           SPtr<TIPv6Addr> peerAddr,
-                           int hop,
-                           const TOptList&  echolist) {
+void TSrvMsg::addRelayInfo(SPtr<TIPv6Addr> linkAddr, SPtr<TIPv6Addr> peerAddr, int hop, const TOptList & echolist) {
     RelayInfo info;
     info.LinkAddr_ = linkAddr;
     info.PeerAddr_ = peerAddr;
-    info.Hop_      = hop;
+    info.Hop_ = hop;
     info.EchoList_ = echolist;
-    info.Len_      = 0; /// @todo: what about this?
+    info.Len_ = 0; /// @todo: what about this?
     RelayInfo_.push_back(info);
 }
 
-void TSrvMsg::send(int dstPort /* = 0 */)
-{
-    char* buf = new char[getSize() < 2048? 2048:getSize()];
+void TSrvMsg::send(int dstPort /* = 0 */) {
+    char * buf = new char[getSize() < 2048 ? 2048 : getSize()];
     int offset = 0;
     int port;
 
@@ -371,31 +357,28 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     if (!ptrIface) {
         SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(this->Iface);
         if (!cfgIface) {
-            Log(Error) << "Can't send message: interface with ifindex=" << this->Iface
-                       << " not found." << LogEnd;
-            delete [] buf;
+            Log(Error) << "Can't send message: interface with ifindex=" << this->Iface << " not found." << LogEnd;
+            delete[] buf;
             return;
         }
-        if (cfgIface->getRelayID()==-1) {
-            Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
-                       << " is invalid relay." << LogEnd;
-            delete [] buf;
+        if (cfgIface->getRelayID() == -1) {
+            Log(Error) << "Can't send message: interface " << cfgIface->getFullName() << " is invalid relay." << LogEnd;
+            delete[] buf;
             return;
         }
         ptrIface = SrvIfaceMgr().getIfaceByID(cfgIface->getRelayID());
         if (!ptrIface) {
             Log(Error) << "Can't send message: interface " << cfgIface->getFullName()
-                       << " has invalid physical interface defined (ifindex="
-                       << cfgIface->getRelayID() << "." << LogEnd;
-            delete [] buf;
+                       << " has invalid physical interface defined (ifindex=" << cfgIface->getRelayID() << "." << LogEnd;
+            delete[] buf;
             return;
         }
     }
-    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getFullName()
-                << hex << ",transID=0x" << this->getTransID() << dec << ", opts:";
+    Log(Notice) << "Sending " << this->getName() << " on " << ptrIface->getFullName() << hex << ",transID=0x"
+                << this->getTransID() << dec << ", opts:";
     SPtr<TOpt> ptrOpt;
     this->firstOption();
-    while (ptrOpt = this->getOption() )
+    while (ptrOpt = this->getOption())
         Log(Cont) << " " << ptrOpt->getOptType();
     Log(Cont) << ", " << RelayInfo_.size() << " relay(s)." << LogEnd;
 
@@ -403,10 +386,9 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     if (!RelayInfo_.empty()) {
         port = DHCPSERVER_PORT;
         if (RelayInfo_.size() > HOP_COUNT_LIMIT) {
-            Log(Error) << "Unable to send message. Got " << RelayInfo_.size()
-                       << " relay entries (" << HOP_COUNT_LIMIT
+            Log(Error) << "Unable to send message. Got " << RelayInfo_.size() << " relay entries (" << HOP_COUNT_LIMIT
                        << " is allowed maximum." << LogEnd;
-            delete [] buf;
+            delete[] buf;
             return;
         }
 
@@ -417,21 +399,18 @@ void TSrvMsg::send(int dstPort /* = 0 */)
 
             SPtr<TOpt> interface_id = TOpt::getOption(RelayInfo_[i].EchoList_, OPTION_INTERFACE_ID);
             // 38 = 34 bytes (relay header) + 4 bytes (relay-msg option header)
-            RelayInfo_[i-1].Len_ = RelayInfo_[i].Len_ + 38;
-            if (interface_id && (SrvCfgMgr().getInterfaceIDOrder()!=SRV_IFACE_ID_ORDER_NONE)) {
-                RelayInfo_[i-1].Len_ += interface_id->getSize();
+            RelayInfo_[i - 1].Len_ = RelayInfo_[i].Len_ + 38;
+            if (interface_id && (SrvCfgMgr().getInterfaceIDOrder() != SRV_IFACE_ID_ORDER_NONE)) {
+                RelayInfo_[i - 1].Len_ += interface_id->getSize();
 
-                for (TOptList::iterator it = RelayInfo_[i].EchoList_.begin();
-                     it != RelayInfo_[i].EchoList_.end(); ++it) {
-                    RelayInfo_[i-1].Len_ += (*it)->getSize();
+                for (TOptList::iterator it = RelayInfo_[i].EchoList_.begin(); it != RelayInfo_[i].EchoList_.end(); ++it) {
+                    RelayInfo_[i - 1].Len_ += (*it)->getSize();
                 }
-                //RelayInfo_[i].EchoList_.first();
-                //while (gen = RelayInfo_[i].EchoList_.get()) {
-                //    RelayInfo_[i-1].Len_ += gen->getSize();
-                //}
-
+                // RelayInfo_[i].EchoList_.first();
+                // while (gen = RelayInfo_[i].EchoList_.get()) {
+                //     RelayInfo_[i-1].Len_ += gen->getSize();
+                // }
             }
-
         }
 
 #if 0
@@ -452,13 +431,12 @@ void TSrvMsg::send(int dstPort /* = 0 */)
 #endif
 
         // recursive storeSelf
-        offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder() );
+        offset += storeSelfRelay(buf, 0, SrvCfgMgr().getInterfaceIDOrder());
 
-        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset
-                   << "(relay headers) data on the "
+        Log(Debug) << "Sending " << this->getSize() << "(packet)+" << offset << "(relay headers) data on the "
                    << ptrIface->getFullName() << " interface." << LogEnd;
     } else {
-        offset += this->storeSelf(buf+offset);
+        offset += this->storeSelf(buf + offset);
     }
 
     if (dstPort) {
@@ -466,7 +444,7 @@ void TSrvMsg::send(int dstPort /* = 0 */)
     }
 
     SrvIfaceMgr().send(ptrIface->getID(), buf, offset, PeerAddr_, port);
-    delete [] buf;
+    delete[] buf;
 }
 
 SPtr<TDUID> TSrvMsg::getClientDUID() {
@@ -481,7 +459,7 @@ SPtr<TDUID> TSrvMsg::getClientDUID() {
 
 void TSrvMsg::processIA_NA(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptIA_NA> queryOpt) {
     SPtr<TOpt> optIA_NA;
-    optIA_NA = new TSrvOptIA_NA( queryOpt, clientMsg, this);
+    optIA_NA = new TSrvOptIA_NA(queryOpt, clientMsg, this);
     Options.push_back(optIA_NA);
 }
 
@@ -512,8 +490,7 @@ void TSrvMsg::appendReconfigureKey() {
         return;
     }
 
-    SPtr<TOptAuthentication> auth = new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1,
-                                                           AUTH_REPLAY_NONE, this);
+    SPtr<TOptAuthentication> auth = new TOptAuthentication(AUTH_PROTO_RECONFIGURE_KEY, 1, AUTH_REPLAY_NONE, this);
     switch (MsgType) {
     case REPLY_MSG: {
         // If there is no reconfigure key nonce generated
@@ -536,7 +513,6 @@ void TSrvMsg::appendReconfigureKey() {
         // don't include reconfigure-key in any other message type
         return;
     }
-
     }
 
     Options.push_back(SPtr_cast<TOpt>(auth));
@@ -548,8 +524,7 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
     SPtr<TOpt> optFQDN;
 
     bool doRealUpdate = false;
-    if (clientMsg->getType() == REQUEST_MSG ||
-        clientMsg->getType() == RELEASE_MSG) {
+    if (clientMsg->getType() == REQUEST_MSG || clientMsg->getType() == RELEASE_MSG) {
         doRealUpdate = true;
     }
 
@@ -559,8 +534,7 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
         // doRealUpdate = false; // but do not do the actual update
     }
 
-    optFQDN = SPtr_cast<TOpt>(addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint,
-                                      doRealUpdate));
+    optFQDN = SPtr_cast<TOpt>(addFQDN(Iface, requestFQDN, ClientDUID, clntAssignedAddr, hint, doRealUpdate));
 
     if (optFQDN)
         Options.push_back(optFQDN);
@@ -579,28 +553,27 @@ void TSrvMsg::processFQDN(SPtr<TSrvMsg> clientMsg, SPtr<TSrvOptFQDN> requestFQDN
  *
  * @return FQDN option
  */
-SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
-                                   SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
+SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN, SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr,
                                    std::string hint, bool doRealUpdate) {
     SPtr<TSrvOptFQDN> optFQDN;
     SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(iface);
     if (!cfgIface) {
         Log(Crit) << "Msg received through not configured interface. "
-            "Somebody call an exorcist!" << LogEnd;
+                     "Somebody call an exorcist!"
+                  << LogEnd;
         this->IsDone = true;
         return SPtr<TSrvOptFQDN>(); // NULL
     }
     // FQDN is chosen, "" if no name for this host is found.
     if (!cfgIface->supportFQDN()) {
-        Log(Error) << "FQDN is not defined on " << cfgIface->getFullName() << " interface."
-                   << LogEnd;
+        Log(Error) << "FQDN is not defined on " << cfgIface->getFullName() << " interface." << LogEnd;
         return SPtr<TSrvOptFQDN>(); // NULL
     }
 
-    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr="
-               << clntAddr->getPlain() << LogEnd;
+    Log(Debug) << "Requesting FQDN for client with DUID=" << clntDuid->getPlain() << ", addr=" << clntAddr->getPlain()
+               << LogEnd;
 
-    SPtr<TFQDN> fqdn = cfgIface->getFQDNName(clntDuid,clntAddr, hint);
+    SPtr<TFQDN> fqdn = cfgIface->getFQDNName(clntDuid, clntAddr, hint);
     if (!fqdn) {
         Log(Debug) << "Unable to find FQDN for this client." << LogEnd;
         return SPtr<TSrvOptFQDN>(); // NULL
@@ -620,12 +593,11 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
     fqdn->setUsed(true);
 
     int FQDNMode = cfgIface->getFQDNMode();
-    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode="
-               << FQDNMode << LogEnd;
+    Log(Debug) << "FQDN: Adding FQDN Option in REPLY message: " << fqdnName << ", FQDNMode=" << FQDNMode << LogEnd;
 
-    if ( FQDNMode==1 || FQDNMode==2 ) {
-        //Log(Debug) << "FQDN: Server configuration allows DNS updates for " << clntDuid->getPlain()
-        //           << LogEnd;
+    if (FQDNMode == 1 || FQDNMode == 2) {
+        // Log(Debug) << "FQDN: Server configuration allows DNS updates for " << clntDuid->getPlain()
+        //            << LogEnd;
 
         if (FQDNMode == 1)
             optFQDN->setSFlag(false);
@@ -664,8 +636,8 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
         ptrAddrIA->setFQDNDnsServer(DNSAddr);
 
         if (doRealUpdate) {
-            Log(Notice) << "FQDN: About to perform DNS Update: IP="
-                        << addr->get()->getPlain() << " and FQDN=" << fqdnName << LogEnd;
+            Log(Notice) << "FQDN: About to perform DNS Update: IP=" << addr->get()->getPlain() << " and FQDN=" << fqdnName
+                        << LogEnd;
             SrvIfaceMgr().addFQDN(cfgIface->getID(), DNSAddr, addr->get(), fqdnName);
         } else {
             Log(Debug) << "FQDN: Skipping DNS Update." << LogEnd;
@@ -676,7 +648,6 @@ SPtr<TSrvOptFQDN> TSrvMsg::addFQDN(int iface, SPtr<TSrvOptFQDN> requestFQDN,
     }
 
     return optFQDN;
-
 }
 
 void TSrvMsg::delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQDN> fqdn) {
@@ -709,7 +680,7 @@ void TSrvMsg::delFQDN(SPtr<TSrvCfgIface> cfgIface, SPtr<TAddrIA> ptrIA, SPtr<TFQ
 }
 
 void TSrvMsg::copyRemoteID(SPtr<TSrvMsg> q) {
-  this->RemoteID = q->getRemoteID();
+    this->RemoteID = q->getRemoteID();
 }
 
 bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
@@ -724,18 +695,16 @@ bool TSrvMsg::copyClientID(SPtr<TMsg> donor) {
     return false;
 }
 
-SPtr<TIPv6Addr> TSrvMsg::getClientPeer()
-{
+SPtr<TIPv6Addr> TSrvMsg::getClientPeer() {
     if (!RelayInfo_.empty()) {
-       return RelayInfo_[0].PeerAddr_; //first hop ?
-   }
-   return PeerAddr_;
+        return RelayInfo_[0].PeerAddr_; // first hop ?
+    }
+    return PeerAddr_;
 }
 
 void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
     RelayInfo_ = q->RelayInfo_;
 }
-
 
 /**
  * stores message in a buffer, used in relayed messages
@@ -746,46 +715,43 @@ void TSrvMsg::copyRelayInfo(SPtr<TSrvMsg> q) {
  *
  * @return - number of bytes used
  */
-int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder order)
-{
+int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder order) {
     int offset = 0;
     if (relayDepth == RelayInfo_.size()) {
         return storeSelf(buf);
     }
-    buf[offset++] = forceMsgType_?forceMsgType_:RELAY_REPL_MSG;
+    buf[offset++] = forceMsgType_ ? forceMsgType_ : RELAY_REPL_MSG;
     buf[offset++] = RelayInfo_[relayDepth].Hop_;
-    RelayInfo_[relayDepth].LinkAddr_->storeSelf(buf+offset);
-    RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf+offset+16);
+    RelayInfo_[relayDepth].LinkAddr_->storeSelf(buf + offset);
+    RelayInfo_[relayDepth].PeerAddr_->storeSelf(buf + offset + 16);
     offset += 32;
 
     SPtr<TOpt> interfaceid = TOpt::getOption(RelayInfo_[relayDepth].EchoList_, OPTION_INTERFACE_ID);
 
-    if (order == SRV_IFACE_ID_ORDER_BEFORE)
-    {
+    if (order == SRV_IFACE_ID_ORDER_BEFORE) {
         if (interfaceid) {
-            interfaceid->storeSelf(buf+offset);
+            interfaceid->storeSelf(buf + offset);
             offset += interfaceid->getSize();
         }
     }
 
-    writeUint16((buf+offset), OPTION_RELAY_MSG);
+    writeUint16((buf + offset), OPTION_RELAY_MSG);
     offset += sizeof(uint16_t);
-    writeUint16((buf+offset), RelayInfo_[relayDepth].Len_);
+    writeUint16((buf + offset), RelayInfo_[relayDepth].Len_);
     offset += sizeof(uint16_t);
 
-    offset += storeSelfRelay(buf+offset, relayDepth+1, order);
+    offset += storeSelfRelay(buf + offset, relayDepth + 1, order);
 
-    if (order == SRV_IFACE_ID_ORDER_AFTER)
-    {
+    if (order == SRV_IFACE_ID_ORDER_AFTER) {
         if (interfaceid) {
-            interfaceid->storeSelf(buf+offset);
+            interfaceid->storeSelf(buf + offset);
             offset += interfaceid->getSize();
         }
     }
 
     SPtr<TOpt> echo;
-    for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
-         it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
+    for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin(); it != RelayInfo_[relayDepth].EchoList_.end();
+         ++it) {
         if ((*it)->getOptType() == OPTION_ERO) {
             echo = *it;
         }
@@ -797,10 +763,9 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
         for (TOptList::const_iterator it = RelayInfo_[relayDepth].EchoList_.begin();
              it != RelayInfo_[relayDepth].EchoList_.end(); ++it) {
             if (ero->isOption((*it)->getOptType())) {
-                    Log(Debug) << "Echoing back option " << (*it)->getOptType() << ", length "
-                               << (*it)->getSize() << LogEnd;
-                    (*it)->storeSelf(buf+offset);
-                    offset += (*it)->getSize();
+                Log(Debug) << "Echoing back option " << (*it)->getOptType() << ", length " << (*it)->getSize() << LogEnd;
+                (*it)->storeSelf(buf + offset);
+                offset += (*it)->getSize();
             }
         }
     }
@@ -819,14 +784,13 @@ int TSrvMsg::storeSelfRelay(char * buf, uint8_t relayDepth, ESrvIfaceIdOrder ord
     return offset;
 }
 
-
 void TSrvMsg::copyAAASPI(SPtr<TSrvMsg> q) {
 #ifndef MOD_DISABLE_AUTH
-    //this->AAASPI = q->getAAASPI();
+    // this->AAASPI = q->getAAASPI();
     SPI_ = q->SPI_;
     AuthKey_ = q->AuthKey_;
     DigestType_ = q->DigestType_;
-    
+
 #endif
 }
 
@@ -834,8 +798,7 @@ void TSrvMsg::copyAAASPI(SPtr<TSrvMsg> q) {
  * this function appends authentication option
  *
  */
-void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
-{
+void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid) {
 
     uint8_t algo = 0;
 
@@ -878,25 +841,21 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
         }
         algo = DigestType_;
 
-        Log(Debug) << "Auth: Dibbler protocol, setting digest type to "
-                   << getDigestName(DigestType_) << LogEnd;
+        Log(Debug) << "Auth: Dibbler protocol, setting digest type to " << getDigestName(DigestType_) << LogEnd;
 
         SPtr<TAddrClient> client = SrvAddrMgr().getClient(duid);
         if (client && !client->getSPI() && getSPI())
             client->setSPI(getSPI());
 
         if (getSPI() == 0) {
-            Log(Info) << "Auth: no key selected (SPI=0) for this message, will not include AUTH option."
-                      << LogEnd;
+            Log(Info) << "Auth: no key selected (SPI=0) for this message, will not include AUTH option." << LogEnd;
             return;
         }
     }
 
     if (!getOption(OPTION_AUTH)) {
-        SPtr<TOptAuthentication> auth = new TOptAuthentication(SrvCfgMgr().getAuthProtocol(),
-                                                               algo,
-                                                               SrvCfgMgr().getAuthReplay(),
-                                                               this);
+        SPtr<TOptAuthentication> auth =
+            new TOptAuthentication(SrvCfgMgr().getAuthProtocol(), algo, SrvCfgMgr().getAuthReplay(), this);
         auth->setReplayDetection(SrvAddrMgr().getNextReplayDetectionValue());
 
         auth->setRealm(SrvCfgMgr().getAuthRealm()); // defined for delayed-auth only
@@ -906,8 +865,7 @@ void TSrvMsg::appendAuthenticationOption(SPtr<TDUID> duid)
 #endif
 }
 
-bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID /* =true */)
-{
+bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID /* =true */) {
     // include our DUID (Server ID)
     SPtr<TOpt> ptrSrvID(new TOptDUID(OPTION_SERVERID, SrvCfgMgr().getDUID(), this));
     Options.push_back(ptrSrvID);
@@ -947,21 +905,19 @@ bool TSrvMsg::appendMandatoryOptions(SPtr<TOptOptionRequest> oro, bool clientID 
  *
  * @return true, if any options (conveying configuration paramter) has been appended
  */
-bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
-                                     int iface, SPtr<TOptOptionRequest> reqOpts)
-{
+bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, int iface, SPtr<TOptOptionRequest> reqOpts) {
     bool newOptionAssigned = false;
     // client didn't want any option? Or maybe we're not supporting this client?
     if (!reqOpts->count())
         return false;
 
-    SPtr<TSrvCfgIface>  ptrIface=SrvCfgMgr().getIfaceByID(iface);
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface) {
         Log(Error) << "Unable to find interface (ifindex=" << iface << "). Something is wrong." << LogEnd;
         return false;
     }
 
-    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, this, false/* false = verbose */);
+    SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, this, false /* false = verbose */);
 
     /// @todo: Make this an array of options and handle them in an uniform manner
 
@@ -980,7 +936,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // see processFQDN() method
 
     // --- option: VENDOR SPEC ---
-    if ( reqOpts->isOption(OPTION_VENDOR_OPTS)) {
+    if (reqOpts->isOption(OPTION_VENDOR_OPTS)) {
         if (appendVendorSpec(duid, iface, 0, reqOpts))
             newOptionAssigned = true;
     }
@@ -989,7 +945,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     // this option should be checked last
 
     // --- option: forced options first ---
-    TOptList extraOpts; // possible additional options
+    TOptList extraOpts;  // possible additional options
     TOptList forcedOpts; // forced (asked for or not, will send them anyway)
 
     if (ex) {
@@ -1003,21 +959,17 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
     if (!ex || !forcedOpts.size())
         forcedOpts = ptrIface->getForcedOptions();
 
-    for (TOptList::iterator gen = forcedOpts.begin(); gen!=forcedOpts.end(); ++gen)
-    {
-        Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType()
-                   << " (" << (*gen)->getSize() << ")" << LogEnd;
+    for (TOptList::iterator gen = forcedOpts.begin(); gen != forcedOpts.end(); ++gen) {
+        Log(Debug) << "Appending mandatory extra option " << (*gen)->getOptType() << " (" << (*gen)->getSize() << ")" << LogEnd;
         Options.push_back(*gen);
-        reqOpts->delOption( (*gen)->getOptType() );
+        reqOpts->delOption((*gen)->getOptType());
         newOptionAssigned = true;
     }
 
-    for (TOptList::iterator gen = extraOpts.begin(); gen!=extraOpts.end(); ++gen)
-    {
-        if (reqOpts->isOption( (*gen)->getOptType()))
-        {
-            Log(Debug) << "Appending requested extra option " << (*gen)->getOptType()
-                       << " (" << (*gen)->getSize() << ")" << LogEnd;
+    for (TOptList::iterator gen = extraOpts.begin(); gen != extraOpts.end(); ++gen) {
+        if (reqOpts->isOption((*gen)->getOptType())) {
+            Log(Debug) << "Appending requested extra option " << (*gen)->getOptType() << " (" << (*gen)->getSize() << ")"
+                       << LogEnd;
             Options.push_back(*gen);
             newOptionAssigned = true;
         }
@@ -1026,8 +978,7 @@ bool TSrvMsg::appendRequestedOptions(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr,
 #ifdef AUTH_CRAP
     // --- option: KEYGEN ---
 #ifndef MOD_DISABLE_AUTH
-    if ( reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE )
-    { // && this->MsgType == ADVERTISE_MSG ) {
+    if (reqOpts->isOption(OPTION_KEYGEN) && SrvCfgMgr().getDigest() != DIGEST_NONE) { // && this->MsgType == ADVERTISE_MSG ) {
         SPtr<TSrvOptKeyGeneration> optKeyGeneration = new TSrvOptKeyGeneration(this);
         Options.push_back(optKeyGeneration);
     }
@@ -1046,7 +997,7 @@ string TSrvMsg::showRequestedOptions(SPtr<TOptOptionRequest> oro) {
     x << i << " opts";
     if (i)
         x << ":";
-    for (i=0;i<oro->count();i++) {
+    for (i = 0; i < oro->count(); i++) {
         x << " " << oro->getReqOpt(i);
     }
     return x.str();
@@ -1057,7 +1008,7 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
 
     SPtr<TOptDUID> optSrvID = SPtr_cast<TOptDUID>(this->getOption(OPTION_SERVERID));
     if (optSrvID) {
-        if ( !( *(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()) ) ) {
+        if (!(*(SrvCfgMgr().getDUID()) == *(optSrvID->getDUID()))) {
             Log(Debug) << "Wrong ServerID value detected. This message is not for me. Message ignored." << LogEnd;
             return false;
         }
@@ -1065,18 +1016,16 @@ bool TSrvMsg::check(bool clntIDmandatory, bool srvIDmandatory) {
     return status;
 }
 
-bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt)
-{
+bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOptOptionRequest> reqOpt) {
     reqOpt->delOption(OPTION_VENDOR_OPTS);
 
-    SPtr<TSrvCfgIface> ptrIface=SrvCfgMgr().getIfaceByID(iface);
+    SPtr<TSrvCfgIface> ptrIface = SrvCfgMgr().getIfaceByID(iface);
     if (!ptrIface) {
         Log(Error) << "Unable to find interface with ifindex=" << iface << LogEnd;
         return false;
     }
 
-    Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor
-               << ")." << LogEnd;
+    Log(Debug) << "Client requested vendor-spec. info (vendor=" << vendor << ")." << LogEnd;
 
     SPtr<TSrvCfgOptions> ex = ptrIface->getClientException(duid, this, true);
     SPtr<TOptVendorSpecInfo> vs;
@@ -1088,14 +1037,12 @@ bool TSrvMsg::appendVendorSpec(SPtr<TDUID> duid, int iface, int vendor, SPtr<TOp
         vsLst = ptrIface->getVendorSpecLst(vendor);
     }
 
-
     if (!vsLst.count())
         vsLst = ptrIface->getVendorSpecLst(vendor);
 
     if (vsLst.count()) {
         vsLst.first();
-        while (vs=vsLst.get())
-        {
+        while (vs = vsLst.get()) {
             Options.push_back(SPtr_cast<TOpt>(vs));
         }
         return true;
@@ -1139,14 +1086,13 @@ bool TSrvMsg::validateReplayDetection() {
     uint64_t last_received = client->getReplayDetectionRcvd();
 
     if (last_received < received) {
-        Log(Debug) << "Auth: Replay detection field should be greater than "
-                   << last_received << " and it actually is ("
+        Log(Debug) << "Auth: Replay detection field should be greater than " << last_received << " and it actually is ("
                    << received << ")" << LogEnd;
         client->setReplayDetectionRcvd(received);
         return true;
     } else {
-        Log(Warning) << "Auth: Replayed message detected: previously received: "
-                     << last_received << ", now received " << received << LogEnd;
+        Log(Warning) << "Auth: Replayed message detected: previously received: " << last_received << ", now received "
+                     << received << LogEnd;
         return false;
     }
 
@@ -1154,13 +1100,11 @@ bool TSrvMsg::validateReplayDetection() {
 }
 #endif
 
-void TSrvMsg::setRemoteID(SPtr<TOptVendorData> remoteID)
-{
+void TSrvMsg::setRemoteID(SPtr<TOptVendorData> remoteID) {
     RemoteID = remoteID;
 }
 
-SPtr<TOptVendorData> TSrvMsg::getRemoteID()
-{
+SPtr<TOptVendorData> TSrvMsg::getRemoteID() {
     return RemoteID;
 }
 
@@ -1168,31 +1112,27 @@ SPtr<TOptVendorData> TSrvMsg::getRemoteID()
  * copy status-code to top-level if something is wrong (i.e. status-code!=SUCCESS)
  *
  */
-void TSrvMsg::appendStatusCode()
-{
+void TSrvMsg::appendStatusCode() {
     SPtr<TOptStatusCode> rootLevel, optLevel;
     SPtr<TOpt> opt;
-    //rootLevel = getOption(OPTION_STATUS_CODE);
+    // rootLevel = getOption(OPTION_STATUS_CODE);
 
     firstOption();
     while (opt = getOption()) {
-        switch ( opt->getOptType() ) {
-        case OPTION_IA_NA:
-            {
-                if (optLevel= SPtr_cast<TOptStatusCode>(opt->getOption(OPTION_STATUS_CODE))) {
-                    if (optLevel->getCode() != STATUSCODE_SUCCESS) {
-                        // copy status code to root-level
-                        delOption(OPTION_STATUS_CODE);
-                        SPtr<TOpt> rootLevel(new TOptStatusCode(optLevel->getCode(),
-                                                                optLevel->getText(), this));
-                        Options.push_back( rootLevel);
-                        return;
-                    }
+        switch (opt->getOptType()) {
+        case OPTION_IA_NA: {
+            if (optLevel = SPtr_cast<TOptStatusCode>(opt->getOption(OPTION_STATUS_CODE))) {
+                if (optLevel->getCode() != STATUSCODE_SUCCESS) {
+                    // copy status code to root-level
+                    delOption(OPTION_STATUS_CODE);
+                    SPtr<TOpt> rootLevel(new TOptStatusCode(optLevel->getCode(), optLevel->getText(), this));
+                    Options.push_back(rootLevel);
+                    return;
                 }
             }
-        default:
-            {
-            }
+        }
+        default: {
+        }
         }
     }
 }
@@ -1212,8 +1152,7 @@ void TSrvMsg::handleDefaultOption(SPtr<TOpt> ptrOpt) {
  *
  * @param msg - parent message
  */
-void TSrvMsg::getORO(SPtr<TMsg> msg)
-{
+void TSrvMsg::getORO(SPtr<TMsg> msg) {
     ORO = SPtr_cast<TOptOptionRequest>(msg->getOption(OPTION_ORO));
     if (!ORO) {
         ORO.reset(new TOptOptionRequest(OPTION_ORO, this));

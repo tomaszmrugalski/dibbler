@@ -9,14 +9,13 @@ class TOptIA_PD;
 #ifndef OPTIA_PD_H
 #define OPTIA_PD_H
 
-#include <stdint.h>
 #include "Opt.h"
+#include <stdint.h>
 
-class TOptIA_PD : public TOpt
-{
+class TOptIA_PD : public TOpt {
   public:
-    TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent);
-    TOptIA_PD(char * &buf, int &bufsize, TMsg* parent);
+    TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg * parent);
+    TOptIA_PD(char *& buf, int & bufsize, TMsg * parent);
     size_t getSize();
     int getStatusCode();
 
@@ -29,14 +28,14 @@ class TOptIA_PD : public TOpt
     void setT2(uint32_t t2);
     void setIAID(uint32_t iaid);
 
-    char * storeSelf( char* buf);
+    char * storeSelf(char * buf);
     bool isValid() const;
- protected:
+
+  protected:
     uint32_t IAID_;
     uint32_t T1_;
     uint32_t T2_;
     bool Valid_;
 };
-
 
 #endif /*  */

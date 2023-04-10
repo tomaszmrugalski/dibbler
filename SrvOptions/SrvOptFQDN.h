@@ -2,7 +2,7 @@
  * Dibbler - a portable DHCPv6
  *
  * author: Krzysztof Wnuk <keczi@poczta.onet.pl>
- * 
+ *
  * released under GNU GPL v2 only licence
  *
  * $Id: SrvOptFQDN.h,v 1.4 2008-08-29 00:07:36 thomson Exp $
@@ -24,11 +24,10 @@
 
 #include "OptFQDN.h"
 
-class TSrvOptFQDN : public TOptFQDN
-{
-public:
-    TSrvOptFQDN(const std::string& fqdn, TMsg* parent);
-    TSrvOptFQDN(char *buf, int bufsize, TMsg* parent);
+class TSrvOptFQDN : public TOptFQDN {
+  public:
+    TSrvOptFQDN(const std::string & fqdn, TMsg * parent);
+    TSrvOptFQDN(char * buf, int bufsize, TMsg * parent);
     bool doDuties();
 };
 

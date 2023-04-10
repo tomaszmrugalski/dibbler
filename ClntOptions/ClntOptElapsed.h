@@ -12,15 +12,15 @@
 
 #include "OptInteger.h"
 
-class TClntOptElapsed : public TOptInteger
-{
+class TClntOptElapsed : public TOptInteger {
   public:
-    TClntOptElapsed(TMsg* parent);
-    TClntOptElapsed( char * buf,  int n, TMsg* parent);
+    TClntOptElapsed(TMsg * parent);
+    TClntOptElapsed(char * buf, int n, TMsg * parent);
 
-    char * storeSelf(char* buf);
+    char * storeSelf(char * buf);
     bool doDuties();
-private:
+
+  private:
     unsigned long Timestamp;
 };
 #endif

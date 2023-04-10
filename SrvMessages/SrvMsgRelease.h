@@ -14,11 +14,10 @@ class TSrvMsgRelease;
 
 #include "SrvMsg.h"
 
-class TSrvMsgRelease : public TSrvMsg
-{
+class TSrvMsgRelease : public TSrvMsg {
   public:
-    TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char* buf, int bufSize);
-	
+    TSrvMsgRelease(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize);
+
     void doDuties();
     unsigned long getTimeout();
     bool check();

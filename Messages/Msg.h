@@ -12,32 +12,31 @@ class TMsg;
 #ifndef MSG_H
 #define MSG_H
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <list>
-#include "SmartPtr.h"
 #include "Container.h"
 #include "DHCPConst.h"
 #include "IPv6Addr.h"
+#include "Key.h"
 #include "Opt.h"
 #include "OptDUID.h"
 #include "OptOptionRequest.h"
-#include "Key.h"
 #include "ScriptParams.h"
+#include "SmartPtr.h"
+#include <iostream>
+#include <list>
+#include <string>
+#include <vector>
 
 class TOptStatusCode;
 
 // Hey! It's grampa of all messages
-class TMsg
-{
+class TMsg {
   public:
     // Used to create TMsg object (normal way)
     TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
     TMsg(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
 
     // used to create TMsg object based on received char[] data
-    TMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+    TMsg(int iface, SPtr<TIPv6Addr> addr, char *& buf, int & bufSize);
 
     virtual int getSize();
 
@@ -53,7 +52,9 @@ class TMsg
     SPtr<TOpt> getOption(int type) const;
     void firstOption();
     int countOption();
-    void addOption(SPtr<TOpt> opt) { Options.push_back(opt); }
+    void addOption(SPtr<TOpt> opt) {
+        Options.push_back(opt);
+    }
 
     virtual SPtr<TOpt> getOption();
 
@@ -66,22 +67,21 @@ class TMsg
     bool isDone(bool done);
 
     // useful auth stuff below
-    void calculateDigests(char* buffer,  size_t len);
+    void calculateDigests(char * buffer, size_t len);
 
     /// @todo: remove from here (and move to AUTH option)
-    void setAuthDigestPtr(char* ptr, unsigned len);
+    void setAuthDigestPtr(char * ptr, unsigned len);
     bool loadAuthKey();
-    void setAuthKey(const TKey& key);
+    void setAuthKey(const TKey & key);
     TKey getAuthKey();
 
-    bool validateAuthInfo(char *buf, int bufSize, AuthProtocols proto,
-                          const DigestTypesLst& acceptedDigestTypes);
+    bool validateAuthInfo(char * buf, int bufSize, AuthProtocols proto, const DigestTypesLst & acceptedDigestTypes);
     uint32_t getSPI();
     void setSPI(uint32_t val);
     DigestTypes DigestType_;
 
     // notify scripts stuff
-    void* getNotifyScriptParams();
+    void * getNotifyScriptParams();
 
     SPtr<TIPv6Addr> getRemoteAddr();
 
@@ -105,14 +105,12 @@ class TMsg
 
     TOptList Options;
     TOptList::iterator NextOpt; // to be removed together with firstOption() and getOption();
-    void setAttribs(int iface, SPtr<TIPv6Addr> addr,
-                    int msgType, long transID);
+    void setAttribs(int iface, SPtr<TIPv6Addr> addr, int msgType, long transID);
     virtual bool check(bool clntIDmandatory, bool srvIDmandatory);
 
     bool IsDone; // Is this transaction done?
     int Iface;   // logical interface (for direct messages it equals PhysicalIface
                  // for relayed messages Iface points to relayX, PhysicalInterface to ethX)
-
 
     /// Address of the corresponding node (received from or to be sent to)
     /// @todo: rename to RemoteAddr_
@@ -122,15 +120,15 @@ class TMsg
     SPtr<TIPv6Addr> LocalAddr_;
 
     // Auth stuff
-    uint32_t SPI_; // Key identifier
-    char* AuthDigestPtr_;    // Digest (pointer to Authentication Information field of OPTION AUTH)
+    uint32_t SPI_;           // Key identifier
+    char * AuthDigestPtr_;   // Digest (pointer to Authentication Information field of OPTION AUTH)
     unsigned AuthDigestLen_; // Length of the digest
-    TKey AuthKey_; // Auth Key
+    TKey AuthKey_;           // Auth Key
 
     // a pointer to NotifyScriptParams structure (if defined)
-    TNotifyScriptParams* NotifyScripts;
+    TNotifyScriptParams * NotifyScripts;
 };
 
-typedef std::list< SPtr<TMsg> > TMsgLst;
+typedef std::list<SPtr<TMsg>> TMsgLst;
 
 #endif

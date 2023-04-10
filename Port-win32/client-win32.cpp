@@ -9,16 +9,16 @@
  *
  */
 
-#include <string>
+#include <Ws2tcpip.h>
 #include <iostream>
-#include <winsock2.h>
-#include <Ws2tcpip.h> 
 #include <process.h>
+#include <string>
+#include <winsock2.h>
 
-#include "WinService.h"
 #include "ClntService.h"
-#include "Portable.h"
 #include "DHCPClient.h"
+#include "Portable.h"
+#include "WinService.h"
 #include "logger.h"
 #include <iostream>
 
@@ -40,31 +40,29 @@ void usage() {
          << " install   - install service" << endl
          << " uninstall - uninstall service" << endl
          << " run       - run interactively" << endl
-         << " help      - displays usage info." << endl << endl
+         << " help      - displays usage info." << endl
+         << endl
          << " Note: -d parameter is optional." << endl;
 }
 
 extern TDHCPClient * clntPtr;
 
-/* 
- * Handle the CTRL-C, CTRL-BREAK signal. 
+/*
+ * Handle the CTRL-C, CTRL-BREAK signal.
  */
-BOOL CtrlHandler( DWORD fdwCtrlType ) 
-{ 
-    switch( fdwCtrlType ) 
-    { 
+BOOL CtrlHandler(DWORD fdwCtrlType) {
+    switch (fdwCtrlType) {
     case CTRL_C_EVENT: {
         clntPtr->stop();
         return TRUE;
     }
-    case CTRL_BREAK_EVENT: 
-        return FALSE; 
+    case CTRL_BREAK_EVENT:
+        return FALSE;
     }
     return TRUE;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char * argv[]) {
     // get the service object
     TClntService * Client = TClntService::getHandle();
 
@@ -76,9 +74,9 @@ int main(int argc, char* argv[])
     cout << DIBBLER_COPYRIGHT4 << endl;
     cout << endl;
 
-    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 
-    if( WSAStartup( MAKEWORD( 2, 2 ), &wsaData )) {
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
         cout << "Unable to load WinSock 2.2 library." << endl;
         return -1;
     }
@@ -95,16 +93,16 @@ int main(int argc, char* argv[])
     // find ipv6.exe (or netsh.exe in future implementations)
     if (!lowlevelInit()) {
         clog << "lowlevelInit() failed. Startup aborted." << endl;
-        return -1;		
+        return -1;
     }
 
     // Check for administrative privileges for some of the actions
-    switch ( status ) {
+    switch (status) {
     case START:
     case STOP:
     case INSTALL:
     case UNINSTALL:
-        if ( !Client->isRunAsAdmin() ) {
+        if (!Client->isRunAsAdmin()) {
             Log(Crit) << Client->ADMIN_REQUIRED_STR << LogEnd;
             return -1;
         }
@@ -113,16 +111,16 @@ int main(int argc, char* argv[])
         break;
     }
 
-    switch(status) {
-    case STATUS: { 
+    switch (status) {
+    case STATUS: {
         Client->showStatus();
         break;
     }
-    case START: { 
+    case START: {
         Client->StartService();
         break;
     }
-    case STOP: { 
+    case STOP: {
         Client->StopService();
         break;
     }
@@ -145,12 +143,11 @@ int main(int argc, char* argv[])
     case INVALID: {
         Log(Crit) << "Invalid usage." << LogEnd;
     }
-    case HELP: 
+    case HELP:
     default: {
         usage();
-    }	
     }
-    
+    }
+
     return 0;
 }
-

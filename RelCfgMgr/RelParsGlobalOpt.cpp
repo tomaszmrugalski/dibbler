@@ -13,9 +13,8 @@
 
 using namespace std;
 
-TRelParsGlobalOpt::TRelParsGlobalOpt(void) 
-    : WorkDir_(DEFAULT_WORKDIR), GuessMode_(false),
-      InterfaceIDOrder_(REL_IFACE_ID_ORDER_BEFORE) {
+TRelParsGlobalOpt::TRelParsGlobalOpt(void)
+    : WorkDir_(DEFAULT_WORKDIR), GuessMode_(false), InterfaceIDOrder_(REL_IFACE_ID_ORDER_BEFORE) {
 }
 
 TRelParsGlobalOpt::~TRelParsGlobalOpt(void) {
@@ -28,7 +27,6 @@ string TRelParsGlobalOpt::getWorkDir() {
 void TRelParsGlobalOpt::setWorkDir(std::string dir) {
     WorkDir_ = dir;
 }
-
 
 void TRelParsGlobalOpt::setGuessMode(bool guess) {
     GuessMode_ = guess;
@@ -46,22 +44,18 @@ ERelIfaceIdOrder TRelParsGlobalOpt::getInterfaceIDOrder() {
     return InterfaceIDOrder_;
 }
 
-void TRelParsGlobalOpt::setRemoteID(SPtr<TOptVendorData> remoteID)
-{
+void TRelParsGlobalOpt::setRemoteID(SPtr<TOptVendorData> remoteID) {
     RemoteID_ = remoteID;
 }
 
-SPtr<TOptVendorData> TRelParsGlobalOpt::getRemoteID()
-{
+SPtr<TOptVendorData> TRelParsGlobalOpt::getRemoteID() {
     return RemoteID_;
 }
 
-void TRelParsGlobalOpt::setEcho(SPtr<TRelOptEcho> echo)
-{
+void TRelParsGlobalOpt::setEcho(SPtr<TRelOptEcho> echo) {
     Echo_ = echo;
 }
 
-SPtr<TRelOptEcho> TRelParsGlobalOpt::getEcho()
-{
+SPtr<TRelOptEcho> TRelParsGlobalOpt::getEcho() {
     return Echo_;
 }

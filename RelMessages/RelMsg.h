@@ -14,10 +14,9 @@ class TRelMsg;
 
 #include "Msg.h"
 
-class TRelMsg : public TMsg
-{
-public:
-    TRelMsg(int iface,  SPtr<TIPv6Addr> addr, char* data,  int dataLen);
+class TRelMsg : public TMsg {
+  public:
+    TRelMsg(int iface, SPtr<TIPv6Addr> addr, char * data, int dataLen);
     virtual bool check() = 0;
     void setDestination(int ifindex, SPtr<TIPv6Addr> dest);
     int getDestIface();
@@ -25,7 +24,7 @@ public:
     void decodeOpts(char * data, int dataLen);
     int getHopCount();
 
- protected:
+  protected:
     int DestIface;
     SPtr<TIPv6Addr> DestAddr;
 

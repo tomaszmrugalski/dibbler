@@ -7,23 +7,21 @@
  *
  */
 
-#include <sstream>
-#include "DHCPDefaults.h"
 #include "RelCfgIface.h"
+#include "DHCPDefaults.h"
 #include "Logger.h"
+#include <sstream>
 
 using namespace std;
 
 TRelCfgIface::TRelCfgIface(int ifindex)
-    :Name_("[unknown]"), ID_(ifindex), InterfaceID_(-1),
-     ClientUnicast_(), ServerUnicast_(),
-     ClientMulticast_(false), ServerMulticast_(false) {
+    : Name_("[unknown]"), ID_(ifindex), InterfaceID_(-1), ClientUnicast_(), ServerUnicast_(), ClientMulticast_(false),
+      ServerMulticast_(false) {
 }
 
-TRelCfgIface::TRelCfgIface(const std::string& ifaceName)
-    :Name_(ifaceName), ID_(-1), InterfaceID_(-1),
-     ClientUnicast_(), ServerUnicast_(),
-     ClientMulticast_(false), ServerMulticast_(false) {
+TRelCfgIface::TRelCfgIface(const std::string & ifaceName)
+    : Name_(ifaceName), ID_(-1), InterfaceID_(-1), ClientUnicast_(), ServerUnicast_(), ClientMulticast_(false),
+      ServerMulticast_(false) {
 }
 
 int TRelCfgIface::getID() {
@@ -83,17 +81,16 @@ int TRelCfgIface::getInterfaceID() {
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream& operator<<(ostream& out, TRelCfgIface& iface) {
+ostream & operator<<(ostream & out, TRelCfgIface & iface) {
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
 
     out << dec;
-    out << "  <RelCfgIface name=\"" << iface.Name_ << "\" ifindex=\"" << iface.ID_
-        << "\" interfaceID=\"" << iface.InterfaceID_ << "\">" << std::endl;
+    out << "  <RelCfgIface name=\"" << iface.Name_ << "\" ifindex=\"" << iface.ID_ << "\" interfaceID=\"" << iface.InterfaceID_
+        << "\">" << std::endl;
 
     if (iface.ClientUnicast_) {
-        out << "    <ClientUnicast>" << iface.ClientUnicast_->getPlain()
-            << "</ClientUnicast>" << endl;
+        out << "    <ClientUnicast>" << iface.ClientUnicast_->getPlain() << "</ClientUnicast>" << endl;
     } else {
         out << "    <!-- <ClientUnicast/> -->" << endl;
     }
@@ -104,8 +101,7 @@ ostream& operator<<(ostream& out, TRelCfgIface& iface) {
     }
 
     if (iface.ServerUnicast_) {
-        out << "    <ServerUnicast>" << iface.ServerUnicast_->getPlain()
-            << "</ServerUnicast>" << endl;
+        out << "    <ServerUnicast>" << iface.ServerUnicast_->getPlain() << "</ServerUnicast>" << endl;
     } else {
         out << "    <!-- <ServerUnicast/> -->" << endl;
     }

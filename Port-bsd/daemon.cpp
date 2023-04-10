@@ -8,17 +8,17 @@
  *
  */
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <signal.h>
-#include <unistd.h>
+#include "Logger.h"
+#include "Portable.h"
 #include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <sys/stat.h>
-#include "Portable.h"
-#include "Logger.h"
+#include <unistd.h>
 
 extern int status();
 extern int run();
@@ -26,23 +26,23 @@ extern std::string WORKDIR;
 
 using namespace std;
 
-/** 
+/**
  * checks if pid file exists, and returns its content (or -2 if unable to read)
- * 
- * @param file 
- * 
+ *
+ * @param file
+ *
  * @return pid value, or negative if error was detected
  */
 pid_t getPID(const char * file) {
     /* check if the file exists */
     struct stat buf;
     int i = stat(file, &buf);
-    if (i!=0)
-	return LOWLEVEL_ERROR_UNSPEC;
+    if (i != 0)
+        return LOWLEVEL_ERROR_UNSPEC;
 
     ifstream pidfile(file);
-    if (!pidfile.is_open()) 
-	return LOWLEVEL_ERROR_FILE;
+    if (!pidfile.is_open())
+        return LOWLEVEL_ERROR_FILE;
     pid_t pid;
     pidfile >> pid;
     return pid;
@@ -76,23 +76,23 @@ void daemon_init() {
     cout << "Starting daemon..." << endl;
     logger::EchoOff();
 
-    if (getppid()!=1) {
+    if (getppid() != 1) {
 
 #ifdef SIGTTOU
-	signal(SIGTTOU, SIG_IGN);
+        signal(SIGTTOU, SIG_IGN);
 #endif
 #ifdef SIGTTIN
-	signal(SIGTTIN, SIG_IGN);
+        signal(SIGTTIN, SIG_IGN);
 #endif
 #ifdef SIGTSTP
-	signal(SIGTSTP, SIG_IGN);
+        signal(SIGTSTP, SIG_IGN);
 #endif
-	if ( (childpid = fork()) <0 ) {
-	    Log(Crit) << "Can't fork first child." << endl;
-	    return;
-	} else if (childpid > 0) 
-	    exit(EXIT_SUCCESS); // parent process
-	
+        if ((childpid = fork()) < 0) {
+            Log(Crit) << "Can't fork first child." << endl;
+            return;
+        } else if (childpid > 0)
+            exit(EXIT_SUCCESS); // parent process
+
 #if 0
 	// @todo: daemon spawning in Mac OS is done a bit differently
 	if (setpgrp(0) == -1) {
@@ -100,15 +100,15 @@ void daemon_init() {
 	    return;
 	}
 #endif
-	
-	signal( SIGHUP, SIG_IGN);
-	
-	if ( (childpid = fork()) <0) {
-	    cout << "Can't fork second child." << endl;
-	    return;
-	} else if (childpid > 0)
-	    exit(EXIT_SUCCESS); // first child
-	
+
+        signal(SIGHUP, SIG_IGN);
+
+        if ((childpid = fork()) < 0) {
+            cout << "Can't fork second child." << endl;
+            return;
+        } else if (childpid > 0)
+            exit(EXIT_SUCCESS); // first child
+
     } // getppid()!=1
 
     umask(DEFAULT_UMASK);
@@ -126,44 +126,43 @@ int init(const char * pidfile, const char * workdir) {
         /** @todo: This is Linux specific. It will most likely not work on BSD or Mac OS */
         char buf[20];
         char cmd[256];
-	sprintf(buf,"/proc/%d", pid);
-	if (!access(buf, F_OK)) {
-	    sprintf(buf, "/proc/%d/exe", pid);
-	    int len=readlink(buf, cmd, sizeof(cmd));
-	    if(len!=-1) {
-	        cmd[len]=0;
-		if(strstr(cmd, "dibbler")==NULL) {
-		    Log(Warning) << "Process is running but it is not Dibbler (pid=" << pid
-				 << ", name " << cmd << ")." << LogEnd;
-		} else {
-    		    Log(Crit) << "Process already running and it seems to be Dibbler (pid=" 
-			      << pid << ", name " << cmd << ")." << LogEnd;
-		    return 0;
-		}
-	    } else {
-    		Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile 
-		    	  << " is present)." << LogEnd;
-		return 0;
-	    }
-	} else {
-	    Log(Warning) << "Pid file found (pid=" << pid << ", file " << pidfile 
-			 << "), but process " << pid << " does not exist." << LogEnd;
-	}
+        sprintf(buf, "/proc/%d", pid);
+        if (!access(buf, F_OK)) {
+            sprintf(buf, "/proc/%d/exe", pid);
+            int len = readlink(buf, cmd, sizeof(cmd));
+            if (len != -1) {
+                cmd[len] = 0;
+                if (strstr(cmd, "dibbler") == NULL) {
+                    Log(Warning) << "Process is running but it is not Dibbler (pid=" << pid << ", name " << cmd << ")."
+                                 << LogEnd;
+                } else {
+                    Log(Crit) << "Process already running and it seems to be Dibbler (pid=" << pid << ", name " << cmd << ")."
+                              << LogEnd;
+                    return 0;
+                }
+            } else {
+                Log(Crit) << "Process already running (pid=" << pid << ", file " << pidfile << " is present)." << LogEnd;
+                return 0;
+            }
+        } else {
+            Log(Warning) << "Pid file found (pid=" << pid << ", file " << pidfile << "), but process " << pid
+                         << " does not exist." << LogEnd;
+        }
     }
 
     unlink(pidfile);
     ofstream pidFile(pidfile);
     if (!pidFile.is_open()) {
-	Log(Crit) << "Unable to create " << pidfile << " file." << LogEnd;
-	return 0;
+        Log(Crit) << "Unable to create " << pidfile << " file." << LogEnd;
+        return 0;
     }
     pidFile << getpid();
     pidFile.close();
     Log(Notice) << "My pid (" << getpid() << ") is stored in " << pidfile << LogEnd;
 
     if (chdir(workdir)) {
-	Log(Crit) << "Unable to change directory to " << workdir << "." << LogEnd;
-	return 0;
+        Log(Crit) << "Unable to change directory to " << workdir << "." << LogEnd;
+        return 0;
     }
 
     umask(DEFAULT_UMASK);
@@ -173,11 +172,9 @@ int init(const char * pidfile, const char * workdir) {
 
 void die(const char * pidfile) {
     if (unlink(pidfile)) {
-	Log(Warning) << "Unable to delete " << pidfile << "." << LogEnd;
+        Log(Warning) << "Unable to delete " << pidfile << "." << LogEnd;
     }
 }
-
-
 
 int start(const char * pidfile, const char * workdir) {
     int result;
@@ -189,9 +186,9 @@ int start(const char * pidfile, const char * workdir) {
 
 int stop(const char * pidfile) {
     int pid = getPID(pidfile);
-    if (pid==-1) {
-	cout << "Process is not running." << endl;
-	return -1;
+    if (pid == -1) {
+        cout << "Process is not running." << endl;
+        return -1;
     }
     cout << "Sending KILL signal to process " << pid << endl;
     kill(pid, SIGTERM);
@@ -221,7 +218,7 @@ void logStart(const char * note, const char * logname, const char * logfile) {
     logger::EchoOn();
 }
 
-/** things to do just before end 
+/** things to do just before end
  */
 void logEnd() {
     logger::Terminate();

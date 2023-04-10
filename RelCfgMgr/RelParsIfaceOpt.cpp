@@ -8,13 +8,11 @@
  *
  */
 
-#include "DHCPDefaults.h"
 #include "RelParsIfaceOpt.h"
+#include "DHCPDefaults.h"
 
 TRelParsIfaceOpt::TRelParsIfaceOpt(void)
-    :ClientUnicast_(), ServerUnicast_(),
-     ClientMulticast_(false), ServerMulticast_(false),
-     InterfaceID_(-1) {
+    : ClientUnicast_(), ServerUnicast_(), ClientMulticast_(false), ServerMulticast_(false), InterfaceID_(-1) {
 }
 
 TRelParsIfaceOpt::~TRelParsIfaceOpt(void) {
@@ -36,7 +34,6 @@ void TRelParsIfaceOpt::setClientUnicast(SPtr<TIPv6Addr> addr) {
 SPtr<TIPv6Addr> TRelParsIfaceOpt::getClientUnicast() {
     return ClientUnicast_;
 }
-
 
 void TRelParsIfaceOpt::setClientMulticast(bool multi) {
     ClientMulticast_ = multi;

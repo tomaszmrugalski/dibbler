@@ -1,20 +1,20 @@
 
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <string.h>
-#include <time.h>
-#include <malloc.h>
-#include <errno.h>
-#include <syslog.h>
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <asm/types.h>
+#include <errno.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#include <malloc.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/queue.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <syslog.h>
+#include <time.h>
+#include <unistd.h>
 
 #define IF_RA_MANAGED 0x40
 #define IF_RA_OTHERCONF 0x80
@@ -23,19 +23,19 @@ int main() {
     int sd, status;
     int seq = time(NULL);
     struct sockaddr_nl nl_addr;
-    struct nlmsghdr *nlm_hdr;
-    struct rtgenmsg *rt_genmsg;
+    struct nlmsghdr * nlm_hdr;
+    struct rtgenmsg * rt_genmsg;
     char buf[NLMSG_ALIGN(sizeof(struct nlmsghdr)) + NLMSG_ALIGN(sizeof(struct rtgenmsg))];
     struct msghdr msgh;
-    struct nlmsghdr *nlm;
+    struct nlmsghdr * nlm;
     size_t newsize = 65536, size = 0;
     int msg_len;
-    char *nbuf = NULL;
+    char * nbuf = NULL;
     int nlm_len;
-    struct ifinfomsg *ifim;
+    struct ifinfomsg * ifim;
     struct rtattr *rta, *rta1;
     size_t rtasize, rtapayload, rtasize1;
-    void *rtadata;
+    void * rtadata;
     char if_name[10];
 
     sd = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
@@ -72,7 +72,7 @@ int main() {
     }
 
     for (;;) {
-        void *newbuf = realloc(nbuf, newsize);
+        void * newbuf = realloc(nbuf, newsize);
         if (newbuf == NULL) {
             perror("realloc");
             return -1;
@@ -89,7 +89,7 @@ int main() {
             msgh.msg_iov = &iov;
             msgh.msg_iovlen = 1;
             msg_len = recvmsg(sd, &msgh, 0);
-        }while (msg_len < 0 && errno == EINTR);
+        } while (msg_len < 0 && errno == EINTR);
 
         /* If msg truncated because of less size, call it with double the size */
         if (msg_len < 0 || msgh.msg_flags & MSG_TRUNC) {
@@ -99,13 +99,11 @@ int main() {
         } else if (msg_len == 0)
             break;
 
-        for (nlm = (struct nlmsghdr *)nbuf; NLMSG_OK(nlm, msg_len);
-             nlm = (struct nlmsghdr *)NLMSG_NEXT(nlm, msg_len)) {
+        for (nlm = (struct nlmsghdr *)nbuf; NLMSG_OK(nlm, msg_len); nlm = (struct nlmsghdr *)NLMSG_NEXT(nlm, msg_len)) {
             if (nlm->nlmsg_type == NLMSG_DONE) {
                 printf("NLMSG_DONE\n");
                 return 0;
-            }
-            else if (nlm->nlmsg_type == NLMSG_ERROR) {
+            } else if (nlm->nlmsg_type == NLMSG_ERROR) {
                 printf("NLMSG_ERROR\n");
                 return -1;
             }
@@ -121,8 +119,7 @@ int main() {
 
             nlm_len = msg_len;
             rtasize = NLMSG_PAYLOAD(nlm, nlm_len) - NLMSG_ALIGN(sizeof(*ifim));
-            for (rta = (struct rtattr *) (((char *) NLMSG_DATA(nlm)) +
-                                          NLMSG_ALIGN(sizeof(*ifim))); RTA_OK(rta, rtasize);
+            for (rta = (struct rtattr *)(((char *)NLMSG_DATA(nlm)) + NLMSG_ALIGN(sizeof(*ifim))); RTA_OK(rta, rtasize);
                  rta = RTA_NEXT(rta, rtasize)) {
                 rtadata = RTA_DATA(rta);
                 rtapayload = RTA_PAYLOAD(rta);
@@ -130,10 +127,9 @@ int main() {
                 switch (rta->rta_type) {
                 case IFLA_PROTINFO:
                     rtasize1 = rta->rta_len;
-                    for (rta1 = (struct rtattr *)rtadata; RTA_OK(rta1, rtasize1);
-                         rta1 = RTA_NEXT(rta1, rtasize1)) {
-                        void *rtadata1 = RTA_DATA(rta1);
-                        switch(rta1->rta_type) {
+                    for (rta1 = (struct rtattr *)rtadata; RTA_OK(rta1, rtasize1); rta1 = RTA_NEXT(rta1, rtasize1)) {
+                        void * rtadata1 = RTA_DATA(rta1);
+                        switch (rta1->rta_type) {
                         case IFLA_INET6_FLAGS:
                             if_indextoname(ifim->ifi_index, if_name);
                             printf("interface: %s\n", if_name);

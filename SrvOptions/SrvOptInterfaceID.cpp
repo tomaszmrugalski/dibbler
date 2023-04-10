@@ -20,32 +20,30 @@
 #include <netinet/in.h>
 #endif
 
-/** 
+/**
  * compares two interface-ids
- * 
- * @param other 
- * 
+ *
+ * @param other
+ *
  * @return true, if both interface-IDs are the same
  */
-bool TSrvOptInterfaceID::operator==(const TSrvOptInterfaceID &other) const
-{
+bool TSrvOptInterfaceID::operator==(const TSrvOptInterfaceID & other) const {
     if (DataLen != other.DataLen)
-	return false;
+        return false;
     if (!memcmp(Data, other.Data, DataLen))
-	return true;
+        return true;
     return false;
 }
 
 /// @todo: not endian-safe!
 TSrvOptInterfaceID::TSrvOptInterfaceID(int id, TMsg * parent)
-    :TOptGeneric(OPTION_INTERFACE_ID, (char*)&id, sizeof(int), parent)
-{
+    : TOptGeneric(OPTION_INTERFACE_ID, (char *)&id, sizeof(int), parent) {
     int tmp = htonl(id);
     memmove(Data, &tmp, sizeof(int));
 }
 
-TSrvOptInterfaceID::TSrvOptInterfaceID(const char * buf,  int n, TMsg* parent)
-    :TOptGeneric(OPTION_INTERFACE_ID, buf,n, parent) {
+TSrvOptInterfaceID::TSrvOptInterfaceID(const char * buf, int n, TMsg * parent)
+    : TOptGeneric(OPTION_INTERFACE_ID, buf, n, parent) {
 }
 
 bool TSrvOptInterfaceID::doDuties() {

@@ -12,8 +12,7 @@
 #define SRVMSGADVERTISE_H
 
 #include "SrvMsg.h"
-class TSrvMsgAdvertise : public TSrvMsg
-{
+class TSrvMsgAdvertise : public TSrvMsg {
   public:
     // creates object based on a buffer
     TSrvMsgAdvertise(SPtr<TSrvMsg> question);

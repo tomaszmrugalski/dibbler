@@ -23,16 +23,15 @@
 #ifndef SRVOPTIAADDRESS_H
 #define SRVOPTIAADDRESS_H
 
-#include "SmartPtr.h"
 #include "Container.h"
 #include "OptIAAddress.h"
+#include "SmartPtr.h"
 
 class TSrvOptIAAddress : public TOptIAAddress {
- public:
-    TSrvOptIAAddress( char * addr, int n, TMsg* parent);
-    
-    TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, 
-		     unsigned long valid, TMsg* parent);
+  public:
+    TSrvOptIAAddress(char * addr, int n, TMsg * parent);
+
+    TSrvOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg * parent);
 
     bool doDuties();
 };

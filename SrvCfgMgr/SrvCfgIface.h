@@ -14,27 +14,27 @@ class TSrvCfgIface;
 #ifndef SRVCONFIFACE_H
 #define SRVCONFIFACE_H
 #include "DHCPConst.h"
+#include "OptVendorSpecInfo.h"
 #include "SrvCfgAddrClass.h"
-#include "SrvCfgTA.h"
+#include "SrvCfgOptions.h"
 #include "SrvCfgPD.h"
+#include "SrvCfgTA.h"
 #include "SrvParsGlobalOpt.h"
 #include <iostream>
 #include <string>
 #include <vector>
-#include "OptVendorSpecInfo.h"
-#include "SrvCfgOptions.h"
 
-class TSrvCfgIface: public TSrvCfgOptions
-{
-    friend std::ostream& operator<<(std::ostream& out, TSrvCfgIface& iface);
-public:
-    TSrvCfgIface(const std::string& ifaceName);
+class TSrvCfgIface : public TSrvCfgOptions {
+    friend std::ostream & operator<<(std::ostream & out, TSrvCfgIface & iface);
+
+  public:
+    TSrvCfgIface(const std::string & ifaceName);
     TSrvCfgIface(int ifindex);
     virtual ~TSrvCfgIface();
     void setDefaults();
-    void setName(const std::string& ifaceName);
+    void setName(const std::string & ifaceName);
     void setID(int ifindex);
-    int	getID() const;
+    int getID() const;
     std::string getName() const;
     std::string getFullName() const;
 
@@ -58,7 +58,7 @@ public:
     // prefix management (IA_PD)
     void addPDClass(SPtr<TSrvCfgPD> PDClass);
     SPtr<TSrvCfgPD> getPDByID(unsigned long id);
-    //SPtr<TSrvCfgPD> getRandomPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
+    // SPtr<TSrvCfgPD> getRandomPrefix(SPtr<TDUID> clntDuid, SPtr<TIPv6Addr> clntAddr);
     long countPD() const;
     void addPD(SPtr<TSrvCfgPD> pd);
     void firstPD();
@@ -103,33 +103,30 @@ public:
     int getRelayID() const;
     SPtr<TSrvOptInterfaceID> getRelayInterfaceID() const;
     bool isRelay() const;
-    void setRelayName(const std::string& name);
+    void setRelayName(const std::string & name);
     void setRelayID(int id);
 
     // per-client parameters (exceptions)
     unsigned int removeReservedFromCache();
     void addClientExceptionsLst(List(TSrvCfgOptions) exLst);
-    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, TMsg* message, bool quiet=true);
-    bool checkReservedPrefix(SPtr<TIPv6Addr> pfx,
-                             SPtr<TDUID> duid,
-                             SPtr<TOptVendorData> remoteID,
-                             SPtr<TIPv6Addr> linkLocal);
+    SPtr<TSrvCfgOptions> getClientException(SPtr<TDUID> duid, TMsg * message, bool quiet = true);
+    bool checkReservedPrefix(SPtr<TIPv6Addr> pfx, SPtr<TDUID> duid, SPtr<TOptVendorData> remoteID, SPtr<TIPv6Addr> linkLocal);
     bool addrReserved(SPtr<TIPv6Addr> addr);
     bool prefixReserved(SPtr<TIPv6Addr> prefix);
 
     // option: FQDN
     List(TFQDN) * getFQDNLst();
-    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, const std::string& hint);
-    SPtr<TDUID> getFQDNDuid(const std::string& name);
+    SPtr<TFQDN> getFQDNName(SPtr<TDUID> duid, SPtr<TIPv6Addr> addr, const std::string & hint);
+    SPtr<TDUID> getFQDNDuid(const std::string & name);
     void setFQDNLst(List(TFQDN) * fqdn);
     int getFQDNMode() const;
     std::string getFQDNModeString() const;
-    int  getRevDNSZoneRootLength() const;
+    int getRevDNSZoneRootLength() const;
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
     bool supportFQDN() const;
     bool leaseQuerySupport() const;
 
-    void mapAllowDenyList( List(TSrvCfgClientClass) clientClassLst);
+    void mapAllowDenyList(List(TSrvCfgClientClass) clientClassLst);
 
     // following methods are used by out-of-pool reservations (others are using
     // methods from pool (SrvCfgAddrClass)
@@ -137,11 +134,12 @@ public:
     uint32_t getT2(uint32_t proposal);
     uint32_t getPref(uint32_t proposal);
     uint32_t getValid(uint32_t proposal);
-private:
+
+  private:
     uint32_t chooseTime(uint32_t min, uint32_t max, uint32_t proposal);
 
     unsigned char Preference_;
-    int	ID_;
+    int ID_;
     std::string Name_;
     bool NoConfig_;
     SPtr<TIPv6Addr> Unicast_;
@@ -162,8 +160,8 @@ private:
 
     // --- relay ---
     bool Relay_;
-    std::string RelayName_;     // name of the underlaying physical interface (or other relay)
-    int RelayID_;          // ifindex (-1 means this is not a relay)
+    std::string RelayName_;                     // name of the underlaying physical interface (or other relay)
+    int RelayID_;                               // ifindex (-1 means this is not a relay)
     SPtr<TSrvOptInterfaceID> RelayInterfaceID_; // value of interface-id option (optional)
 
     // --- option: FQDN ---

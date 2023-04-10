@@ -10,24 +10,23 @@
 #ifndef CLNTOPTIA_PD_H
 #define CLNTOPTIA_PD_H
 
-#include "OptIA_PD.h"
-#include "OptIAPrefix.h"
 #include "ClntIfaceMgr.h"
 #include "IPv6Addr.h"
+#include "OptIAPrefix.h"
+#include "OptIA_PD.h"
 
 class TOptIA_PD;
 
-class TClntOptIA_PD : public TOptIA_PD
-{
- public:
-    TClntOptIA_PD(SPtr<TClntCfgPD> ClntCfgPD, TMsg* parent);
-    TClntOptIA_PD(SPtr<TAddrIA> clntAddrPD, TMsg* parent);
-    TClntOptIA_PD(char * buf, int bufsize, TMsg* parent);
+class TClntOptIA_PD : public TOptIA_PD {
+  public:
+    TClntOptIA_PD(SPtr<TClntCfgPD> ClntCfgPD, TMsg * parent);
+    TClntOptIA_PD(SPtr<TAddrIA> clntAddrPD, TMsg * parent);
+    TClntOptIA_PD(char * buf, int bufsize, TMsg * parent);
     ~TClntOptIA_PD();
 
     bool doDuties();
     int getStatusCode();
-    void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg* originalMsg);
+    void setContext(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, TMsg * originalMsg);
     void setIface(int iface);
 
     SPtr<TOptIAPrefix> getPrefix();
@@ -40,8 +39,9 @@ class TClntOptIA_PD : public TOptIA_PD
     bool addPrefixes();
     bool updatePrefixes();
     bool delPrefixes();
- private:
-     bool modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode);
+
+  private:
+    bool modifyPrefixes(TClntIfaceMgr::PrefixModifyMode mode);
     void setState(EState state);
     void clearContext();
 

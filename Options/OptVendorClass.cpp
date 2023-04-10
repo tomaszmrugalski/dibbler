@@ -7,16 +7,16 @@
  *
  */
 
-#include "DHCPConst.h"
 #include "OptVendorClass.h"
+#include "DHCPConst.h"
 #include "Portable.h"
 #include <string.h>
 
-TOptVendorClass::TOptVendorClass(uint16_t type, const char* buf, unsigned short buf_len, TMsg* parent)
-    :TOptUserClass(type, parent) {
+TOptVendorClass::TOptVendorClass(uint16_t type, const char * buf, unsigned short buf_len, TMsg * parent)
+    : TOptUserClass(type, parent) {
     if (buf_len < 4) {
-	Valid = false;
-	return;
+        Valid = false;
+        return;
     }
     Enterprise_id_ = readUint32(buf);
     buf += sizeof(uint32_t);
@@ -28,7 +28,7 @@ size_t TOptVendorClass::getSize() {
     return 4 + TOptUserClass::getSize();
 }
 
-char * TOptVendorClass::storeSelf(char* buf) {
+char * TOptVendorClass::storeSelf(char * buf) {
     buf = writeUint16(buf, OptType);
     buf = writeUint16(buf, getSize() - 4);
     buf = writeUint32(buf, Enterprise_id_);

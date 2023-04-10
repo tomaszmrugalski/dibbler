@@ -8,17 +8,15 @@
  *
  */
 
-//#include <netinet/in.h>
-#include <string.h>
-#include "Portable.h"
+// #include <netinet/in.h>
+#include "OptIAAddress.h"
 #include "DHCPConst.h"
 #include "Opt.h"
-#include "OptIAAddress.h"
+#include "Portable.h"
+#include <string.h>
 
-TOptIAAddress::TOptIAAddress(const char * buf, size_t len, TMsg* parent)
-    :TOpt(OPTION_IAADDR, parent), Valid_(false)
-{
-    if ( len >= 24) {
+TOptIAAddress::TOptIAAddress(const char * buf, size_t len, TMsg * parent) : TOpt(OPTION_IAADDR, parent), Valid_(false) {
+    if (len >= 24) {
         Addr_ = new TIPv6Addr(buf);
         buf += 16;
         len -= 16;
@@ -31,19 +29,17 @@ TOptIAAddress::TOptIAAddress(const char * buf, size_t len, TMsg* parent)
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
 
-        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAADDR,
-                              "IAAddress option");
+        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAADDR, "IAAddress option");
     }
 }
 
-TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref,
-                             unsigned long valid, TMsg* parent)
-    :TOpt(OPTION_IAADDR, parent), Valid_(true) {
-    if(addr)
+TOptIAAddress::TOptIAAddress(SPtr<TIPv6Addr> addr, unsigned long pref, unsigned long valid, TMsg * parent)
+    : TOpt(OPTION_IAADDR, parent), Valid_(true) {
+    if (addr)
         Addr_ = addr;
     else
         Addr_ = new TIPv6Addr();
-    PrefLifetime_  = pref;
+    PrefLifetime_ = pref;
     ValidLifetime_ = valid;
 }
 
@@ -60,11 +56,10 @@ void TOptIAAddress::setValid(unsigned long valid) {
     ValidLifetime_ = valid;
 }
 
- char * TOptIAAddress::storeSelf( char* buf)
-{
+char * TOptIAAddress::storeSelf(char * buf) {
     buf = writeUint16(buf, OptType);
 
-    buf = writeUint16(buf, getSize() - 4 );
+    buf = writeUint16(buf, getSize() - 4);
 
     memcpy(buf, Addr_->getAddr(), 16);
     buf += 16;

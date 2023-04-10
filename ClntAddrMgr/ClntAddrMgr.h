@@ -11,25 +11,23 @@
 #ifndef CLNTADDRMGR_H
 #define CLNTADDRMGR_H
 
-#include "Container.h"
-#include "SmartPtr.h"
 #include "AddrIA.h"
 #include "AddrMgr.h"
-#include "Portable.h"
+#include "Container.h"
 #include "IPv6Addr.h"
+#include "Portable.h"
 #include "ScriptParams.h"
+#include "SmartPtr.h"
 
 #define ClntAddrMgr() (TClntAddrMgr::instance())
 
-class TClntAddrMgr : public TAddrMgr
-{
- private:
-    TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, const std::string& xmlFile, bool loadDB);
+class TClntAddrMgr : public TAddrMgr {
+  private:
+    TClntAddrMgr(SPtr<TDUID> clientDuid, bool useConfirm, const std::string & xmlFile, bool loadDB);
 
   public:
-    static TClntAddrMgr& instance();
-    static void instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, 
-                               const std::string& xmlFile, bool loadDB);
+    static TClntAddrMgr & instance();
+    static void instanceCreate(SPtr<TDUID> clientDUID, bool useConfirm, const std::string & xmlFile, bool loadDB);
 
     unsigned long getT1Timeout();
     unsigned long getT2Timeout();
@@ -49,23 +47,20 @@ class TClntAddrMgr : public TAddrMgr
     void setIA2Confirm(volatile link_state_notify_t * changedLinks);
     SPtr<TIPv6Addr> getPreferredAddr();
 
-    // --- PD --- 
+    // --- PD ---
     void firstPD();
     SPtr<TAddrIA> getPD();
     SPtr<TAddrIA> getPD(unsigned long IAID);
     void addPD(SPtr<TAddrIA> ptr);
     bool delPD(long IAID);
     int countPD();
-    bool addPrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
-		   const std::string& ifacename, int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-		   SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-		   int length, bool quiet);
+    bool addPrefix(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, const std::string & ifacename, int iface, unsigned long IAID,
+                   unsigned long T1, unsigned long T2, SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+                   int length, bool quiet);
 
-    bool updatePrefix(SPtr<TDUID> srvDuid , SPtr<TIPv6Addr> srvAddr,
-                      const std::string& ifname,
-		      int iface, unsigned long IAID, unsigned long T1, unsigned long T2,
-		      SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
-		      int length, bool quiet);
+    bool updatePrefix(SPtr<TDUID> srvDuid, SPtr<TIPv6Addr> srvAddr, const std::string & ifname, int iface, unsigned long IAID,
+                      unsigned long T1, unsigned long T2, SPtr<TIPv6Addr> prefix, unsigned long pref, unsigned long valid,
+                      int length, bool quiet);
 
     // --- TA ---
     void firstTA();
@@ -79,10 +74,11 @@ class TClntAddrMgr : public TAddrMgr
 
     void doDuties();
     void processLoadedDB();
-    
- protected:
-    void print(std::ostream &x);
- private:
+
+  protected:
+    void print(std::ostream & x);
+
+  private:
     SPtr<TAddrClient> Client;
     static TClntAddrMgr * Instance;
 };

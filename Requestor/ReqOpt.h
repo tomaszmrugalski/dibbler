@@ -13,31 +13,31 @@
 #define REQOPT_H
 
 #include "Opt.h"
-#include "OptIAAddress.h"
 #include "OptDUID.h"
 #include "OptGeneric.h"
+#include "OptIAAddress.h"
 
-class TReqOptAddr : public TOptIAAddress
-{
-public:
+class TReqOptAddr : public TOptIAAddress {
+  public:
     TReqOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent);
-protected:
+
+  protected:
     bool doDuties();
 };
 
-class TReqOptDUID : public TOptDUID
-{
-public:
-    TReqOptDUID(int type, SPtr<TDUID> duid, TMsg* parent);
-protected:
+class TReqOptDUID : public TOptDUID {
+  public:
+    TReqOptDUID(int type, SPtr<TDUID> duid, TMsg * parent);
+
+  protected:
     bool doDuties();
 };
 
-class TReqOptGeneric : public TOptGeneric
-{
-public:
-    TReqOptGeneric(int optType, char * data, int dataLen, TMsg* parent);
-protected:
+class TReqOptGeneric : public TOptGeneric {
+  public:
+    TReqOptGeneric(int optType, char * data, int dataLen, TMsg * parent);
+
+  protected:
     bool doDuties();
 };
 

@@ -1,13 +1,12 @@
 
-#include <wchar.h>
 #include "Portable.h"
-
+#include <wchar.h>
 
 int main() {
 
     char dev[] = "eth0";
     char prefix[] = "2000::";
-    int  len = 64;
+    int len = 64;
     int result;
 
     domain_add("eth0", 4, "example.com");

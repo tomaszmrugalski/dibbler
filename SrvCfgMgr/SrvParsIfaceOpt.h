@@ -11,18 +11,17 @@
 #ifndef TSRCPARSIFACEOPT_H_
 #define TSRCPARSIFACEOPT_H_
 
+#include "FQDN.h"
 #include "OptVendorSpecInfo.h"
 #include "SrvOptInterfaceID.h"
 #include "SrvParsClassOpt.h"
-#include "FQDN.h"
 
-class TSrvParsIfaceOpt : public TSrvParsClassOpt
-{
-public:
+class TSrvParsIfaceOpt : public TSrvParsClassOpt {
+  public:
     TSrvParsIfaceOpt(void);
     ~TSrvParsIfaceOpt(void);
 
-   void setClntMaxLease(long maxLeases);
+    void setClntMaxLease(long maxLeases);
     long getClntMaxLease();
     void setIfaceMaxLease(long maxLease);
     long getIfaceMaxLease();
@@ -62,14 +61,14 @@ public:
     // option: LIFETIME servers is now handled with extra options mechanism
 
     // option: FQDN
-    List(TFQDN) *getFQDNLst();
+    List(TFQDN) * getFQDNLst();
     int getRevDNSZoneRootLength();
     void setRevDNSZoneRootLength(int revDNSZoneRootLength);
-    void setUnknownFQDN(EUnknownFQDNMode mode, const std::string& domain);
+    void setUnknownFQDN(EUnknownFQDNMode mode, const std::string & domain);
     EUnknownFQDNMode getUnknownFQDN();
     std::string getFQDNDomain();
 
-    void setFQDNLst(List(TFQDN) *fqdn);
+    void setFQDNLst(List(TFQDN) * fqdn);
     bool supportFQDN();
 
     int getFQDNMode();
@@ -84,13 +83,12 @@ public:
 
     // extra options
     void addExtraOption(SPtr<TOpt> extra, bool always);
-    const TOptList& getExtraOptions();
+    const TOptList & getExtraOptions();
     SPtr<TOpt> getExtraOption(uint16_t type);
-    const TOptList& getForcedOptions();
+    const TOptList & getForcedOptions();
 
-private:
-
-    void addOption(TOptList& list, SPtr<TOpt> opt);
+  private:
+    void addOption(TOptList & list, SPtr<TOpt> opt);
 
     /// @todo: Preference should be a global value
     char Preference_;

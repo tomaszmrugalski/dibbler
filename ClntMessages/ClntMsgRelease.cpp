@@ -11,21 +11,20 @@
  */
 
 #include "ClntMsgRelease.h"
-#include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "Container.h"
+#include "AddrAddr.h"
 #include "AddrIA.h"
-#include "OptDUID.h"
+#include "AddrMgr.h"
+#include "ClntAddrMgr.h"
 #include "ClntCfgMgr.h"
 #include "ClntOptIA_NA.h"
-#include "ClntOptTA.h"
 #include "ClntOptIA_PD.h"
-#include <cmath>
+#include "ClntOptTA.h"
+#include "Container.h"
+#include "DHCPConst.h"
 #include "Logger.h"
-#include "ClntAddrMgr.h"
-#include "AddrMgr.h"
-#include "AddrIA.h"
-#include "AddrAddr.h"
+#include "OptDUID.h"
+#include "SmartPtr.h"
+#include <cmath>
 
 using namespace std;
 
@@ -38,19 +37,15 @@ using namespace std;
  * @param ta    - IA_TA to be released
  * @param pdLst - IA_PD list to be released
  */
-TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
-                                 List(TAddrIA) iaLst,
-                                 SPtr<TAddrIA> ta,
-                                 List(TAddrIA) pdLst)
-  :TClntMsg(iface, addr, RELEASE_MSG)
-{
+TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr, List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst)
+    : TClntMsg(iface, addr, RELEASE_MSG) {
     SPtr<TDUID> srvDUID;
 
-    IRT=REL_TIMEOUT;
-    MRT=0;
-    MRC=REL_MAX_RC;
-    MRD=0;
-    RT=0;
+    IRT = REL_TIMEOUT;
+    MRT = 0;
+    MRC = REL_MAX_RC;
+    MRD = 0;
+    RT = 0;
 
     // obtain IA, TA or PD, so server DUID can be obtained
     SPtr<TAddrIA> x;
@@ -76,19 +71,18 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     }
     srvDUID = x->getDUID();
 
-    Options.push_back(new TOptDUID(OPTION_SERVERID, srvDUID,this));
-    Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(),this));
+    Options.push_back(new TOptDUID(OPTION_SERVERID, srvDUID, this));
+    Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this));
 
     // --- RELEASE IA ---
     iaLst.first();
-    while(x=iaLst.get()) {
-        Options.push_back(new TClntOptIA_NA(x,this));
+    while (x = iaLst.get()) {
+        Options.push_back(new TClntOptIA_NA(x, this));
         SPtr<TAddrAddr> ptrAddr;
         SPtr<TClntIfaceIface> ptrIface;
         ptrIface = SPtr_cast<TClntIfaceIface>(ClntIfaceMgr().getIfaceByID(x->getIfindex()));
         if (!ptrIface) {
-            Log(Warning) << "Unable to find interface with ifindex "
-                         << x->getIfindex() << " while creating RELEASE." << LogEnd;
+            Log(Warning) << "Unable to find interface with ifindex " << x->getIfindex() << " while creating RELEASE." << LogEnd;
             continue;
         }
         x->firstAddr();
@@ -117,8 +111,8 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
                 ptrIface->delAddr(addr->get(), addr->getPrefix());
             }
         } else {
-            Log(Warning) << "Unable to find interface with ifindex "
-                         << ta->getIfindex() << " while creating RELEASE." << LogEnd;
+            Log(Warning) << "Unable to find interface with ifindex " << ta->getIfindex() << " while creating RELEASE."
+                         << LogEnd;
         }
     }
 
@@ -127,13 +121,13 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     SPtr<TAddrIA> pd;
 
     pdLst.first();
-    while(pd=pdLst.get()) {
-        SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd,this);
+    while (pd = pdLst.get()) {
+        SPtr<TClntOptIA_PD> pdOpt = new TClntOptIA_PD(pd, this);
         pdOpt->setContext(srvDUID, addr, this);
         pdOpt->delPrefixes();
         Options.push_back(SPtr_cast<TOpt>(pdOpt));
 
-        ClntAddrMgr().delPD(pd->getIAID() );
+        ClntAddrMgr().delPD(pd->getIAID());
     }
 
     appendElapsedOption();
@@ -143,8 +137,7 @@ TClntMsgRelease::TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
     send();
 }
 
-void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
-{
+void TClntMsgRelease::answer(SPtr<TClntMsg> rep) {
     SPtr<TOptDUID> rspSrvID = rep->getServerID();
     SPtr<TOptDUID> msgSrvID = getServerID();
     if (!rspSrvID) {
@@ -155,8 +148,7 @@ void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
         Log(Error) << "Sent RELEASE did not contain SERVER-ID. That seems to be my fault. Sorry." << LogEnd;
     }
 
-    if (rspSrvID && msgSrvID &&
-        (!(*msgSrvID->getDUID()==*rspSrvID->getDUID()))) {
+    if (rspSrvID && msgSrvID && (!(*msgSrvID->getDUID() == *rspSrvID->getDUID()))) {
         Log(Error) << "Internal error. RELEASE sent to server with DUID=" << msgSrvID->getPlain()
                    << ", but response returned with " << rspSrvID->getPlain() << LogEnd;
     }
@@ -165,10 +157,10 @@ void TClntMsgRelease::answer(SPtr<TClntMsg> rep)
 }
 
 void TClntMsgRelease::doDuties() {
-    if (RC!=MRC)
+    if (RC != MRC)
         send();
     else
-       IsDone=true;
+        IsDone = true;
     return;
 }
 

@@ -13,15 +13,15 @@
 
 #include "ClntMsg.h"
 
-class TClntMsgReconfigure : public TClntMsg
-{
+class TClntMsgReconfigure : public TClntMsg {
   public:
-    TClntMsgReconfigure(int iface, SPtr<TIPv6Addr> addr,
-                      char* buf, int bufSize);
+    TClntMsgReconfigure(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize);
 
     bool check();
     void doDuties();
-    std::string getName() const { return std::string("RECONFIGURE"); }
+    std::string getName() const {
+        return std::string("RECONFIGURE");
+    }
     ~TClntMsgReconfigure();
 };
 

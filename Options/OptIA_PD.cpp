@@ -8,14 +8,14 @@
  *
  */
 
-#include "Portable.h"
 #include "OptIA_PD.h"
+#include "DHCPConst.h"
 #include "OptIAPrefix.h"
 #include "OptStatusCode.h"
-#include "DHCPConst.h"
+#include "Portable.h"
 
-TOptIA_PD::TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg* parent)
-    :TOpt(OPTION_IA_PD, parent), IAID_(iaid), T1_(t1), T2_(t2), Valid_(true)  {
+TOptIA_PD::TOptIA_PD(uint32_t iaid, uint32_t t1, uint32_t t2, TMsg * parent)
+    : TOpt(OPTION_IA_PD, parent), IAID_(iaid), T1_(t1), T2_(t2), Valid_(true) {
 }
 
 uint32_t TOptIA_PD::getIAID() const {
@@ -30,8 +30,7 @@ uint32_t TOptIA_PD::getT2() const {
     return T2_;
 }
 
-TOptIA_PD::TOptIA_PD(char * &buf, int &bufsize, TMsg* parent)
-    :TOpt(OPTION_IA_PD, parent), Valid_(false) {
+TOptIA_PD::TOptIA_PD(char *& buf, int & bufsize, TMsg * parent) : TOpt(OPTION_IA_PD, parent), Valid_(false) {
     if (bufsize < 12) {
         bufsize = 0;
     } else {
@@ -50,13 +49,12 @@ TOptIA_PD::TOptIA_PD(char * &buf, int &bufsize, TMsg* parent)
     }
 }
 
-
 int TOptIA_PD::getStatusCode() {
     SPtr<TOpt> ptrOpt;
     SubOptions.first();
-    while ( ptrOpt = SubOptions.get() ) {
-        if ( ptrOpt->getOptType() == OPTION_STATUS_CODE) {
-            SPtr <TOptStatusCode> ptrStatus;
+    while (ptrOpt = SubOptions.get()) {
+        if (ptrOpt->getOptType() == OPTION_STATUS_CODE) {
+            SPtr<TOptStatusCode> ptrStatus;
             ptrStatus = SPtr_cast<TOptStatusCode>(ptrOpt);
             if (ptrStatus) {
                 return ptrStatus->getCode();
@@ -71,9 +69,9 @@ size_t TOptIA_PD::getSize() {
     return mySize + getSubOptSize();
 }
 
-char * TOptIA_PD::storeSelf( char* buf) {
+char * TOptIA_PD::storeSelf(char * buf) {
     buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize() - 4 );
+    buf = writeUint16(buf, getSize() - 4);
 
     buf = writeUint32(buf, IAID_);
     buf = writeUint32(buf, T1_);
@@ -95,7 +93,7 @@ int TOptIA_PD::countPrefixes() {
     int cnt = 0;
     SPtr<TOpt> opt;
     this->firstOption();
-    while (opt = this->getOption() ) {
+    while (opt = this->getOption()) {
         if (opt->getOptType() == OPTION_IAPREFIX)
             cnt++;
     }

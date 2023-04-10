@@ -15,30 +15,44 @@
 
 // standard options specified in RFC3315, pg. 99
 bool OptInMsg[13][20] = {
-//           Client Server  IA_NA IA_TA IAAddr Option  Pref  Elap  Relay  Empty Auth. Server  Status  Rap. User  Vendor Vendor Inter. Recon. Recon.
-//             ID     ID                       Request       Time  Msg.   Empty       Unica.   Code  Comm. Class Class  Spec.    ID    Msg.  Accept
-/*Solicit */ {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  true, true, true,  true, false, false,true },
-/*Advertise*/{true,  true , true,  true, false, false,true , false,false, false,true, true,  true ,  false,true, true,  true, false, false,true },
-/*Request*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,true },
-/*Confirm*/  {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
-/*Renew*/    {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
-/*Rebind*/   {true,  false, true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false, true},
-/*Reply*/    {true,  true , true,  true, false, false,true,  false,false, false,true, true,  true ,  true ,true, true,  true, false, false,true },
-/*Release*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
-/*Decline*/  {true,  true , true,  true, false, true, false, true, false, false,true, false, false,  false,true, true,  true, false, false,false},
-/*Reconf.*/  {true,  true , false, false,false, true, false, false,false, false,true, false, false,  false,false,false, false,false, true ,false},
-/*Inform.*/  {true,  true,  false, false,false, true ,false, true, false, false,true, false, false,  false,true, true,  true, false, false,true},
-/*R-forw.*/  {false, false, false, false,false, false,false, false,true,  false,true, false, false,  false,true, true,  true, true , false,false},
-/*R-repl.*/  {false, false, false, false,false, false,false, false,true,  false,true, false, false,  false,true, true,  true, true , false,false},
+    //           Client Server  IA_NA IA_TA IAAddr Option  Pref  Elap  Relay  Empty Auth. Server  Status  Rap. User  Vendor
+    //           Vendor Inter. Recon. Recon.
+    //             ID     ID                       Request       Time  Msg.   Empty       Unica.   Code  Comm. Class Class Spec.
+    //             ID    Msg.  Accept
+    /*Solicit */ {true, false, true,  true, false, true, false, true,  false, false,
+                  true, false, false, true, true,  true, true,  false, false, true},
+    /*Advertise*/ {true, true, true, true,  false, false, true, false, false, false,
+                   true, true, true, false, true,  true,  true, false, false, true},
+    /*Request*/ {true, true,  true,  true,  false, true, false, true,  false, false,
+                 true, false, false, false, true,  true, true,  false, false, true},
+    /*Confirm*/ {true, false, true,  true,  false, true, false, true,  false, false,
+                 true, false, false, false, true,  true, true,  false, false, false},
+    /*Renew*/ {true, true,  true,  true,  false, true, false, true,  false, false,
+               true, false, false, false, true,  true, true,  false, false, true},
+    /*Rebind*/ {true, false, true,  true,  false, true, false, true,  false, false,
+                true, false, false, false, true,  true, true,  false, false, true},
+    /*Reply*/ {true, true, true, true, false, false, true, false, false, false,
+               true, true, true, true, true,  true,  true, false, false, true},
+    /*Release*/ {true, true,  true,  true,  false, true, false, true,  false, false,
+                 true, false, false, false, true,  true, true,  false, false, false},
+    /*Decline*/ {true, true,  true,  true,  false, true, false, true,  false, false,
+                 true, false, false, false, true,  true, true,  false, false, false},
+    /*Reconf.*/ {true, true,  false, false, false, true,  false, false, false, false,
+                 true, false, false, false, false, false, false, false, true,  false},
+    /*Inform.*/ {true, true,  false, false, false, true, false, true,  false, false,
+                 true, false, false, false, true,  true, true,  false, false, true},
+    /*R-forw.*/ {false, false, false, false, false, false, false, false, true,  false,
+                 true,  false, false, false, true,  true,  true,  true,  false, false},
+    /*R-repl.*/ {false, false, false, false, false, false, false, false, true,  false,
+                 true,  false, false, false, true,  true,  true,  true,  false, false},
 };
 
-int allowOptInMsg(int msg, int opt)
-{
+int allowOptInMsg(int msg, int opt) {
     // standard options specified in RFC3315
-    if (msg>13)
+    if (msg > 13)
         return 1; // allow everthing in new messages
-    if (opt <=20) {
-            return OptInMsg[msg-1][opt-1];
+    if (opt <= 20) {
+        return OptInMsg[msg - 1][opt - 1];
     }
 
     // additional options: allow them
@@ -73,56 +87,54 @@ int allowOptInMsg(int msg, int opt)
 int allowOptInOpt(int msgType, int parent, int subopt) {
 
     // additional options (not specified in RFC3315)
-    if (subopt>20)
+    if (subopt > 20)
         return 1;
 
-    if ((msgType==RELAY_FORW_MSG)||(msgType==RELAY_REPL_MSG)) {
-            if ( (subopt==OPTION_INTERFACE_ID) || (subopt=OPTION_RELAY_MSG))
-                return 1;
-            return 0;
+    if ((msgType == RELAY_FORW_MSG) || (msgType == RELAY_REPL_MSG)) {
+        if ((subopt == OPTION_INTERFACE_ID) || (subopt = OPTION_RELAY_MSG))
+            return 1;
+        return 0;
     }
 
     switch (parent) {
-    case 0: //Option Field
-        if ((subopt!=OPTION_IAADDR)&&
-            (subopt!=OPTION_RELAY_MSG)&&
-            (subopt!=OPTION_INTERFACE_ID))
+    case 0: // Option Field
+        if ((subopt != OPTION_IAADDR) && (subopt != OPTION_RELAY_MSG) && (subopt != OPTION_INTERFACE_ID))
             return 1;
         break;
     case OPTION_IA_NA:
     case OPTION_IA_TA:
-        if ((subopt==OPTION_IAADDR)||(subopt==OPTION_STATUS_CODE))
+        if ((subopt == OPTION_IAADDR) || (subopt == OPTION_STATUS_CODE))
             return 1;
         break;
     case OPTION_IAADDR:
-        if (subopt==OPTION_STATUS_CODE)
+        if (subopt == OPTION_STATUS_CODE)
             return 1;
-        if (subopt==OPTION_ADDRPARAMS)
+        if (subopt == OPTION_ADDRPARAMS)
             return 1;
         break;
     case OPTION_IA_PD:
-        if ( (subopt==OPTION_IAPREFIX) || (subopt==OPTION_STATUS_CODE))
+        if ((subopt == OPTION_IAPREFIX) || (subopt == OPTION_STATUS_CODE))
             return 1;
     case OPTION_LQ_QUERY:
-      if ( (subopt == OPTION_IAADDR) || (subopt==OPTION_CLIENTID) )
-        return 1;
+        if ((subopt == OPTION_IAADDR) || (subopt == OPTION_CLIENTID))
+            return 1;
     }
     return 0;
 }
 
 unsigned DIGESTSIZE[] = {
-        0,  //NONE
-        32, //PLAIN
-        16, //HMAC-MD5
-        20, //HMAC-SHA1
-        28, //HMAC-SHA224
-        32, //HMAC-SHA256
-        48, //HMAC-SHA384
-        64, //HMAC-SHA512
-        0   //_END_
+    0,  // NONE
+    32, // PLAIN
+    16, // HMAC-MD5
+    20, // HMAC-SHA1
+    28, // HMAC-SHA224
+    32, // HMAC-SHA256
+    48, // HMAC-SHA384
+    64, // HMAC-SHA512
+    0   //_END_
 };
 
-char *DIGESTNAME[] = {
+char * DIGESTNAME[] = {
     (char *)"NONE",
     (char *)"PLAIN",
     (char *)"HMAC-MD5",
@@ -131,21 +143,21 @@ char *DIGESTNAME[] = {
     (char *)"HMAC-SHA-256",
     (char *)"HMAC-SHA-384",
     (char *)"HMAC-SHA-512",
-    (char *)""   //_END_
+    (char *)"" //_END_
 };
 
 unsigned getDigestSize(enum DigestTypes type) {
-        if (type >= DIGEST_INVALID) {
-                Log(Error) << "Invalid digest type: " << type << LogEnd;
-                return 0;
-        }
-        return DIGESTSIZE[type];
+    if (type >= DIGEST_INVALID) {
+        Log(Error) << "Invalid digest type: " << type << LogEnd;
+        return 0;
+    }
+    return DIGESTSIZE[type];
 }
 
-char *getDigestName(enum DigestTypes type) {
+char * getDigestName(enum DigestTypes type) {
     return DIGESTNAME[type];
 }
 
-void PrintHex(const std::string& message, const uint8_t *buffer, unsigned len) {
+void PrintHex(const std::string & message, const uint8_t * buffer, unsigned len) {
     Log(Debug) << message << hexToText(buffer, len, false, false) << LogEnd;
 }

@@ -12,22 +12,20 @@ class TClntIfaceMgr;
 #ifndef CLNTMSGREQUEST_H
 #define CLNTMSGREQUEST_H
 
-#include "SmartPtr.h"
 #include "ClntMsg.h"
+#include "SmartPtr.h"
 
-class TClntMsgRequest : public TClntMsg
-{
+class TClntMsgRequest : public TClntMsg {
   public:
     TClntMsgRequest(TOptList opts, int iface);
-    TClntMsgRequest(List(TAddrIA) requestIALst,
-                    SPtr<TDUID> srvDUID,
-                    int iface);
-    
+    TClntMsgRequest(List(TAddrIA) requestIALst, SPtr<TDUID> srvDUID, int iface);
+
     void answer(SPtr<TClntMsg> msg);
     void doDuties();
     bool check();
     std::string getName() const;
     ~TClntMsgRequest();
+
   private:
     void setState(TOptList opts, EState state);
     void copyAddrsFromAdvertise(SPtr<TClntMsg> adv);

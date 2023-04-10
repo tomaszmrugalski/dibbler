@@ -10,30 +10,25 @@
  *
  */
 
-#include "Portable.h"
-#include "DHCPConst.h"
 #include "ClntOptElapsed.h"
+#include "DHCPConst.h"
 #include "Logger.h"
+#include "Portable.h"
 
-TClntOptElapsed::TClntOptElapsed( char * buf,  int n, TMsg* parent)
-    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf,n, parent)
-{
+TClntOptElapsed::TClntOptElapsed(char * buf, int n, TMsg * parent)
+    : TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, buf, n, parent) {
     Timestamp = (uint32_t)time(NULL);
 }
 
-TClntOptElapsed::TClntOptElapsed(TMsg* parent)
-    :TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, 0, parent)
-{
+TClntOptElapsed::TClntOptElapsed(TMsg * parent) : TOptInteger(OPTION_ELAPSED_TIME, OPTION_ELAPSED_TIME_LEN, 0, parent) {
     Timestamp = (uint32_t)time(NULL);
 }
 
-bool TClntOptElapsed::doDuties()
-{
+bool TClntOptElapsed::doDuties() {
     return false;
 }
 
-char * TClntOptElapsed::storeSelf(char* buf)
-{
-    Value = (unsigned int)((uint32_t)time(NULL) - Timestamp)*100;
+char * TClntOptElapsed::storeSelf(char * buf) {
+    Value = (unsigned int)((uint32_t)time(NULL) - Timestamp) * 100;
     return TOptInteger::storeSelf(buf);
 }

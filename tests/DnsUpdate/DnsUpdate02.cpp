@@ -1,21 +1,20 @@
-#include <iostream>
 #include "DNSUpdate.h"
 #include "Logger.h"
+#include <iostream>
 
 using namespace std;
 
 bool DnsUpdate_test(DNSUpdate::DnsUpdateProtocol proto, bool dhcid, bool tsig) {
 
-    string dnsAddr   = "2000::1";
-    string zonename  = "example.org.";
-    string hostname  = "troi.example.org.";
-    string hostip    = "2000::dead:beef";
+    string dnsAddr = "2000::1";
+    string zonename = "example.org.";
+    string hostname = "troi.example.org.";
+    string hostip = "2000::dead:beef";
 
-    char duid[]="this is my duid";
+    char duid[] = "this is my duid";
     int duidLen = strlen(duid);
 
-    DNSUpdate *act = new DNSUpdate(dnsAddr, zonename, hostname, hostip, 
-				   DNSUPDATE_AAAA, proto);
+    DNSUpdate * act = new DNSUpdate(dnsAddr, zonename, hostname, hostip, DNSUPDATE_AAAA, proto);
     if (dhcid)
         act->addDHCID(duid, duidLen);
 
@@ -26,7 +25,7 @@ bool DnsUpdate_test(DNSUpdate::DnsUpdateProtocol proto, bool dhcid, bool tsig) {
     return true;
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char * argv[]) {
 
     DnsUpdate_test(DNSUpdate::DNSUPDATE_UDP, false, false);
     DnsUpdate_test(DNSUpdate::DNSUPDATE_TCP, false, false);

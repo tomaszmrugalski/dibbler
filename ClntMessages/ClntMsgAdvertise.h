@@ -15,14 +15,12 @@
 
 #include "ClntMsg.h"
 
-class TClntMsgAdvertise : public TClntMsg
-{
+class TClntMsgAdvertise : public TClntMsg {
   public:
     /* TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr); */
-    
-    TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, 
-                      char* buf, int bufSize);
-    
+
+    TClntMsgAdvertise(int iface, SPtr<TIPv6Addr> addr, char * buf, int bufSize);
+
     // returns preference value (default value is 0)
     int getPreference();
     bool check();
@@ -33,4 +31,4 @@ class TClntMsgAdvertise : public TClntMsg
     ~TClntMsgAdvertise();
 };
 
-#endif 
+#endif

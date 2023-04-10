@@ -6,16 +6,14 @@
  * released under GNU GPL v2 licence
  */
 
-#include <string.h>
 #include "Key.h"
 #include "Logger.h"
+#include <string.h>
 extern "C" {
 #include "base64.h"
 }
 
-TSIGKey::TSIGKey(const std::string& name)
-    : Digest_(DIGEST_NONE), Name_(name), Fudge_(300) {
-
+TSIGKey::TSIGKey(const std::string & name) : Digest_(DIGEST_NONE), Name_(name), Fudge_(300) {
 }
 std::string TSIGKey::getAlgorithmText() {
     switch (Digest_) {
@@ -30,7 +28,7 @@ std::string TSIGKey::getAlgorithmText() {
     }
 }
 
-bool TSIGKey::setData(const std::string& base64encoded) {
+bool TSIGKey::setData(const std::string & base64encoded) {
     Base64Data_ = base64encoded;
 
     char raw[100];
@@ -40,16 +38,13 @@ bool TSIGKey::setData(const std::string& base64encoded) {
     base64_decode_context ctx = {0};
     base64_decode_ctx_init(&ctx);
 
-    bool status = base64_decode(&ctx, Base64Data_.c_str(),
-                                Base64Data_.length(),
-                                raw, &raw_len);
+    bool status = base64_decode(&ctx, Base64Data_.c_str(), Base64Data_.length(), raw, &raw_len);
     if (!status) {
-        Log(Warning) << "Failed to base64-decode key. There are trailing unparsed characters."
-                     << LogEnd;
+        Log(Warning) << "Failed to base64-decode key. There are trailing unparsed characters." << LogEnd;
     }
 
     Data_.resize(raw_len);
-    for (unsigned i=0; i<raw_len; i++) {
+    for (unsigned i = 0; i < raw_len; i++) {
         Data_[i] = raw[i];
     }
 

@@ -10,17 +10,16 @@
 #ifndef ADDRADDR_H
 #define ADDRADDR_H
 
-#include <list>
-#include <iostream>
+#include "DHCPConst.h"
 #include "IPv6Addr.h"
 #include "SmartPtr.h"
-#include "DHCPConst.h"
+#include <iostream>
+#include <list>
 
-class TAddrAddr
-{
-    friend std::ostream & operator<<(std::ostream & strum, TAddrAddr &x);
+class TAddrAddr {
+    friend std::ostream & operator<<(std::ostream & strum, TAddrAddr & x);
+
   public:
-
     TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid);
     TAddrAddr(SPtr<TIPv6Addr> addr, long pref, long valid, int prefix);
 
@@ -40,7 +39,7 @@ class TAddrAddr
     long getTimestamp();
     void setTimestamp(long ts);
     void setTimestamp();
-    
+
     // tentative
     enum EAddrStatus getTentative();
     void setTentative(enum EAddrStatus state);
@@ -55,6 +54,6 @@ class TAddrAddr
     int Prefix;
 };
 
-typedef std::list< SPtr<TIPv6Addr> > TAddrList;
+typedef std::list<SPtr<TIPv6Addr>> TAddrList;
 
 #endif

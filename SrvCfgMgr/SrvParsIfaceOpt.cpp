@@ -9,23 +9,20 @@
  *
  */
 
-#include <climits>
 #include "SrvParsIfaceOpt.h"
-#include "OptAddr.h"
-#include "OptString.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include "OptAddr.h"
+#include "OptString.h"
+#include <climits>
 
 using namespace std;
 
 TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
-    :Preference_(SERVER_DEFAULT_PREFERENCE), RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
-     IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE), ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE),
-     Unicast_(), LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false),
-     RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(),
-     FQDNSupport_(false), FQDNMode_(0/*DNS_UPDATE_MODE_NONE*/),
-     UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN), FQDNDomain_("")
-{
+    : Preference_(SERVER_DEFAULT_PREFERENCE), RapidCommit_(SERVER_DEFAULT_RAPIDCOMMIT),
+      IfaceMaxLease_(SERVER_DEFAULT_IFACEMAXLEASE), ClntMaxLease_(SERVER_DEFAULT_CLNTMAXLEASE), Unicast_(),
+      LeaseQuery_(SERVER_DEFAULT_LEASEQUERY), Relay_(false), RelayName_("[unknown]"), RelayID_(-1), RelayInterfaceID_(),
+      FQDNSupport_(false), FQDNMode_(0 /*DNS_UPDATE_MODE_NONE*/), UnknownFQDN_(SERVER_DEFAULT_UNKNOWN_FQDN), FQDNDomain_("") {
     RevDNSZoneRootLength_ = SERVER_DEFAULT_DNSUPDATE_REVDNS_ZONE_LEN;
 
     // don't support leasequery unless explicitly configured to do so
@@ -34,7 +31,7 @@ TSrvParsIfaceOpt::TSrvParsIfaceOpt(void)
 TSrvParsIfaceOpt::~TSrvParsIfaceOpt(void) {
 }
 
-void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string& domain) {
+void TSrvParsIfaceOpt::setUnknownFQDN(EUnknownFQDNMode mode, const std::string & domain) {
     UnknownFQDN_ = mode;
     FQDNDomain_ = domain;
 }
@@ -166,25 +163,25 @@ List(TOptVendorSpecInfo) TSrvParsIfaceOpt::getVendorSpec()
 #endif
 
 // --- option: FQDN ---
-void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) *fqdn) {
+void TSrvParsIfaceOpt::setFQDNLst(List(TFQDN) * fqdn) {
     FQDNLst_ = *fqdn;
     FQDNSupport_ = true;
 }
 
-List(TFQDN) *TSrvParsIfaceOpt::getFQDNLst() {
+List(TFQDN) * TSrvParsIfaceOpt::getFQDNLst() {
     return &this->FQDNLst_;
 }
 
-int TSrvParsIfaceOpt::getFQDNMode(){
+int TSrvParsIfaceOpt::getFQDNMode() {
     return FQDNMode_;
 }
-void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode){
+void TSrvParsIfaceOpt::setFQDNMode(int FQDNMode) {
     FQDNMode_ = FQDNMode;
 }
-int TSrvParsIfaceOpt::getRevDNSZoneRootLength(){
+int TSrvParsIfaceOpt::getRevDNSZoneRootLength() {
     return RevDNSZoneRootLength_;
 }
-void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength){
+void TSrvParsIfaceOpt::setRevDNSZoneRootLength(int revDNSZoneRootLength) {
     RevDNSZoneRootLength_ = revDNSZoneRootLength;
 }
 
@@ -201,7 +198,7 @@ bool TSrvParsIfaceOpt::supportFQDN() {
 ///
 /// @param list list of options (new option will be added or merged here)
 /// @param custom new option to be added
-void TSrvParsIfaceOpt::addOption(TOptList& list, TOptPtr custom) {
+void TSrvParsIfaceOpt::addOption(TOptList & list, TOptPtr custom) {
 
     if (custom->getOptType() == OPTION_VENDOR_OPTS) {
 
@@ -211,9 +208,8 @@ void TSrvParsIfaceOpt::addOption(TOptList& list, TOptPtr custom) {
                        << " can't add option." << LogEnd;
             return;
         }
-        
-        for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
-        {
+
+        for (TOptList::iterator opt = ExtraOpts.begin(); opt != ExtraOpts.end(); ++opt) {
             if ((*opt)->getOptType() != OPTION_VENDOR_OPTS)
                 continue;
             SPtr<TOptVendorSpecInfo> existing = SPtr_cast<TOptVendorSpecInfo>(*opt);
@@ -240,19 +236,18 @@ void TSrvParsIfaceOpt::addExtraOption(SPtr<TOpt> custom, bool always) {
         addOption(ForcedOpts, custom); // also add to forced, if requested so
 }
 
-const TOptList& TSrvParsIfaceOpt::getExtraOptions() {
+const TOptList & TSrvParsIfaceOpt::getExtraOptions() {
     return ExtraOpts;
 }
 
 TOptPtr TSrvParsIfaceOpt::getExtraOption(uint16_t type) {
-    for (TOptList::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
-    {
+    for (TOptList::iterator opt = ExtraOpts.begin(); opt != ExtraOpts.end(); ++opt) {
         if ((*opt)->getOptType() == type)
             return *opt;
     }
     return TOptPtr(); // NULL
 }
 
-const TOptList& TSrvParsIfaceOpt::getForcedOptions() {
+const TOptList & TSrvParsIfaceOpt::getForcedOptions() {
     return ForcedOpts;
 }

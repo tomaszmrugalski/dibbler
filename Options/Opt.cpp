@@ -8,27 +8,25 @@
  *
  */
 
-#include "Portable.h"
 #include "Opt.h"
-#include "OptStatusCode.h"
+#include "Logger.h"
 #include "OptGeneric.h"
 #include "OptIAAddress.h"
 #include "OptIAPrefix.h"
 #include "OptRtPrefix.h"
-#include "Logger.h"
+#include "OptStatusCode.h"
+#include "Portable.h"
 
 int TOpt::getOptType() {
     return OptType;
 }
 
 TOpt::~TOpt() {
-
 }
 
-TOpt::TOpt(int optType, TMsg *parent)
-    :Valid(true) {
-    OptType=optType;
-    Parent=parent;
+TOpt::TOpt(int optType, TMsg * parent) : Valid(true) {
+    OptType = optType;
+    Parent = parent;
 }
 
 int TOpt::getSubOptSize() {
@@ -40,16 +38,16 @@ int TOpt::getSubOptSize() {
     return size;
 }
 
-char* TOpt::storeHeader(char* buf) {
+char * TOpt::storeHeader(char * buf) {
     buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf,getSize() - 4);
+    buf = writeUint16(buf, getSize() - 4);
     return buf;
 }
 
-char* TOpt::storeSubOpt(char* buf){
+char * TOpt::storeSubOpt(char * buf) {
     TOptPtr ptr;
     SubOptions.first();
-    while ( ptr = SubOptions.get() ) {
+    while (ptr = SubOptions.get()) {
         ptr->storeSelf(buf);
         buf += ptr->getSize();
     }
@@ -67,8 +65,8 @@ TOptPtr TOpt::getOption() {
 TOptPtr TOpt::getOption(int optType) {
     firstOption();
     TOptPtr opt;
-    while(opt=getOption()) {
-        if (opt->getOptType()==optType)
+    while (opt = getOption()) {
+        if (opt->getOptType() == optType)
             return opt;
     }
     return TOptPtr();
@@ -82,8 +80,8 @@ int TOpt::countOption() {
     return SubOptions.count();
 }
 
-void TOpt::setParent(TMsg* Parent) {
-    this->Parent=Parent;
+void TOpt::setParent(TMsg * Parent) {
+    this->Parent = Parent;
 }
 
 void TOpt::delAllOptions() {
@@ -103,8 +101,8 @@ bool TOpt::delOption(uint16_t type) {
     firstOption();
     TOptPtr opt;
     bool del = false;
-    while(opt=getOption()) {
-        if (opt->getOptType()==type) {
+    while (opt = getOption()) {
+        if (opt->getOptType() == type) {
             SubOptions.del();
             SubOptions.first();
             del = true;
@@ -117,9 +115,8 @@ std::string TOpt::getPlain() {
     return "[generic]";
 }
 
-TOptPtr TOpt::getOption(const TOptList& list, uint16_t opt_type) {
-    for (TOptList::const_iterator opt = list.begin(); opt != list.end();
-         ++opt) {
+TOptPtr TOpt::getOption(const TOptList & list, uint16_t opt_type) {
+    for (TOptList::const_iterator opt = list.begin(); opt != list.end(); ++opt) {
         if ((*opt)->getOptType() == opt_type) {
             return *opt;
         }
@@ -139,13 +136,13 @@ TOptPtr TOpt::getOption(const TOptList& list, uint16_t opt_type) {
 /// @param place text representation of the parsed scope
 ///
 /// @return true if parsing was successful, false if anomalies are detected
-bool TOpt::parseOptions(TOptContainer& options, const char* buf, size_t len,
-                        TMsg* parent, uint16_t placeId /*= 0*/, // 5 (option 5) or (message 5)
+bool TOpt::parseOptions(TOptContainer & options, const char * buf, size_t len, TMsg * parent,
+                        uint16_t placeId /*= 0*/,           // 5 (option 5) or (message 5)
                         std::string place) { /*= "option"*/ // "option" or "message"
 
     // parse suboptions
-    while (len>0) {
-        if (len<4) {
+    while (len > 0) {
+        if (len < 4) {
             Log(Warning) << "Truncated suboption in " << place << " " << placeId << LogEnd;
             return false;
         }
@@ -157,9 +154,8 @@ bool TOpt::parseOptions(TOptContainer& options, const char* buf, size_t len,
         buf += sizeof(uint16_t);
         len -= sizeof(uint16_t);
 
-        if (optLen>len) {
-            Log(Warning) << "Truncated suboption " << optType << " in " << place << " "
-                         << placeId << LogEnd;
+        if (optLen > len) {
+            Log(Warning) << "Truncated suboption " << optType << " in " << place << " " << placeId << LogEnd;
             return false;
         }
 

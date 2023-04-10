@@ -13,25 +13,22 @@
  */
 
 #include "ClntMsgRenew.h"
-#include "DHCPConst.h"
+#include "ClntIfaceMgr.h"
 #include "ClntOptIA_NA.h"
 #include "ClntOptIA_PD.h"
+#include "ClntTransMgr.h"
+#include "DHCPConst.h"
+#include "Logger.h"
 #include "OptDUID.h"
 #include "OptOptionRequest.h"
-#include "Logger.h"
-#include "ClntTransMgr.h"
-#include "ClntIfaceMgr.h"
 #include <cmath>
 
-TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
-                             List(TAddrIA) PDLst)
-    :TClntMsg(0, SPtr<TIPv6Addr>(), RENEW_MSG)
-{
-   // set transmission parameters
-    IRT=REN_TIMEOUT;
-    MRT=REN_MAX_RT;
-    MRC=0;
-    RT=0;
+TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst, List(TAddrIA) PDLst) : TClntMsg(0, SPtr<TIPv6Addr>(), RENEW_MSG) {
+    // set transmission parameters
+    IRT = REN_TIMEOUT;
+    MRT = REN_MAX_RT;
+    MRC = 0;
+    RT = 0;
 
     if (IALst.count() + PDLst.count() == 0) {
         Log(Error) << "Unable to send RENEW. No IAs and no PDs defined." << LogEnd;
@@ -40,7 +37,7 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
     }
 
     // retransmit until T2 has been reached or any address has expired
-    //it should be the same for all IAs
+    // it should be the same for all IAs
     unsigned int timeout = DHCPV6_INFINITY;
 
     SPtr<TAddrIA> ia;
@@ -58,35 +55,35 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
         return;
     }
 
-    MRD      = ia->getT2Timeout();
-    Iface    = ia->getIfindex();
+    MRD = ia->getT2Timeout();
+    Iface = ia->getIfindex();
     PeerAddr_ = ia->getSrvAddr();
 
-    if (RT>MRD)
-        RT=MRD;
+    if (RT > MRD)
+        RT = MRD;
 
     // store our DUID
     Options.push_back(new TOptDUID(OPTION_CLIENTID, ClntCfgMgr().getDUID(), this));
 
     // and say who's this message is for
     if (IALst.count())
-        Options.push_back( new TOptDUID(OPTION_SERVERID,IALst.getFirst()->getDUID(),this));
+        Options.push_back(new TOptDUID(OPTION_SERVERID, IALst.getFirst()->getDUID(), this));
     else
-        Options.push_back( new TOptDUID(OPTION_SERVERID,PDLst.getFirst()->getDUID(),this));
+        Options.push_back(new TOptDUID(OPTION_SERVERID, PDLst.getFirst()->getDUID(), this));
 
-    //Store all IAs to renew
+    // Store all IAs to renew
     IALst.first();
-    while(ia=IALst.get()) {
-              if (timeout > ia->getT2Timeout())
-                  timeout = ia->getT2Timeout();
-              Options.push_back(new TClntOptIA_NA(ia,this));
+    while (ia = IALst.get()) {
+        if (timeout > ia->getT2Timeout())
+            timeout = ia->getT2Timeout();
+        Options.push_back(new TClntOptIA_NA(ia, this));
     }
 
     PDLst.first();
-    while (ia=PDLst.get()) {
-              if (timeout > ia->getT2Timeout())
-                  timeout = ia->getT2Timeout();
-              Options.push_back(new TClntOptIA_PD(ia, this));
+    while (ia = PDLst.get()) {
+        if (timeout > ia->getT2Timeout())
+            timeout = ia->getT2Timeout();
+        Options.push_back(new TClntOptIA_PD(ia, this));
     }
 
     appendRequestedOptions();
@@ -96,9 +93,7 @@ TClntMsgRenew::TClntMsgRenew(List(TAddrIA) IALst,
     send();
 }
 
-
-void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
-{
+void TClntMsgRenew::answer(SPtr<TClntMsg> Reply) {
     SPtr<TOpt> opt;
     unsigned int iaCnt = 0;
 
@@ -107,23 +102,20 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
     Reply->firstOption();
     // for each option in message... (there should be only one IA option, as we send
     // separate RENEW for each IA, but we check all options anyway)
-    while ( opt = Reply->getOption() ) {
+    while (opt = Reply->getOption()) {
         switch (opt->getOptType()) {
         case OPTION_IA_NA: {
             iaCnt++;
             SPtr<TClntOptIA_NA> ptrOptIA = SPtr_cast<TClntOptIA_NA>(opt);
             if (ptrOptIA->getStatusCode() != STATUSCODE_SUCCESS) {
-                if(ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING){
+                if (ptrOptIA->getStatusCode() == STATUSCODE_NOBINDING) {
                     ClntTransMgr().sendRequest(Options, Iface);
                     IsDone = true;
                     return;
-                }else{
-                    SPtr<TOptStatusCode> status =
-                        SPtr_cast<TOptStatusCode>(ptrOptIA->getOption(OPTION_STATUS_CODE));
-                    Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID()
-                                 << ") with status code "
-                                 << StatusCodeToString(status->getCode()) << ": "
-                                 << status->getText() << LogEnd;
+                } else {
+                    SPtr<TOptStatusCode> status = SPtr_cast<TOptStatusCode>(ptrOptIA->getOption(OPTION_STATUS_CODE));
+                    Log(Warning) << "Received IA (iaid=" << ptrOptIA->getIAID() << ") with status code "
+                                 << StatusCodeToString(status->getCode()) << ": " << status->getText() << LogEnd;
                     break;
                 }
             }
@@ -136,21 +128,18 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
             iaCnt++;
             SPtr<TClntOptIA_PD> pd = SPtr_cast<TClntOptIA_PD>(opt);
             if (pd->getStatusCode() != STATUSCODE_SUCCESS) {
-                if(pd->getStatusCode() == STATUSCODE_NOBINDING){
-                    ClntTransMgr().sendRequest(Options,Iface);
+                if (pd->getStatusCode() == STATUSCODE_NOBINDING) {
+                    ClntTransMgr().sendRequest(Options, Iface);
                     IsDone = true;
                     return;
-                }
-                else{
-                    SPtr<TOptStatusCode> status =
-                        SPtr_cast<TOptStatusCode>(pd->getOption(OPTION_STATUS_CODE));
+                } else {
+                    SPtr<TOptStatusCode> status = SPtr_cast<TOptStatusCode>(pd->getOption(OPTION_STATUS_CODE));
                     Log(Warning) << "Received PD (iaid=" << pd->getIAID() << ") with status code "
-                                 << StatusCodeToString(status->getCode()) << ": "
-                                 << status->getText() << LogEnd;
+                                 << StatusCodeToString(status->getCode()) << ": " << status->getText() << LogEnd;
                     break;
                 }
             }
-            pd->setContext(srvDUID->getDUID(), SPtr<TIPv6Addr>(), (TMsg*)this);
+            pd->setContext(srvDUID->getDUID(), SPtr<TIPv6Addr>(), (TMsg *)this);
             pd->doDuties();
             break;
         }
@@ -159,8 +148,7 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
         case OPTION_INTERFACE_ID:
         case OPTION_IAADDR:
         case OPTION_RECONF_MSG:
-            Log(Warning) << "Illegal option (" << opt->getOptType()
-                         << ") in received REPLY message." << LogEnd;
+            Log(Warning) << "Illegal option (" << opt->getOptType() << ") in received REPLY message." << LogEnd;
             break;
         default:
             // what to do with unknown/other options? execute them
@@ -169,9 +157,9 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
         }
     }
 
-    //Here we received answer from our server, which updated the "whole information"
-    //There is no use to send Rebind even if server realesed some addresses/IAs
-    //in such a case new Solicit message should be sent
+    // Here we received answer from our server, which updated the "whole information"
+    // There is no use to send Rebind even if server realesed some addresses/IAs
+    // in such a case new Solicit message should be sent
     IsDone = true;
 }
 
@@ -180,32 +168,27 @@ void TClntMsgRenew::answer(SPtr<TClntMsg> Reply)
  *
  * @param iaid
  */
-void TClntMsgRenew::releaseIA(long iaid)
-{
+void TClntMsgRenew::releaseIA(long iaid) {
     SPtr<TAddrIA> ia = ClntAddrMgr().getIA(iaid);
-    if(ia){
+    if (ia) {
         ia->setState(STATE_NOTCONFIGURED);
     }
 }
 
-void TClntMsgRenew::doDuties()
-{
+void TClntMsgRenew::doDuties() {
     /// @todo: increase RT from REN_TIMEOUT to REN_MAX_RT
 
     // should we send RENEW once more or start sending REBIND
-    if (!MRD)
-    {
+    if (!MRD) {
         Log(Notice) << "RENEW remains unanswered and timeout T2 reached, so REBIND will be sent." << LogEnd;
-        ClntTransMgr().sendRebind(Options,getIface());
+        ClntTransMgr().sendRebind(Options, getIface());
         IsDone = true;
         return;
     }
     send();
 }
 
-
-bool TClntMsgRenew::check()
-{
+bool TClntMsgRenew::check() {
     // this should never happen
     return false;
 }

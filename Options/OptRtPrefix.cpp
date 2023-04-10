@@ -8,21 +8,20 @@
  *
  */
 
-#include <sstream>
-#include "DHCPConst.h"
 #include "OptRtPrefix.h"
+#include "DHCPConst.h"
 #include "Logger.h"
 #include "Portable.h"
+#include <sstream>
 
 using namespace std;
 
-TOptRtPrefix::TOptRtPrefix(uint32_t lifetime, uint8_t prefixlen, uint8_t metric, SPtr<TIPv6Addr> prefix, TMsg* parent)
-    :TOpt(OPTION_RTPREFIX, parent), Lifetime(lifetime), PrefixLen(prefixlen), Metric(metric), Prefix(prefix) {
+TOptRtPrefix::TOptRtPrefix(uint32_t lifetime, uint8_t prefixlen, uint8_t metric, SPtr<TIPv6Addr> prefix, TMsg * parent)
+    : TOpt(OPTION_RTPREFIX, parent), Lifetime(lifetime), PrefixLen(prefixlen), Metric(metric), Prefix(prefix) {
 }
 
-TOptRtPrefix::TOptRtPrefix(const char * buf, int bufsize, TMsg* parent)
-    :TOpt(OPTION_RTPREFIX, parent) {
-    if (bufsize<20) {
+TOptRtPrefix::TOptRtPrefix(const char * buf, int bufsize, TMsg * parent) : TOpt(OPTION_RTPREFIX, parent) {
+    if (bufsize < 20) {
         Log(Warning) << "Received truncated RTPREFIX option" << LogEnd;
         Valid = false;
         return;
@@ -46,7 +45,7 @@ TOptRtPrefix::TOptRtPrefix(const char * buf, int bufsize, TMsg* parent)
     Valid = parseOptions(SubOptions, buf, bufsize, parent, OPTION_RTPREFIX);
 }
 
-char* TOptRtPrefix::storeSelf(char* buf) {
+char * TOptRtPrefix::storeSelf(char * buf) {
     buf = storeHeader(buf);
     buf = writeUint32(buf, Lifetime);
     buf[0] = PrefixLen;
@@ -58,18 +57,15 @@ char* TOptRtPrefix::storeSelf(char* buf) {
     return storeSubOpt(buf);
 }
 
-uint32_t TOptRtPrefix::getLifetime()
-{
+uint32_t TOptRtPrefix::getLifetime() {
     return Lifetime;
 }
 
-uint8_t TOptRtPrefix::getPrefixLen()
-{
+uint8_t TOptRtPrefix::getPrefixLen() {
     return PrefixLen;
 }
 
-uint8_t TOptRtPrefix::getMetric()
-{
+uint8_t TOptRtPrefix::getMetric() {
     return Metric;
 }
 
@@ -83,7 +79,6 @@ size_t TOptRtPrefix::getSize() {
 
 std::string TOptRtPrefix::getPlain() {
     stringstream tmp;
-    tmp << Prefix->getPlain() << "/" << (unsigned int)PrefixLen << " " << Lifetime
-        << " " << (unsigned int)Metric;
+    tmp << Prefix->getPlain() << "/" << (unsigned int)PrefixLen << " " << Lifetime << " " << (unsigned int)Metric;
     return tmp.str();
 }

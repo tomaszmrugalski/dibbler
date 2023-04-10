@@ -9,16 +9,14 @@
 
 #include "SrvParsGlobalOpt.h"
 #include "DHCPDefaults.h"
-#include "Portable.h"
 #include "Logger.h"
+#include "Portable.h"
 
 using namespace std;
 
-TSrvParsGlobalOpt::TSrvParsGlobalOpt(void) 
-    :Experimental_(false), WorkDir_(DEFAULT_WORKDIR), Stateless_(false),
-     InactiveMode_(false), GuessMode_(false), CacheSize_(SERVER_DEFAULT_CACHE_SIZE),
-     InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE)
-{
+TSrvParsGlobalOpt::TSrvParsGlobalOpt(void)
+    : Experimental_(false), WorkDir_(DEFAULT_WORKDIR), Stateless_(false), InactiveMode_(false), GuessMode_(false),
+      CacheSize_(SERVER_DEFAULT_CACHE_SIZE), InterfaceIDOrder_(SRV_IFACE_ID_ORDER_BEFORE) {
 }
 
 TSrvParsGlobalOpt::~TSrvParsGlobalOpt(void) {
@@ -28,7 +26,7 @@ std::string TSrvParsGlobalOpt::getWorkDir() const {
     return WorkDir_;
 }
 
-void TSrvParsGlobalOpt::setWorkDir(const std::string& dir) {
+void TSrvParsGlobalOpt::setWorkDir(const std::string & dir) {
     WorkDir_ = dir;
 }
 
@@ -52,7 +50,7 @@ void TSrvParsGlobalOpt::setCacheSize(int bytes) {
     CacheSize_ = bytes;
 }
 
-int  TSrvParsGlobalOpt::getCacheSize() const {
+int TSrvParsGlobalOpt::getCacheSize() const {
     return CacheSize_;
 }
 

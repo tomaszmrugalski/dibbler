@@ -10,9 +10,9 @@
 
 #ifndef TRELPARSGLOBALOPT_H_
 #define TRELPARSGLOBALOPT_H_
-#include "RelParsIfaceOpt.h"
 #include "OptVendorData.h"
 #include "RelOptEcho.h"
+#include "RelParsIfaceOpt.h"
 #include "SmartPtr.h"
 #include <string>
 
@@ -22,12 +22,11 @@ typedef enum {
     REL_IFACE_ID_ORDER_NONE
 } ERelIfaceIdOrder;
 
-class TRelParsGlobalOpt : public TRelParsIfaceOpt
-{
- public:
+class TRelParsGlobalOpt : public TRelParsIfaceOpt {
+  public:
     TRelParsGlobalOpt(void);
     ~TRelParsGlobalOpt(void);
-    
+
     std::string getWorkDir();
     void setWorkDir(std::string dir);
 
@@ -43,7 +42,7 @@ class TRelParsGlobalOpt : public TRelParsIfaceOpt
     void setEcho(SPtr<TRelOptEcho> echo);
     SPtr<TRelOptEcho> getEcho();
 
-private:
+  private:
     std::string WorkDir_;
     bool GuessMode_;
 

@@ -29,7 +29,7 @@
 #endif
 
 #if defined(LINUX)
-# include <sys/select.h>
+#include <sys/select.h>
 #endif
 
 #include <stdint.h>
@@ -50,15 +50,15 @@ uint8_t* writeUint64(uint8_t* buf, uint64_t qword); */
 #ifdef __cplusplus
 extern "C" {
 #endif
-    uint8_t readUint8(const BUFFER_TYPE* buf);
-    BUFFER_TYPE* writeUint8(BUFFER_TYPE* buf, uint8_t octet);
-    uint16_t readUint16(const BUFFER_TYPE * buf);
-    BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
-    uint32_t readUint32(const BUFFER_TYPE * buf);
-    BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
-    uint64_t readUint64(const BUFFER_TYPE * buf);
-    BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
-    BUFFER_TYPE* writeData(BUFFER_TYPE* buf,  BUFFER_TYPE* data, size_t len);
+uint8_t readUint8(const BUFFER_TYPE * buf);
+BUFFER_TYPE * writeUint8(BUFFER_TYPE * buf, uint8_t octet);
+uint16_t readUint16(const BUFFER_TYPE * buf);
+BUFFER_TYPE * writeUint16(BUFFER_TYPE * buf, uint16_t word);
+uint32_t readUint32(const BUFFER_TYPE * buf);
+BUFFER_TYPE * writeUint32(BUFFER_TYPE * buf, uint32_t dword);
+uint64_t readUint64(const BUFFER_TYPE * buf);
+BUFFER_TYPE * writeUint64(BUFFER_TYPE * buf, uint64_t qword);
+BUFFER_TYPE * writeData(BUFFER_TYPE * buf, BUFFER_TYPE * data, size_t len);
 #ifdef __cplusplus
 }
 #endif
@@ -75,20 +75,20 @@ extern "C" {
 
 /* Structure used for interface name reporting */
 struct iface {
-    char name[MAX_IFNAME_LENGTH];  /* interface name */
-    int  id;                       /* interface ID (often called ifindex) */
-    int  hardwareType;             /* type of hardware (see RFC 826) */
-    char mac[255];                 /* link layer address */
-    int  maclen;                   /* length of link layer address */
-    char *linkaddr;                /* assigned IPv6 link local addresses  */
-    int  linkaddrcount;            /* number of assigned IPv6 link local addresses */
-    char *globaladdr;              /* global IPv6 addresses */
-    int  globaladdrcount;          /* number of global IPV6 addresses */
-    int  link_state;               /* used in link change detection routines */
-    unsigned int flags;            /* look IF_xxx in portable.h */
-    unsigned char m_bit;           /* M bit in RA received? */
-    unsigned char o_bit;           /* O bit in RA received? */
-    struct iface* next;            /* structure describing next iface in system */
+    char name[MAX_IFNAME_LENGTH]; /* interface name */
+    int id;                       /* interface ID (often called ifindex) */
+    int hardwareType;             /* type of hardware (see RFC 826) */
+    char mac[255];                /* link layer address */
+    int maclen;                   /* length of link layer address */
+    char * linkaddr;              /* assigned IPv6 link local addresses  */
+    int linkaddrcount;            /* number of assigned IPv6 link local addresses */
+    char * globaladdr;            /* global IPv6 addresses */
+    int globaladdrcount;          /* number of global IPV6 addresses */
+    int link_state;               /* used in link change detection routines */
+    unsigned int flags;           /* look IF_xxx in portable.h */
+    unsigned char m_bit;          /* M bit in RA received? */
+    unsigned char o_bit;          /* O bit in RA received? */
+    struct iface * next;          /* structure describing next iface in system */
 };
 
 #define MAX_LINK_STATE_CHANGES_AT_ONCE 16
@@ -105,55 +105,54 @@ struct iface {
    with lifetimes, please set this to 1, but be aware that DAD may not work. */
 #define ADD_ADDRESSES_WITH_LIFETIMES 0
 
-struct link_state_notify_t
-{
+struct link_state_notify_t {
     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed.
                                                     Only non-zero values will be used */
     int stat[MAX_LINK_STATE_CHANGES_AT_ONCE];
-    int cnt;  /* number of iterface indexes filled */
+    int cnt; /* number of iterface indexes filled */
 };
 
 /**********************************************************************/
 /*** file setup/default paths *****************************************/
 /**********************************************************************/
 
-#define CLNTCFGMGR_FILE   "client-CfgMgr.xml"
+#define CLNTCFGMGR_FILE "client-CfgMgr.xml"
 #define CLNTIFACEMGR_FILE "client-IfaceMgr.xml"
-#define CLNTDUID_FILE     "client-duid"
-#define CLNTADDRMGR_FILE  "client-AddrMgr.xml"
+#define CLNTDUID_FILE "client-duid"
+#define CLNTADDRMGR_FILE "client-AddrMgr.xml"
 #define CLNTTRANSMGR_FILE "client-TransMgr.xml"
 
-#define SRVCFGMGR_FILE    "server-CfgMgr.xml"
-#define SRVIFACEMGR_FILE  "server-IfaceMgr.xml"
-#define SRVDUID_FILE      "server-duid"
-#define SRVADDRMGR_FILE   "server-AddrMgr.xml"
-#define SRVTRANSMGR_FILE  "server-TransMgr.xml"
-#define SRVCACHE_FILE     "server-cache.xml"
+#define SRVCFGMGR_FILE "server-CfgMgr.xml"
+#define SRVIFACEMGR_FILE "server-IfaceMgr.xml"
+#define SRVDUID_FILE "server-duid"
+#define SRVADDRMGR_FILE "server-AddrMgr.xml"
+#define SRVTRANSMGR_FILE "server-TransMgr.xml"
+#define SRVCACHE_FILE "server-cache.xml"
 
-#define RELCFGMGR_FILE    "relay-CfgMgr.xml"
-#define RELIFACEMGR_FILE  "relay-IfaceMgr.xml"
-#define RELTRANSMGR_FILE  "relay-TransMgr.xml"
+#define RELCFGMGR_FILE "relay-CfgMgr.xml"
+#define RELIFACEMGR_FILE "relay-IfaceMgr.xml"
+#define RELTRANSMGR_FILE "relay-TransMgr.xml"
 
-#define REQIFACEMGR_FILE  "requestor-IfaceMgr.xml"
+#define REQIFACEMGR_FILE "requestor-IfaceMgr.xml"
 
 #define DNSUPDATE_DEFAULT_TTL "2h"
 #define DNSUPDATE_DEFAULT_TIMEOUT 1000 /* in ms */
-#define INACTIVE_MODE_INTERVAL 3 /* 3 seconds */
+#define INACTIVE_MODE_INTERVAL 3       /* 3 seconds */
 
-#define REQLOG_FILE        "dibbler-requestor.log"
+#define REQLOG_FILE "dibbler-requestor.log"
 
 #ifdef WIN32
-#define DEFAULT_WORKDIR       ".\\"
-#define DEFAULT_SCRIPT        ""
+#define DEFAULT_WORKDIR ".\\"
+#define DEFAULT_SCRIPT ""
 #define DEFAULT_CLNTCONF_FILE "client.conf"
-#define SRVCONF_FILE          "server.conf"
-#define RELCONF_FILE          "relay.conf"
-#define DEFAULT_CLNTLOG_FILE  "dibbler-client.log"
-#define SRVLOG_FILE           "dibbler-server.log"
-#define RELLOG_FILE           "dibbler-relay.log"
-#define CLNT_AAASPI_FILE      "AAA-SPI"
-#define SRV_KEYMAP_FILE       "keys-mapping"
-#define NULLFILE              "nul"
+#define SRVCONF_FILE "server.conf"
+#define RELCONF_FILE "relay.conf"
+#define DEFAULT_CLNTLOG_FILE "dibbler-client.log"
+#define SRVLOG_FILE "dibbler-server.log"
+#define RELLOG_FILE "dibbler-relay.log"
+#define CLNT_AAASPI_FILE "AAA-SPI"
+#define SRV_KEYMAP_FILE "keys-mapping"
+#define NULLFILE "nul"
 /* specifies if client should remove any configured DNS servers when configuring
    DNS servers for the first time. This makes sense on WIN32 only. */
 #define FLUSH_OTHER_CONFIGURED_DNS_SERVERS true
@@ -161,47 +160,47 @@ struct link_state_notify_t
 
 #ifndef DEFAULT_WORKDIR
 #if defined(BSD)
-#define DEFAULT_WORKDIR       "/var/db/dibbler"
+#define DEFAULT_WORKDIR "/var/db/dibbler"
 #else
 #if !defined(WIN32)
-#define DEFAULT_WORKDIR       "/var/lib/dibbler"
+#define DEFAULT_WORKDIR "/var/lib/dibbler"
 #endif
 #endif
 #endif
 
 #if defined(LINUX) || defined(BSD) || defined(SUNOS)
 #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
-#define DEFAULT_CLNTPID_FILE  "/var/lib/dibbler/client.pid"
-#define DEFAULT_CLNTLOG_FILE  "/var/log/dibbler/dibbler-client.log"
+#define DEFAULT_CLNTPID_FILE "/var/lib/dibbler/client.pid"
+#define DEFAULT_CLNTLOG_FILE "/var/log/dibbler/dibbler-client.log"
 
-#define DEFAULT_SCRIPT     ""
-#define SRVCONF_FILE       "/etc/dibbler/server.conf"
-#define RELCONF_FILE       "/etc/dibbler/relay.conf"
-#define RESOLVCONF_FILE    "/etc/resolv.conf"
-#define NTPCONF_FILE       "/etc/ntp.conf"
-#define RADVD_FILE         "/etc/dibbler/radvd.conf"
+#define DEFAULT_SCRIPT ""
+#define SRVCONF_FILE "/etc/dibbler/server.conf"
+#define RELCONF_FILE "/etc/dibbler/relay.conf"
+#define RESOLVCONF_FILE "/etc/resolv.conf"
+#define NTPCONF_FILE "/etc/ntp.conf"
+#define RADVD_FILE "/etc/dibbler/radvd.conf"
 
 #if defined(BSD)
-#define SRVPID_FILE        "/var/run/dibbler-server.pid"
-#define RELPID_FILE        "/var/run/dibbler-relay.pid"
-#define CLNT_AAASPI_FILE   "/var/db/dibbler/AAA/AAA-SPI"
-#define SRV_KEYMAP_FILE    "/var/db/dibbler/AAA/keys-mapping"
+#define SRVPID_FILE "/var/run/dibbler-server.pid"
+#define RELPID_FILE "/var/run/dibbler-relay.pid"
+#define CLNT_AAASPI_FILE "/var/db/dibbler/AAA/AAA-SPI"
+#define SRV_KEYMAP_FILE "/var/db/dibbler/AAA/keys-mapping"
 #else
-#define SRVPID_FILE        "/var/lib/dibbler/server.pid"
-#define RELPID_FILE        "/var/lib/dibbler/relay.pid"
-#define CLNT_AAASPI_FILE   "/var/lib/dibbler/AAA/AAA-SPI"
-#define SRV_KEYMAP_FILE    "/var/lib/dibbler/AAA/keys-mapping"
+#define SRVPID_FILE "/var/lib/dibbler/server.pid"
+#define RELPID_FILE "/var/lib/dibbler/relay.pid"
+#define CLNT_AAASPI_FILE "/var/lib/dibbler/AAA/AAA-SPI"
+#define SRV_KEYMAP_FILE "/var/lib/dibbler/AAA/keys-mapping"
 #endif
 
-#define SRVLOG_FILE        "/var/log/dibbler/dibbler-server.log"
-#define RELLOG_FILE        "/var/log/dibbler/dibbler-relay.log"
-#define NULLFILE           "/dev/null"
+#define SRVLOG_FILE "/var/log/dibbler/dibbler-server.log"
+#define RELLOG_FILE "/var/log/dibbler/dibbler-relay.log"
+#define NULLFILE "/dev/null"
 
 /* those defines were initially used on Linux only, but hopefully
    they will work on other Posix systems as well */
-#define RESOLVCONF         "/sbin/resolvconf"
-#define TIMEZONE_FILE      "/etc/localtime"
-#define TIMEZONES_DIR      "/usr/share/zoneinfo"
+#define RESOLVCONF "/sbin/resolvconf"
+#define TIMEZONE_FILE "/etc/localtime"
+#define TIMEZONES_DIR "/usr/share/zoneinfo"
 
 /* specifies if client should remove any configured DNS servers when configuring
    DNS servers for the first time. This makes sense on WIN32 only. */
@@ -209,16 +208,16 @@ struct link_state_notify_t
 #endif
 
 /* --- options --- */
-#define OPTION_DNS_SERVERS_FILENAME  "option-dns-servers"
-#define OPTION_DOMAINS_FILENAME      "option-domains"
-#define OPTION_NTP_SERVERS_FILENAME  "option-ntp-servers"
-#define OPTION_TIMEZONE_FILENAME     "option-timezone"
-#define OPTION_SIP_SERVERS_FILENAME  "option-sip-servers"
-#define OPTION_SIP_DOMAINS_FILENAME  "option-sip-domains"
-#define OPTION_NIS_SERVERS_FILENAME  "option-nis-servers"
-#define OPTION_NIS_DOMAIN_FILENAME   "option-nis-domain"
+#define OPTION_DNS_SERVERS_FILENAME "option-dns-servers"
+#define OPTION_DOMAINS_FILENAME "option-domains"
+#define OPTION_NTP_SERVERS_FILENAME "option-ntp-servers"
+#define OPTION_TIMEZONE_FILENAME "option-timezone"
+#define OPTION_SIP_SERVERS_FILENAME "option-sip-servers"
+#define OPTION_SIP_DOMAINS_FILENAME "option-sip-domains"
+#define OPTION_NIS_SERVERS_FILENAME "option-nis-servers"
+#define OPTION_NIS_DOMAIN_FILENAME "option-nis-domain"
 #define OPTION_NISP_SERVERS_FILENAME "option-nisplus-servers"
-#define OPTION_NISP_DOMAIN_FILENAME  "option-nisplus-domain"
+#define OPTION_NISP_DOMAIN_FILENAME "option-nisplus-domain"
 
 /* --- bulk leasequery --- */
 #define BULKLQ_ACCEPT false
@@ -234,7 +233,7 @@ struct link_state_notify_t
    Posix systems use values imported from headers */
 
 #ifdef WIN32
-#define IFF_RUNNING        IFF_UP
+#define IFF_RUNNING IFF_UP
 /* those defines are in ws2ipdef.h
 #define IFF_UP             0x1
 #define IFF_MULTICAST      0x4
@@ -244,21 +243,21 @@ struct link_state_notify_t
 /* ********************************************************************** */
 /* *** low-level error codes ******************************************** */
 /* ********************************************************************** */
-#define LOWLEVEL_NO_ERROR                0
-#define LOWLEVEL_ERROR_UNSPEC           -1
-#define LOWLEVEL_ERROR_BIND_IFACE       -2
-#define LOWLEVEL_ERROR_BIND_FAILED      -4
-#define LOWLEVEL_ERROR_MCAST_HOPS       -5
+#define LOWLEVEL_NO_ERROR 0
+#define LOWLEVEL_ERROR_UNSPEC -1
+#define LOWLEVEL_ERROR_BIND_IFACE -2
+#define LOWLEVEL_ERROR_BIND_FAILED -4
+#define LOWLEVEL_ERROR_MCAST_HOPS -5
 #define LOWLEVEL_ERROR_MCAST_MEMBERSHIP -6
-#define LOWLEVEL_ERROR_GETADDRINFO      -7
-#define LOWLEVEL_ERROR_SOCK_OPTS        -8
-#define LOWLEVEL_ERROR_REUSE_FAILED     -9
-#define LOWLEVEL_ERROR_FILE             -10
-#define LOWLEVEL_ERROR_SOCKET           -11
-#define LOWLEVEL_ERROR_NOT_IMPLEMENTED  -12
+#define LOWLEVEL_ERROR_GETADDRINFO -7
+#define LOWLEVEL_ERROR_SOCK_OPTS -8
+#define LOWLEVEL_ERROR_REUSE_FAILED -9
+#define LOWLEVEL_ERROR_FILE -10
+#define LOWLEVEL_ERROR_SOCKET -11
+#define LOWLEVEL_ERROR_NOT_IMPLEMENTED -12
 
 #define LOWLEVEL_TENTATIVE_YES 1
-#define LOWLEVEL_TENTATIVE_NO  0
+#define LOWLEVEL_TENTATIVE_NO 0
 #define LOWLEVEL_TENTATIVE_DONT_KNOW -1
 
 /* ********************************************************************** */
@@ -267,9 +266,9 @@ struct link_state_notify_t
 
 #ifdef WIN32
 #define strncasecmp _strnicmp
-#include <winsock2.h>
-#include <windows.h>
 #include <time.h>
+#include <windows.h>
+#include <winsock2.h>
 #endif
 
 /* ********************************************************************** */
@@ -280,107 +279,105 @@ struct link_state_notify_t
 extern "C" {
 #endif
 
-    int lowlevelInit();
-    int lowlevelExit();
+int lowlevelInit();
+int lowlevelExit();
 
-    /* get list of interfaces */
-    extern struct iface * if_list_get();
-    extern void if_list_release(struct iface * list);
+/* get list of interfaces */
+extern struct iface * if_list_get();
+extern void if_list_release(struct iface * list);
 
-    /* add address to interface */
-    extern int ipaddr_add(const char* ifacename, int ifindex, const char* addr,
-unsigned long pref, unsigned long valid, int prefixLength);
-    extern int ipaddr_update(const char* ifacename, int ifindex, const char* addr,
-                             unsigned long pref, unsigned long valid, int prefixLength);
-    extern int ipaddr_del(const char* ifacename, int ifindex, const char* addr, int prefixLength);
+/* add address to interface */
+extern int ipaddr_add(const char * ifacename, int ifindex, const char * addr, unsigned long pref, unsigned long valid,
+                      int prefixLength);
+extern int ipaddr_update(const char * ifacename, int ifindex, const char * addr, unsigned long pref, unsigned long valid,
+                         int prefixLength);
+extern int ipaddr_del(const char * ifacename, int ifindex, const char * addr, int prefixLength);
 
-    /* add socket to interface */
-    extern int sock_add(char* ifacename,int ifaceid, char* addr, int port, int thisifaceonly, int reuse);
-    extern int sock_del(int fd);
-    extern int sock_send(int fd, char* addr, char* buf, int buflen, int port, int iface);
-    extern int sock_recv(int fd, char* myPlainAddr, char* peerPlainAddr, char* buf, int buflen);
+/* add socket to interface */
+extern int sock_add(char * ifacename, int ifaceid, char * addr, int port, int thisifaceonly, int reuse);
+extern int sock_del(int fd);
+extern int sock_send(int fd, char * addr, char * buf, int buflen, int port, int iface);
+extern int sock_recv(int fd, char * myPlainAddr, char * peerPlainAddr, char * buf, int buflen);
 
-    /** @brief gets MAC address from the specified IPv6 address
-     *
-     *  This is called immediately after we received message from that address,
-     *  so the neighbor cache is guaranteed to have entry for it. This is highly
-     *  os specific
-     *
-     * @param iface_name network interface name
-     * @param ifindex network interface index
-     * @param v6addr text represenation of the IPv6 address
-     * @param mac pointer to MAC buffer (length specified in mac_len)
-     * @param mac_len specifies MAC buffer length. Must be set so number of bytes set by the function
-     *
-     * @return 0 if successful, negative values if there are errors
-     */
-    extern int get_mac_from_ipv6(const char* iface_name, int ifindex, const char* v6addr,
-                                 char* mac, int* mac_len);
+/** @brief gets MAC address from the specified IPv6 address
+ *
+ *  This is called immediately after we received message from that address,
+ *  so the neighbor cache is guaranteed to have entry for it. This is highly
+ *  os specific
+ *
+ * @param iface_name network interface name
+ * @param ifindex network interface index
+ * @param v6addr text represenation of the IPv6 address
+ * @param mac pointer to MAC buffer (length specified in mac_len)
+ * @param mac_len specifies MAC buffer length. Must be set so number of bytes set by the function
+ *
+ * @return 0 if successful, negative values if there are errors
+ */
+extern int get_mac_from_ipv6(const char * iface_name, int ifindex, const char * v6addr, char * mac, int * mac_len);
 
-    /* pack/unpack address */
-    extern void print_packed(char addr[]);
-    extern int inet_pton6(const char* src, char* dst);
-    extern char * inet_ntop4(const char* src, char* dst);
-    extern char * inet_ntop6(const char* src, char* dst);
-    extern void print_packed(char * addr);
-    extern void doRevDnsAddress( char * src, char *dst);
-    extern void doRevDnsZoneRoot( char * src,  char * dst, int lenght);
-    extern void truncatePrefixFromConfig( char * src,  char * dst, char lenght);
-    extern int is_addr_tentative(char* ifacename, int iface, char* plainAddr);
-    extern void link_state_change_init(volatile struct link_state_notify_t * changed_links,
-                                       volatile int * notify);
-    extern void link_state_change_cleanup();
-    extern void microsleep(int microsecs);
-    extern char * error_message();
+/* pack/unpack address */
+extern void print_packed(char addr[]);
+extern int inet_pton6(const char * src, char * dst);
+extern char * inet_ntop4(const char * src, char * dst);
+extern char * inet_ntop6(const char * src, char * dst);
+extern void print_packed(char * addr);
+extern void doRevDnsAddress(char * src, char * dst);
+extern void doRevDnsZoneRoot(char * src, char * dst, int lenght);
+extern void truncatePrefixFromConfig(char * src, char * dst, char lenght);
+extern int is_addr_tentative(char * ifacename, int iface, char * plainAddr);
+extern void link_state_change_init(volatile struct link_state_notify_t * changed_links, volatile int * notify);
+extern void link_state_change_cleanup();
+extern void microsleep(int microsecs);
+extern char * error_message();
 
-    /* options */
-    extern int dns_add(const char* ifname, int ifindex, const char* addrPlain);
-    extern int dns_del(const char* ifname, int ifindex, const char* addrPlain);
-    extern int domain_add(const char* ifname, int ifindex, const char* domain);
-    extern int domain_del(const char* ifname, int ifindex, const char* domain);
-    extern int ntp_add(const char* ifname, int ifindex, const char* addrPlain);
-    extern int ntp_del(const char* ifname, int ifindex, const char* addrPlain);
-    extern int timezone_set(const char* ifname, int ifindex, const char* timezone);
-    extern int timezone_del(const char* ifname, int ifindex, const char* timezone);
-    extern int sipserver_add(const char* ifname, int ifindex, const char* addrPlain);
-    extern int sipserver_del(const char* ifname, int ifindex, const char* addrPlain);
-    extern int sipdomain_add(const char* ifname, int ifindex, const char* domain);
-    extern int sipdomain_del(const char* ifname, int ifindex, const char* domain);
-    extern int nisserver_add(const char* ifname, int ifindex, const char* addrPlain);
-    extern int nisserver_del(const char* ifname, int ifindex, const char* addrPlain);
-    extern int nisdomain_set(const char* ifname, int ifindex, const char* domain);
-    extern int nisdomain_del(const char* ifname, int ifindex, const char* domain);
+/* options */
+extern int dns_add(const char * ifname, int ifindex, const char * addrPlain);
+extern int dns_del(const char * ifname, int ifindex, const char * addrPlain);
+extern int domain_add(const char * ifname, int ifindex, const char * domain);
+extern int domain_del(const char * ifname, int ifindex, const char * domain);
+extern int ntp_add(const char * ifname, int ifindex, const char * addrPlain);
+extern int ntp_del(const char * ifname, int ifindex, const char * addrPlain);
+extern int timezone_set(const char * ifname, int ifindex, const char * timezone);
+extern int timezone_del(const char * ifname, int ifindex, const char * timezone);
+extern int sipserver_add(const char * ifname, int ifindex, const char * addrPlain);
+extern int sipserver_del(const char * ifname, int ifindex, const char * addrPlain);
+extern int sipdomain_add(const char * ifname, int ifindex, const char * domain);
+extern int sipdomain_del(const char * ifname, int ifindex, const char * domain);
+extern int nisserver_add(const char * ifname, int ifindex, const char * addrPlain);
+extern int nisserver_del(const char * ifname, int ifindex, const char * addrPlain);
+extern int nisdomain_set(const char * ifname, int ifindex, const char * domain);
+extern int nisdomain_del(const char * ifname, int ifindex, const char * domain);
 
-    extern int nisplusserver_add(const char* ifname, int ifindex, const char* addrPlain);
-    extern int nisplusserver_del(const char* ifname, int ifindex, const char* addrPlain);
-    extern int nisplusdomain_set(const char* ifname, int ifindex, const char* domain);
-    extern int nisplusdomain_del(const char* ifname, int ifindex, const char* domain);
+extern int nisplusserver_add(const char * ifname, int ifindex, const char * addrPlain);
+extern int nisplusserver_del(const char * ifname, int ifindex, const char * addrPlain);
+extern int nisplusdomain_set(const char * ifname, int ifindex, const char * domain);
+extern int nisplusdomain_del(const char * ifname, int ifindex, const char * domain);
 
-    extern int prefix_add(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
-                          unsigned long prefered, unsigned long valid);
-    extern int prefix_update(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength,
-                             unsigned long prefered, unsigned long valid);
-    extern int prefix_del(const char* ifname, int ifindex, const char* prefixPlain, int prefixLength);
+extern int prefix_add(const char * ifname, int ifindex, const char * prefixPlain, int prefixLength, unsigned long prefered,
+                      unsigned long valid);
+extern int prefix_update(const char * ifname, int ifindex, const char * prefixPlain, int prefixLength, unsigned long prefered,
+                         unsigned long valid);
+extern int prefix_del(const char * ifname, int ifindex, const char * prefixPlain, int prefixLength);
 
-    char * getAAAKey(uint32_t SPI, uint32_t *len); /* reads AAA key from a file */
-    char * getAAAKeyFilename(uint32_t SPI); /* which file? use this function to find out */
-    uint32_t getAAASPIfromFile();
+char * getAAAKey(uint32_t SPI, uint32_t * len); /* reads AAA key from a file */
+char * getAAAKeyFilename(uint32_t SPI);         /* which file? use this function to find out */
+uint32_t getAAASPIfromFile();
 
-    int execute(const char *filename, const char * argv[], const char *env[]);
+int execute(const char * filename, const char * argv[], const char * env[]);
 
-    /** @brief fills specified buffer with random data
-     * @param buffer random data will be written here
-     * @param len length of the buffer
-     */
-    void fill_random(uint8_t* buffer, int len);
+/** @brief fills specified buffer with random data
+ * @param buffer random data will be written here
+ * @param len length of the buffer
+ */
+void fill_random(uint8_t * buffer, int len);
 
-    /** @brief returns host name of this host
-     *
-     * @param hostname buffer (hostname will be stored here)
-     * @param hostname_len length of the buffer
-     * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
-     */
-    int get_hostname(char* hostname, int hostname_len);
+/** @brief returns host name of this host
+ *
+ * @param hostname buffer (hostname will be stored here)
+ * @param hostname_len length of the buffer
+ * @return LOWLEVEL_NO_ERROR if successful, appropriate LOWLEVEL_ERROR_* otherwise
+ */
+int get_hostname(char * hostname, int hostname_len);
 
 #ifdef __cplusplus
 }
@@ -391,6 +388,5 @@ unsigned long pref, unsigned long valid, int prefixLength);
 void print_trace(void);
 #endif
 #endif
-
 
 #endif

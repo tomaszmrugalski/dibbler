@@ -13,22 +13,16 @@ using namespace std;
 #include "SrvCfgClientClass.h"
 #include "SrvMsg.h"
 
-TSrvCfgClientClass::TSrvCfgClientClass()
-    :classname("")
-{
+TSrvCfgClientClass::TSrvCfgClientClass() : classname("") {
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(std::string name)
-    :classname(name)
-{
+TSrvCfgClientClass::TSrvCfgClientClass(std::string name) : classname(name) {
 }
 
-TSrvCfgClientClass::TSrvCfgClientClass(std::string name , SPtr<Node>& cond)
-    :classname(name), condition(cond) {
+TSrvCfgClientClass::TSrvCfgClientClass(std::string name, SPtr<Node> & cond) : classname(name), condition(cond) {
 }
 
 TSrvCfgClientClass::~TSrvCfgClientClass() {
-    
 }
 
 std::string TSrvCfgClientClass::getClassName() {
@@ -40,7 +34,7 @@ SPtr<Node> TSrvCfgClientClass::getCondition() {
 }
 
 bool TSrvCfgClientClass::isStatisfy(SPtr<TSrvMsg> msg) {
-    if (condition->exec(msg) == "true") 
+    if (condition->exec(msg) == "true")
         return true;
     return false;
 }

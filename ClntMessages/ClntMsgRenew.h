@@ -15,8 +15,7 @@
 #include "ClntMsg.h"
 #include "ClntOptIA_NA.h"
 
-class TClntMsgRenew : public TClntMsg
-{
+class TClntMsgRenew : public TClntMsg {
   public:
     TClntMsgRenew(List(TAddrIA) IALst, List(TAddrIA) PDLst);
 
@@ -25,10 +24,10 @@ class TClntMsgRenew : public TClntMsg
     bool check();
     std::string getName() const;
     ~TClntMsgRenew();
-    void updateIA(SPtr <TClntOptIA_NA> ptrOptIA);
+    void updateIA(SPtr<TClntOptIA_NA> ptrOptIA);
     void releaseIA(long IAID);
 
- private:
+  private:
 };
 
-#endif 
+#endif

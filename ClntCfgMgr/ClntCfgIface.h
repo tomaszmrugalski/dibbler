@@ -14,38 +14,35 @@
 #define CLNTCFGIFACE_H
 #include <list>
 
-#include "Container.h"
-#include "HostID.h"
-#include "SmartPtr.h"
-#include "DHCPConst.h"
-#include "IPv6Addr.h"
-#include "ClntCfgTA.h"
-#include "ClntParsGlobalOpt.h"
-#include "SmartPtr.h"
-#include "DUID.h"
 #include "ClntCfgIA.h"
 #include "ClntCfgPD.h"
-#include "OptVendorSpecInfo.h"
+#include "ClntCfgTA.h"
+#include "ClntParsGlobalOpt.h"
+#include "Container.h"
+#include "DHCPConst.h"
+#include "DUID.h"
+#include "HostID.h"
+#include "IPv6Addr.h"
 #include "Opt.h"
+#include "OptVendorSpecInfo.h"
+#include "SmartPtr.h"
 
-class TClntCfgIface
-{
-    friend std::ostream& operator<<(std::ostream&,TClntCfgIface&);
-public:
+class TClntCfgIface {
+    friend std::ostream & operator<<(std::ostream &, TClntCfgIface &);
 
-    class TOptionStatus
-    {
-    public:
-	TOptionStatus(): OptionType(0), State(STATE_NOTCONFIGURED), Option(), Always(true) {};
-	unsigned short OptionType;
-	EState State;
-	SPtr<TOpt> Option;
-	TOpt::EOptionLayout Layout;
-	bool Always; // should this option be sent always? (even when already configured?)
+  public:
+    class TOptionStatus {
+      public:
+        TOptionStatus() : OptionType(0), State(STATE_NOTCONFIGURED), Option(), Always(true){};
+        unsigned short OptionType;
+        EState State;
+        SPtr<TOpt> Option;
+        TOpt::EOptionLayout Layout;
+        bool Always; // should this option be sent always? (even when already configured?)
     };
-    typedef std::list< SPtr<TOptionStatus> > TOptionStatusLst;
+    typedef std::list<SPtr<TOptionStatus>> TOptionStatusLst;
 
-    TClntCfgIface(const std::string& ifaceName);
+    TClntCfgIface(const std::string & ifaceName);
     TClntCfgIface(int ifaceNr);
 
     void setRouting(bool enabled);
@@ -53,7 +50,7 @@ public:
     EState getRoutingEnabledState();
     void setRoutingEnabledState(EState state);
 
-    bool isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid);
+    bool isServerRejected(SPtr<TIPv6Addr> addr, SPtr<TDUID> duid);
 
     // IA
     void firstIA();
@@ -78,10 +75,10 @@ public:
     std::string getName(void);
     std::string getFullName(void);
     void setOptions(SPtr<TClntParsGlobalOpt> opt);
-    int	getID(void);
+    int getID(void);
     void setNoConfig();
     void setIfaceID(int ifaceID);
-    void setIfaceName(const std::string& ifaceName);
+    void setIfaceName(const std::string & ifaceName);
     bool noConfig();
 
     bool stateless();
@@ -175,7 +172,7 @@ public:
 
     // --- see strict-rfc-no-routing ---
     void setOnLinkPrefixLength(int len);
-    int  getOnLinkPrefixLength();
+    int getOnLinkPrefixLength();
 
     // --- option: VendorSpec ---
     bool isReqVendorSpec();
@@ -190,7 +187,7 @@ public:
     // --- custom/extra options ---
     void addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout, bool sendAlways);
     void addExtraOption(int optType, TOpt::EOptionLayout layout, bool sendAlways);
-    TOptionStatusLst& getExtraOptions();
+    TOptionStatusLst & getExtraOptions();
     SPtr<TOptionStatus> getExtaOptionState(int type);
 
     // --- option: KeyGeneration ---
@@ -208,7 +205,7 @@ public:
     /// @return the address to bind to (or NULL if not set)
     SPtr<TIPv6Addr> getBindToAddr();
 
-private:
+  private:
     void setDefaults();
     std::string IfaceName;
     int ID;
@@ -216,7 +213,7 @@ private:
     bool Stateful_;
     bool Unicast;
     bool RapidCommit;
-    int  PrefixLength; // default prefix length of the configured addresses
+    int PrefixLength; // default prefix length of the configured addresses
 
     List(TClntCfgIA) IALst;
     List(TClntCfgPD) PDLst;

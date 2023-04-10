@@ -11,17 +11,17 @@
 #ifndef STATIONRANGE_H
 #define STATIONRANGE_H
 
-#include "IPv6Addr.h"
 #include "DUID.h"
+#include "IPv6Addr.h"
 #include "SmartPtr.h"
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class THostRange
-{
-    friend std::ostream& operator<<(std::ostream& out, THostRange& station);
- public:
+class THostRange {
+    friend std::ostream & operator<<(std::ostream & out, THostRange & station);
+
+  public:
     THostRange(SPtr<TDUID> duidl, SPtr<TDUID> duidr);
     THostRange(SPtr<TIPv6Addr> addrl, SPtr<TIPv6Addr> addrR);
     ~THostRange(void);
@@ -36,7 +36,8 @@ class THostRange
     int getPrefixLength() const;
     void setPrefixLength(int len);
     void truncate(int minPrefix, int maxPrefix);
- private:
+
+  private:
     bool isAddrRange_;
     SPtr<TDUID> DUIDL_;
     SPtr<TDUID> DUIDR_;

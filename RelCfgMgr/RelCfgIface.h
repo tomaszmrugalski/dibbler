@@ -17,17 +17,17 @@ class TRelCfgIface;
 #include <iostream>
 #include <string>
 
-class TRelCfgIface
-{
-    friend std::ostream& operator<<(std::ostream& out,TRelCfgIface& iface);
-public:
-    TRelCfgIface(const std::string& ifaceName);
+class TRelCfgIface {
+    friend std::ostream & operator<<(std::ostream & out, TRelCfgIface & iface);
+
+  public:
+    TRelCfgIface(const std::string & ifaceName);
     TRelCfgIface(int ifaceNr);
     virtual ~TRelCfgIface();
 
     void setName(std::string ifaceName);
     void setID(int ifaceID);
-    int	getID();
+    int getID();
     std::string getName();
     std::string getFullName();
 
@@ -37,13 +37,13 @@ public:
     bool getClientMulticast();
 
     void setOptions(SPtr<TRelParsGlobalOpt> opt);
-    
+
     unsigned char getPreference();
     int getInterfaceID();
-    
-private:
+
+  private:
     std::string Name_;
-    int	ID_;
+    int ID_;
     int InterfaceID_; // value of interface-id option (optional)
 
     SPtr<TIPv6Addr> ClientUnicast_;

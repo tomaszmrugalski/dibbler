@@ -13,23 +13,21 @@ class TAddrIA;
 #ifndef ADDRIA_H
 #define ADDRIA_H
 
-#include <iostream>
-#include <string>
-#include "DHCPConst.h"
-#include "SmartPtr.h"
-#include "Container.h"
 #include "AddrAddr.h"
 #include "AddrPrefix.h"
+#include "Container.h"
+#include "DHCPConst.h"
 #include "DUID.h"
 #include "FQDN.h"
+#include "SmartPtr.h"
+#include <iostream>
+#include <string>
 
-class TAddrIA
-{
+class TAddrIA {
   public:
-
-    friend std::ostream & operator<<(std::ostream & strum,TAddrIA &x);
-    TAddrIA(const std::string& ifacename, int ifindex, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, 
-	    unsigned long T1, unsigned long T2,unsigned long ID);
+    friend std::ostream & operator<<(std::ostream & strum, TAddrIA & x);
+    TAddrIA(const std::string & ifacename, int ifindex, TIAType mode, SPtr<TIPv6Addr> addr, SPtr<TDUID> duid, unsigned long T1,
+            unsigned long T2, unsigned long ID);
     ~TAddrIA();
 
     //---IA state---
@@ -43,10 +41,14 @@ class TAddrIA
     unsigned long getIAID();
 
     //---Iface details ---
-    const std::string& getIfacename();
+    const std::string & getIfacename();
     int getIfindex();
-    void setIfindex(int ifindex) { Ifindex_ = ifindex; }
-    void setIfacename(const std::string& ifacename) { Iface_ = ifacename; }
+    void setIfindex(int ifindex) {
+        Ifindex_ = ifindex;
+    }
+    void setIfacename(const std::string & ifacename) {
+        Iface_ = ifacename;
+    }
 
     //---Server's DUID---
     void setDUID(SPtr<TDUID> duid);
@@ -78,7 +80,7 @@ class TAddrIA
     SPtr<TAddrAddr> getAddr(SPtr<TIPv6Addr> addr);
     int countAddr();
     int delAddr(SPtr<TIPv6Addr> addr);
-    
+
     // timestamp
     void setTimestamp(unsigned long ts);
     void setTimestamp();
@@ -88,7 +90,7 @@ class TAddrIA
     unsigned long getValidTimeout();
     unsigned long getMaxValidTimeout();
     unsigned long getTimestamp();
-    
+
     //---tentative---
     unsigned long getTentativeTimeout();
     enum EAddrStatus getTentative();
@@ -100,7 +102,7 @@ class TAddrIA
     void setFQDN(SPtr<TFQDN> fqdn);
     SPtr<TFQDN> getFQDN();
 
-private:
+  private:
     List(TAddrAddr) AddrLst;
     List(TAddrPrefix) PrefixLst;
 
@@ -120,7 +122,7 @@ private:
     SPtr<TIPv6Addr> SrvAddr;
 
     std::string Iface_; ///< Interface name
-    int Ifindex_; ///< Interface index
+    int Ifindex_;       ///< Interface index
 
     SPtr<TIPv6Addr> fqdnDnsServer; // DNS Updates was performed to that server
     SPtr<TFQDN> fqdn;              // this FQDN object was used to perform update
@@ -128,4 +130,4 @@ private:
     TIAType Type; // type of this IA (IA, TA or PD)
 };
 
-#endif 
+#endif

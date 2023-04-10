@@ -14,18 +14,17 @@ class TMsg;
 #ifndef CLNTIA_TA_H
 #define CLNTIA_TA_H
 
-#include "OptTA.h"
-#include "OptIAAddress.h"
 #include "IPv6Addr.h"
 #include "Msg.h"
+#include "OptIAAddress.h"
+#include "OptTA.h"
 
-class TClntOptTA : public TOptTA
-{
- public:
-    TClntOptTA(unsigned int iaid, TMsg* parent);
-    TClntOptTA(char * buf, int bufsize, TMsg* parent);
-    TClntOptTA(SPtr<TAddrIA> ta, TMsg* parent);
-    ~TClntOptTA();    
+class TClntOptTA : public TOptTA {
+  public:
+    TClntOptTA(unsigned int iaid, TMsg * parent);
+    TClntOptTA(char * buf, int bufsize, TMsg * parent);
+    TClntOptTA(SPtr<TAddrIA> ta, TMsg * parent);
+    ~TClntOptTA();
 
     bool doDuties();
     int getStatusCode();
@@ -39,12 +38,11 @@ class TClntOptTA : public TOptTA
 
     void setContext(int iface, SPtr<TIPv6Addr> clntAddr);
 
- private:
-    void releaseAddr(long IAID, SPtr<TIPv6Addr> addr );
+  private:
+    void releaseAddr(long IAID, SPtr<TIPv6Addr> addr);
 
     SPtr<TIPv6Addr> Addr;
     int Iface;
 };
-
 
 #endif /* CLNTIA_TA_H */

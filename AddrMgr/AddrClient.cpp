@@ -8,13 +8,13 @@
  *
  */
 
-#include <iostream>
-#include <string>
-#include <limits.h>
-#include <stdlib.h>
 #include "AddrClient.h"
 #include "Logger.h"
 #include "hex.h"
+#include <iostream>
+#include <limits.h>
+#include <stdlib.h>
+#include <string>
 
 using namespace std;
 
@@ -27,8 +27,7 @@ using namespace std;
  * @param duid Client DUID
  *
  */
-TAddrClient::TAddrClient(SPtr<TDUID> duid)
-    :DUID_(duid), SPI_(0), ReplayDetectionRcvd_(0) {
+TAddrClient::TAddrClient(SPtr<TDUID> duid) : DUID_(duid), SPI_(0), ReplayDetectionRcvd_(0) {
 }
 
 SPtr<TDUID> TAddrClient::getDUID() {
@@ -37,14 +36,13 @@ SPtr<TDUID> TAddrClient::getDUID() {
 
 // --- IA ------------------------------------------------------------
 
-
 /**
  * @brief rewinds IA list to the beginning
  *
  * rewinds IA list to the beginning
  */
 void TAddrClient::firstIA() {
-  IAsLst.first();
+    IAsLst.first();
 }
 
 /**
@@ -64,7 +62,7 @@ SPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
     SPtr<TAddrIA> ptr;
     IAsLst.first();
 
-    while ( ptr = IAsLst.get() ) {
+    while (ptr = IAsLst.get()) {
         if (ptr->getIAID() == IAID) {
             return ptr;
         }
@@ -73,10 +71,9 @@ SPtr<TAddrIA> TAddrClient::getIA(unsigned long IAID) {
 }
 
 void TAddrClient::addIA(SPtr<TAddrIA> ia) {
-    if (getIA(ia->getIAID()))
-    {
+    if (getIA(ia->getIAID())) {
         Log(Debug) << "Unable to add IA (iaid=" << ia->getIAID() << "), such IA already exists." << LogEnd;
-              return;
+        return;
     }
     IAsLst.append(ia);
 }
@@ -96,7 +93,7 @@ bool TAddrClient::delIA(unsigned long IAID) {
     SPtr<TAddrIA> ptr;
     IAsLst.first();
 
-    while ( ptr = IAsLst.get() ) {
+    while (ptr = IAsLst.get()) {
         if (ptr->getIAID() == IAID) {
             IAsLst.del();
             return true;
@@ -115,7 +112,7 @@ SPtr<TAddrIA> TAddrClient::getPD(unsigned long IAID) {
     SPtr<TAddrIA> ptr;
     PDLst.first();
 
-    while ( ptr = PDLst.get() ) {
+    while (ptr = PDLst.get()) {
         if (ptr->getIAID() == IAID) {
             return ptr;
         }
@@ -139,7 +136,7 @@ bool TAddrClient::delPD(unsigned long IAID) {
     SPtr<TAddrIA> ptr;
     PDLst.first();
 
-    while ( ptr = PDLst.get() ) {
+    while (ptr = PDLst.get()) {
         if (ptr->getIAID() == IAID) {
             PDLst.del();
             return true;
@@ -158,7 +155,7 @@ SPtr<TAddrIA> TAddrClient::getTA(unsigned long IAID) {
     SPtr<TAddrIA> ptr;
     TALst.first();
 
-    while ( ptr = TALst.get() ) {
+    while (ptr = TALst.get()) {
         if (ptr->getIAID() == IAID) {
             return ptr;
         }
@@ -181,7 +178,7 @@ int TAddrClient::countTA() {
 bool TAddrClient::delTA(unsigned long iaid) {
     SPtr<TAddrIA> ptr;
     TALst.first();
-    while ( ptr = TALst.get() ) {
+    while (ptr = TALst.get()) {
         if (ptr->getIAID() == iaid) {
             TALst.del();
             return true;
@@ -199,18 +196,18 @@ unsigned long TAddrClient::getT1Timeout() {
     unsigned long ts = UINT_MAX;
 
     IAsLst.first();
-    while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()==STATE_CONFIGURED) {
+    while (ptr = IAsLst.get()) {
+        if (ptr->getState() == STATE_CONFIGURED) {
             if (ts > ptr->getT1Timeout())
                 ts = ptr->getT1Timeout();
-        }else if (ptr->getState()==STATE_NOTCONFIGURED){
+        } else if (ptr->getState() == STATE_NOTCONFIGURED) {
             ts = 0;
         }
     }
 
     PDLst.first();
-    while ( ptr = PDLst.get() ) {
-        if (ptr->getState()!=STATE_CONFIGURED)
+    while (ptr = PDLst.get()) {
+        if (ptr->getState() != STATE_CONFIGURED)
             continue;
         if (ts > ptr->getT1Timeout())
             ts = ptr->getT1Timeout();
@@ -223,16 +220,16 @@ unsigned long TAddrClient::getT2Timeout() {
     unsigned long ts = UINT_MAX;
     IAsLst.first();
 
-    while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()!=STATE_CONFIGURED)
+    while (ptr = IAsLst.get()) {
+        if (ptr->getState() != STATE_CONFIGURED)
             continue;
         if (ts > ptr->getT2Timeout())
             ts = ptr->getT2Timeout();
     }
 
     PDLst.first();
-    while ( ptr = PDLst.get() ) {
-        if (ptr->getState()!=STATE_CONFIGURED)
+    while (ptr = PDLst.get()) {
+        if (ptr->getState() != STATE_CONFIGURED)
             continue;
         if (ts > ptr->getT2Timeout())
             ts = ptr->getT2Timeout();
@@ -246,16 +243,16 @@ unsigned long TAddrClient::getPrefTimeout() {
     unsigned long ts = UINT_MAX;
 
     IAsLst.first();
-    while ( ptr = IAsLst.get() ) {
-        if (ptr->getState()!=STATE_CONFIGURED)
+    while (ptr = IAsLst.get()) {
+        if (ptr->getState() != STATE_CONFIGURED)
             continue;
         if (ts > ptr->getPrefTimeout())
             ts = ptr->getPrefTimeout();
     }
 
     PDLst.first();
-    while ( ptr = PDLst.get() ) {
-        if (ptr->getState()!=STATE_CONFIGURED)
+    while (ptr = PDLst.get()) {
+        if (ptr->getState() != STATE_CONFIGURED)
             continue;
         if (ts > ptr->getPrefTimeout())
             ts = ptr->getPrefTimeout();
@@ -269,19 +266,19 @@ unsigned long TAddrClient::getValidTimeout() {
     unsigned long ts = UINT_MAX;
 
     IAsLst.first();
-    while ( ptr = IAsLst.get() ) {
+    while (ptr = IAsLst.get()) {
         if (ts > ptr->getValidTimeout())
             ts = ptr->getValidTimeout();
     }
 
     TALst.first();
-    while ( ptr = TALst.get() ) {
+    while (ptr = TALst.get()) {
         if (ts > ptr->getValidTimeout())
             ts = ptr->getValidTimeout();
     }
 
     PDLst.first();
-    while ( ptr = PDLst.get() ) {
+    while (ptr = PDLst.get()) {
         if (ts > ptr->getValidTimeout())
             ts = ptr->getValidTimeout();
     }
@@ -295,20 +292,19 @@ unsigned long TAddrClient::getLastTimestamp() {
     SPtr<TAddrIA> ptr;
 
     IAsLst.first();
-    while ( ptr = IAsLst.get() ) {
+    while (ptr = IAsLst.get()) {
         if (ts < ptr->getTimestamp())
             ts = ptr->getTimestamp();
     }
 
     firstTA();
-    while ( ptr = getTA() ) {
+    while (ptr = getTA()) {
         if (ts < ptr->getTimestamp())
             ts = ptr->getTimestamp();
     }
 
-
     PDLst.first();
-    while ( ptr = PDLst.get() ) {
+    while (ptr = PDLst.get()) {
         if (ts > ptr->getTimestamp())
             ts = ptr->getTimestamp();
     }
@@ -346,40 +342,37 @@ void TAddrClient::generateReconfKey() {
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-std::ostream & operator<<(std::ostream & strum, TAddrClient &x)
-{
+std::ostream & operator<<(std::ostream & strum, TAddrClient & x) {
     strum << "  <AddrClient>" << endl;
     if (x.DUID_->getLen())
         strum << "    " << *x.DUID_;
-    if (x.DUID_->getLen()==1)
+    if (x.DUID_->getLen() == 1)
         strum << "  <!-- 1-byte length DUID. DECLINED-ADDRESSES -->" << endl;
 
     // reconfigure-key
-	if (!x.ReconfKey_.empty()) {
-		strum << "    <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
-	          << hexToText(&x.ReconfKey_[0], x.ReconfKey_.size(), false)
-			  << "</ReconfigureKey>" << endl;
-	}
-	else {
-		strum << "    <ReconfigureKey />" << endl;
-	}
+    if (!x.ReconfKey_.empty()) {
+        strum << "    <ReconfigureKey length=\"" << x.ReconfKey_.size() << "\">"
+              << hexToText(&x.ReconfKey_[0], x.ReconfKey_.size(), false) << "</ReconfigureKey>" << endl;
+    } else {
+        strum << "    <ReconfigureKey />" << endl;
+    }
 
     strum << "    <!-- " << x.IAsLst.count() << " IA(s) -->" << endl;
     SPtr<TAddrIA> ptr;
     x.IAsLst.first();
-    while (ptr = x.IAsLst.get() ) {
+    while (ptr = x.IAsLst.get()) {
         strum << *ptr;
     }
 
     strum << "    <!-- " << x.TALst.count() << " TA(s) -->" << endl;
     x.TALst.first();
-    while (ptr = x.TALst.get() ) {
+    while (ptr = x.TALst.get()) {
         strum << *ptr;
     }
 
     strum << "    <!-- " << x.PDLst.count() << " PD(s) -->" << endl;
     x.PDLst.first();
-    while (ptr = x.PDLst.get() ) {
+    while (ptr = x.PDLst.get()) {
         strum << *ptr;
     }
     strum << "  </AddrClient>" << endl;

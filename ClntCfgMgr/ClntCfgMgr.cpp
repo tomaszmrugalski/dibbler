@@ -10,50 +10,46 @@
  *
  */
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "SmartPtr.h"
-#include "Portable.h"
 #include "ClntCfgMgr.h"
 #include "ClntCfgIface.h"
 #include "Logger.h"
+#include "Portable.h"
+#include "SmartPtr.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 using namespace std;
 
-#include "FlexLexer.h"
 #include "ClntIfaceMgr.h"
 #include "ClntParsGlobalOpt.h"
 #include "ClntParser.h"
+#include "FlexLexer.h"
 #include "hex.h"
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;
 
 #ifdef MOD_CLNT_EMBEDDED_CFG
-static bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params);
+static bool HardcodedCfgExample(TClntCfgMgr * cfgMgr, string params);
 #endif
 
 extern std::string CLNTCONF_FILE;
 
-TClntCfgMgr & TClntCfgMgr::instance()
-{
+TClntCfgMgr & TClntCfgMgr::instance() {
     if (!Instance) {
         Log(Crit) << "Application error. Tried to access CfgMgr without instanceCreate!" << LogEnd;
         instanceCreate(CLNTCONF_FILE);
     }
-  // throw an exception here or something
-  return *Instance;
+    // throw an exception here or something
+    return *Instance;
 }
 
-void TClntCfgMgr::instanceCreate(const std::string& cfgFile) {
+void TClntCfgMgr::instanceCreate(const std::string & cfgFile) {
     Instance = new TClntCfgMgr(cfgFile);
 }
 
-
-TClntCfgMgr::TClntCfgMgr(const std::string& cfgFile)
-    :TCfgMgr(), ScriptName(DEFAULT_SCRIPT), InactiveMode(false),
-     Digest_(DIGEST_NONE), ObeyRaBits_(false)
-{
+TClntCfgMgr::TClntCfgMgr(const std::string & cfgFile)
+    : TCfgMgr(), ScriptName(DEFAULT_SCRIPT), InactiveMode(false), Digest_(DIGEST_NONE), ObeyRaBits_(false) {
 
 #ifdef MOD_REMOTE_AUTOCONF
     RemoteAutoconf = false;
@@ -88,32 +84,30 @@ void TClntCfgMgr::dump() {
     xmlDump.close();
 }
 
-bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
-{
-    #ifndef MOD_CLNT_EMBEDDED_CFG
+bool TClntCfgMgr::parseConfigFile(const std::string & cfgFile) {
+#ifndef MOD_CLNT_EMBEDDED_CFG
     // --- normal operation: read config. file ---
 
     // parse config file
     ifstream f;
     f.open(cfgFile.c_str());
-    if ( ! f.is_open()  ) {
+    if (!f.is_open()) {
         Log(Crit) << "Unable to open " << cfgFile << " file." << LogEnd;
-            return false;
+        return false;
     } else {
         Log(Notice) << "Parsing " << cfgFile << " config file..." << LogEnd;
     }
-    yyFlexLexer lexer(&f,&clog);
+    yyFlexLexer lexer(&f, &clog);
     ClntParser parser(&lexer);
     parser.CfgMgr = this; // just a workaround to access CfgMgr while still being in constructor
     int result = parser.yyparse();
-    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result
-               << (result?"(failure)":"(success)") << LogEnd;
+    Log(Debug) << "Parsing " << cfgFile << " done, result=" << result << (result ? "(failure)" : "(success)") << LogEnd;
     f.close();
 
     if (result) {
-        //Result!=0 means config errors. Finish whole DHCPClient
+        // Result!=0 means config errors. Finish whole DHCPClient
         Log(Crit) << "Fatal error during config parsing." << LogEnd;
-        this->DUID=new TDUID();
+        this->DUID = new TDUID();
         return false;
     }
 
@@ -128,7 +122,7 @@ bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
 #else
     // --- use hardcoded config ---
     // use your favourite configuration generator function here
-    HardcodedCfgFunc *cfgMaker = &HardcodedCfgExample;
+    HardcodedCfgFunc * cfgMaker = &HardcodedCfgExample;
 
     // call your function here
     cfgMaker(this, cfgFile);
@@ -136,7 +130,7 @@ bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
 #endif
 
     // check config consistency
-    if(!validateConfig()) {
+    if (!validateConfig()) {
         return false;
     }
 
@@ -151,7 +145,7 @@ bool TClntCfgMgr::parseConfigFile(const std::string& cfgFile)
  *
  * @return true if ok, false if interface definitions are incorrect
  */
-bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
+bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser * parser) {
     int cfgIfaceCnt;
 
     cfgIfaceCnt = parser->ClntCfgIfaceLst.count();
@@ -163,9 +157,9 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     if (cfgIfaceCnt) {
         // user specified some interfaces in config file
         parser->ClntCfgIfaceLst.first();
-        while(cfgIface = parser->ClntCfgIfaceLst.get()) {
+        while (cfgIface = parser->ClntCfgIfaceLst.get()) {
             // for each interface (from config file)
-            if (cfgIface->getID()==-1) {
+            if (cfgIface->getID() == -1) {
                 ifaceIface = ClntIfaceMgr().getIfaceByName(cfgIface->getName());
             } else {
                 ifaceIface = ClntIfaceMgr().getIfaceByID(cfgIface->getID());
@@ -177,14 +171,12 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                               << " is not currently available (that's ok, inactive-mode enabled)." << LogEnd;
                     continue;
                 }
-                Log(Error) << "Interface " << cfgIface->getFullName()
-                           << " specified in " << CLNTCONF_FILE << " is not present or does not support IPv6."
-                           << LogEnd;
+                Log(Error) << "Interface " << cfgIface->getFullName() << " specified in " << CLNTCONF_FILE
+                           << " is not present or does not support IPv6." << LogEnd;
                 return false;
             }
             if (cfgIface->noConfig()) {
-                Log(Info) << "Interface " << cfgIface->getFullName()
-                          << " has flag no-config set, so it is ignored." << LogEnd;
+                Log(Info) << "Interface " << cfgIface->getFullName() << " has flag no-config set, so it is ignored." << LogEnd;
                 continue;
             }
 
@@ -205,16 +197,15 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
 
             if (!ifaceIface->flagUp() || !ifaceIface->countLLAddress()) {
                 if (inactiveMode()) {
-                    Log(Notice) << "Interface " << ifaceIface->getFullName()
-                                << " is not operational yet (does not have "
+                    Log(Notice) << "Interface " << ifaceIface->getFullName() << " is not operational yet (does not have "
                                 << "link-local address or is down), skipping it for now." << LogEnd;
                     addIface(cfgIface);
                     makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
                     continue;
                 }
 
-                Log(Crit) << "Interface " << ifaceIface->getFullName()
-                          << " is down or doesn't have any link-local address." << LogEnd;
+                Log(Crit) << "Interface " << ifaceIface->getFullName() << " is down or doesn't have any link-local address."
+                          << LogEnd;
                 return false;
             }
 
@@ -228,15 +219,12 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                 inet_ntop6(ifaceIface->getLLAddress(), tmp);
             }
 
-            if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp)
-                == LOWLEVEL_TENTATIVE_YES) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " has link-local address " << tmp
+            if (is_addr_tentative(ifaceIface->getName(), ifaceIface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
+                Log(Notice) << "Interface " << ifaceIface->getFullName() << " has link-local address " << tmp
                             << ", but it is currently tentative." << LogEnd;
 
                 if (this->inactiveMode()) {
-                    Log(Notice) << "Interface " << ifaceIface->getFullName()
-                                << " is not operational yet (link-local address "
+                    Log(Notice) << "Interface " << ifaceIface->getFullName() << " is not operational yet (link-local address "
                                 << "is not ready), skipping it for now." << LogEnd;
                     addIface(cfgIface);
                     makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
@@ -252,8 +240,7 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                 if (!ifaceIface->getMBit() && !ifaceIface->getOBit()) {
                     Log(Info) << "Interface " << cfgIface->getFullName()
                               << " configuration loaded, but did not receive a Router "
-                              << "Advertisement with M or O bits set, adding to inactive."
-                              << LogEnd;
+                              << "Advertisement with M or O bits set, adding to inactive." << LogEnd;
                     addIface(cfgIface);
                     makeInactiveIface(cfgIface->getID(), true, true, true); // move it to inactive list
                     continue;
@@ -263,15 +250,13 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             }
 
             addIface(cfgIface);
-            Log(Info) << "Interface " << cfgIface->getFullName()
-                      << " configuration has been loaded." << LogEnd;
+            Log(Info) << "Interface " << cfgIface->getFullName() << " configuration has been loaded." << LogEnd;
         }
         return countIfaces() || (inactiveMode() && inactiveIfacesCnt());
     } else {
         // user didn't specified any interfaces in config file, so
         // we'll try to configure each interface we could find
-        Log(Warning) << "Config file does not contain any interface definitions. Trying to autodetect."
-                     << LogEnd;
+        Log(Warning) << "Config file does not contain any interface definitions. Trying to autodetect." << LogEnd;
 
         List(TIPv6Addr) dnsList;
         dnsList.clear();
@@ -281,13 +266,13 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
         char hostname[255];
         if (get_hostname(hostname, 255) == LOWLEVEL_NO_ERROR) {
             parser->ParserOptStack.getLast()->setFQDN(string(hostname));
-	    } else {
+        } else {
             parser->ParserOptStack.getLast()->setFQDN(string(""));
         }
 
         int cnt = 0;
         ClntIfaceMgr().firstIface();
-        while ( ifaceIface = ClntIfaceMgr().getIface() ) {
+        while (ifaceIface = ClntIfaceMgr().getIface()) {
             // for each interface present in the system...
             if (!inactiveMode()) {
                 if (!ifaceIface->flagUp()) {
@@ -295,39 +280,35 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
                     continue;
                 }
                 if (!ifaceIface->flagRunning()) {
-                    Log(Notice) << "Interface " << ifaceIface->getFullName()
-                                << " has flag RUNNING not set, ignoring." << LogEnd;
+                    Log(Notice) << "Interface " << ifaceIface->getFullName() << " has flag RUNNING not set, ignoring."
+                                << LogEnd;
                     continue;
                 }
                 if (!ifaceIface->flagMulticast()) {
-                    Log(Notice) << "Interface " << ifaceIface->getFullName()
-                                << " is not multicast capable, ignoring." << LogEnd;
+                    Log(Notice) << "Interface " << ifaceIface->getFullName() << " is not multicast capable, ignoring."
+                                << LogEnd;
                     continue;
                 }
             }
-            if ( !(ifaceIface->getMacLen() > 5) ) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " has MAC address length " << ifaceIface->getMacLen()
-                            << " (6 or more required), ignoring." << LogEnd;
+            if (!(ifaceIface->getMacLen() > 5)) {
+                Log(Notice) << "Interface " << ifaceIface->getFullName() << " has MAC address length "
+                            << ifaceIface->getMacLen() << " (6 or more required), ignoring." << LogEnd;
                 continue;
             }
 
             // ignore disabled Teredo pseudo-interface on Win (and other similar useless junk)
-            const static unsigned char zeros[] = {0,0,0,0,0,0,0,0};
-            const static unsigned char ones[] = {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff};
-            if ( (ifaceIface->getMacLen()<=8) &&
-                 (!memcmp(zeros, ifaceIface->getMac(), min(8,ifaceIface->getMacLen())) ||
-                  !memcmp(ones, ifaceIface->getMac(), min(8,ifaceIface->getMacLen()))) ) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " has invalid MAC address "
-                            << hexToText((uint8_t*)ifaceIface->getMac(), ifaceIface->getMacLen(), true)
-                            << ", ignoring." << LogEnd;
+            const static unsigned char zeros[] = {0, 0, 0, 0, 0, 0, 0, 0};
+            const static unsigned char ones[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+            if ((ifaceIface->getMacLen() <= 8) && (!memcmp(zeros, ifaceIface->getMac(), min(8, ifaceIface->getMacLen())) ||
+                                                   !memcmp(ones, ifaceIface->getMac(), min(8, ifaceIface->getMacLen())))) {
+                Log(Notice) << "Interface " << ifaceIface->getFullName() << " has invalid MAC address "
+                            << hexToText((uint8_t *)ifaceIface->getMac(), ifaceIface->getMacLen(), true) << ", ignoring."
+                            << LogEnd;
                 continue;
             }
 
             if (!ifaceIface->countLLAddress()) {
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " has no link-local address, ignoring. "
+                Log(Notice) << "Interface " << ifaceIface->getFullName() << " has no link-local address, ignoring. "
                             << "(Disconnected? Not associated? No-link?)" << LogEnd;
                 continue;
             }
@@ -351,16 +332,14 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
             // ... which is added to ClntCfgMgr
             addIface(cfgIface);
 
-            Log(Info) << "Interface " << cfgIface->getFullName()
-                      << " has been added." << LogEnd;
+            Log(Info) << "Interface " << cfgIface->getFullName() << " has been added." << LogEnd;
 
-            if (inactiveMode() && !ifaceIface->flagRunning() ) {
+            if (inactiveMode() && !ifaceIface->flagRunning()) {
                 makeInactiveIface(cfgIface->getID(), true, true, true); // move it to InactiveLst
-                Log(Notice) << "Interface " << ifaceIface->getFullName()
-                            << " is not operational yet"
+                Log(Notice) << "Interface " << ifaceIface->getFullName() << " is not operational yet"
                             << " (not running), made inactive." << LogEnd;
             }
-            cnt ++;
+            cnt++;
         }
         if (!cnt) {
             Log(Crit) << "Unable to detect any suitable interfaces. If there are any interfaces that you"
@@ -371,25 +350,20 @@ bool TClntCfgMgr::matchParsedSystemInterfaces(ClntParser *parser) {
     return true;
 }
 
-SPtr<TClntCfgIface> TClntCfgMgr::getIface()
-{
+SPtr<TClntCfgIface> TClntCfgMgr::getIface() {
     return ClntCfgIfaceLst.get();
 }
 
-void TClntCfgMgr::addIface(SPtr<TClntCfgIface> ptr)
-{
+void TClntCfgMgr::addIface(SPtr<TClntCfgIface> ptr) {
     ClntCfgIfaceLst.append(ptr);
 }
 
-void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive, bool managed,
-                                    bool otherConf)
-{
+void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive, bool managed, bool otherConf) {
     SPtr<TClntCfgIface> x;
 
-    if (inactive)
-    {
+    if (inactive) {
         ClntCfgIfaceLst.first();
-        while (x= ClntCfgIfaceLst.get()) {
+        while (x = ClntCfgIfaceLst.get()) {
             if (x->getID() == ifindex) {
                 Log(Info) << "Switching " << x->getFullName() << " to inactive-mode." << LogEnd;
                 ClntCfgIfaceLst.del();
@@ -397,13 +371,12 @@ void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive, bool managed,
                 return;
             }
         }
-        Log(Error) << "Unable to switch interface ifindex=" << ifindex
-                   << " to inactive-mode: interface not found." << LogEnd;
+        Log(Error) << "Unable to switch interface ifindex=" << ifindex << " to inactive-mode: interface not found." << LogEnd;
         return;
     }
 
     InactiveLst.first();
-    while (x= InactiveLst.get()) {
+    while (x = InactiveLst.get()) {
         if (x->getID() == ifindex) {
             Log(Info) << "Switching " << x->getFullName() << " to normal mode." << LogEnd;
             InactiveLst.del();
@@ -419,91 +392,78 @@ void TClntCfgMgr::makeInactiveIface(int ifindex, bool inactive, bool managed,
                << " from inactive-mode to normal operation: interface not found." << LogEnd;
 }
 
-void TClntCfgMgr::firstIface()
-{
+void TClntCfgMgr::firstIface() {
     ClntCfgIfaceLst.first();
 }
 
-int TClntCfgMgr::countIfaces()
-{
+int TClntCfgMgr::countIfaces() {
     return ClntCfgIfaceLst.count();
 }
 
-bool TClntCfgMgr::getReconfigure()
-{
+bool TClntCfgMgr::getReconfigure() {
     return Reconfigure;
 }
 
-void TClntCfgMgr::setReconfigure(bool enable)
-{
+void TClntCfgMgr::setReconfigure(bool enable) {
     Reconfigure = enable;
 }
 
-
-int TClntCfgMgr::countAddrForIA(long IAID)
-{
+int TClntCfgMgr::countAddrForIA(long IAID) {
     SPtr<TClntCfgIface> iface;
     firstIface();
-    while (iface = getIface() )
-    {
+    while (iface = getIface()) {
         SPtr<TClntCfgIA> ia;
         iface->firstIA();
         while (ia = iface->getIA())
-            if (ia->getIAID()==IAID)
+            if (ia->getIAID() == IAID)
                 return ia->countAddr();
     }
     return 0;
 }
 
-SPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID)
-{
+SPtr<TClntCfgIA> TClntCfgMgr::getIA(long IAID) {
     SPtr<TClntCfgIface> iface;
     firstIface();
-    while (iface = getIface() )
-    {
+    while (iface = getIface()) {
         SPtr<TClntCfgIA> ia;
         iface->firstIA();
         while (ia = iface->getIA())
-            if (ia->getIAID()==IAID)
+            if (ia->getIAID() == IAID)
                 return ia;
     }
     return SPtr<TClntCfgIA>(); // NULL
 }
 
-SPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID)
-{
+SPtr<TClntCfgPD> TClntCfgMgr::getPD(long IAID) {
     SPtr<TClntCfgIface> iface;
     firstIface();
-    while (iface = getIface() )
-    {
+    while (iface = getIface()) {
         SPtr<TClntCfgPD> pd;
         iface->firstPD();
         while (pd = iface->getPD())
-            if (pd->getIAID()==IAID)
+            if (pd->getIAID() == IAID)
                 return pd;
     }
     return SPtr<TClntCfgPD>(); // NULL
 }
 
-bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
-{
+bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state) {
     firstIface();
     SPtr<TClntCfgIface> ptrIface;
-    while (ptrIface = getIface() ) {
-        if ( ptrIface->getID() == iface ) break;
+    while (ptrIface = getIface()) {
+        if (ptrIface->getID() == iface)
+            break;
     }
-    if (! ptrIface) {
-        Log(Error) <<"ClntCfgMgr: Unable to set IA state (id=" << iaid
-            << "):Interface " << iface << " not found." << LogEnd;
+    if (!ptrIface) {
+        Log(Error) << "ClntCfgMgr: Unable to set IA state (id=" << iaid << "):Interface " << iface << " not found." << LogEnd;
         return false;
     }
 
     SPtr<TClntCfgIA> ia;
     ptrIface->firstIA();
 
-    while (ia = ptrIface->getIA())
-    {
-        if ( ia->getIAID() == iaid ) {
+    while (ia = ptrIface->getIA()) {
+        if (ia->getIAID() == iaid) {
             ia->setState(state);
             return true;
         }
@@ -513,15 +473,13 @@ bool TClntCfgMgr::setIAState(int iface, int iaid, enum EState state)
     return false;
 }
 
-//check whether T1<T2 and Pref<Valid and at least T1<=Valid
-bool TClntCfgMgr::validateConfig()
-{
+// check whether T1<T2 and Pref<Valid and at least T1<=Valid
+bool TClntCfgMgr::validateConfig() {
     if (IsDone)
-                return false; //Is everything so far ok?
+        return false; // Is everything so far ok?
     SPtr<TClntCfgIface> ptrIface;
     this->ClntCfgIfaceLst.first();
-    while(ptrIface=ClntCfgIfaceLst.get())
-    {
+    while (ptrIface = ClntCfgIfaceLst.get()) {
         if (!this->validateIface(ptrIface)) {
             return false;
         }
@@ -535,8 +493,7 @@ bool TClntCfgMgr::validateConfig()
     case AUTH_PROTO_DELAYED: {
         const std::vector<DigestTypes> digests = getAuthAcceptMethods();
         if (digests.empty()) {
-            Log(Error) << "AUTH: No digests specified. For delayed-auth HMAC-MD5 must be used."
-                       << LogEnd;
+            Log(Error) << "AUTH: No digests specified. For delayed-auth HMAC-MD5 must be used." << LogEnd;
             return false;
         }
         if (digests.size() > 1) {
@@ -544,9 +501,8 @@ bool TClntCfgMgr::validateConfig()
                          << " expected only HMAC-MD5" << LogEnd;
         }
         if (digests[0] != DIGEST_HMAC_MD5) {
-            Log(Error) << "AUTH: First digest type for delayed-auth is "
-                       << getDigestName(digests[0]) << ", but only HMAC-MD5 is allowed for delayed-auth."
-                       << LogEnd;
+            Log(Error) << "AUTH: First digest type for delayed-auth is " << getDigestName(digests[0])
+                       << ", but only HMAC-MD5 is allowed for delayed-auth." << LogEnd;
             return false;
         }
         break;
@@ -558,9 +514,8 @@ bool TClntCfgMgr::validateConfig()
                          << " expected only HMAC-MD5." << LogEnd;
         }
         if (digests[0] != DIGEST_HMAC_MD5) {
-            Log(Error) << "AUTH: First digest type for reconfigure-key is "
-                       << getDigestName(digests[0]) << ", but only HMAC-MD5 is allowed for delayed-auth."
-                       << LogEnd;
+            Log(Error) << "AUTH: First digest type for reconfigure-key is " << getDigestName(digests[0])
+                       << ", but only HMAC-MD5 is allowed for delayed-auth." << LogEnd;
             return false;
         }
         break;
@@ -577,16 +532,14 @@ bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
 
     SPtr<TClntCfgIA> ptrIA;
     ptrIface->firstIA();
-    while(ptrIA=ptrIface->getIA())
-    {
+    while (ptrIA = ptrIface->getIA()) {
         if (!this->validateIA(ptrIface, ptrIA))
             return false;
     }
 
     SPtr<TClntCfgPD> ptrPD;
     ptrIface->firstPD();
-    while(ptrPD=ptrIface->getPD())
-    {
+    while (ptrPD = ptrIface->getPD()) {
         if (!this->validatePD(ptrIface, ptrPD))
             return false;
     }
@@ -596,42 +549,37 @@ bool TClntCfgMgr::validateIface(SPtr<TClntCfgIface> ptrIface) {
 
 bool TClntCfgMgr::validateIA(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgIA> ptrIA) {
 
-    if ( ptrIA->getT2()<ptrIA->getT1() )
-    {
-        Log(Crit) << "T1 can't be lower than T2 for IA " << *ptrIA << "on the " << ptrIface->getName()
-                  << "/" << ptrIface->getID() << " interface." << LogEnd;
+    if (ptrIA->getT2() < ptrIA->getT1()) {
+        Log(Crit) << "T1 can't be lower than T2 for IA " << *ptrIA << "on the " << ptrIface->getName() << "/"
+                  << ptrIface->getID() << " interface." << LogEnd;
         return false;
     }
     SPtr<TClntCfgAddr> ptrAddr;
     ptrIA->firstAddr();
-    while(ptrAddr=ptrIA->getAddr())
-    {
+    while (ptrAddr = ptrIA->getAddr()) {
         if (!this->validateAddr(ptrIface, ptrIA, ptrAddr))
             return false;
     }
     return true;
 }
 
-bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface,
-                               SPtr<TClntCfgIA> ptrIA,
-                               SPtr<TClntCfgAddr> ptrAddr) {
+bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgIA> ptrIA, SPtr<TClntCfgAddr> ptrAddr) {
     SPtr<TIPv6Addr> addr = ptrAddr->get();
-    if ( addr && addr->linkLocal()) {
-        Log(Crit) << "Address " << ptrAddr->get()->getPlain() << " specified in IA "
-                  << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/" << ptrIface->getID()
-                  << " interface is link local." << LogEnd;
+    if (addr && addr->linkLocal()) {
+        Log(Crit) << "Address " << ptrAddr->get()->getPlain() << " specified in IA " << ptrIA->getIAID() << " on the "
+                  << ptrIface->getName() << "/" << ptrIface->getID() << " interface is link local." << LogEnd;
         return false;
     }
-    if( ptrAddr->getPref()>ptrAddr->getValid() ) {
-        Log(Crit) << "Prefered time " << ptrAddr->getPref() << " can't be lower than valid lifetime "
-                  << ptrAddr->getValid() << " for IA " << ptrIA->getIAID() << " on the "
-                  << ptrIface->getName() << "/" << ptrIface->getID() << " interface." << LogEnd;
+    if (ptrAddr->getPref() > ptrAddr->getValid()) {
+        Log(Crit) << "Prefered time " << ptrAddr->getPref() << " can't be lower than valid lifetime " << ptrAddr->getValid()
+                  << " for IA " << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/" << ptrIface->getID()
+                  << " interface." << LogEnd;
         return false;
     }
-    if ((unsigned long)ptrIA->getT1()>(unsigned long)ptrAddr->getValid()) {
-        Log(Crit) << "Valid lifetime " << ptrAddr->getValid() << " can't be lower than T1 " <<ptrIA->getT1()
-                  << "(address can't be renewed) in IA " << ptrIA->getIAID() << " on the "
-                  << ptrIface->getName() << "/" << ptrIface->getName() << " interface." << LogEnd;
+    if ((unsigned long)ptrIA->getT1() > (unsigned long)ptrAddr->getValid()) {
+        Log(Crit) << "Valid lifetime " << ptrAddr->getValid() << " can't be lower than T1 " << ptrIA->getT1()
+                  << "(address can't be renewed) in IA " << ptrIA->getIAID() << " on the " << ptrIface->getName() << "/"
+                  << ptrIface->getName() << " interface." << LogEnd;
         return false;
     }
 
@@ -640,29 +588,25 @@ bool TClntCfgMgr::validateAddr(SPtr<TClntCfgIface> ptrIface,
 
 bool TClntCfgMgr::validatePD(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgPD> ptrPD) {
 
-    if ( ptrPD->getT1() && ptrPD->getT2() && (ptrPD->getT2() < ptrPD->getT1()) )
-    {
-        Log(Crit) << "Non-zero T1 can't be lower than non-zero T2 for PD " << *ptrPD
-                  << " on the " << ptrIface->getFullName() << " interface." << LogEnd;
+    if (ptrPD->getT1() && ptrPD->getT2() && (ptrPD->getT2() < ptrPD->getT1())) {
+        Log(Crit) << "Non-zero T1 can't be lower than non-zero T2 for PD " << *ptrPD << " on the " << ptrIface->getFullName()
+                  << " interface." << LogEnd;
         return false;
     }
     SPtr<TClntCfgPrefix> ptrPrefix;
     ptrPD->firstPrefix();
-    while(ptrPrefix = ptrPD->getPrefix())
-    {
+    while (ptrPrefix = ptrPD->getPrefix()) {
         if (!this->validatePrefix(ptrIface, ptrPD, ptrPrefix))
             return false;
     }
     return true;
 }
 
-bool TClntCfgMgr::validatePrefix(SPtr<TClntCfgIface> ptrIface,
-                                 SPtr<TClntCfgPD> ptrPD,
-                                 SPtr<TClntCfgPrefix> ptrPrefix) {
-    if( ptrPrefix->getPref() > ptrPrefix->getValid() ) {
+bool TClntCfgMgr::validatePrefix(SPtr<TClntCfgIface> ptrIface, SPtr<TClntCfgPD> ptrPD, SPtr<TClntCfgPrefix> ptrPrefix) {
+    if (ptrPrefix->getPref() > ptrPrefix->getValid()) {
         Log(Crit) << "Preferred time " << ptrPrefix->getPref() << " can't be lower than valid lifetime "
-                  << ptrPrefix->getValid() << " for PD " << ptrPD->getIAID() << " on the "
-                  << ptrIface->getFullName() << " interface." << LogEnd;
+                  << ptrPrefix->getValid() << " for PD " << ptrPD->getIAID() << " on the " << ptrIface->getFullName()
+                  << " interface." << LogEnd;
         return false;
     }
 
@@ -682,61 +626,56 @@ bool TClntCfgMgr::validatePrefix(SPtr<TClntCfgIface> ptrIface,
     return true;
 }
 
-SPtr<TClntCfgIface> TClntCfgMgr::getIface(int id)
-{
+SPtr<TClntCfgIface> TClntCfgMgr::getIface(int id) {
     firstIface();
     SPtr<TClntCfgIface> iface;
-    while(iface=getIface())
-        if (iface->getID()==id) return iface;
-    return SPtr<TClntCfgIface> ();
+    while (iface = getIface())
+        if (iface->getID() == id)
+            return iface;
+    return SPtr<TClntCfgIface>();
 }
 
-SPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid)
-{
+SPtr<TClntCfgIface> TClntCfgMgr::getIfaceByIAID(int iaid) {
     SPtr<TClntCfgIface> iface;
     firstIface();
-    while(iface=getIface())
-    {
+    while (iface = getIface()) {
         SPtr<TClntCfgIA> ia;
         iface->firstIA();
-        while(ia=iface->getIA())
-            if (ia->getIAID()==iaid)
+        while (ia = iface->getIA())
+            if (ia->getIAID() == iaid)
                 return iface;
     }
     return SPtr<TClntCfgIface>();
 }
 
-bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
-{
+bool TClntCfgMgr::setGlobalOptions(ClntParser * parser) {
     SPtr<TClntParsGlobalOpt> opt = parser->ParserOptStack.getLast();
-    LogLevel       = logger::getLogLevel();
-    LogName        = logger::getLogName();
+    LogLevel = logger::getLogLevel();
+    LogName = logger::getLogName();
     AnonInfRequest = opt->getAnonInfRequest();
-    InsistMode     = opt->getInsistMode();// should the client insist on receiving
-                                          // all options i.e. sending INF-REQUEST
-                                          // if REQUEST did not grant required opts
-    if (opt->getInactiveMode()) // should the client accept not ready interfaces?
-        InactiveMode   = true;  // This may have been set up already by obeyRaBits()
+    InsistMode = opt->getInsistMode(); // should the client insist on receiving
+                                       // all options i.e. sending INF-REQUEST
+                                       // if REQUEST did not grant required opts
+    if (opt->getInactiveMode())        // should the client accept not ready interfaces?
+        InactiveMode = true;           // This may have been set up already by obeyRaBits()
 
-    FQDNFlagS      = opt->getFQDNFlagS();
-    UseConfirm     = opt->getConfirm(); // should client try to send CONFIRM?
+    FQDNFlagS = opt->getFQDNFlagS();
+    UseConfirm = opt->getConfirm(); // should client try to send CONFIRM?
 
     // user has specified DUID type, just in case if new DUID will be generated
     if (parser->DUIDType != DUID_TYPE_NOT_DEFINED) {
         DUIDType = parser->DUIDType;
         DUIDEnterpriseNumber = parser->DUIDEnterpriseNumber;
-        DUIDEnterpriseID     = parser->DUIDEnterpriseID;
+        DUIDEnterpriseID = parser->DUIDEnterpriseID;
     }
 
 #ifndef MOD_DISABLE_AUTH
     if (getAuthProtocol() == AUTH_PROTO_DIBBLER) {
         SPI_ = getAAASPIfromFile();
         if (SPI_) {
-            Log(Debug) << "Auth: Read SPI=" << hex << SPI_ << dec
-                       << " from a AAA-SPI file:" << CLNT_AAASPI_FILE << LogEnd;
+            Log(Debug) << "Auth: Read SPI=" << hex << SPI_ << dec << " from a AAA-SPI file:" << CLNT_AAASPI_FILE << LogEnd;
         } else {
-            Log(Crit) << "Auth: Dibbler protocol configured, but unable to read AAA-SPI file:"
-                      << CLNT_AAASPI_FILE << LogEnd;
+            Log(Crit) << "Auth: Dibbler protocol configured, but unable to read AAA-SPI file:" << CLNT_AAASPI_FILE << LogEnd;
             return false;
         }
 
@@ -744,8 +683,7 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
         unsigned len = 0;
         char * ptr = getAAAKey(SPI_, &len);
         if (len == 0) {
-            Log(Crit) << "Auth: Failed to load AAA key from file "
-                      << getAAAKeyFilename(SPI_) << LogEnd;
+            Log(Crit) << "Auth: Failed to load AAA key from file " << getAAAKeyFilename(SPI_) << LogEnd;
             return false;
         }
         free(ptr); // we don't really need the key yet.
@@ -757,7 +695,7 @@ bool TClntCfgMgr::setGlobalOptions(ClntParser * parser)
 
 #ifdef MOD_REMOTE_AUTOCONF
 void TClntCfgMgr::setRemoteAutoconf(bool enable) {
-    Log(Info) << "Remote autoconf " << (enable?"enabled":"disabled") << LogEnd;
+    Log(Info) << "Remote autoconf " << (enable ? "enabled" : "disabled") << LogEnd;
     RemoteAutoconf = enable;
 }
 
@@ -766,16 +704,14 @@ bool TClntCfgMgr::getRemoteAutoconf() {
 }
 #endif
 
-void TClntCfgMgr::setDigest(DigestTypes type)
-{
+void TClntCfgMgr::setDigest(DigestTypes type) {
     if (type >= DIGEST_INVALID)
         Digest_ = DIGEST_NONE;
     else
         Digest_ = type;
 }
 
-DigestTypes TClntCfgMgr::getDigest()
-{
+DigestTypes TClntCfgMgr::getDigest() {
     return Digest_;
 }
 
@@ -783,25 +719,22 @@ bool TClntCfgMgr::isDone() {
     return IsDone;
 }
 
-bool TClntCfgMgr::anonInfRequest()
-{
+bool TClntCfgMgr::anonInfRequest() {
     return AnonInfRequest;
 }
 
-bool TClntCfgMgr::inactiveMode()
-{
+bool TClntCfgMgr::inactiveMode() {
     return InactiveMode;
 }
 
-bool TClntCfgMgr::addInfRefreshTime()
-{
+bool TClntCfgMgr::addInfRefreshTime() {
     /* this can be considered a workaround, but for now ask for inf-refresh-time
        only when running in stateless mode */
 
     // are there any stateful interfaces?
     SPtr<TClntCfgIface> ptr;
     firstIface();
-    while ( ptr = getIface() ) {
+    while (ptr = getIface()) {
         if (!ptr->stateless())
             return false;
     }
@@ -809,18 +742,15 @@ bool TClntCfgMgr::addInfRefreshTime()
     return true;
 }
 
-bool TClntCfgMgr::insistMode()
-{
+bool TClntCfgMgr::insistMode() {
     return InsistMode;
 }
 
-int TClntCfgMgr::inactiveIfacesCnt()
-{
+int TClntCfgMgr::inactiveIfacesCnt() {
     return InactiveLst.count();
 }
 
-SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
-{
+SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces() {
     if (!InactiveLst.count())
         return SPtr<TClntCfgIface>(); // NULL
 
@@ -840,9 +770,8 @@ SPtr<TClntCfgIface> TClntCfgMgr::checkInactiveIfaces()
             char tmp[64];
             iface->firstLLAddress();
             inet_ntop6(iface->getLLAddress(), tmp);
-            if (is_addr_tentative(iface->getName(), iface->getID(), tmp)==LOWLEVEL_TENTATIVE_YES) {
-                Log(Debug) << "Interface " << iface->getFullName()
-                           << " is up and running, but link-local address " << tmp
+            if (is_addr_tentative(iface->getName(), iface->getID(), tmp) == LOWLEVEL_TENTATIVE_YES) {
+                Log(Debug) << "Interface " << iface->getFullName() << " is up and running, but link-local address " << tmp
                            << " is currently tentative." << LogEnd;
                 continue;
             }
@@ -871,14 +800,14 @@ uint32_t TClntCfgMgr::getSPI() {
 }
 
 /// @todo move this to CfgMgr and unify with TSrvCfgMgr::setAuthDigests
-void TClntCfgMgr::setAuthAcceptMethods(const std::vector<DigestTypes>& methods) {
+void TClntCfgMgr::setAuthAcceptMethods(const std::vector<DigestTypes> & methods) {
     AuthAcceptMethods_ = methods;
     if (!methods.empty()) {
         Log(Debug) << "AUTH: " << methods.size() << " method(s) accepted:";
 
         for (unsigned i = 0; i < methods.size(); ++i) {
             Log(Cont) << " " << getDigestName(methods[i]);
-            if (i==0) {
+            if (i == 0) {
                 Log(Cont) << "(default)";
             }
         }
@@ -889,18 +818,16 @@ void TClntCfgMgr::setAuthAcceptMethods(const std::vector<DigestTypes>& methods) 
     }
 }
 
-const std::vector<DigestTypes>& TClntCfgMgr::getAuthAcceptMethods() {
+const std::vector<DigestTypes> & TClntCfgMgr::getAuthAcceptMethods() {
     return AuthAcceptMethods_;
 }
 #endif
 
-bool TClntCfgMgr::getFQDNFlagS()
-{
+bool TClntCfgMgr::getFQDNFlagS() {
     return FQDNFlagS;
 }
 
-bool TClntCfgMgr::useConfirm()
-{
+bool TClntCfgMgr::useConfirm() {
     return UseConfirm;
 }
 
@@ -908,29 +835,28 @@ TClntCfgMgr::~TClntCfgMgr() {
     Log(Debug) << "ClntCfgMgr cleanup." << LogEnd;
 }
 
-ostream & operator<<(ostream &strum, TClntCfgMgr &x)
-{
+ostream & operator<<(ostream & strum, TClntCfgMgr & x) {
     strum << "<ClntCfgMgr>" << endl;
-    strum << "  <workdir>" << x.getWorkDir()  << "</workdir>" << endl;
+    strum << "  <workdir>" << x.getWorkDir() << "</workdir>" << endl;
     strum << "  <scriptName>" << x.getScript() << "</scriptName>" << endl;
-    strum << "  <LogName>" << x.getLogName()  << "</LogName>" << endl;
+    strum << "  <LogName>" << x.getLogName() << "</LogName>" << endl;
     strum << "  <LogLevel>" << x.getLogLevel() << "</LogLevel>" << endl;
-    strum << "  <AnonInfRequest>" << (x.anonInfRequest()?1:0) << "</AnonInfRequest>" << endl;
-    strum << "  <InsistMode>" << (x.InsistMode?1:0) << "</InsistMode>" << endl;
-    strum << "  <InactiveMode>" << (x.InactiveMode?1:0) << "</InactiveMode>" << endl;
-    strum << "  <FQDNFlagS>" << (x.FQDNFlagS?1:0) << "</FQDNFlagS>" << endl;
-    strum << "  <useConfirm>" << (x.UseConfirm?1:0) << "</useConfirm>" << endl;
+    strum << "  <AnonInfRequest>" << (x.anonInfRequest() ? 1 : 0) << "</AnonInfRequest>" << endl;
+    strum << "  <InsistMode>" << (x.InsistMode ? 1 : 0) << "</InsistMode>" << endl;
+    strum << "  <InactiveMode>" << (x.InactiveMode ? 1 : 0) << "</InactiveMode>" << endl;
+    strum << "  <FQDNFlagS>" << (x.FQDNFlagS ? 1 : 0) << "</FQDNFlagS>" << endl;
+    strum << "  <useConfirm>" << (x.UseConfirm ? 1 : 0) << "</useConfirm>" << endl;
     strum << "  <digest>";
     switch (x.getDigest()) {
     case DIGEST_NONE:
         strum << "digest-none";
-            break;
+        break;
     case DIGEST_HMAC_SHA1:
-            strum << "digest-hmac-sha1";
-            break;
+        strum << "digest-hmac-sha1";
+        break;
     default:
         strum << x.getDigest();
-            break;
+        break;
     };
     strum << "</digest>" << endl;
     if (x.DUID)
@@ -941,7 +867,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     SPtr<TClntCfgIface> ptr;
     x.firstIface();
 
-    while ( ptr = x.getIface() ) {
+    while (ptr = x.getIface()) {
         strum << *ptr;
     }
 
@@ -949,7 +875,7 @@ ostream & operator<<(ostream &strum, TClntCfgMgr &x)
     return strum;
 }
 
-void TClntCfgMgr::setDownlinkPrefixIfaces(List(std::string)& ifaces) {
+void TClntCfgMgr::setDownlinkPrefixIfaces(List(std::string) & ifaces) {
     ifaces.first();
     SPtr<string> iface;
     Log(Debug) << "PD: Following interfaces marked as downlink:";
@@ -980,8 +906,7 @@ bool TClntCfgMgr::obeyRaBits() {
  *
  * @return
  */
-bool HardcodedCfgExample(TClntCfgMgr *cfgMgr, string params)
-{
+bool HardcodedCfgExample(TClntCfgMgr * cfgMgr, string params) {
     Log(Info) << "Using hardcoded config. file." << LogEnd;
 
     // there's no way to set some parameters directly, to fake ClntParsGlobalOpt

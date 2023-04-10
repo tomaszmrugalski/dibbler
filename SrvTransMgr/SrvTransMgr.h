@@ -12,24 +12,24 @@
 #ifndef SRVTRANSMGR_H
 #define SRVTRANSMGR_H
 
-#include <string>
-#include <vector>
-#include "SmartPtr.h"
 #include "Container.h"
 #include "Opt.h"
-#include "SrvMsg.h"
-#include "SrvIfaceMgr.h"
-#include "SrvCfgIface.h"
+#include "SmartPtr.h"
 #include "SrvAddrMgr.h"
+#include "SrvCfgIface.h"
+#include "SrvIfaceMgr.h"
+#include "SrvMsg.h"
+#include <string>
+#include <vector>
 
 #define SrvTransMgr() (TSrvTransMgr::instance())
 
-class TSrvTransMgr
-{
-    friend std::ostream & operator<<(std::ostream &strum, TSrvTransMgr &x);
+class TSrvTransMgr {
+    friend std::ostream & operator<<(std::ostream & strum, TSrvTransMgr & x);
+
   public:
-    static void instanceCreate(const std::string& config, int port);
-    static TSrvTransMgr &instance();
+    static void instanceCreate(const std::string & config, int port);
+    static TSrvTransMgr & instance();
 
     bool openSocket(SPtr<TSrvCfgIface> confIface, int port);
 
@@ -58,22 +58,19 @@ class TSrvTransMgr
 
     bool sanitizeAddrDB();
 
-    void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo>& addrLst,
-                       std::vector<TSrvAddrMgr::TExpiredInfo>& tempAddrLst,
-                       std::vector<TSrvAddrMgr::TExpiredInfo>& prefixLst);
+    void removeExpired(std::vector<TSrvAddrMgr::TExpiredInfo> & addrLst, std::vector<TSrvAddrMgr::TExpiredInfo> & tempAddrLst,
+                       std::vector<TSrvAddrMgr::TExpiredInfo> & prefixLst);
 
-    void notifyExpireInfo(TNotifyScriptParams& params, const TSrvAddrMgr::TExpiredInfo& exp,
-                          TIAType type);
+    void notifyExpireInfo(TNotifyScriptParams & params, const TSrvAddrMgr::TExpiredInfo & exp, TIAType type);
 
     char * getCtrlAddr();
-    int    getCtrlIface();
+    int getCtrlIface();
 
     int checkReconfigures();
 
-    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface,
-                         int msgType, SPtr<TDUID> ptrDUID);
+    bool sendReconfigure(SPtr<TIPv6Addr> addr, int iface, int msgType, SPtr<TDUID> ptrDUID);
 
-    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface,bool PD);
+    bool ClientInPool1(SPtr<TIPv6Addr> addr, int iface, bool PD);
 
     /// @brief sends specified packet
     ///
@@ -95,7 +92,5 @@ class TSrvTransMgr
 
     int port_;
 };
-
-
 
 #endif

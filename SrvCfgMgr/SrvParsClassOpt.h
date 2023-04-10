@@ -13,22 +13,21 @@ class TSrvParsClassOpt;
 #ifndef TSRVPARSCLASS_H
 #define TSRVPARSCLASS_H
 
-#include <string>
-#include "DHCPConst.h"
 #include "Container.h"
-#include "SmartPtr.h"
+#include "DHCPConst.h"
 #include "HostID.h"
 #include "HostRange.h"
 #include "IPv6Addr.h"
+#include "SmartPtr.h"
 #include "SrvOptAddrParams.h"
+#include <string>
 
-class TSrvParsClassOpt
-{
- public:
+class TSrvParsClassOpt {
+  public:
     TSrvParsClassOpt(void);
     ~TSrvParsClassOpt(void);
 
-    //T1,T2,Valid,Prefered time routines
+    // T1,T2,Valid,Prefered time routines
     void setT1Beg(unsigned long t1);
     void setT1End(unsigned long t1);
     unsigned long getT1Beg();
@@ -52,23 +51,23 @@ class TSrvParsClassOpt
     unsigned long getValidEnd();
     unsigned long getValidBeg();
 
-    //Rejected clients access routines
+    // Rejected clients access routines
     void addRejedClnt(SPtr<THostRange> addr);
     void firstRejedClnt();
     SPtr<THostRange> getRejedClnt();
-    void setRejedClnt(TContainer<SPtr<THostRange> > *rejedClnt);
+    void setRejedClnt(TContainer<SPtr<THostRange>> * rejedClnt);
 
-    //Accepted clients access routines
+    // Accepted clients access routines
     void addAcceptClnt(SPtr<THostRange> addr);
     void firstAcceptClnt();
     SPtr<THostRange> getAcceptClnt();
-    void setAcceptClnt(TContainer<SPtr<THostRange> > *acceptClnt);
+    void setAcceptClnt(TContainer<SPtr<THostRange>> * acceptClnt);
 
-    //Pool access routines
+    // Pool access routines
     void addPool(SPtr<THostRange> addr);
     void firstPool();
     SPtr<THostRange> getPool();
-    void setPool(TContainer<SPtr<THostRange> > *pool);
+    void setPool(TContainer<SPtr<THostRange>> * pool);
     long countPool();
 
     // leases count
@@ -86,8 +85,8 @@ class TSrvParsClassOpt
     void setDenyClientClass(std::string s);
     List(std::string) getDenyClientClassString();
 
-private:
-    //Ranges of T1 i T2
+  private:
+    // Ranges of T1 i T2
     unsigned long T1Beg;
     unsigned long T1End;
     unsigned long T2End;
@@ -98,9 +97,9 @@ private:
     unsigned long ValidEnd;
     unsigned long Share;
 
-    TContainer<SPtr<THostRange> > RejedClnt;
-    TContainer<SPtr<THostRange> > AcceptClnt;
-    TContainer<SPtr<THostRange> > Pool;
+    TContainer<SPtr<THostRange>> RejedClnt;
+    TContainer<SPtr<THostRange>> AcceptClnt;
+    TContainer<SPtr<THostRange>> Pool;
 
     unsigned long ClassMaxLease;
 

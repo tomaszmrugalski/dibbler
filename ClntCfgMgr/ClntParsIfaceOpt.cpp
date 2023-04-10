@@ -9,52 +9,42 @@
  *
  */
 
-#include <iostream>
-#include <iomanip>
 #include "ClntParsIfaceOpt.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 
 TClntParsIfaceOpt::TClntParsIfaceOpt()
-    : TClntParsIAOpt(), Stateless_(false), Unicast(CLIENT_DEFAULT_UNICAST),
-      RapidCommit(CLIENT_DEFAULT_RAPID_COMMIT), Timezone(""), FQDN(""),
-      NISDomain(""), Lifetime(false), ReqDNSServer(false), ReqDomain(false),
-      ReqNTPServer(false), ReqTimezone(false), ReqSIPServer(false),
-      ReqSIPDomain(false), ReqFQDN(false), ReqNISServer(false),
-      ReqNISPServer(false), ReqNISDomain(false), ReqNISPDomain(false),
-      ReqLifetime(false), ReqPrefixDelegation(false), ReqVendorSpec(false)
-{
+    : TClntParsIAOpt(), Stateless_(false), Unicast(CLIENT_DEFAULT_UNICAST), RapidCommit(CLIENT_DEFAULT_RAPID_COMMIT),
+      Timezone(""), FQDN(""), NISDomain(""), Lifetime(false), ReqDNSServer(false), ReqDomain(false), ReqNTPServer(false),
+      ReqTimezone(false), ReqSIPServer(false), ReqSIPDomain(false), ReqFQDN(false), ReqNISServer(false), ReqNISPServer(false),
+      ReqNISDomain(false), ReqNISPDomain(false), ReqLifetime(false), ReqPrefixDelegation(false), ReqVendorSpec(false) {
 }
 
-bool TClntParsIfaceOpt::getStateful()
-{
+bool TClntParsIfaceOpt::getStateful() {
     return !Stateless_;
 }
 
-void TClntParsIfaceOpt::setStateful(bool state)
-{
+void TClntParsIfaceOpt::setStateful(bool state) {
     Stateless_ = !state;
 }
 
-void TClntParsIfaceOpt::setUnicast(bool unicast)
-{
+void TClntParsIfaceOpt::setUnicast(bool unicast) {
     Unicast = unicast;
 }
 
-bool TClntParsIfaceOpt::getUnicast()
-{
+bool TClntParsIfaceOpt::getUnicast() {
     return this->Unicast;
 }
 
-bool TClntParsIfaceOpt::getRapidCommit()
-{
+bool TClntParsIfaceOpt::getRapidCommit() {
     return this->RapidCommit;
 }
-void TClntParsIfaceOpt::setRapidCommit(bool rapCom)
-{
-    this->RapidCommit=rapCom;
+void TClntParsIfaceOpt::setRapidCommit(bool rapCom) {
+    this->RapidCommit = rapCom;
 }
 
 TClntParsIfaceOpt::~TClntParsIfaceOpt() {
@@ -65,7 +55,7 @@ TClntParsIfaceOpt::~TClntParsIfaceOpt() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getDNSServerLst() {
     return &this->DNSServerLst;
 }
-void TClntParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) *lst) {
+void TClntParsIfaceOpt::setDNSServerLst(List(TIPv6Addr) * lst) {
     this->DNSServerLst = *lst;
     this->ReqDNSServer = true;
 }
@@ -78,8 +68,8 @@ List(std::string) * TClntParsIfaceOpt::getDomainLst() {
     return &this->DomainLst;
 }
 void TClntParsIfaceOpt::setDomainLst(List(std::string) * domain) {
-    this->DomainLst=*domain;
-    this->ReqDomain=true;
+    this->DomainLst = *domain;
+    this->ReqDomain = true;
 }
 bool TClntParsIfaceOpt::getReqDomain() {
     return this->ReqDomain;
@@ -89,18 +79,18 @@ bool TClntParsIfaceOpt::getReqDomain() {
 List(TIPv6Addr) * TClntParsIfaceOpt::getNTPServerLst() {
     return &this->NTPServerLst;
 }
-void TClntParsIfaceOpt::setNTPServerLst(List(TIPv6Addr) *lst) {
+void TClntParsIfaceOpt::setNTPServerLst(List(TIPv6Addr) * lst) {
     this->NTPServerLst = *lst;
     this->ReqNTPServer = true;
 }
-bool TClntParsIfaceOpt::getReqNTPServer(){
+bool TClntParsIfaceOpt::getReqNTPServer() {
     return this->ReqNTPServer;
 }
 
 // --- option: Timezone ---
-void TClntParsIfaceOpt::setTimezone(const std::string& Timezone) {
-    this->Timezone=Timezone;
-    this->ReqTimezone=true;
+void TClntParsIfaceOpt::setTimezone(const std::string & Timezone) {
+    this->Timezone = Timezone;
+    this->ReqTimezone = true;
 }
 bool TClntParsIfaceOpt::getReqTimezone() {
     return this->ReqTimezone;
@@ -109,16 +99,15 @@ string TClntParsIfaceOpt::getTimezone() {
     return this->Timezone;
 }
 
-
 // --- option: SIP server ---
 List(TIPv6Addr) * TClntParsIfaceOpt::getSIPServerLst() {
     return &this->SIPServerLst;
 }
-void TClntParsIfaceOpt::setSIPServerLst(List(TIPv6Addr) *lst) {
+void TClntParsIfaceOpt::setSIPServerLst(List(TIPv6Addr) * lst) {
     this->SIPServerLst = *lst;
     this->ReqSIPServer = true;
 }
-bool TClntParsIfaceOpt::getReqSIPServer(){
+bool TClntParsIfaceOpt::getReqSIPServer() {
     return this->ReqSIPServer;
 }
 
@@ -127,17 +116,17 @@ List(std::string) * TClntParsIfaceOpt::getSIPDomainLst() {
     return &this->SIPDomainLst;
 }
 void TClntParsIfaceOpt::setSIPDomainLst(List(std::string) * domain) {
-    this->SIPDomainLst=*domain;
-    this->ReqSIPDomain=true;
+    this->SIPDomainLst = *domain;
+    this->ReqSIPDomain = true;
 }
 bool TClntParsIfaceOpt::getReqSIPDomain() {
     return this->ReqSIPDomain;
 }
 
 // --- option: FQDN ---
-void TClntParsIfaceOpt::setFQDN(const std::string& fqdn) {
-    this->FQDN=fqdn;
-    this->ReqFQDN=true;
+void TClntParsIfaceOpt::setFQDN(const std::string & fqdn) {
+    this->FQDN = fqdn;
+    this->ReqFQDN = true;
 }
 
 bool TClntParsIfaceOpt::getReqFQDN() {
@@ -150,25 +139,24 @@ string TClntParsIfaceOpt::getFQDN() {
 
 // --- option: Prefix Delegation ---
 void TClntParsIfaceOpt::setPrefixDelegation() {
-    this->ReqPrefixDelegation=true;
+    this->ReqPrefixDelegation = true;
 }
 
 bool TClntParsIfaceOpt::getReqPrefixDelegation() {
     return this->ReqPrefixDelegation;
 }
 
-
 // --- option: NIS server ---
 List(TIPv6Addr) * TClntParsIfaceOpt::getNISServerLst() {
     return &this->NISServerLst;
 }
 
-void TClntParsIfaceOpt::setNISServerLst(List(TIPv6Addr) *lst) {
+void TClntParsIfaceOpt::setNISServerLst(List(TIPv6Addr) * lst) {
     this->NISServerLst = *lst;
     this->ReqNISServer = true;
 }
 
-bool TClntParsIfaceOpt::getReqNISServer(){
+bool TClntParsIfaceOpt::getReqNISServer() {
     return this->ReqNISServer;
 }
 
@@ -177,9 +165,9 @@ string TClntParsIfaceOpt::getNISDomain() {
     return this->NISDomain;
 }
 
-void TClntParsIfaceOpt::setNISDomain(const std::string& domain) {
-    this->NISDomain=domain;
-    this->ReqNISDomain=true;
+void TClntParsIfaceOpt::setNISDomain(const std::string & domain) {
+    this->NISDomain = domain;
+    this->ReqNISDomain = true;
 }
 
 bool TClntParsIfaceOpt::getReqNISDomain() {
@@ -191,12 +179,12 @@ List(TIPv6Addr) * TClntParsIfaceOpt::getNISPServerLst() {
     return &this->NISPServerLst;
 }
 
-void TClntParsIfaceOpt::setNISPServerLst(List(TIPv6Addr) *lst) {
+void TClntParsIfaceOpt::setNISPServerLst(List(TIPv6Addr) * lst) {
     this->NISPServerLst = *lst;
     this->ReqNISPServer = true;
 }
 
-bool TClntParsIfaceOpt::getReqNISPServer(){
+bool TClntParsIfaceOpt::getReqNISPServer() {
     return this->ReqNISPServer;
 }
 
@@ -204,9 +192,9 @@ bool TClntParsIfaceOpt::getReqNISPServer(){
 string TClntParsIfaceOpt::getNISPDomain() {
     return this->NISPDomain;
 }
-void TClntParsIfaceOpt::setNISPDomain(const std::string& domain) {
-    this->NISPDomain=domain;
-    this->ReqNISPDomain=true;
+void TClntParsIfaceOpt::setNISPDomain(const std::string & domain) {
+    this->NISPDomain = domain;
+    this->ReqNISPDomain = true;
 }
 bool TClntParsIfaceOpt::getReqNISPDomain() {
     return this->ReqNISPDomain;

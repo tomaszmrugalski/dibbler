@@ -11,47 +11,45 @@
  *
  */
 
-#include <iostream>
-#include <iomanip>
-#include <sstream>
 #include "ClntCfgIface.h"
 #include "Logger.h"
-#include "Portable.h"
 #include "OptVendorSpecInfo.h"
+#include "Portable.h"
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 using namespace std;
 
-TClntCfgIface::TClntCfgIface(const std::string& ifaceName)
-    :Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1),
-     RoutingEnabled(false){
+TClntCfgIface::TClntCfgIface(const std::string & ifaceName)
+    : Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1), RoutingEnabled(false) {
     setDefaults();
 
-    NoConfig=false;
-    IfaceName=ifaceName;
-    ID=-1;
+    NoConfig = false;
+    IfaceName = ifaceName;
+    ID = -1;
 }
 
 TClntCfgIface::TClntCfgIface(int iface_index)
-    :Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1),
-     RoutingEnabled(false){
+    : Stateful_(true), Unicast(false), RapidCommit(false), PrefixLength(-1), RoutingEnabled(false) {
     setDefaults();
-    NoConfig=false;
-    ID=iface_index;
-    IfaceName="[unknown]";
+    NoConfig = false;
+    ID = iface_index;
+    IfaceName = "[unknown]";
 }
 
 void TClntCfgIface::setDefaults() {
-    DNSServerState  = STATE_DISABLED;
-    DomainState     = STATE_DISABLED;
-    NTPServerState  = STATE_DISABLED;
-    TimezoneState   = STATE_DISABLED;
-    SIPServerState  = STATE_DISABLED;
-    SIPDomainState  = STATE_DISABLED;
-    FQDNState       = STATE_DISABLED;
-    NISServerState  = STATE_DISABLED;
+    DNSServerState = STATE_DISABLED;
+    DomainState = STATE_DISABLED;
+    NTPServerState = STATE_DISABLED;
+    TimezoneState = STATE_DISABLED;
+    SIPServerState = STATE_DISABLED;
+    SIPDomainState = STATE_DISABLED;
+    FQDNState = STATE_DISABLED;
+    NISServerState = STATE_DISABLED;
     NISPServerState = STATE_DISABLED;
-    NISDomainState  = STATE_DISABLED;
+    NISDomainState = STATE_DISABLED;
     NISPDomainState = STATE_DISABLED;
-    LifetimeState   = STATE_DISABLED;
+    LifetimeState = STATE_DISABLED;
     PrefixDelegationState = STATE_DISABLED;
     VendorSpecState = STATE_DISABLED;
     RoutingEnabledState = STATE_DISABLED;
@@ -76,53 +74,66 @@ void TClntCfgIface::setDefaults() {
 }
 
 void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    Stateful_   = opt->getStateful();
-    Unicast     = opt->getUnicast();
+    Stateful_ = opt->getStateful();
+    Unicast = opt->getUnicast();
     RapidCommit = opt->getRapidCommit();
 
     // copy YES/NO information
     ReqDNSServer = opt->getReqDNSServer();
-    ReqDomain    = opt->getReqDomain();
+    ReqDomain = opt->getReqDomain();
     ReqNTPServer = opt->getReqNTPServer();
-    ReqTimezone  = opt->getReqTimezone();
+    ReqTimezone = opt->getReqTimezone();
     ReqSIPServer = opt->getReqSIPServer();
     ReqSIPDomain = opt->getReqSIPDomain();
-    ReqFQDN      = opt->getReqFQDN();
+    ReqFQDN = opt->getReqFQDN();
     ReqNISServer = opt->getReqNISServer();
     ReqNISDomain = opt->getReqNISDomain();
-    ReqNISPServer= opt->getReqNISPServer();
-    ReqNISPDomain= opt->getReqNISPDomain();
-    ReqLifetime  = opt->getReqLifetime();
+    ReqNISPServer = opt->getReqNISPServer();
+    ReqNISPDomain = opt->getReqNISPDomain();
+    ReqLifetime = opt->getReqLifetime();
     ReqPrefixDelegation = opt->getReqPrefixDelegation();
-    ReqVendorSpec= opt->getReqVendorSpec();
+    ReqVendorSpec = opt->getReqVendorSpec();
 
     // copy parameters
     DNSServerLst = *opt->getDNSServerLst();
-    DomainLst    = *opt->getDomainLst();
-    Timezone     = opt->getTimezone();
+    DomainLst = *opt->getDomainLst();
+    Timezone = opt->getTimezone();
     NTPServerLst = *opt->getNTPServerLst();
     SIPServerLst = *opt->getSIPServerLst();
     SIPDomainLst = *opt->getSIPDomainLst();
-    FQDN         = opt->getFQDN();
+    FQDN = opt->getFQDN();
     NISServerLst = *opt->getNISServerLst();
-    NISDomain    = opt->getNISDomain();
-    NISPServerLst= *opt->getNISPServerLst();
-    NISPDomain   = opt->getNISPDomain();
-    VendorSpecLst= opt->getVendorSpec();
+    NISDomain = opt->getNISDomain();
+    NISPServerLst = *opt->getNISPServerLst();
+    NISPDomain = opt->getNISPDomain();
+    VendorSpecLst = opt->getVendorSpec();
 
-    if (ReqDNSServer)  setDNSServerState(STATE_NOTCONFIGURED);
-    if (ReqDomain)     setDomainState(STATE_NOTCONFIGURED);
-    if (ReqNTPServer)  setNTPServerState(STATE_NOTCONFIGURED);
-    if (ReqTimezone)   setTimezoneState(STATE_NOTCONFIGURED);
-    if (ReqSIPServer)  setSIPServerState(STATE_NOTCONFIGURED);
-    if (ReqSIPDomain)  setSIPDomainState(STATE_NOTCONFIGURED);
-    if (ReqFQDN)       setFQDNState(STATE_NOTCONFIGURED);
-    if (ReqNISServer)  setNISServerState(STATE_NOTCONFIGURED);
-    if (ReqNISDomain)  setNISDomainState(STATE_NOTCONFIGURED);
-    if (ReqNISPServer) setNISPServerState(STATE_NOTCONFIGURED);
-    if (ReqNISPDomain) setNISPDomainState(STATE_NOTCONFIGURED);
-    if (ReqLifetime)   setLifetimeState(STATE_NOTCONFIGURED);
-    if (ReqVendorSpec) setVendorSpecState(STATE_NOTCONFIGURED);
+    if (ReqDNSServer)
+        setDNSServerState(STATE_NOTCONFIGURED);
+    if (ReqDomain)
+        setDomainState(STATE_NOTCONFIGURED);
+    if (ReqNTPServer)
+        setNTPServerState(STATE_NOTCONFIGURED);
+    if (ReqTimezone)
+        setTimezoneState(STATE_NOTCONFIGURED);
+    if (ReqSIPServer)
+        setSIPServerState(STATE_NOTCONFIGURED);
+    if (ReqSIPDomain)
+        setSIPDomainState(STATE_NOTCONFIGURED);
+    if (ReqFQDN)
+        setFQDNState(STATE_NOTCONFIGURED);
+    if (ReqNISServer)
+        setNISServerState(STATE_NOTCONFIGURED);
+    if (ReqNISDomain)
+        setNISDomainState(STATE_NOTCONFIGURED);
+    if (ReqNISPServer)
+        setNISPServerState(STATE_NOTCONFIGURED);
+    if (ReqNISPDomain)
+        setNISPDomainState(STATE_NOTCONFIGURED);
+    if (ReqLifetime)
+        setLifetimeState(STATE_NOTCONFIGURED);
+    if (ReqVendorSpec)
+        setVendorSpecState(STATE_NOTCONFIGURED);
 
     // copy preferred-server list
     SPtr<THostID> station;
@@ -136,13 +147,11 @@ void TClntCfgIface::setOptions(SPtr<TClntParsGlobalOpt> opt) {
         RejectedSrvLst.append(station);
 }
 
-bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr,SPtr<TDUID> duid)
-{
+bool TClntCfgIface::isServerRejected(SPtr<TIPv6Addr> addr, SPtr<TDUID> duid) {
     RejectedSrvLst.first();
     SPtr<THostID> RejectedSrv;
-    while(RejectedSrv=RejectedSrvLst.get())
-    {
-        if (((*RejectedSrv)==addr)||((*RejectedSrv)==duid))
+    while (RejectedSrv = RejectedSrvLst.get()) {
+        if (((*RejectedSrv) == addr) || ((*RejectedSrv) == duid))
             return true;
     }
     return false;
@@ -156,113 +165,93 @@ SPtr<TClntCfgTA> TClntCfgIface::getTA() {
     return ClntCfgTALst.get();
 }
 
-void  TClntCfgIface::addTA(SPtr<TClntCfgTA> ta) {
+void TClntCfgIface::addTA(SPtr<TClntCfgTA> ta) {
     ClntCfgTALst.append(ta);
 }
 
-int TClntCfgIface::countTA()
-{
+int TClntCfgIface::countTA() {
     return ClntCfgTALst.count();
 }
 
-void TClntCfgIface::firstIA()
-{
+void TClntCfgIface::firstIA() {
     IALst.first();
 }
 
-int TClntCfgIface::countIA()
-{
+int TClntCfgIface::countIA() {
     return IALst.count();
 }
 
- SPtr<TClntCfgIA> TClntCfgIface::getIA()
-{
+SPtr<TClntCfgIA> TClntCfgIface::getIA() {
     return IALst.get();
 }
 
-SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid)
-{
+SPtr<TClntCfgIA> TClntCfgIface::getIA(int iaid) {
     SPtr<TClntCfgIA> ia;
     IALst.first();
-    while (ia = IALst.get() ) {
+    while (ia = IALst.get()) {
         if (ia->getIAID() == iaid)
             return ia;
     }
     return SPtr<TClntCfgIA>(); // NULL
 }
 
-void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr)
-{
+void TClntCfgIface::addIA(SPtr<TClntCfgIA> ptr) {
     IALst.append(ptr);
 }
 
-void TClntCfgIface::firstPD()
-{
+void TClntCfgIface::firstPD() {
     PDLst.first();
 }
 
-int TClntCfgIface::countPD()
-{
+int TClntCfgIface::countPD() {
     return PDLst.count();
 }
 
- SPtr<TClntCfgPD> TClntCfgIface::getPD()
-{
+SPtr<TClntCfgPD> TClntCfgIface::getPD() {
     return PDLst.get();
 }
 
-SPtr<TClntCfgPD> TClntCfgIface::getPD(int iaid)
-{
+SPtr<TClntCfgPD> TClntCfgIface::getPD(int iaid) {
     SPtr<TClntCfgPD> ia;
     PDLst.first();
-    while (ia = PDLst.get() ) {
+    while (ia = PDLst.get()) {
         if (ia->getIAID() == iaid)
             return ia;
     }
     return SPtr<TClntCfgPD>(); // NULL
 }
 
-void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr)
-{
+void TClntCfgIface::addPD(SPtr<TClntCfgPD> ptr) {
     PDLst.append(ptr);
 }
 
- string TClntCfgIface::getName(void)
-{
+string TClntCfgIface::getName(void) {
     return IfaceName;
 }
 
 string TClntCfgIface::getFullName() {
     ostringstream oss;
     oss << ID;
-    return string(IfaceName)
-        +"/"
-        +oss.str();
+    return string(IfaceName) + "/" + oss.str();
 }
 
-
-int TClntCfgIface::getID(void)
-{
+int TClntCfgIface::getID(void) {
     return ID;
 }
 
-void TClntCfgIface::setIfaceID(int ifaceID)
-{
-    ID=ifaceID;
+void TClntCfgIface::setIfaceID(int ifaceID) {
+    ID = ifaceID;
 }
 
-void TClntCfgIface::setIfaceName(const std::string& ifaceName)
-{
-    IfaceName=ifaceName;
+void TClntCfgIface::setIfaceName(const std::string & ifaceName) {
+    IfaceName = ifaceName;
 }
 
-void TClntCfgIface::setNoConfig()
-{
-    NoConfig=true;
+void TClntCfgIface::setNoConfig() {
+    NoConfig = true;
 }
 
-bool TClntCfgIface::stateless()
-{
+bool TClntCfgIface::stateless() {
     return !Stateful_;
 }
 
@@ -278,9 +267,8 @@ bool TClntCfgIface::getRapidCommit() {
     return this->RapidCommit;
 }
 
-void TClntCfgIface::vendorSpecSupported(bool support)
-{
-    ReqVendorSpec   = support;
+void TClntCfgIface::vendorSpecSupported(bool support) {
+    ReqVendorSpec = support;
     VendorSpecState = STATE_NOTCONFIGURED;
 }
 
@@ -428,48 +416,47 @@ SPtr<TOptVendorSpecInfo> TClntCfgIface::getVendorSpec() {
 // --- options: setState ----------------------------------------------
 // --------------------------------------------------------------------
 void TClntCfgIface::setDNSServerState(EState state) {
-    this->DNSServerState=state;
+    this->DNSServerState = state;
 }
 void TClntCfgIface::setDomainState(EState state) {
-    this->DomainState=state;
+    this->DomainState = state;
 }
 void TClntCfgIface::setNTPServerState(EState state) {
-    this->NTPServerState=state;
+    this->NTPServerState = state;
 }
 void TClntCfgIface::setTimezoneState(EState state) {
-    this->TimezoneState=state;
+    this->TimezoneState = state;
 }
 void TClntCfgIface::setSIPServerState(EState state) {
-    this->SIPServerState=state;
+    this->SIPServerState = state;
 }
 void TClntCfgIface::setSIPDomainState(EState state) {
-    this->SIPDomainState=state;
+    this->SIPDomainState = state;
 }
 void TClntCfgIface::setFQDNState(EState state) {
-    this->FQDNState=state;
+    this->FQDNState = state;
 }
 void TClntCfgIface::setNISServerState(EState state) {
-    this->NISServerState=state;
+    this->NISServerState = state;
 }
 void TClntCfgIface::setNISPServerState(EState state) {
-    this->NISPServerState=state;
+    this->NISPServerState = state;
 }
 void TClntCfgIface::setNISDomainState(EState state) {
-    this->NISDomainState=state;
+    this->NISDomainState = state;
 }
 void TClntCfgIface::setNISPDomainState(EState state) {
-    this->NISPDomainState=state;
+    this->NISPDomainState = state;
 }
 void TClntCfgIface::setLifetimeState(EState state) {
-    this->LifetimeState=state;
+    this->LifetimeState = state;
 }
 
 void TClntCfgIface::setVendorSpecState(EState state) {
     this->VendorSpecState = state;
 }
 
-void TClntCfgIface::setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList)
-{
+void TClntCfgIface::setVendorSpec(List(TOptVendorSpecInfo) vendorSpecList) {
     VendorSpecLst = vendorSpecList;
 }
 
@@ -481,7 +468,7 @@ void TClntCfgIface::setOnLinkPrefixLength(int len) {
     this->PrefixLength = len;
 }
 
-int  TClntCfgIface::getOnLinkPrefixLength() {
+int TClntCfgIface::getOnLinkPrefixLength() {
     return this->PrefixLength;
 }
 
@@ -514,7 +501,8 @@ void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout,
  */
 void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool sendAlways) {
     if (!this) {
-        Log(Error) << "Option " << opttype << " defined in global scope will not work. Please define it in the appropriate interface scope" << LogEnd;
+        Log(Error) << "Option " << opttype
+                   << " defined in global scope will not work. Please define it in the appropriate interface scope" << LogEnd;
         return;
     }
     SPtr<TOptionStatus> optStatus = new TOptionStatus();
@@ -524,7 +512,7 @@ void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool
     ExtraOpts.push_back(optStatus);
 }
 
-TClntCfgIface::TOptionStatusLst& TClntCfgIface::getExtraOptions() {
+TClntCfgIface::TOptionStatusLst & TClntCfgIface::getExtraOptions() {
     return ExtraOpts;
 }
 
@@ -533,7 +521,7 @@ void TClntCfgIface::setRouting(bool enabled) {
 }
 
 SPtr<TClntCfgIface::TOptionStatus> TClntCfgIface::getExtaOptionState(int type) {
-    for (TOptionStatusLst::iterator opt=ExtraOpts.begin(); opt!=ExtraOpts.end(); ++opt)
+    for (TOptionStatusLst::iterator opt = ExtraOpts.begin(); opt != ExtraOpts.end(); ++opt)
         if ((*opt)->OptionType == type)
             return (*opt); // these are the droids you are looking for
 
@@ -564,13 +552,12 @@ SPtr<TIPv6Addr> TClntCfgIface::getBindToAddr() {
 // --- operators ------------------------------------------------------
 // --------------------------------------------------------------------
 
-ostream& operator<<(ostream& out,TClntCfgIface& iface)
-{
+ostream & operator<<(ostream & out, TClntCfgIface & iface) {
     SPtr<TIPv6Addr> addr;
     SPtr<string> str;
 
     out << dec;
-    out<<"  <ClntCfgIface ";
+    out << "  <ClntCfgIface ";
     if (iface.NoConfig) {
         out << "no-config=\"true\" />" << endl;
         return out;
@@ -589,8 +576,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "    <iaLst count=\"" << iface.IALst.count() << "\">" << endl;
     SPtr<TClntCfgIA> ia;
     iface.IALst.first();
-    while(ia=iface.IALst.get())
-    {
+    while (ia = iface.IALst.get()) {
         out << *ia;
     }
     out << "    </iaLst>" << endl;
@@ -598,7 +584,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
     out << "    <!-- temporary addresses -->" << endl;
     SPtr<TClntCfgTA> ta;
     iface.firstTA();
-    while (ta = iface.getTA() ) {
+    while (ta = iface.getTA()) {
         out << *ta;
     }
 
@@ -615,11 +601,11 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DNS-servers ---
     if (iface.isReqDNSServer()) {
-        out << "    <dns-servers state=\"" << StateToString(iface.getDNSServerState())
-            << "\" hints=\"" << iface.DNSServerLst.count() << "\" />" << endl;
+        out << "    <dns-servers state=\"" << StateToString(iface.getDNSServerState()) << "\" hints=\""
+            << iface.DNSServerLst.count() << "\" />" << endl;
 
         iface.DNSServerLst.first();
-        while(addr=iface.DNSServerLst.get())
+        while (addr = iface.DNSServerLst.get())
             out << "      <dns-server>" << *addr << "</dns-server>" << endl;
     } else {
         out << "    <!-- <dns-servers/> -->" << endl;
@@ -627,22 +613,22 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: DOMAIN ---
     if (iface.isReqDomain()) {
-        out << "    <domains state=\"" << StateToString(iface.getDomainState())
-            << "\" hints=\"" << iface.DomainLst.count() << "\" />" << endl;
+        out << "    <domains state=\"" << StateToString(iface.getDomainState()) << "\" hints=\"" << iface.DomainLst.count()
+            << "\" />" << endl;
 
         iface.DomainLst.first();
         while (str = iface.DomainLst.get())
-            out << "      <domain>" << *str <<"</domain>" << endl;
+            out << "      <domain>" << *str << "</domain>" << endl;
     } else {
         out << "    <!-- <domains/> -->" << endl;
     }
 
     // --- option: NTP servers ---
     if (iface.isReqNTPServer()) {
-        out << "    <ntp-servers state=\"" << StateToString(iface.getNTPServerState())
-            << "\" hints=\"" << iface.NTPServerLst.count() << "\" />" << endl;
+        out << "    <ntp-servers state=\"" << StateToString(iface.getNTPServerState()) << "\" hints=\""
+            << iface.NTPServerLst.count() << "\" />" << endl;
         iface.NTPServerLst.first();
-        while(addr=iface.NTPServerLst.get())
+        while (addr = iface.NTPServerLst.get())
             out << "      <ntp-server>" << *addr << "</ntp-server>" << endl;
     } else {
         out << "    <!-- <ntp-servers/> -->" << endl;
@@ -650,18 +636,18 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: Timezone ---
     if (iface.isReqTimezone()) {
-        out << "    <timezone state=\"" << StateToString(iface.getTimezoneState())
-            << "\">" << iface.Timezone << "</timezone>" << endl;
+        out << "    <timezone state=\"" << StateToString(iface.getTimezoneState()) << "\">" << iface.Timezone << "</timezone>"
+            << endl;
     } else {
         out << "    <!-- <timezone/> -->" << endl;
     }
 
     // --- option: SIP servers ---
     if (iface.isReqSIPServer()) {
-        out << "    <sip-servers state=\"" << StateToString(iface.getSIPServerState())
-            << "\" hints=\"" << iface.NTPServerLst.count() << "\"/>" << endl;
+        out << "    <sip-servers state=\"" << StateToString(iface.getSIPServerState()) << "\" hints=\""
+            << iface.NTPServerLst.count() << "\"/>" << endl;
         iface.NTPServerLst.first();
-        while(addr=iface.NTPServerLst.get())
+        while (addr = iface.NTPServerLst.get())
             out << "      <sip-server>" << *addr << "</sip-server>" << endl;
     } else {
         out << "    <!-- <sip-servers/> -->" << endl;
@@ -669,29 +655,28 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: SIP domains ---
     if (iface.isReqSIPDomain()) {
-        out << "    <sip-domains state=\"" << StateToString(iface.getSIPDomainState())
-            << "\" hints=\"" << iface.DomainLst.count() << "\"/>" << endl;
+        out << "    <sip-domains state=\"" << StateToString(iface.getSIPDomainState()) << "\" hints=\""
+            << iface.DomainLst.count() << "\"/>" << endl;
         iface.SIPDomainLst.first();
         while (str = iface.SIPDomainLst.get())
-            out << "      <sip-domain>" << *str <<"</sip-domain>" << endl;
+            out << "      <sip-domain>" << *str << "</sip-domain>" << endl;
     } else {
         out << "    <!-- <sip-domains/> -->" << endl;
     }
 
     // --- option: FQDN ---
     if (iface.isReqFQDN()) {
-        out << "    <fqdn state=\"" << StateToString(iface.getFQDNState())
-            << "\">" << iface.FQDN << "</fqdn>" << endl;
+        out << "    <fqdn state=\"" << StateToString(iface.getFQDNState()) << "\">" << iface.FQDN << "</fqdn>" << endl;
     } else {
         out << "    <!-- <fqdn/> -->" << endl;
     }
 
     // --- option: NIS server ---
     if (iface.isReqNISServer()) {
-        out << "    <nis-servers state=\"" << StateToString(iface.getNISServerState())
-            << "\" hints=\"" << iface.NISServerLst.count() << "\"/>" << endl;
+        out << "    <nis-servers state=\"" << StateToString(iface.getNISServerState()) << "\" hints=\""
+            << iface.NISServerLst.count() << "\"/>" << endl;
         iface.NISServerLst.first();
-        while(addr=iface.NISServerLst.get())
+        while (addr = iface.NISServerLst.get())
             out << "      <nis-server>" << *addr << "</nis-server>" << endl;
     } else {
         out << "    <!-- <nis-servers/> -->" << endl;
@@ -699,18 +684,18 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: NIS domains ---
     if (iface.isReqNISDomain()) {
-        out << "    <nis-domain state=\"" << StateToString(iface.getNISDomainState())
-            << "\" >" << iface.NISDomain << "</nis-domain>" << endl;
+        out << "    <nis-domain state=\"" << StateToString(iface.getNISDomainState()) << "\" >" << iface.NISDomain
+            << "</nis-domain>" << endl;
     } else {
         out << "    <!-- <nis-domain/> -->" << endl;
     }
 
     // --- option: NISP server ---
     if (iface.isReqNISPServer()) {
-        out << "    <nisplus-servers state=\"" << StateToString(iface.getNISPServerState())
-            << "\" hints=\"" << iface.NISPServerLst.count() << "\"/>" << endl;
+        out << "    <nisplus-servers state=\"" << StateToString(iface.getNISPServerState()) << "\" hints=\""
+            << iface.NISPServerLst.count() << "\"/>" << endl;
         iface.NISPServerLst.first();
-        while(addr=iface.NISPServerLst.get())
+        while (addr = iface.NISPServerLst.get())
             out << "      <nisplus-server>" << *addr << "</nisplus-server>" << endl;
     } else {
         out << "    <!-- <nisplus-servers/> -->" << endl;
@@ -718,8 +703,8 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
 
     // --- option: NISP domains ---
     if (iface.isReqNISPDomain()) {
-        out << "    <nisplus-domain state=\"" << StateToString(iface.getNISPDomainState())
-            << "\" >" << iface.NISPDomain << "</nisplus-domain>" << endl;
+        out << "    <nisplus-domain state=\"" << StateToString(iface.getNISPDomainState()) << "\" >" << iface.NISPDomain
+            << "</nisplus-domain>" << endl;
     } else {
         out << "    <!-- <nisplus-domain> -->" << endl;
     }
@@ -737,8 +722,7 @@ ostream& operator<<(ostream& out,TClntCfgIface& iface)
         out << "    <vendorSpecLst count=\"" << iface.VendorSpecLst.count() << "\">" << endl;
         iface.VendorSpecLst.first();
         while (opt = iface.VendorSpecLst.get()) {
-            out << "      <vendorSpec vendor=\"" << opt->getVendor() << "\">"
-                << opt->getPlain() << "</vendorSpec>" << endl;
+            out << "      <vendorSpec vendor=\"" << opt->getVendor() << "\">" << opt->getPlain() << "</vendorSpec>" << endl;
         }
         out << "    <vendorSpecLst/>" << endl;
     } else {

@@ -10,12 +10,12 @@
  *
  */
 
-#include <iostream>
-#include <iomanip>
-#include <limits.h>
-#include "DHCPConst.h"
 #include "ClntCfgAddr.h"
+#include "DHCPConst.h"
 #include "Logger.h"
+#include <iomanip>
+#include <iostream>
+#include <limits.h>
 
 SPtr<TIPv6Addr> TClntCfgAddr::get() {
     return Addr;
@@ -29,38 +29,34 @@ unsigned long TClntCfgAddr::getPref() {
     return Pref;
 }
 
-
-TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr,long valid,long pref)
-{
-    Addr=addr;
+TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr, long valid, long pref) {
+    Addr = addr;
     Valid = valid;
     Pref = pref;
 }
 
 TClntCfgAddr::~TClntCfgAddr() {
-
 }
 
 void TClntCfgAddr::setOptions(SPtr<TClntParsGlobalOpt> opt) {
-    this->Valid=opt->getValid();
-    this->Pref=opt->getPref();
+    this->Valid = opt->getValid();
+    this->Pref = opt->getPref();
 }
 
 TClntCfgAddr::TClntCfgAddr() {
-    this->Valid=UINT_MAX;
-    this->Pref=UINT_MAX;
-    Addr= new TIPv6Addr();
+    this->Valid = UINT_MAX;
+    this->Pref = UINT_MAX;
+    Addr = new TIPv6Addr();
 }
 
 TClntCfgAddr::TClntCfgAddr(SPtr<TIPv6Addr> addr) {
-    Addr=addr;
+    Addr = addr;
     Valid = UINT_MAX;
     Pref = UINT_MAX;
 }
 
-std::ostream& operator<<(std::ostream& out, TClntCfgAddr& addr) {
-    out << "<addr preferred=\"" << addr.Pref 
-	<< "\" valid=\"" << addr.Valid << "\">";
-    out << *addr.Addr << "</addr>" << std::endl;	
+std::ostream & operator<<(std::ostream & out, TClntCfgAddr & addr) {
+    out << "<addr preferred=\"" << addr.Pref << "\" valid=\"" << addr.Valid << "\">";
+    out << *addr.Addr << "</addr>" << std::endl;
     return out;
 }

@@ -13,13 +13,13 @@
 #include "ClntCfgPrefix.h"
 #include "ClntParsGlobalOpt.h"
 #include "DHCPConst.h"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-class TClntCfgPD
-{
-    friend std::ostream& operator<<(std::ostream& out, TClntCfgPD& group);
- public:
+class TClntCfgPD {
+    friend std::ostream & operator<<(std::ostream & out, TClntCfgPD & group);
+
+  public:
     long getIAID();
     void setIAID(long iaid);
 

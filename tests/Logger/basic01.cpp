@@ -11,7 +11,7 @@ int main() {
     logger::setLogLevel(6);
     logger::Initialize("foo.log");
     Log(Debug) << "Entry Debug: str=" << LogEnd;
-    Log(Info) << "Entry Info: str=" << LogEnd;    
+    Log(Info) << "Entry Info: str=" << LogEnd;
     Log(Notice) << "Entry Notice: str=" << strum.str() << LogEnd;
     Log(Warning) << "Entry Warning: str=" << strum.str() << LogEnd;
     Log(Error) << "Entry Error: str=" << strum.str() << LogEnd;

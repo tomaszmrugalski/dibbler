@@ -14,35 +14,34 @@ class TSrvCfgMgr;
 
 #ifndef SRVCONFMGR_H
 #define SRVCONFMGR_H
-#include "SmartPtr.h"
-#include "SrvCfgIface.h"
-#include "SrvIfaceMgr.h"
 #include "CfgMgr.h"
-#include "DHCPConst.h"
 #include "Container.h"
+#include "DHCPConst.h"
 #include "DUID.h"
 #include "KeyList.h"
+#include "SmartPtr.h"
 #include "SrvCfgClientClass.h"
+#include "SrvCfgIface.h"
+#include "SrvIfaceMgr.h"
 
 #define SrvCfgMgr() (TSrvCfgMgr::instance())
 
 class SrvParser;
 
-class TSrvCfgMgr : public TCfgMgr
-{
-public:
-    friend std::ostream & operator<<(std::ostream &strum, TSrvCfgMgr &x);
+class TSrvCfgMgr : public TCfgMgr {
+  public:
+    friend std::ostream & operator<<(std::ostream & strum, TSrvCfgMgr & x);
 
-    static void instanceCreate(const std::string& cfgFile, const std::string& xmlDumpFile);
-    static TSrvCfgMgr &instance();
+    static void instanceCreate(const std::string & cfgFile, const std::string & xmlDumpFile);
+    static TSrvCfgMgr & instance();
 
-    bool parseConfigFile(const std::string& cfgFile);
+    bool parseConfigFile(const std::string & cfgFile);
 
-    //Interfaces acccess methods
+    // Interfaces acccess methods
     void firstIface();
     SPtr<TSrvCfgIface> getIface();
     SPtr<TSrvCfgIface> getIfaceByID(int iface);
-    SPtr<TSrvCfgIface> getIfaceByName(const std::string& name);
+    SPtr<TSrvCfgIface> getIfaceByName(const std::string & name);
     long countIface();
     void addIface(SPtr<TSrvCfgIface> iface);
     void makeInactiveIface(int ifindex, bool inactive);
@@ -53,7 +52,7 @@ public:
 
     bool setupRelay(SPtr<TSrvCfgIface> cfgIface);
 
-    //Address assignment connected methods
+    // Address assignment connected methods
     void setCounters();
 
     void removeReservedFromCache();
@@ -110,18 +109,22 @@ public:
     void bulkLQMaxConns(unsigned int maxConnections);
     void bulkLQTimeout(unsigned int timeout);
 
-    //Authentication
+    // Authentication
 #ifndef MOD_DISABLE_AUTH
     SPtr<KeyList> AuthKeys;
-    void setAuthDigests(const DigestTypesLst& digests);
+    void setAuthDigests(const DigestTypesLst & digests);
     DigestTypesLst getAuthDigests();
     enum DigestTypes getDigest();
-    uint32_t getDelayedAuthKeyID(const char* mapping_file, SPtr<TDUID> clientid);
+    uint32_t getDelayedAuthKeyID(const char * mapping_file, SPtr<TDUID> clientid);
 #endif
 
     void setDefaults();
-    std::string getScriptName() { return ScriptName; }
-    void setScriptName(std::string scriptFile) { ScriptName = scriptFile; }
+    std::string getScriptName() {
+        return ScriptName;
+    }
+    void setScriptName(std::string scriptFile) {
+        ScriptName = scriptFile;
+    }
 
     // Client List check
     void InClientClass(SPtr<TSrvMsg> msg);
@@ -131,7 +134,6 @@ public:
     int getRelayByLinkAddr(SPtr<TIPv6Addr> addr);
     int getAnyRelay();
 
-
     // Sets performance mode (not write whole XML)
     void setPerformanceMode(bool mode);
     bool getPerformanceMode();
@@ -140,8 +142,8 @@ public:
     bool dropUnicast();
 
     // used to be private, but we need access in tests
-protected:
-    TSrvCfgMgr(const std::string& cfgFile, const std::string& xmlFile);
+  protected:
+    TSrvCfgMgr(const std::string & cfgFile, const std::string & xmlFile);
     static TSrvCfgMgr * Instance;
     static int NextRelayID;
     std::string XmlFile;
@@ -156,13 +158,13 @@ protected:
     List(TSrvCfgIface) SrvCfgIfaceLst;
     List(TSrvCfgIface) InactiveLst;
     List(TSrvCfgClientClass) ClientClassLst;
-    bool matchParsedSystemInterfaces(SrvParser *parser);
+    bool matchParsedSystemInterfaces(SrvParser * parser);
 
     // global options
     bool Stateless;
     bool InactiveMode;
     bool GuessMode;
-    int  CacheSize;
+    int CacheSize;
     ESrvIfaceIdOrder InterfaceIDOrder;
     std::string ScriptName;
 

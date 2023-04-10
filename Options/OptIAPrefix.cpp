@@ -8,16 +8,13 @@
  *
  */
 
-#include <string.h>
-#include "Portable.h"
-#include "DHCPConst.h"
 #include "OptIAPrefix.h"
+#include "DHCPConst.h"
+#include "Portable.h"
+#include <string.h>
 
-TOptIAPrefix::TOptIAPrefix(const char * buf, size_t len, TMsg* parent)
-    :TOpt(OPTION_IAPREFIX, parent), Valid_(false)
-{
-    if (len >= 25)
-    {
+TOptIAPrefix::TOptIAPrefix(const char * buf, size_t len, TMsg * parent) : TOpt(OPTION_IAPREFIX, parent), Valid_(false) {
+    if (len >= 25) {
         PrefLifetime_ = readUint32(buf);
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
@@ -26,7 +23,7 @@ TOptIAPrefix::TOptIAPrefix(const char * buf, size_t len, TMsg* parent)
         buf += sizeof(uint32_t);
         len -= sizeof(uint32_t);
 
-        PrefixLength_  = *buf;
+        PrefixLength_ = *buf;
         buf += 1;
         len -= 1;
 
@@ -34,15 +31,13 @@ TOptIAPrefix::TOptIAPrefix(const char * buf, size_t len, TMsg* parent)
         buf += 16;
         len -= 16;
 
-        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAPREFIX,
-                              "IAPrefix option");
+        Valid_ = parseOptions(SubOptions, buf, len, parent, OPTION_IAPREFIX, "IAPrefix option");
     }
 }
 
-TOptIAPrefix::TOptIAPrefix(SPtr<TIPv6Addr> prefix, char len, unsigned long pref,
-                           unsigned long valid, TMsg* parent)
-    :TOpt(OPTION_IAPREFIX, parent), Prefix_(prefix), PrefLifetime_(pref),
-     ValidLifetime_(valid), PrefixLength_(len), Valid_(true) {
+TOptIAPrefix::TOptIAPrefix(SPtr<TIPv6Addr> prefix, char len, unsigned long pref, unsigned long valid, TMsg * parent)
+    : TOpt(OPTION_IAPREFIX, parent), Prefix_(prefix), PrefLifetime_(pref), ValidLifetime_(valid), PrefixLength_(len),
+      Valid_(true) {
     // we are not checking is prefix is a proper address type,
 }
 
@@ -57,24 +52,23 @@ void TOptIAPrefix::setPref(unsigned long pref) {
 void TOptIAPrefix::setValid(unsigned long valid) {
     ValidLifetime_ = valid;
 }
-void TOptIAPrefix::setPrefixLenght(char prefix_length){
+void TOptIAPrefix::setPrefixLenght(char prefix_length) {
     PrefixLength_ = prefix_length;
 }
 
-char * TOptIAPrefix::storeSelf(char* buf)
-{
+char * TOptIAPrefix::storeSelf(char * buf) {
     buf = writeUint16(buf, OptType);
-    buf = writeUint16(buf, getSize()-4);
+    buf = writeUint16(buf, getSize() - 4);
 
     buf = writeUint32(buf, PrefLifetime_);
     buf = writeUint32(buf, ValidLifetime_);
 
-    *(char*)buf = PrefixLength_;
-    buf+=1;
+    *(char *)buf = PrefixLength_;
+    buf += 1;
     memcpy(buf, Prefix_->getAddr(), 16);
-    buf+=16;
+    buf += 16;
 
-    buf=storeSubOpt(buf);
+    buf = storeSubOpt(buf);
     return buf;
 }
 
@@ -83,7 +77,7 @@ SPtr<TIPv6Addr> TOptIAPrefix::getPrefix() const {
 }
 
 unsigned long TOptIAPrefix::getPref() const {
-        return PrefLifetime_;
+    return PrefLifetime_;
 }
 
 unsigned long TOptIAPrefix::getValid() const {

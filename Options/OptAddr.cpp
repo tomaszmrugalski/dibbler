@@ -8,19 +8,17 @@
  *
  */
 
-#include "Portable.h"
 #include "OptAddr.h"
 #include "Logger.h"
-#include "OptRtPrefix.h"
 #include "OptGeneric.h"
+#include "OptRtPrefix.h"
+#include "Portable.h"
 
-TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
-    :TOpt(type, parent) {
-    if (len<16) {
-	Valid = false;
-	Log(Warning) << "Malformed option (code=" << type << ", length=" << len
-		     << "), expected length is 16." << LogEnd;
-	return;
+TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg * parent) : TOpt(type, parent) {
+    if (len < 16) {
+        Valid = false;
+        Log(Warning) << "Malformed option (code=" << type << ", length=" << len << "), expected length is 16." << LogEnd;
+        return;
     }
     Addr = new TIPv6Addr(buf, false); // plain = false
     buf += 16;
@@ -29,8 +27,7 @@ TOptAddr::TOptAddr(int type, const char * buf, unsigned short len, TMsg* parent)
     Valid = parseOptions(SubOptions, buf, len, parent);
 }
 
-TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg* parent)
-    :TOpt(type, parent) {
+TOptAddr::TOptAddr(int type, SPtr<TIPv6Addr> addr, TMsg * parent) : TOpt(type, parent) {
     this->Addr = addr;
 }
 
@@ -47,10 +44,10 @@ std::string TOptAddr::getPlain() {
     return Addr->getPlain();
 }
 
-char * TOptAddr::storeSelf(char* buf) {
+char * TOptAddr::storeSelf(char * buf) {
     // store generic header
-    buf = writeUint16( buf, OptType );
-    buf = writeUint16( buf, getSize() - 4 );
+    buf = writeUint16(buf, OptType);
+    buf = writeUint16(buf, getSize() - 4);
 
     // store address
     buf = Addr->storeSelf(buf);

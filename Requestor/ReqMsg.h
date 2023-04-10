@@ -10,16 +10,15 @@
 #ifndef REQMSG_H
 #define REQMSG_H
 
-#include <string>
 #include "Msg.h"
 #include "SmartPtr.h"
+#include <string>
 
-class TReqMsg: public TMsg
-{
-public:
+class TReqMsg : public TMsg {
+  public:
     TReqMsg(int iface, SPtr<TIPv6Addr> addr, int msgType);
     // used to create TMsg object based on received char[] data
-    TReqMsg(int iface, SPtr<TIPv6Addr> addr, char* &buf, int &bufSize);
+    TReqMsg(int iface, SPtr<TIPv6Addr> addr, char *& buf, int & bufSize);
     void addOption(SPtr<TOpt> opt);
 
     std::string getName() const;

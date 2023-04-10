@@ -12,18 +12,17 @@
 #ifndef CLNTPARSEIFACEOPT_H
 #define CLNTPARSEIFACEOPT_H
 
-#include <iostream>
-#include <string>
-#include "DHCPConst.h"
-#include "Container.h"
 #include "ClntParsIAOpt.h"
+#include "Container.h"
+#include "DHCPConst.h"
 #include "HostID.h"
 #include "IPv6Addr.h"
 #include "OptVendorSpecInfo.h"
+#include <iostream>
+#include <string>
 
-class TClntParsIfaceOpt : public TClntParsIAOpt
-{
- public:
+class TClntParsIfaceOpt : public TClntParsIAOpt {
+  public:
     TClntParsIfaceOpt();
     ~TClntParsIfaceOpt();
     void setUnicast(bool unicast);
@@ -36,7 +35,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     //-- options related methods --
     // option: DNS Servers
     List(TIPv6Addr) * getDNSServerLst();
-    void setDNSServerLst(List(TIPv6Addr) *lst);
+    void setDNSServerLst(List(TIPv6Addr) * lst);
     bool getReqDNSServer();
 
     // option: Domain
@@ -46,47 +45,47 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
 
     // option: NTP servers
     List(TIPv6Addr) * getNTPServerLst();
-    void setNTPServerLst(List(TIPv6Addr) *lst);
+    void setNTPServerLst(List(TIPv6Addr) * lst);
     bool getReqNTPServer();
 
     // option: Timezone
     std::string getTimezone();
-    void setTimezone(const std::string& timeZone);
+    void setTimezone(const std::string & timeZone);
     bool getReqTimezone();
 
     // option: SIP servers
     List(TIPv6Addr) * getSIPServerLst();
-    void setSIPServerLst(List(TIPv6Addr) *addr);
+    void setSIPServerLst(List(TIPv6Addr) * addr);
     bool getReqSIPServer();
 
     // option: SIP domains
     List(std::string) * getSIPDomainLst();
-    void setSIPDomainLst(List(std::string) *domainlist);
+    void setSIPDomainLst(List(std::string) * domainlist);
     bool getReqSIPDomain();
 
     // option: FQDN
     std::string getFQDN();
-    void setFQDN(const std::string& fqdn);
+    void setFQDN(const std::string & fqdn);
     bool getReqFQDN();
 
     // option: NIS servers
     List(TIPv6Addr) * getNISServerLst();
-    void setNISServerLst( List(TIPv6Addr) *nislist);
+    void setNISServerLst(List(TIPv6Addr) * nislist);
     bool getReqNISServer();
 
     // option: NIS+ servers
     List(TIPv6Addr) * getNISPServerLst();
-    void setNISPServerLst( List(TIPv6Addr) *nisplist);
+    void setNISPServerLst(List(TIPv6Addr) * nisplist);
     bool getReqNISPServer();
 
     // option: NIS domain
     std::string getNISDomain();
-    void setNISDomain(const std::string& domain);
+    void setNISDomain(const std::string & domain);
     bool getReqNISDomain();
 
     // option: NISP domain
     std::string getNISPDomain();
-    void setNISPDomain(const std::string& domain);
+    void setNISPDomain(const std::string & domain);
     bool getReqNISPDomain();
 
     // option: Lifetime
@@ -104,7 +103,7 @@ class TClntParsIfaceOpt : public TClntParsIAOpt
     bool getReqVendorSpec();
     List(TOptVendorSpecInfo) getVendorSpec();
 
-private:
+  private:
     /// defined whether this interface is running in stateless mode
     bool Stateless_;
 
@@ -143,6 +142,5 @@ private:
     bool ReqPrefixDelegation;
     bool ReqVendorSpec;
 };
-
 
 #endif

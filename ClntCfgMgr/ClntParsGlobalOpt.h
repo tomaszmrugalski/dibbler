@@ -15,13 +15,12 @@ class TClntParsGlobalOpt;
 #include "ClntParsIfaceOpt.h"
 #include "DHCPConst.h"
 
-class TClntParsGlobalOpt : public TClntParsIfaceOpt
-{
-public:
+class TClntParsGlobalOpt : public TClntParsIfaceOpt {
+  public:
     TClntParsGlobalOpt();
     ~TClntParsGlobalOpt();
 
-    void setWorkDir(const std::string& dir);
+    void setWorkDir(const std::string & dir);
     std::string getWorkDir();
     void setOnLinkPrefixLength(int len);
     int getOnLinkPrefixLength();
@@ -41,13 +40,12 @@ public:
     void setConfirm(bool conf);
     bool getConfirm();
 
-
-private:
+  private:
     std::string WorkDir;
     int PrefixLength;
-    bool   AnonInfRequest;
-    bool   InactiveMode;
-    bool   InsistMode;
+    bool AnonInfRequest;
+    bool InactiveMode;
+    bool InsistMode;
     bool UseConfirm;
 
     bool FQDNFlagS;

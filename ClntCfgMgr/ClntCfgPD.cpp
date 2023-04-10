@@ -6,19 +6,16 @@
  * released under GNU GPL v2 only licence
  */
 
-#include <iostream>
-#include <iomanip>
 #include "ClntCfgPD.h"
 #include "DHCPDefaults.h"
 #include "Logger.h"
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 
-TClntCfgPD::TClntCfgPD()
-    :T1_(CLIENT_DEFAULT_T1), T2_(CLIENT_DEFAULT_T2),
-     PrefixLength_(64), State_(STATE_NOTCONFIGURED)
-{
-    static unsigned long nextIAID=1;
+TClntCfgPD::TClntCfgPD() : T1_(CLIENT_DEFAULT_T1), T2_(CLIENT_DEFAULT_T2), PrefixLength_(64), State_(STATE_NOTCONFIGURED) {
+    static unsigned long nextIAID = 1;
     IAID_ = nextIAID++;
 }
 
@@ -45,7 +42,7 @@ enum EState TClntCfgPD::getState() {
     return State_;
 }
 
-long  TClntCfgPD::getIAID() {
+long TClntCfgPD::getIAID() {
     return IAID_;
 }
 
@@ -67,24 +64,22 @@ SPtr<TClntCfgPrefix> TClntCfgPD::getPrefix() {
 }
 
 TClntCfgPD::TClntCfgPD(SPtr<TClntCfgPD> right, long iaid)
-    :ClntCfgPrefixLst_(right->ClntCfgPrefixLst_), IAID_(iaid), T1_(right->getT1()),
-     T2_(right->getT2()), PrefixLength_(right->getPrefixLength()) {
+    : ClntCfgPrefixLst_(right->ClntCfgPrefixLst_), IAID_(iaid), T1_(right->getT1()), T2_(right->getT2()),
+      PrefixLength_(right->getPrefixLength()) {
 }
 
 void TClntCfgPD::addPrefix(SPtr<TClntCfgPrefix> prefix) {
     ClntCfgPrefixLst_.append(prefix);
 }
 
-ostream& operator<<(ostream& out,TClntCfgPD& pd)
-{
-    out << "        <pd iaid=\"" << pd.IAID_ << "\" state=\"" << StateToString(pd.State_) << "\" t1=\""
-        << pd.T1_ << "\" t2=\"" << pd.T2_ << "\" prefixes=\"" << pd.ClntCfgPrefixLst_.count() << "\">" << std::endl;
+ostream & operator<<(ostream & out, TClntCfgPD & pd) {
+    out << "        <pd iaid=\"" << pd.IAID_ << "\" state=\"" << StateToString(pd.State_) << "\" t1=\"" << pd.T1_ << "\" t2=\""
+        << pd.T2_ << "\" prefixes=\"" << pd.ClntCfgPrefixLst_.count() << "\">" << std::endl;
 
     SPtr<TClntCfgPrefix> prefix;
 
     pd.ClntCfgPrefixLst_.first();
-    while(prefix = pd.ClntCfgPrefixLst_.get())
-    {
+    while (prefix = pd.ClntCfgPrefixLst_.get()) {
         out << "          " << *prefix;
     }
     out << "        </pd>" << std::endl;

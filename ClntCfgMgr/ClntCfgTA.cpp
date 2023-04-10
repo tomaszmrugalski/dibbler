@@ -9,9 +9,9 @@
  */
 
 #include "ClntCfgTA.h"
-#include <iostream>
-#include <iomanip>
 #include "Logger.h"
+#include <iomanip>
+#include <iostream>
 using namespace std;
 
 TClntCfgTA::TClntCfgTA() {
@@ -33,11 +33,10 @@ unsigned long TClntCfgTA::getIAID() {
 }
 
 void TClntCfgTA::setIAID(unsigned long iaid) {
-    this->iaid=iaid;
+    this->iaid = iaid;
 }
 
-ostream& operator<<(ostream& out,TClntCfgTA& ta)
-{
+ostream & operator<<(ostream & out, TClntCfgTA & ta) {
     out << "    <ta iaid=\"" << ta.iaid << "\" state=\"" << StateToString(ta.State) << "\" />" << std::endl;
     return out;
 }

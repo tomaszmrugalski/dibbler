@@ -10,14 +10,13 @@
 #ifndef DHCPSERVER_H
 #define DHCPSERVER_H
 
+#include "SmartPtr.h"
 #include <iostream>
 #include <string>
-#include "SmartPtr.h"
 
-class TDHCPServer
-{
+class TDHCPServer {
   public:
-    TDHCPServer(const std::string& config);
+    TDHCPServer(const std::string & config);
     void run();
     void stop();
     bool isDone();

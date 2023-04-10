@@ -13,15 +13,11 @@ class TClntMsgRelease;
 #define CLNTMSGRELEASE_H
 #include "ClntMsg.h"
 
-class TClntMsgRelease : public TClntMsg
-{
+class TClntMsgRelease : public TClntMsg {
   public:
     /* TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr=NULL); */
-    
-    TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr,
-                    List(TAddrIA) iaLst, 
-                    SPtr<TAddrIA> ta,
-                    List(TAddrIA) pdLst);
+
+    TClntMsgRelease(int iface, SPtr<TIPv6Addr> addr, List(TAddrIA) iaLst, SPtr<TAddrIA> ta, List(TAddrIA) pdLst);
 
     void answer(SPtr<TClntMsg> Rep);
     void doDuties();

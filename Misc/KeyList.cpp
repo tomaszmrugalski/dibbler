@@ -13,8 +13,8 @@
 #include <stdio.h>
 
 KeyList::~KeyList() {
-    KeyListElement * tmp1 = beginning, * tmp2;
-    while(tmp1) {
+    KeyListElement *tmp1 = beginning, *tmp2;
+    while (tmp1) {
         tmp2 = tmp1;
         tmp1 = tmp1->next;
         delete tmp2->AuthInfoKey;
@@ -68,7 +68,7 @@ char * KeyList::Get(uint32_t SPI) {
 }
 
 void KeyList::Del(uint32_t SPI) {
-    KeyListElement * tmp = beginning, * prev = NULL;
+    KeyListElement *tmp = beginning, *prev = NULL;
     while (tmp) {
         if (tmp->SPI == SPI) {
             if (prev)

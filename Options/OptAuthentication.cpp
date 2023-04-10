@@ -7,19 +7,16 @@
  * released under GNU GPL v2 licence
  */
 
-#include <string.h>
-#include <stdlib.h>
-#include "Portable.h"
 #include "OptAuthentication.h"
 #include "DHCPConst.h"
-#include "Portable.h"
-#include "Portable.h"
 #include "Logger.h"
 #include "Msg.h"
 #include "Portable.h"
+#include <stdlib.h>
+#include <string.h>
 
-TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), authDataPtr_(NULL), AuthInfoLen_(0) {
+TOptAuthentication::TOptAuthentication(char * buf, size_t buflen, TMsg * parent)
+    : TOpt(OPTION_AUTH, parent), authDataPtr_(NULL), AuthInfoLen_(0) {
 
     if (buflen < OPT_AUTH_FIXED_SIZE) {
         Valid = false;
@@ -35,8 +32,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         proto_ = static_cast<AuthProtocols>(proto);
         break;
     default: {
-        Log(Warning) << "Auth: unsupported protocol type " << proto
-                     << " received in auth option." << LogEnd;
+        Log(Warning) << "Auth: unsupported protocol type " << proto << " received in auth option." << LogEnd;
         Valid = false;
         return;
     }
@@ -48,8 +44,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
     if (rdm <= AUTH_REPLAY_MONOTONIC) {
         rdm_ = static_cast<AuthReplay>(rdm);
     } else {
-        Log(Warning) << "Auth: unsupported rdm value " << rdm
-                     << " received in auth option." << LogEnd;
+        Log(Warning) << "Auth: unsupported rdm value " << rdm << " received in auth option." << LogEnd;
         Valid = false;
         return;
     }
@@ -77,8 +72,7 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         }
         if (buflen < DELAYED_AUTH_DIGEST_SIZE + DELAYED_AUTH_KEY_ID_SIZE) {
             Log(Warning) << "AUTH: protocol set to delayed-auth, but variable option data"
-                         << " is smaller (" << buflen << ") than required 20. Invalid auth."
-                         << LogEnd;
+                         << " is smaller (" << buflen << ") than required 20. Invalid auth." << LogEnd;
             Valid = false;
             return;
         }
@@ -111,9 +105,8 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         if (Parent)
             Parent->setAuthDigestPtr(buf + 1, buflen);
         if (data_.size() != RECONFIGURE_KEY_AUTHINFO_SIZE) {
-            Log(Warning) << "AUTH: Invalid reconfigure-key data received. Expected size is "
-                         << RECONFIGURE_KEY_AUTHINFO_SIZE << ", but received " << data_.size()
-                         << LogEnd;
+            Log(Warning) << "AUTH: Invalid reconfigure-key data received. Expected size is " << RECONFIGURE_KEY_AUTHINFO_SIZE
+                         << ", but received " << data_.size() << LogEnd;
             Valid = false;
             return;
         }
@@ -140,16 +133,16 @@ TOptAuthentication::TOptAuthentication(char* buf, size_t buflen, TMsg* parent)
         data_ = std::vector<uint8_t>(buf, buf + buflen);
 
         AuthInfoLen_ = getDigestSize(parent->DigestType_);
-        if (buflen != AuthInfoLen_){
-            Log(Warning) << "Auth: Invalid digest size for digest type " << algo_
-                       << ", expected len=" << AuthInfoLen_ << ", received " << buflen << LogEnd;
+        if (buflen != AuthInfoLen_) {
+            Log(Warning) << "Auth: Invalid digest size for digest type " << algo_ << ", expected len=" << AuthInfoLen_
+                         << ", received " << buflen << LogEnd;
             Valid = false;
             return;
         }
 
         Parent->setAuthDigestPtr(buf, AuthInfoLen_);
-        PrintHex(std::string("Auth: Received digest ") + getDigestName(parent->DigestType_) + ": ",
-                 (uint8_t*)buf, AuthInfoLen_);
+        PrintHex(std::string("Auth: Received digest ") + getDigestName(parent->DigestType_) + ": ", (uint8_t *)buf,
+                 AuthInfoLen_);
     }
     }
 
@@ -164,18 +157,16 @@ AuthReplay TOptAuthentication::getRDM() const {
     return rdm_;
 }
 
-TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo,
-                                       AuthReplay rdm, TMsg* parent)
-    :TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0),
-    authDataPtr_(NULL) {
+TOptAuthentication::TOptAuthentication(AuthProtocols proto, uint8_t algo, AuthReplay rdm, TMsg * parent)
+    : TOpt(OPTION_AUTH, parent), proto_(proto), algo_(algo), rdm_(rdm), replay_(0), authDataPtr_(NULL) {
     switch (proto) {
     default:
         AuthInfoLen_ = 0;
         return;
     case AUTH_PROTO_DELAYED:
         if (algo != 1) {
-            Log(Warning) << "AUTH: The only defined protocol for delayed-auth is 1, but "
-                         << static_cast<int>(algo) << " was specified." << LogEnd;
+            Log(Warning) << "AUTH: The only defined protocol for delayed-auth is 1, but " << static_cast<int>(algo)
+                         << " was specified." << LogEnd;
         }
         AuthInfoLen_ = 0; // Keep it as zero (we don't know yet if it's a SOLICIT
                           // (no data at all) or any other (realm + key id + HMAC-MD5)
@@ -220,7 +211,7 @@ bool TOpt::doDuties() {
     return true;
 }
 
-char* TOptAuthentication::storeSelf(char* buf) {
+char * TOptAuthentication::storeSelf(char * buf) {
 
     // common part (the same for all auth protocols)
     buf = writeUint16(buf, OptType);
@@ -241,11 +232,11 @@ char* TOptAuthentication::storeSelf(char* buf) {
         default:
         case 1: // reconfigure-key value
             authDataPtr_ = buf;
-            buf = writeData(buf, (char*)&data_[0], data_.size());
+            buf = writeData(buf, (char *)&data_[0], data_.size());
             return buf;
-        case 2: // HMAC-MD5 digest
-            authDataPtr_ = buf + 1; // The first byte is 1 or 2 (see RFC3315, 21.5.1)
-            buf[0] = data_[0]; // 2 = HMAC-MD5 digest
+        case 2:                                          // HMAC-MD5 digest
+            authDataPtr_ = buf + 1;                      // The first byte is 1 or 2 (see RFC3315, 21.5.1)
+            buf[0] = data_[0];                           // 2 = HMAC-MD5 digest
             memset(buf + 1, 0, RECONFIGURE_DIGEST_SIZE); // 16 bytes
             return buf + RECONFIGURE_KEY_AUTHINFO_SIZE;
         }
@@ -254,7 +245,7 @@ char* TOptAuthentication::storeSelf(char* buf) {
     default:
     case AUTH_PROTO_NONE: {
         authDataPtr_ = buf;
-        buf = writeData(buf, (char*)&data_[0], data_.size());
+        buf = writeData(buf, (char *)&data_[0], data_.size());
         return buf;
     }
     case AUTH_PROTO_DELAYED: {
@@ -270,7 +261,7 @@ char* TOptAuthentication::storeSelf(char* buf) {
                 buf = writeUint32(buf, Parent->getSPI()); // key id (4 bytes)
             else
                 buf = writeUint32(buf, 0);
-            authDataPtr_ = buf; // Digest will be stored here
+            authDataPtr_ = buf;           // Digest will be stored here
             memset(buf, 0, AuthInfoLen_); // HMAC-MD5 (16 bytes)
             buf += AuthInfoLen_;
             return buf;
@@ -309,11 +300,11 @@ uint64_t TOptAuthentication::getReplayDetection() {
     return replay_;
 }
 
-void TOptAuthentication::setPayload(const std::vector<uint8_t>& data) {
+void TOptAuthentication::setPayload(const std::vector<uint8_t> & data) {
     data_ = data;
 }
 
-void TOptAuthentication::getPayload(std::vector<uint8_t>& data) {
+void TOptAuthentication::getPayload(std::vector<uint8_t> & data) {
     data = data_;
 }
 
@@ -321,7 +312,7 @@ bool TOptAuthentication::doDuties() {
     return true;
 }
 
-void TOptAuthentication::setRealm(const std::string& realm) {
+void TOptAuthentication::setRealm(const std::string & realm) {
     realm_ = realm;
     if (realm_.empty()) {
         AuthInfoLen_ = 0;

@@ -8,18 +8,17 @@
  *
  */
 
-class TClntMsgConfirm;    
+class TClntMsgConfirm;
 
 #ifndef CLNTMSGCONFIRM_H
 #define CLNTMSGCONFIRM_H
-#include "ClntMsg.h"
-#include "ClntIfaceMgr.h"
-#include "ClntCfgIface.h"
 #include "ClntCfgIA.h"
+#include "ClntCfgIface.h"
+#include "ClntIfaceMgr.h"
+#include "ClntMsg.h"
 
-class TClntMsgConfirm : public TClntMsg
-{
-public:
+class TClntMsgConfirm : public TClntMsg {
+  public:
     TClntMsgConfirm(unsigned int iface, List(TAddrIA) iaLst);
     bool check();
     void answer(SPtr<TClntMsg> Rep);
@@ -30,6 +29,5 @@ public:
     void addrsAccepted();
     void addrsRejected();
     ~TClntMsgConfirm();
-
 };
 #endif /* CLNTMSGCONFIRM_H */

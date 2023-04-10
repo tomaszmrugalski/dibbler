@@ -12,14 +12,13 @@
 #ifndef SRVMSGLEASEQUERYREPLY_H
 #define SRVMSGLEASEQUERYREPLY_H
 
+#include "AddrClient.h"
+#include "Logger.h"
 #include "SrvMsg.h"
 #include "SrvMsgLeaseQuery.h"
-#include "Logger.h"
 #include "SrvOptLQ.h"
-#include "AddrClient.h"
 
-class TSrvMsgLeaseQueryReply : public TSrvMsg
-{
+class TSrvMsgLeaseQueryReply : public TSrvMsg {
   public:
     TSrvMsgLeaseQueryReply(SPtr<TSrvMsgLeaseQuery> query);
 

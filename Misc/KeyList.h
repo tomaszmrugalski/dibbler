@@ -7,12 +7,12 @@
  *
  */
 
+#include "Portable.h"
 #include <stdlib.h>
 #include <string.h>
-#include "Portable.h"
 
-#ifndef  KEYLIST_FILE_HEADER_INC
-#define  KEYLIST_FILE_HEADER_INC
+#ifndef KEYLIST_FILE_HEADER_INC
+#define KEYLIST_FILE_HEADER_INC
 
 struct KeyListElement {
     // client-server SPI
@@ -25,13 +25,15 @@ struct KeyListElement {
 };
 
 class KeyList {
-public:
-    KeyList(): beginning(NULL) {}
+  public:
+    KeyList() : beginning(NULL) {
+    }
     ~KeyList();
     void Add(uint32_t SPI, uint32_t AAASPI, char * AuthInfoKey);
     void Del(uint32_t SPI);
     char * Get(uint32_t SPI);
-protected:
+
+  protected:
     KeyListElement * beginning;
 };
 
