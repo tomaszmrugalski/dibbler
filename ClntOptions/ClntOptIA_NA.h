@@ -9,6 +9,7 @@
 #ifndef CLNTOPTIA_NA_H
 #define CLNTOPTIA_NA_H
 
+#include "AddrIA.h"
 #include "ClntCfgIA.h"
 #include "IPv6Addr.h"
 #include "OptIAAddress.h"

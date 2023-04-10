@@ -23,8 +23,8 @@ using namespace std;
 
 #include "ClntIfaceMgr.h"
 #include "ClntParsGlobalOpt.h"
-#include "ClntParser.h"
 #include "FlexLexer.h"
+#include "ClntParser.h"
 #include "hex.h"
 
 TClntCfgMgr * TClntCfgMgr::Instance = 0;

@@ -6,8 +6,8 @@
 #endif
 
 #include <asm/types.h>
-// #include <resolv.h>
 #include <linux/types.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 #include "libnetlink.h"
@@ -22,19 +22,6 @@ extern int resolve_hosts;
 extern int oneline;
 extern int timestamp;
 extern char * _SL_;
-
-#ifndef IPPROTO_ESP
-#define IPPROTO_ESP 50
-#endif
-#ifndef IPPROTO_AH
-#define IPPROTO_AH 51
-#endif
-#ifndef IPPROTO_COMP
-#define IPPROTO_COMP 108
-#endif
-#ifndef IPSEC_PROTO_ANY
-#define IPSEC_PROTO_ANY 255
-#endif
 
 #define SPRINT_BSIZE 64
 #define SPRINT_BUF(x) char x[SPRINT_BSIZE]

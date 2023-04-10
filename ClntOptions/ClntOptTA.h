@@ -14,6 +14,7 @@ class TMsg;
 #ifndef CLNTIA_TA_H
 #define CLNTIA_TA_H
 
+#include "AddrIA.h"
 #include "IPv6Addr.h"
 #include "Msg.h"
 #include "OptIAAddress.h"
