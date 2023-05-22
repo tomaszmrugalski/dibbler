@@ -115,6 +115,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt, SPtr<TSrvMsg> queryMsg, 
     Iface = parent->getIface();
     ClntAddr = queryMsg->getRemoteAddr();
     ClntDuid  = queryMsg->getClientDUID();
+    MsgType = parent->getType();
 
     // true for advertise, false for everything else
     bool quiet = (parent->getType()==ADVERTISE_MSG);
@@ -404,6 +405,7 @@ TSrvOptIA_NA::TSrvOptIA_NA(SPtr<TSrvOptIA_NA> queryOpt,
     ClntDuid  = clntDuid;
     ClntAddr  = clntAddr;
     Iface     = iface;
+    MsgType   = msgType;
 
     IAID_ = queryOpt->getIAID();
 
@@ -472,6 +474,12 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
       return false;
     }
 
+    // Check if the address belongs to the link.
+    if (!checkAddrOnLink(queryOpt)) {
+        Log(Info) << "Address/Addresses sent in renew message are not on link." << LogEnd;
+        return false;
+    }
+
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
     T1_ = ptrIA->getT1();
@@ -479,8 +487,9 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
 
     // send addr info to client
     SPtr<TAddrAddr> ptrAddr;
+    int isAddressRenewed = 0;
     ptrIA->firstAddr();
-    while ( ptrAddr = ptrIA->getAddr() ) {
+    while ((ptrAddr = ptrIA->getAddr()) && (isAddressRenewed = 1)) {
         SPtr<TOptIAAddress> optAddr;
         ptrAddr->setTimestamp();
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),ptrAddr->getValid(),
@@ -489,10 +498,11 @@ bool TSrvOptIA_NA::renew(SPtr<TSrvOptIA_NA> queryOpt, bool complainIfMissing)
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TOptStatusCode> ptrStatus;
-    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
-    SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
-
+    if (isAddressRenewed == 1) {
+        SPtr<TOptStatusCode> ptrStatus;
+        ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Address(es) renewed. Greetings from planet Earth",this->Parent);
+        SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
+    }
     return true;
 }
 
@@ -517,7 +527,11 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
         return;
     }
 
-    /// @todo: 18.2.4 par. 3 (check if addrs are appropriate for this link)
+    // RFC 3315 - 18.2.4 par. 3 (check if addrs are appropriate for this link)
+    if (!checkAddrOnLink(queryOpt)) {
+        Log(Info) << "Address/Addresses sent in rebind message are not on link." << LogEnd;
+        return;
+    }
 
     // everything seems ok, update data in addrdb
     ptrIA->setTimestamp();
@@ -526,8 +540,9 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
 
     // send addr info to client
     SPtr<TAddrAddr> ptrAddr;
+    int isAddressRenewed = 0;
     ptrIA->firstAddr();
-    while ( ptrAddr = ptrIA->getAddr() ) {
+    while ((ptrAddr = ptrIA->getAddr()) && (isAddressRenewed = 1)) {
         SPtr<TOptIAAddress> optAddr;
         optAddr = new TSrvOptIAAddress(ptrAddr->get(), ptrAddr->getPref(),
                                        ptrAddr->getValid(),this->Parent);
@@ -535,10 +550,12 @@ void TSrvOptIA_NA::rebind(SPtr<TSrvOptIA_NA> queryOpt,
     }
 
     // finally send greetings and happy OK status code
-    SPtr<TOptStatusCode> ptrStatus;
-    ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
+    if (isAddressRenewed == 1) {
+        SPtr<TOptStatusCode> ptrStatus;
+        ptrStatus = new TOptStatusCode(STATUSCODE_SUCCESS,"Greetings from planet Earth",
                                       this->Parent);
-    SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
+        SubOptions.append( SPtr_cast<TOpt>(ptrStatus) );
+    }
 }
 
 void TSrvOptIA_NA::release(SPtr<TSrvOptIA_NA> queryOpt,
@@ -552,6 +569,60 @@ void TSrvOptIA_NA::decline(SPtr<TSrvOptIA_NA> queryOpt,
 
 bool TSrvOptIA_NA::doDuties()
 {
+    return true;
+}
+
+bool TSrvOptIA_NA::checkAddrOnLink(SPtr<TSrvOptIA_NA> queryOpt)
+{
+    SPtr<TSrvCfgIface> cfgIface             = SrvCfgMgr().getIfaceByID(Iface);
+    SPtr<TOpt>         querySubOption;
+    EAddrStatus        isAddrOnLink         = ADDRSTATUS_YES;
+
+    Log(Info) << "MsgType : " << MsgType << LogEnd;
+
+    if ( !cfgIface)
+    {
+        Log(Crit) << "Msg received through not configured interface. "
+            "Somebody call an exorcist!" << LogEnd;
+        return false;
+    }
+
+    queryOpt->firstOption();
+    while (querySubOption = queryOpt->getOption()) {
+        if (querySubOption->getOptType() != OPTION_IAADDR) {
+            continue;
+        }
+        SPtr<TSrvOptIAAddress> optIAAddr = SPtr_cast<TSrvOptIAAddress>(querySubOption);
+        if (!optIAAddr) {
+            continue;
+        }
+        isAddrOnLink = cfgIface->confirmAddress(IATYPE_IA, optIAAddr->getAddr());
+        if (isAddrOnLink != ADDRSTATUS_YES) {
+            switch (MsgType) {
+                case RENEW_MSG:
+                    /*
+                    RFC 8415 - 18.3.4.  Receipt of Renew Messages
+                       If the server finds that any of the addresses in the IA are not
+                       appropriate for the link to which the client is attached, the server
+                       returns the address to the client with lifetimes of 0.
+                    */
+                case REBIND_MSG: {
+                    /*
+                    RFC 3315 - 18.2.4. Receipt of Rebind Messages
+                        If the server finds that any of the addresses are no longer
+                        appropriate for the link to which the client is attached, the server
+                        returns the address to the client with lifetimes of 0.
+                    */
+                    SPtr<TOptIAAddress> optAddr;
+                    optAddr = new TSrvOptIAAddress(optIAAddr->getAddr(), 0, 0, this->Parent);
+                    SubOptions.append( SPtr_cast<TOpt>(optAddr) );
+                    break;
+                }
+                default :
+                    break;
+            }
+        }
+    }
     return true;
 }
 
