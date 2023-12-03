@@ -1,4 +1,6 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 [![Build Status](https://travis-ci.org/tomaszmrugalski/dibbler.svg?branch=master)](https://travis-ci.org/tomaszmrugalski/dibbler)
+
 
 # Dibbler - a portable DHCPv6
 
