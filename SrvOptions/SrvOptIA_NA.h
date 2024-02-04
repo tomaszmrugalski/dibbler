@@ -40,6 +40,7 @@ class TSrvOptIA_NA : public TOptIA_NA
     void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
     bool doDuties();
+    bool checkAddrOnLink(SPtr<TSrvOptIA_NA> queryOpt);
  private:
     bool assignCachedAddr(bool quiet);
     bool assignRequestedAddr(SPtr<TSrvMsg> queryMsg, SPtr<TSrvOptIA_NA> queryOpt, bool quiet);
@@ -52,6 +53,7 @@ class TSrvOptIA_NA : public TOptIA_NA
     SPtr<TIPv6Addr>   ClntAddr;
     SPtr<TDUID>       ClntDuid;
     int                   Iface;
+    int                   MsgType;
 
     SPtr<TIPv6Addr> getFreeAddr(SPtr<TIPv6Addr> hint);
     SPtr<TIPv6Addr> getExceptionAddr();
