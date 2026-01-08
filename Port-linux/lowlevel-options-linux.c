@@ -469,7 +469,7 @@ void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLengt
     }
     fseek(f, 0, SEEK_END);
 
-    fprintf(f, "\n### %s start ###\n", ifname);
+    fprintf(f, "### %s start ###\n", ifname);
     fprintf(f, "interface %s \n", ifname);
     fprintf(f, "{ \n");
     fprintf(f, "     AdvSendAdvert on; \n");
@@ -482,7 +482,6 @@ void add_radvd_conf(const char* ifname, const char* prefixPlain, int prefixLengt
     fprintf(f, "     };\n");
     fprintf(f, "};\n");
     fprintf(f, "### %s end ###\n", ifname);
-    fprintf(f, "\n");
 
     fclose(f);
 }
